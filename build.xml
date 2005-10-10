@@ -1,0 +1,79 @@
+<project name="JSampler" default="build-jsclassic" basedir=".">
+    <description>This buildfile is used to build JSampler distributions</description>
+    
+    <property name="jlscp.version" value="0.3a"/>
+    <property name="juife.version" value="0.1a"/>
+    <property name="JSampler.version" value="0.1a"/>
+    
+    <target name="build-jsclassic" depends="clean-jsclassic,build-manifest">
+        <unjar src="lib/required/jlscp.jar" dest="dist/build">
+            <patternset>
+                <include name="org/**"/>
+            </patternset>
+        </unjar>
+
+        <unjar src="lib/required/juife.jar" dest="dist/build">
+            <patternset>
+                <include name="net/**"/>
+            </patternset>
+        </unjar>
+        
+        <javac debug="true" debuglevel="source,lines,vars" srcdir="src" destdir="dist/build"/>
+        <copy todir="./dist/build/org/jsampler/langprops">
+            <fileset dir="./src/org/jsampler/langprops"/>
+        </copy>
+        <copy todir="./dist/build/org/jsampler/view/classic/langprops">
+            <fileset dir="./src/org/jsampler/view/classic/langprops"/>
+        </copy>
+        <copy todir="./dist/build/licenses">
+            <fileset dir="licenses"/>
+        </copy>
+        <copy todir="./dist/build/org/jsampler/view/classic/res">
+            <fileset dir="res/js-classic"/>
+        </copy>
+        <jar basedir="./dist/build" excludes="Manifest" destfile="./dist/js-classic.jar" manifest="./dist/build/Manifest"/>
+        <delete dir="./dist/build"/>
+    </target>
+
+    <target name="clean-jsclassic">
+        <delete dir="dist"/>
+
+        
+    </target>
+
+    <target name="build-manifest">
+        <mkdir dir="dist/build"/>
+        <manifest file="dist/build/Manifest">
+            <attribute name="Main-Class" value="org.jsampler.JSampler"/>
+            
+            <section name="org/linuxsampler/lscp/">
+                <attribute name="Specification-Title" value="A java LinuxSampler control protocol API"/>
+                <attribute name="Specification-Version" value="1.0"/>
+                <attribute name="Specification-Vendor" value="Grigor Iliev"/>
+                <attribute name="Implementation-Title" value="org.linuxsampler.lscp"/>
+                <attribute name="Implementation-Version" value="${jlscp.version}"/>
+                <attribute name="Implementation-Vendor" value="Grigor Iliev"/>
+            </section>
+
+            <section name="net/sf/juife/">
+                <attribute name="Specification-Title" value="Java User Interface Framework Extensions"/>
+                <attribute name="Specification-Version" value="0.1"/>
+                <attribute name="Specification-Vendor" value="Grigor Iliev"/>
+                <attribute name="Implementation-Title" value="net.sf.juife"/>
+                <attribute name="Implementation-Version" value="${juife.version}"/>
+                <attribute name="Implementation-Vendor" value="Grigor Iliev"/>
+            </section>
+
+            <section name="org/jsampler/">
+                <attribute name="Specification-Title" value="A java front-end for LinuxSampler"/>
+                <attribute name="Specification-Version" value="0.1"/>
+                <attribute name="Specification-Vendor" value="Grigor Iliev"/>
+                <attribute name="Implementation-Title" value="org.jsampler"/>
+                <attribute name="Implementation-Version" value="${JSampler.version}"/>
+                <attribute name="Implementation-Vendor" value="Grigor Iliev"/>
+            </section>
+        </manifest>
+    </target>
+    
+</project>
+

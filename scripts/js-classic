@@ -1,0 +1,53 @@
+#!/bin/sh
+#
+#   JSampler - a java front-end for LinuxSampler
+#
+#   Copyright (C) 2005 Grigor Kirilov Iliev
+#
+#   This file is part of JSampler.
+#
+#   JSampler is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License version 2
+#   as published by the Free Software Foundation.
+#
+#   JSampler is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with JSampler; if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+#   MA  02111-1307  USA
+
+
+# Set the JAVA_HOME variable to specify the java distribution to be used.
+#JAVA_HOME=
+
+# If you want to run js-classic.jar from a different directory
+# you must define JS_CLASSIC_PATH to point to js-classic.jar location.
+#JS_CLASSIC_PATH=
+
+if [ -n "$JAVA_HOME" ]  ; then
+    if [ -x "$JAVA_HOME/bin/java" ] ; then
+        JAVA="$JAVA_HOME/bin/java"
+    fi
+fi
+
+if [ -z "$JAVA" ]  ; then
+    if [ -x "`which java`" ] ; then
+        JAVA="`which java`"
+    fi
+fi
+
+if [ -n "$JAVA" ] ; then
+    if [ -n "$JS_CLASSIC_PATH" ] ; then
+        $JAVA -jar $JS_CLASSIC_PATH/js-classic.jar
+    else
+        $JAVA -jar js-classic.jar
+    fi
+else
+    echo "Unable to find java! Please set JAVA_HOME to point to your JDK directory."
+    echo "Example:"
+    echo "export JAVA_HOME=/opt/jdk1.5.0_04"
+fi

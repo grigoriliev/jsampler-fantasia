@@ -1,0 +1,54 @@
+
+JSampler - A java front-end for LinuxSampler
+
+by Grigor Iliev <gr.iliev@gmail.com>
+
+
+The Latest Version
+==================
+
+The latest version can be downloaded from
+http://sourceforge.net/projects/jsampler/
+
+See also: http://www.linuxsampler.org/downloads.html
+
+
+License
+=======
+
+This software is licensed under the terms of
+the GNU General Public License Version 2 (see COPYING file).
+
+
+Requirements
+============
+
+To run JSampler you need java version 1.5.0 or higher.
+
+To build a distribution you need JDK version 1.5.0 or higher
+and the Ant tool (http://ant.apache.org/).
+
+
+Compilation
+===========
+
+To build a JSampler distribution follow the next steps.
+(note that only one distribution is available for now - JS Classic)
+
+  1. Set the JAVA_HOME environment variable to point to your JDK directory.
+     If the JDK is installed in /opt/jdk1.5.0 directory, this can be done
+     with the following command:
+
+     export JAVA_HOME=/opt/jdk1.5.0
+
+     (Windows users must do something like `set JAVA_HOME=c:\jdk1.5.0')
+
+  2. Choose one or more of the following options.
+
+     - Building a JS Classic distribution: `ant build-jsclassic'
+
+     - Cleaning the JS Classic distribution: `ant clean-jsclassic'
+
+
+Thanks for using JSampler.
+

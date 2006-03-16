@@ -27,8 +27,6 @@ import java.util.logging.Level;
 import org.jsampler.CC;
 import org.jsampler.HF;
 
-import net.sf.juife.AbstractTask;
-
 import static org.jsampler.JSI18n.i18n;
 
 
@@ -36,7 +34,7 @@ import static org.jsampler.JSI18n.i18n;
  *
  * @author Grigor Iliev
  */
-public class SetSoloChannel extends AbstractTask {
+public class SetSoloChannel extends EnhancedTask {
 	private int channel;
 	private boolean solo;
 	
@@ -48,9 +46,6 @@ public class SetSoloChannel extends AbstractTask {
 		this.channel = channel;
 		this.solo = solo;
 	}
-	
-	public void
-	stop() { CC.cleanExit(); }
 	
 	public void
 	run() {

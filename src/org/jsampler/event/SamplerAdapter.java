@@ -29,24 +29,7 @@ package org.jsampler.event;
  * @author Grigor Iliev
  */
 public abstract class SamplerAdapter implements SamplerListener {
-	/**
-	 * Invoked when a new sampler channel is created.
-	 * @param e A <code>SamplerEvent</code> instance containing the event information.
-	 */
+	/** Invoked when the total number of active voices is changed. */
 	public void
-	channelAdded(SamplerEvent e) { }
-	
-	/**
-	 * Invoked when a sampler channel is removed.
-	 * @param e A <code>SamplerEvent</code> instance containing the event information.
-	 */
-	public void
-	channelRemoved(SamplerEvent e) { }
-	
-	/**
-	 * Invoked when changes are made to a sampler channel.
-	 * @param e A <code>SamplerEvent</code> instance containing the event information.
-	 */
-	public void
-	channelChanged(SamplerEvent e) { }
+	totalVoiceCountChanged(SamplerEvent e) { }
 }

@@ -24,8 +24,6 @@ package org.jsampler.task;
 
 import java.util.logging.Level;
 
-import net.sf.juife.AbstractTask;
-
 import org.jsampler.CC;
 import org.jsampler.HF;
 
@@ -36,9 +34,8 @@ import static org.jsampler.JSI18n.i18n;
  *
  * @author Grigor Iliev
  */
-public class DestroyMidiDevice extends AbstractTask {
+public class DestroyMidiDevice extends EnhancedTask {
 	private int deviceID;
-	
 	
 	public
 	DestroyMidiDevice(int deviceID) {
@@ -47,9 +44,6 @@ public class DestroyMidiDevice extends AbstractTask {
 		
 		this.deviceID = deviceID;
 	}
-	
-	public void
-	stop() { CC.cleanExit(); }
 	
 	public void
 	run() {

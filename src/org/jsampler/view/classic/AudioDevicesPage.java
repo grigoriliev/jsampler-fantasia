@@ -59,8 +59,9 @@ import net.sf.juife.InformationDialog;
 import net.sf.juife.JuifeUtils;
 import net.sf.juife.NavigationPage;
 
-import org.jsampler.CC;
 import org.jsampler.AudioDeviceModel;
+import org.jsampler.CC;
+import org.jsampler.HF;
 
 import org.jsampler.event.AudioDeviceEvent;
 import org.jsampler.event.AudioDeviceListEvent;
@@ -307,7 +308,9 @@ public class AudioDevicesPage extends NavigationPage {
 				ImageIcon icon = new ImageIcon(url);
 				if(icon.getImageLoadStatus() == MediaTracker.COMPLETE)
 					putValue(Action.SMALL_ICON, icon);
-			} catch(Exception x) { CC.getLogger().log(Level.INFO, x.getMessage(), x); }
+			} catch(Exception x) {
+				CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
+			}
 			
 			setEnabled(false);
 		}
@@ -344,7 +347,9 @@ public class AudioDevicesPage extends NavigationPage {
 				ImageIcon icon = new ImageIcon(url);
 				if(icon.getImageLoadStatus() == MediaTracker.COMPLETE)
 					putValue(Action.SMALL_ICON, icon);
-			} catch(Exception x) { CC.getLogger().log(Level.INFO, x.getMessage(), x); }
+			} catch(Exception x) {
+				CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
+			}
 			
 			setEnabled(false);
 		}
@@ -375,7 +380,9 @@ public class AudioDevicesPage extends NavigationPage {
 				ImageIcon icon = new ImageIcon(url);
 				if(icon.getImageLoadStatus() == MediaTracker.COMPLETE)
 					putValue(Action.SMALL_ICON, icon);
-			} catch(Exception x) { CC.getLogger().log(Level.INFO, x.getMessage(), x); }
+			} catch(Exception x) {
+				CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
+			}
 			
 			setEnabled(false);
 		}

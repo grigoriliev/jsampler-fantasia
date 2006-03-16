@@ -112,6 +112,8 @@ public class InstrumentChooser extends OkCancelDialog {
 			public void
 			actionPerformed(ActionEvent e) { onBrowse(); }
 		});
+		
+		btnBrowse.requestFocusInWindow();
 	}
 	
 	protected void
@@ -138,6 +140,7 @@ public class InstrumentChooser extends OkCancelDialog {
 		int result = fc.showOpenDialog(this);
 		if(result == JFileChooser.APPROVE_OPTION) {
 			tfFilename.setText(fc.getSelectedFile().getPath());
+			btnOk.requestFocusInWindow();
 		}
 	}
 	
@@ -148,6 +151,10 @@ public class InstrumentChooser extends OkCancelDialog {
 	public String
 	getFileName() { return tfFilename.getText(); }
 	
+	/**
+	 * Gets the index of the instrument in the instrument file.
+	 * @return The index of the instrument in the instrument file.
+	 */
 	public int
 	getInstrumentIndex() { return Integer.parseInt(spinnerIndex.getValue().toString()); }
 }

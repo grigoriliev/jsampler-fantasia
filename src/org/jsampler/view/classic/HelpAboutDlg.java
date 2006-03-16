@@ -57,10 +57,8 @@ import static org.jsampler.view.classic.ClassicI18n.i18n;
  * @author grish
  */
 public class HelpAboutDlg extends InformationDialog {
-	private final static JPanel pane = new JPanel();
-	
 	private JLabel lProductName =
-		new JLabel("<html>\n<font size=+1>JS Classic (version 0.1a)</font>");
+		new JLabel("<html>\n<font size=+1>JS Classic (version 0.2a)</font>");
 	
 	private JLabel lAuthor = new JLabel(i18n.getLabel("HelpAboutDlg.lAuthor"));
 	private JTextField tfAuthor = new JTextField(i18n.getLabel("HelpAboutDlg.tfAuthor"));
@@ -84,7 +82,7 @@ public class HelpAboutDlg extends InformationDialog {
 	
 	/** Creates a new instance of HelpAboutDlg */
 	public HelpAboutDlg(Frame owner) {
-		super(owner, i18n.getLabel("HelpAboutDlg.title"), pane);
+		super(owner, i18n.getLabel("HelpAboutDlg.title"));
 		
 		GridBagLayout gridbag = new GridBagLayout();
 		GridBagConstraints c = new GridBagConstraints();
@@ -187,7 +185,6 @@ public class HelpAboutDlg extends InformationDialog {
 		lCopyright.setAlignmentX(LEFT_ALIGNMENT);
 		mainPane.add(lCopyright);
 		
-		pane.getParent().remove(pane);
 		setMainPane(mainPane);
 		
 		pack();
@@ -305,10 +302,8 @@ class WebButton extends LinkButton {
 enum License { GPL, LGPL }
 
 class LicenseDlg extends InformationDialog {
-	private static JPanel pane = new JPanel();
-	
 	LicenseDlg(Dialog owner, License license) {
-		super(owner, pane);
+		super(owner);
 		
 		switch(license) {
 			case GPL: setTitle("GNU General Public License"); break;
@@ -318,7 +313,6 @@ class LicenseDlg extends InformationDialog {
 		JScrollPane sp = new JScrollPane(new LicensePane(license));
 		sp.setPreferredSize(new Dimension(800, 400));
 		
-		pane.getParent().remove(pane);
 		setMainPane(sp);
 	}
 	
@@ -342,13 +336,13 @@ class LicenseDlg extends InformationDialog {
 			} catch(Exception x) {
 				x.printStackTrace();
 			}
+			
+			setEditable(false);
 		}
 	}
 }
 
 class LibraryInfoDlg extends InformationDialog {
-	private final static JPanel pane = new JPanel();
-	
 	private JLabel lAuthor = new JLabel(i18n.getLabel("LibraryInfoDlg.lAuthor"));
 	private JTextField tfAuthor = new JTextField(i18n.getLabel("LibraryInfoDlg.tfAuthor"));
 	
@@ -365,7 +359,7 @@ class LibraryInfoDlg extends InformationDialog {
 		String website,
 		final License license
 	) {
-		super(owner, libName,  pane);
+		super(owner, libName);
 		
 		switch(license) {
 			case GPL: btnLicense.setText("GNU General Public License"); break;
@@ -374,7 +368,6 @@ class LibraryInfoDlg extends InformationDialog {
 		
 		btnWebsite.setText(website);
 		
-		pane.getParent().remove(pane);
 		setMainPane(new LibraryInfoPane(libName, libVersion, license));
 		
 		btnLicense.addActionListener(new ActionListener() {

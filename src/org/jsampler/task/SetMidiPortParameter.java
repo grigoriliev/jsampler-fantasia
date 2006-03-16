@@ -24,8 +24,6 @@ package org.jsampler.task;
 
 import java.util.logging.Level;
 
-import net.sf.juife.AbstractTask;
-
 import org.jsampler.CC;
 import org.jsampler.HF;
 
@@ -39,7 +37,7 @@ import static org.jsampler.JSI18n.i18n;
  *
  * @author Grigor Iliev
  */
-public class SetMidiPortParameter extends AbstractTask {
+public class SetMidiPortParameter extends EnhancedTask {
 	private int dev;
 	private int port;
 	private Parameter prm;
@@ -59,9 +57,6 @@ public class SetMidiPortParameter extends AbstractTask {
 		this.port = port;
 		this.prm = prm;
 	}
-	
-	public void
-	stop() { CC.cleanExit(); }
 	
 	public void
 	run() {

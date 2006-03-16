@@ -23,10 +23,10 @@
 package org.jsampler.view.classic;
 
 import java.awt.Dimension;
+import java.awt.MediaTracker;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.MediaTracker;
 
 import java.net.URL;
 

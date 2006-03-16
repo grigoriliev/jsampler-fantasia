@@ -27,8 +27,6 @@ import java.util.logging.Level;
 import org.jsampler.CC;
 import org.jsampler.HF;
 
-import net.sf.juife.AbstractTask;
-
 import static org.jsampler.JSI18n.i18n;
 
 
@@ -36,7 +34,7 @@ import static org.jsampler.JSI18n.i18n;
  *
  * @author Grigor Iliev
  */
-public class SetChannelAudioOutputDevice extends AbstractTask {
+public class SetChannelAudioOutputDevice extends EnhancedTask {
 	private int channel;
 	private int deviceID;
 	
@@ -50,9 +48,6 @@ public class SetChannelAudioOutputDevice extends AbstractTask {
 		this.channel = channel;
 		this.deviceID = deviceID;
 	}
-	
-	public void
-	stop() { CC.cleanExit(); }
 	
 	public void
 	run() {

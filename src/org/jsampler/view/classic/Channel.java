@@ -23,6 +23,7 @@
 package org.jsampler.view.classic;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -31,7 +32,12 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import java.net.URL;
+
+import java.util.Vector;
 
 import java.util.logging.Level;
 
@@ -46,6 +52,9 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JSlider;
 import javax.swing.JToggleButton;
+
+import javax.swing.border.Border;
+import javax.swing.border.LineBorder;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -90,6 +99,14 @@ public class Channel extends org.jsampler.view.JSChannel {
 	private final static ImageIcon iconShowProperties;
 	private final static ImageIcon iconHideProperties;
 	
+	private static Border borderSelected;
+	private static Border borderDeselected;
+	
+	private static Color borderColor;
+	
+	private final static Vector<PropertyChangeListener> propertyChangeListeners
+		= new Vector<PropertyChangeListener>();
+	
 	static {
 		String path = "org/jsampler/view/classic/res/icons/";
 		URL url = ClassLoader.getSystemClassLoader().getResource(path + "mute_on.png");
@@ -112,6 +129,60 @@ public class Channel extends org.jsampler.view.JSChannel {
 		
 		url = ClassLoader.getSystemClassLoader().getResource(path + "Down16.gif");
 		iconHideProperties = new ImageIcon(url);
+		
+		if(ClassicPrefs.getCustomChannelBorderColor())
+			setBorderColor(ClassicPrefs.getChannelBorderColor());
+		else setBorderColor(ClassicPrefs.getDefaultChannelBorderColor());
+		
+		borderSelected = new LineBorder(getBorderColor(), 2, true);
+		borderDeselected = BorderFactory.createEmptyBorder(2, 2, 2, 2);
+	}
+	
+	/**
+	 * Registers the specified listener for receiving property change events.
+	 * @param l The <code>PropertyChangeListener</code> to register.
+	 */
+	public void
+	addPropertyChangeListener(PropertyChangeListener l) {
+		propertyChangeListeners.add(l);
+	}
+	
+	/**
+	 * Removes the specified listener.
+	 * @param l The <code>PropertyChangeListener</code> to remove.
+	 */
+	public void
+	removePropertyChangeListener(PropertyChangeListener l) {
+		propertyChangeListeners.remove(l);
+	}
+	
+	/**
+	 * Gets the border color that is used when the channel is selected.
+	 * @return The border color that is used when the channel is selected.
+	 */
+	public static Color
+	getBorderColor() { return borderColor; }
+	
+	/**
+	 * Sets the border color to be used when the channel is selected.
+	 * @param c The border color to be used when the channel is selected.
+	 */
+	public static void
+	setBorderColor(Color c) {
+		if(borderColor != null && borderColor.getRGB() == c.getRGB()) return;
+		
+		Color oldColor = borderColor;
+		borderColor = c;
+		borderSelected = new LineBorder(getBorderColor(), 2, true);
+		firePropertyChanged("borderColor", oldColor, borderColor);
+	}
+	
+	private static void
+	firePropertyChanged(String propertyName, Object oldValue, Object newValue) {
+		PropertyChangeEvent e =
+			new PropertyChangeEvent(Channel.class, propertyName, oldValue, newValue);
+		
+		for(PropertyChangeListener l : propertyChangeListeners) l.propertyChange(e);
 	}
 	
 	
@@ -220,7 +291,7 @@ public class Channel extends org.jsampler.view.JSChannel {
 		d = getPreferredSize();
 		setMaximumSize(new Dimension(getMaximumSize().width, d.height));
 		
-		getModel().addSamplerChannelListener(eventHandler);
+		getModel().addSamplerChannelListener(getHandler());
 		
 		btnInstr.addActionListener(new ActionListener() {
 			public void
@@ -246,13 +317,35 @@ public class Channel extends org.jsampler.view.JSChannel {
 			public void
 			actionPerformed(ActionEvent e) {
 				showProperties(btnProperties.isSelected());
+				
+				String s;
+				if(btnProperties.isSelected()) {
+					s = i18n.getButtonLabel("Channel.ttHideProps");
+				} else {
+					s = i18n.getButtonLabel("Channel.ttShowProps");
+				}
+				
+				btnProperties.setToolTipText(s);
 			}
 		});
+		
+		btnProperties.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		
+		String s;
+		if(btnProperties.isSelected()) s = i18n.getButtonLabel("Channel.ttHideProps");
+		else s = i18n.getButtonLabel("Channel.ttShowProps");
+		
+		btnProperties.setToolTipText(s);
+		
+		addPropertyChangeListener(getHandler());
 		
 		updateChannelInfo();
 	}
 	
-	private class EventHandler implements SamplerChannelListener {
+	private EventHandler
+	getHandler() { return eventHandler; }
+	
+	private class EventHandler implements SamplerChannelListener, PropertyChangeListener {
 		/**
 		 * Invoked when changes are made to a sampler channel.
 		 * @param e A <code>SamplerChannelEvent</code> instance
@@ -280,6 +373,11 @@ public class Channel extends org.jsampler.view.JSChannel {
 		voiceCountChanged(SamplerChannelEvent e) {
 			updateVoiceCount(getModel().getVoiceCount());
 		}
+		
+		public void
+		propertyChange(PropertyChangeEvent e) {
+			if(e.getPropertyName() == "borderColor") setSelected(isSelected());
+		}
 	}
 	
 	/**
@@ -296,9 +394,8 @@ public class Channel extends org.jsampler.view.JSChannel {
 	 */
 	public void
 	setSelected(boolean select) {
-		if(select) 
-			mainPane.setBorder(BorderFactory.createLineBorder(java.awt.Color.WHITE, 3));
-		else mainPane.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
+		if(select)  mainPane.setBorder(borderSelected);
+		else mainPane.setBorder(borderDeselected);
 		
 		selected = select;
 	}

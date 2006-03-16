@@ -25,6 +25,7 @@ package org.jsampler.view.classic;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -38,6 +39,8 @@ import javax.swing.JProgressBar;
 
 import org.jsampler.CC;
 
+import org.jsampler.event.SamplerChannelListEvent;
+import org.jsampler.event.SamplerChannelListListener;
 import org.jsampler.event.SamplerEvent;
 import org.jsampler.event.SamplerListener;
 
@@ -49,6 +52,9 @@ import static org.jsampler.view.classic.ClassicI18n.i18n;
  * @author Grigor Iliev
  */
 public class Statusbar extends JPanel {
+	JLabel l1;
+	JLabel l2;
+	
 	private final JProgressBar pbTotalVoices = new JProgressBar();
 	
 	/** Creates a new instance of StatusBar */
@@ -57,11 +63,15 @@ public class Statusbar extends JPanel {
 		GridBagConstraints c = new GridBagConstraints();
 		setLayout(gridbag);
 		
-		JLabel l1 = new JLabel(" ");
+		l1 = new JLabel();
+		l1.setFont(l1.getFont().deriveFont(Font.PLAIN));
 		l1.setBorder(BorderFactory.createLoweredBevelBorder());
 		
-		JLabel l2 = new JLabel(" ");
+		l2 = new JLabel(" ");
 		l2.setBorder(BorderFactory.createLoweredBevelBorder());
+		l2.setPreferredSize(l1.getPreferredSize());
+		
+		setTotalChannelCount(CC.getSamplerModel().getChannelCount());
 		
 		JPanel progressPane = new JPanel();
 		progressPane.setLayout(new BorderLayout());
@@ -100,6 +110,14 @@ public class Statusbar extends JPanel {
 		getHandler().totalVoiceCountChanged(null);
 		
 		CC.getSamplerModel().addSamplerListener(getHandler());
+		CC.getSamplerModel().addSamplerChannelListListener(getHandler());
+	}
+	
+	private void
+	setTotalChannelCount(int count) {
+		if(count == 1) l1.setText(" " + i18n.getLabel("Statusbar.totalChannel", count));
+		else l1.setText(" " + i18n.getLabel("Statusbar.totalChannels", count));
+		l2.setPreferredSize(l1.getPreferredSize());
 	}
 	
 	private final Handler handler = new Handler();
@@ -107,7 +125,7 @@ public class Statusbar extends JPanel {
 	private Handler
 	getHandler() { return handler; }
 	
-	private class Handler implements SamplerListener {
+	private class Handler implements SamplerListener, SamplerChannelListListener {
 		/** Invoked when the total number of active voices is changed. */
 		public void
 		totalVoiceCountChanged(SamplerEvent e) {
@@ -116,6 +134,26 @@ public class Statusbar extends JPanel {
 			pbTotalVoices.setMaximum(voicesMax);
 			pbTotalVoices.setValue(voices);
 			pbTotalVoices.setString(i18n.getLabel("Statusbar.pbTotalVoices", voices));
+		}
+		
+		/**
+		 * Invoked when a new sampler channel is created.
+		 * @param e A <code>SamplerChannelListEvent</code>
+		 * instance providing the event information.
+		 */
+		public void
+		channelAdded(SamplerChannelListEvent e) {
+			setTotalChannelCount(CC.getSamplerModel().getChannelCount());
+		}
+		
+		/**
+		 * Invoked when a sampler channel is removed.
+		 * @param e A <code>SamplerChannelListEvent</code>
+		 * instance providing the event information.
+		 */
+		public void
+		channelRemoved(SamplerChannelListEvent e) {
+			setTotalChannelCount(CC.getSamplerModel().getChannelCount());
 		}
 	}
 }

@@ -27,8 +27,6 @@ import java.util.logging.Level;
 import org.jsampler.CC;
 import org.jsampler.HF;
 
-import net.sf.juife.AbstractTask;
-
 import static org.jsampler.JSI18n.i18n;
 
 
@@ -36,7 +34,7 @@ import static org.jsampler.JSI18n.i18n;
  *
  * @author Grigor Iliev
  */
-public class LoadEngine extends AbstractTask {
+public class LoadEngine extends EnhancedTask {
 	private String engine;
 	private int channel;
 	
@@ -50,9 +48,6 @@ public class LoadEngine extends AbstractTask {
 		Object[] objs = { engine, new Integer(channel) };
 		setDescription(i18n.getMessage("LoadEngine.description", objs));
 	}
-	
-	public void
-	stop() { CC.cleanExit(); }
 	
 	public void
 	run() {

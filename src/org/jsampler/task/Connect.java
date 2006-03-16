@@ -27,8 +27,6 @@ import java.util.logging.Level;
 import org.jsampler.CC;
 import org.jsampler.HF;
 
-import net.sf.juife.AbstractTask;
-
 import static org.jsampler.JSI18n.i18n;
 
 
@@ -36,15 +34,12 @@ import static org.jsampler.JSI18n.i18n;
  *
  * @author Grigor Iliev
  */
-public class Connect extends AbstractTask {
+public class Connect extends EnhancedTask {
 	public
 	Connect() {
 		setTitle("Connect_task");
 		setDescription(i18n.getMessage("Connect.description"));
 	}
-	
-	public void
-	stop() { CC.cleanExit(); }
 	
 	public void
 	run() {

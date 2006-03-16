@@ -28,8 +28,6 @@ import org.jsampler.CC;
 import org.jsampler.HF;
 import org.jsampler.SamplerModel;
 
-import net.sf.juife.AbstractTask;
-
 import org.jsampler.SamplerChannelModel;
 
 import static org.jsampler.JSI18n.i18n;
@@ -39,15 +37,12 @@ import static org.jsampler.JSI18n.i18n;
  *
  * @author Grigor Iliev
  */
-public class UpdateChannels extends AbstractTask {
+public class UpdateChannels extends EnhancedTask {
 	public
 	UpdateChannels() {
 		setTitle("UpdateChannels_task");
 		setDescription(i18n.getMessage("UpdateChannels.description"));
 	}
-	
-	public void
-	stop() { CC.cleanExit(); }
 	
 	public void
 	run() {

@@ -24,8 +24,6 @@ package org.jsampler.task;
 
 import java.util.logging.Level;
 
-import net.sf.juife.AbstractTask;
-
 import org.jsampler.CC;
 import org.jsampler.HF;
 
@@ -36,7 +34,7 @@ import static org.jsampler.JSI18n.i18n;
  *
  * @author Grigor Iliev
  */
-public class EnableAudioDevice extends AbstractTask {
+public class EnableAudioDevice extends EnhancedTask {
 	private int dev;
 	private boolean enable;
 	
@@ -54,9 +52,6 @@ public class EnableAudioDevice extends AbstractTask {
 		this.dev = dev;
 		this.enable = enable;
 	}
-	
-	public void
-	stop() { CC.cleanExit(); }
 	
 	public void
 	run() {

@@ -22,6 +22,8 @@
 
 package org.jsampler.view;
 
+import java.awt.Dimension;
+
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -32,6 +34,7 @@ import javax.swing.JFrame;
 
 import org.jsampler.CC;
 import org.jsampler.JSampler;
+import org.jsampler.Prefs;
 
 import org.jsampler.event.SamplerChannelListEvent;
 import org.jsampler.event.SamplerChannelListListener;
@@ -50,10 +53,35 @@ public abstract class JSMainFrame extends JFrame {
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
 			public void
-			windowClosing(WindowEvent we) { CC.cleanExit(); }
+			windowClosing(WindowEvent we) { onWindowClose(); }
 		});
 		
 		CC.getSamplerModel().addSamplerChannelListListener(new EventHandler());
+	}
+	
+	private void
+	onWindowClose() {
+		if(Prefs.getSaveWindowProperties()) {
+			Prefs.setWindowMaximized (
+				(getExtendedState() & MAXIMIZED_BOTH) == MAXIMIZED_BOTH
+			);
+			
+			setVisible(false);
+			if(Prefs.getWindowMaximized()) {
+				//setExtendedState(getExtendedState() & ~MAXIMIZED_BOTH);
+				CC.cleanExit();
+				return;
+			}
+			
+			java.awt.Point p = getLocation();
+			Dimension d = getSize();
+			StringBuffer sb = new StringBuffer();
+			sb.append(p.x).append(',').append(p.y).append(',');
+			sb.append(d.width).append(',').append(d.height);
+			Prefs.setWindowSizeAndLocation(sb.toString());
+		}
+		
+		CC.cleanExit();
 	}
 	
 	public Vector<JSChannelsPane>

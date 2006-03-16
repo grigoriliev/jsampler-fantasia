@@ -57,6 +57,16 @@ import static org.jsampler.view.classic.ClassicI18n.i18n;
  * @author Grigor Iliev
  */
 public class A4n {
+	private static boolean
+	verifyConnection() {
+		if(!CC.getClient().isConnected()) {
+			HF.showErrorMessage(i18n.getError("notConnected"));
+			return false;
+		}
+		
+		return true;
+	}
+	
 	public final static Action connect = new Connect();
 		
 	private static class Connect extends AbstractAction {
@@ -88,7 +98,9 @@ public class A4n {
 				ImageIcon icon = new ImageIcon(url);
 				if(icon.getImageLoadStatus() == MediaTracker.COMPLETE)
 					putValue(Action.SMALL_ICON, icon);
-			} catch(Exception x) { CC.getLogger().log(Level.INFO, x.getMessage(), x); }
+			} catch(Exception x) {
+				CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
+			}
 		}
 		
 		public void
@@ -113,7 +125,9 @@ public class A4n {
 				ImageIcon icon = new ImageIcon(url);
 				if(icon.getImageLoadStatus() == MediaTracker.COMPLETE)
 					putValue(Action.SMALL_ICON, icon);
-			} catch(Exception x) { CC.getLogger().log(Level.INFO, x.getMessage(), x); }
+			} catch(Exception x) {
+				CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
+			}
 		}
 		
 		public void
@@ -151,11 +165,14 @@ public class A4n {
 				ImageIcon icon = new ImageIcon(url);
 				if(icon.getImageLoadStatus() == MediaTracker.COMPLETE)
 					putValue(Action.SMALL_ICON, icon);
-			} catch(Exception x) { CC.getLogger().log(Level.INFO, x.getMessage(), x); }
+			} catch(Exception x) {
+				CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
+			}
 		}
 		
 		public void
 		actionPerformed(ActionEvent e) {
+			if(!verifyConnection()) return;
 			new NewMidiDeviceDlg(CC.getMainFrame()).setVisible(true);
 		}
 	}
@@ -176,11 +193,14 @@ public class A4n {
 				ImageIcon icon = new ImageIcon(url);
 				if(icon.getImageLoadStatus() == MediaTracker.COMPLETE)
 					putValue(Action.SMALL_ICON, icon);
-			} catch(Exception x) { CC.getLogger().log(Level.INFO, x.getMessage(), x); }
+			} catch(Exception x) {
+				CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
+			}
 		}
 		
 		public void
 		actionPerformed(ActionEvent e) {
+			if(!verifyConnection()) return;
 			new NewAudioDeviceDlg(CC.getMainFrame()).setVisible(true);
 		}
 	}
@@ -202,7 +222,9 @@ public class A4n {
 				ImageIcon icon = new ImageIcon(url);
 				if(icon.getImageLoadStatus() == MediaTracker.COMPLETE)
 					putValue(Action.SMALL_ICON, icon);
-			} catch(Exception x) { CC.getLogger().log(Level.INFO, x.getMessage(), x); }
+			} catch(Exception x) {
+				CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
+			}
 		}
 		
 		public void
@@ -239,11 +261,16 @@ public class A4n {
 				ImageIcon icon = new ImageIcon(url);
 				if(icon.getImageLoadStatus() == MediaTracker.COMPLETE)
 					putValue(Action.SMALL_ICON, icon);
-			} catch(Exception x) { CC.getLogger().log(Level.INFO, x.getMessage(), x); }
+			} catch(Exception x) {
+				CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
+			}
 		}
 		
 		public void
-		actionPerformed(ActionEvent e) { CC.getSamplerModel().createChannel(); }
+		actionPerformed(ActionEvent e) {
+			if(!verifyConnection()) return;
+			CC.getSamplerModel().createChannel();
+		}
 	}
 	
 	private static class NewChannelWizard extends AbstractAction {
@@ -255,12 +282,7 @@ public class A4n {
 		
 		public void
 		actionPerformed(ActionEvent e) {
-			JOptionPane.showMessageDialog (
-				CC.getMainFrame(), "Not implemented yet",
-				"",
-				JOptionPane.INFORMATION_MESSAGE
-			);
-			//new org.jsampler.view.classic.NewChannelWizard().showWizard();
+			new org.jsampler.view.classic.NewChannelWizard().showWizard();
 		}
 	}
 	
@@ -278,7 +300,9 @@ public class A4n {
 				ImageIcon icon = new ImageIcon(url);
 				if(icon.getImageLoadStatus() == MediaTracker.COMPLETE)
 					putValue(Action.SMALL_ICON, icon);
-			} catch(Exception x) { CC.getLogger().log(Level.INFO, x.getMessage(), x); }
+			} catch(Exception x) {
+				CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
+			}
 			
 			setEnabled(false);
 		}
@@ -330,7 +354,9 @@ public class A4n {
 				ImageIcon icon = new ImageIcon(url);
 				if(icon.getImageLoadStatus() == MediaTracker.COMPLETE)
 					putValue(Action.SMALL_ICON, icon);
-			} catch(Exception x) { CC.getLogger().log(Level.INFO, x.getMessage(), x); }
+			} catch(Exception x) {
+				CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
+			}
 			
 			setEnabled(false);
 		}
@@ -356,7 +382,9 @@ public class A4n {
 				ImageIcon icon = new ImageIcon(url);
 				if(icon.getImageLoadStatus() == MediaTracker.COMPLETE)
 					putValue(Action.SMALL_ICON, icon);
-			} catch(Exception x) { CC.getLogger().log(Level.INFO, x.getMessage(), x); }
+			} catch(Exception x) {
+				CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
+			}
 			
 			setEnabled(false);
 		}
@@ -464,7 +492,9 @@ public class A4n {
 				ImageIcon icon = new ImageIcon(url);
 				if(icon.getImageLoadStatus() == MediaTracker.COMPLETE)
 					putValue(Action.SMALL_ICON, icon);
-			} catch(Exception x) { CC.getLogger().log(Level.INFO, x.getMessage(), x); }
+			} catch(Exception x) {
+				CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
+			}
 			
 			setEnabled(false);
 		}
@@ -527,7 +557,7 @@ public class A4n {
 				if(ii.getImageLoadStatus() == MediaTracker.COMPLETE)
 					putValue(Action.SMALL_ICON, ii);
 			} catch(Exception x) {
-				CC.getLogger().log(Level.INFO, x.getMessage(), x);
+				CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
 			}*/
 		}
 		

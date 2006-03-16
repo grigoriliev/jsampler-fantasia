@@ -23,11 +23,14 @@
 package org.jsampler.view.classic;
 
 import java.awt.BorderLayout;
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -71,6 +74,18 @@ public class NewAudioDeviceDlg extends EnhancedDialog {
 	public NewAudioDeviceDlg(Frame owner) {
 		super(owner, i18n.getLabel("NewAudioDeviceDlg.title"));
 		
+		initNewAudioDeviceDlg();
+	}
+	
+	/** Creates a new instance of NewMidiDeviceDlg */
+	public NewAudioDeviceDlg(Dialog owner) {
+		super(owner, i18n.getLabel("NewAudioDeviceDlg.title"));
+		
+		initNewAudioDeviceDlg();
+	}
+	
+	private void
+	initNewAudioDeviceDlg() {
 		JPanel mainPane = new JPanel();
 		mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.Y_AXIS));
 		
@@ -137,6 +152,11 @@ public class NewAudioDeviceDlg extends EnhancedDialog {
 		btnCreate.addActionListener(new ActionListener() {
 			public void
 			actionPerformed(ActionEvent e) { onOk(); }
+		});
+		
+		addWindowListener(new WindowAdapter() {
+			public void
+			windowActivated(WindowEvent e) { btnCreate.requestFocusInWindow(); }
 		});
 	}
 	

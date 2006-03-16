@@ -24,8 +24,6 @@ package org.jsampler.task;
 
 import java.util.logging.Level;
 
-import net.sf.juife.AbstractTask;
-
 import org.jsampler.CC;
 import org.jsampler.HF;
 
@@ -39,7 +37,7 @@ import static org.jsampler.JSI18n.i18n;
  *
  * @author Grigor Iliev
  */
-public class SetMidiDeviceParameter extends AbstractTask {
+public class SetMidiDeviceParameter extends EnhancedTask {
 	private int dev;
 	private Parameter prm;
 	
@@ -67,9 +65,6 @@ public class SetMidiDeviceParameter extends AbstractTask {
 		this.dev = dev;
 		this.prm = prm;
 	}
-	
-	public void
-	stop() { CC.cleanExit(); }
 	
 	public void
 	run() {

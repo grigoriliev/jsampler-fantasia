@@ -28,8 +28,6 @@ import org.jsampler.CC;
 import org.jsampler.HF;
 import org.jsampler.SamplerModel;
 
-import net.sf.juife.AbstractTask;
-
 import org.linuxsampler.lscp.SamplerChannel;
 
 import static org.jsampler.JSI18n.i18n;
@@ -39,7 +37,7 @@ import static org.jsampler.JSI18n.i18n;
  *
  * @author Grigor Iliev
  */
-public class UpdateChannelInfo extends AbstractTask {
+public class UpdateChannelInfo extends EnhancedTask {
 	private int channel;
 	
 	public
@@ -49,9 +47,6 @@ public class UpdateChannelInfo extends AbstractTask {
 		
 		this.channel = channel;
 	}
-	
-	public void
-	stop() { CC.cleanExit(); }
 	
 	public void
 	run() {

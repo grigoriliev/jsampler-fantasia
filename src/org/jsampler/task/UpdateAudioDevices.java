@@ -28,8 +28,6 @@ import org.jsampler.CC;
 import org.jsampler.HF;
 import org.jsampler.SamplerModel;
 
-import net.sf.juife.AbstractTask;
-
 import org.jsampler.AudioDeviceModel;
 
 import static org.jsampler.JSI18n.i18n;
@@ -39,15 +37,12 @@ import static org.jsampler.JSI18n.i18n;
  *
  * @author Grigor Iliev
  */
-public class UpdateAudioDevices extends AbstractTask {
+public class UpdateAudioDevices extends EnhancedTask {
 	public
 	UpdateAudioDevices() {
 		setTitle("UpdateAudioDevices_task");
 		setDescription(i18n.getMessage("UpdateAudioDevices.description"));
 	}
-	
-	public void
-	stop() { CC.cleanExit(); }
 	
 	public void
 	run() {

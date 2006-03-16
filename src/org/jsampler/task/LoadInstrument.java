@@ -28,8 +28,6 @@ import org.jsampler.CC;
 import org.jsampler.HF;
 import org.jsampler.SamplerModel;
 
-import net.sf.juife.AbstractTask;
-
 import org.linuxsampler.lscp.SamplerChannel;
 
 import static org.jsampler.JSI18n.i18n;
@@ -39,7 +37,7 @@ import static org.jsampler.JSI18n.i18n;
  *
  * @author Grigor Iliev
  */
-public class LoadInstrument extends AbstractTask {
+public class LoadInstrument extends EnhancedTask {
 	private String filename;
 	private int instrIndex;
 	private int channel;
@@ -53,9 +51,6 @@ public class LoadInstrument extends AbstractTask {
 		setTitle("LoadInstrument_task");
 		setDescription(i18n.getMessage("LoadInstrument.description"));
 	}
-	
-	public void
-	stop() { CC.cleanExit(); }
 	
 	public void
 	run() {

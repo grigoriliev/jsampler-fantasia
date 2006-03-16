@@ -141,8 +141,8 @@ public class CC {
 					);
 					break;
 				case TASK_DONE:
-					Task t = (Task)e.getSource();
-					if(t.doneWithErrors()) 
+					EnhancedTask t = (EnhancedTask)e.getSource();
+					if(t.doneWithErrors() && !t.isStopped()) 
 						HF.showErrorMessage(t.getErrorMessage());
 					break;
 				case NOT_IDLE:

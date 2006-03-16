@@ -98,7 +98,6 @@ public class ProgressDlg extends JDialog implements JSProgress {
 	
 	private void
 	onCancel() {
-		CC.getTaskQueue().cancel();
 		int i = CC.getTaskQueue().getPendingTaskCount();
 		if(i > 0) {
 			String s;
@@ -111,7 +110,8 @@ public class ProgressDlg extends JDialog implements JSProgress {
 		}
 		
 		CC.getTaskQueue().removePendingTasks();
-		CC.getTaskQueue().start();
+		net.sf.juife.Task t = CC.getTaskQueue().getRunningTask();
+		if(t != null) t.stop();
 		
 		setVisible(false);
 	}

@@ -62,6 +62,7 @@ import net.sf.juife.JuifeUtils;
 import net.sf.juife.NavigationPage;
 
 import org.jsampler.CC;
+import org.jsampler.HF;
 import org.jsampler.MidiDeviceModel;
 
 import org.jsampler.event.MidiDeviceEvent;
@@ -71,6 +72,7 @@ import org.jsampler.event.MidiDeviceListener;
 import org.jsampler.event.ParameterEvent;
 import org.jsampler.event.ParameterListener;
 
+import org.jsampler.task.CreateMidiDevice;
 import org.jsampler.task.DestroyMidiDevice;
 import org.jsampler.task.EnableMidiDevice;
 import org.jsampler.task.SetMidiInputPortCount;
@@ -309,20 +311,26 @@ public class MidiDevicesPage extends NavigationPage {
 				ImageIcon icon = new ImageIcon(url);
 				if(icon.getImageLoadStatus() == MediaTracker.COMPLETE)
 					putValue(Action.SMALL_ICON, icon);
-			} catch(Exception x) { CC.getLogger().log(Level.INFO, x.getMessage(), x); }
+			} catch(Exception x) {
+				CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
+			}
 			
 			setEnabled(false);
 		}
 		
 		public void
 		actionPerformed(ActionEvent e) {
-			JOptionPane.showMessageDialog (
-				CC.getMainFrame(), "Not implemented yet",
-				"",
-				JOptionPane.INFORMATION_MESSAGE
-			);
-			
-			
+			int i = devicesTable.getSelectedRow();
+			if(i < 0) {
+				CC.getLogger().info("There's no selected MIDI device to duplicate");
+				return;
+			}
+			MidiDeviceModel m;
+			m = ((MidiDevicesTableModel)devicesTable.getModel()).getMidiDeviceModel(i);
+			String d = m.getDeviceInfo().getDriverName();
+			Parameter[] pS = m.getDeviceInfo().getAdditionalParameters();
+			for(Parameter p : pS) System.out.println(p.getName());
+			CC.getTaskQueue().add(new CreateMidiDevice(d, pS));
 		}
 	}
 	
@@ -340,7 +348,9 @@ public class MidiDevicesPage extends NavigationPage {
 				ImageIcon icon = new ImageIcon(url);
 				if(icon.getImageLoadStatus() == MediaTracker.COMPLETE)
 					putValue(Action.SMALL_ICON, icon);
-			} catch(Exception x) { CC.getLogger().log(Level.INFO, x.getMessage(), x); }
+			} catch(Exception x) {
+				CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
+			}
 			
 			setEnabled(false);
 		}
@@ -371,7 +381,9 @@ public class MidiDevicesPage extends NavigationPage {
 				ImageIcon icon = new ImageIcon(url);
 				if(icon.getImageLoadStatus() == MediaTracker.COMPLETE)
 					putValue(Action.SMALL_ICON, icon);
-			} catch(Exception x) { CC.getLogger().log(Level.INFO, x.getMessage(), x); }
+			} catch(Exception x) {
+				CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
+			}
 			
 			setEnabled(false);
 		}

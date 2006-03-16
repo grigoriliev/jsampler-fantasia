@@ -24,8 +24,6 @@ package org.jsampler.task;
 
 import java.util.logging.Level;
 
-import net.sf.juife.AbstractTask;
-
 import org.jsampler.CC;
 import org.jsampler.HF;
 
@@ -41,7 +39,7 @@ import static org.jsampler.JSI18n.i18n;
  *
  * @author Grigor Iliev
  */
-public class DuplicateChannels extends AbstractTask {
+public class DuplicateChannels extends EnhancedTask {
 	JSChannel[] channels;
 	
 	public
@@ -51,9 +49,6 @@ public class DuplicateChannels extends AbstractTask {
 		setTitle("DuplicateChannels_task");
 		setDescription(i18n.getMessage("DuplicateChannels.description"));
 	}
-	
-	public void
-	stop() { CC.cleanExit(); }
 	
 	public void
 	run() {

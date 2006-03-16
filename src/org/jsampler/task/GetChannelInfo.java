@@ -27,8 +27,6 @@ import java.util.logging.Level;
 import org.jsampler.CC;
 import org.jsampler.HF;
 
-import net.sf.juife.AbstractTask;
-
 import org.linuxsampler.lscp.SamplerChannel;
 
 import static org.jsampler.JSI18n.i18n;
@@ -38,7 +36,7 @@ import static org.jsampler.JSI18n.i18n;
  *
  * @author Grigor Iliev
  */
-public class GetChannelInfo extends AbstractTask<SamplerChannel> {
+public class GetChannelInfo extends EnhancedTask<SamplerChannel> {
 	private int channel = -1;
 	
 	public
@@ -46,9 +44,6 @@ public class GetChannelInfo extends AbstractTask<SamplerChannel> {
 		setTitle("GetChannelInfo_task");
 		setDescription(i18n.getMessage("GetChannelInfo.description"));
 	}
-	
-	public void
-	stop() { CC.cleanExit(); }
 	
 	public void
 	run() {

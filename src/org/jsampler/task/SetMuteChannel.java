@@ -27,8 +27,6 @@ import java.util.logging.Level;
 import org.jsampler.CC;
 import org.jsampler.HF;
 
-import net.sf.juife.AbstractTask;
-
 import static org.jsampler.JSI18n.i18n;
 
 
@@ -36,7 +34,7 @@ import static org.jsampler.JSI18n.i18n;
  *
  * @author Grigor Iliev
  */
-public class SetMuteChannel extends AbstractTask {
+public class SetMuteChannel extends EnhancedTask {
 	private int channel;
 	private boolean mute;
 	
@@ -48,9 +46,6 @@ public class SetMuteChannel extends AbstractTask {
 		this.channel = channel;
 		this.mute = mute;
 	}
-	
-	public void
-	stop() { CC.cleanExit(); }
 	
 	public void
 	run() {

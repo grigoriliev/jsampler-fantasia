@@ -35,7 +35,7 @@ import static org.jsampler.JSI18n.i18n;
  */
 public class JSampler {
 	public final static String NAME = "JSampler";
-	public final static String VERSION = "0.01a";
+	public final static String VERSION = "0.02a";
 	
 	
 	public static void

@@ -27,8 +27,6 @@ import java.util.logging.Level;
 import org.jsampler.CC;
 import org.jsampler.HF;
 
-import net.sf.juife.AbstractTask;
-
 import org.linuxsampler.lscp.SamplerEngine;
 
 import static org.jsampler.JSI18n.i18n;
@@ -38,15 +36,12 @@ import static org.jsampler.JSI18n.i18n;
  *
  * @author Grigor Iliev
  */
-public class GetEngines extends AbstractTask<SamplerEngine[]> {
+public class GetEngines extends EnhancedTask<SamplerEngine[]> {
 	public
 	GetEngines() {
 		setTitle("GetEngines_task");
 		setDescription(i18n.getMessage("GetEngines.description"));
 	}
-	
-	public void
-	stop() { CC.cleanExit(); }
 	
 	public void
 	run() {

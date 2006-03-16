@@ -29,6 +29,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
+import java.util.logging.Level;
 import java.util.Vector;
 
 import javax.swing.Action;
@@ -51,6 +52,7 @@ import net.sf.juife.NavigationPage;
 import net.sf.juife.NavigationPane;
 
 import org.jsampler.CC;
+import org.jsampler.Prefs;
 
 import org.jsampler.view.JSChannel;
 import org.jsampler.view.JSChannelsPane;
@@ -92,7 +94,6 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 	MainFrame() {
 		setTitle(i18n.getLabel("MainFrame.title"));
 		
-		initMainFrame();
 		getContentPane().add(toolbar, BorderLayout.NORTH);
 		getContentPane().add(mainPane);
 		
@@ -119,8 +120,21 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		
 		if(applicationIcon != null) setIconImage(applicationIcon.getImage());
 		
+		initMainFrame();
 		pack();
 		
+		if(Prefs.getSaveWindowProperties()) setSavedSize();
+		else setDefaultSize();
+	}
+	
+	private void
+	initMainFrame() {
+		addMenu();
+		handleEvents();
+	}
+	
+	private void
+	setDefaultSize() {
 		Dimension dimension = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
 		double width = dimension.getWidth();
 		double height = dimension.getHeight();
@@ -128,9 +142,37 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 	}
 	
 	private void
-	initMainFrame() {
-		addMenu();
-		handleEvents();
+	setSavedSize() {
+		String s = Prefs.getWindowSizeAndLocation();
+		if(s == null) {
+			setDefaultSize();
+			return;
+		}
+		
+		try {
+			int i = s.indexOf(',');
+			int x = Integer.parseInt(s.substring(0, i));
+			
+			s = s.substring(i + 1);
+			i = s.indexOf(',');
+			int y = Integer.parseInt(s.substring(0, i));
+			
+			s = s.substring(i + 1);
+			i = s.indexOf(',');
+			int width = Integer.parseInt(s.substring(0, i));
+			
+			s = s.substring(i + 1);
+			int height = Integer.parseInt(s);
+			
+			setBounds(x, y, width, height);
+		} catch(Exception x) {
+			String msg = "Parsing of window size and location string failed";
+			CC.getLogger().log(Level.INFO, msg, x);
+			setDefaultSize();
+		}
+		
+		if(Prefs.getWindowMaximized())
+			setExtendedState(getExtendedState() | MAXIMIZED_BOTH);
 	}
 	
 	private void
@@ -193,40 +235,39 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 			new JCheckBoxMenuItem(i18n.getMenuLabel("view.toolbar"));
 		
 		m.add(cbmi);
-		cbmi.setState(true);
 		cbmi.addActionListener(new ActionListener() {
 			public void
-			actionPerformed(ActionEvent e) {
-				if(cbmi.getState()) 
-					getContentPane().add(toolbar, BorderLayout.NORTH);
-				else getContentPane().remove(toolbar);
-				
-				validate();
-				repaint();
-			}
+			actionPerformed(ActionEvent e) { showToolbar(cbmi.getState()); }
 		});
+		
+		boolean b = ClassicPrefs.shouldShowToolbar();
+		cbmi.setSelected(b);
+		showToolbar(b);
 		
 		final JCheckBoxMenuItem cbmi1 =
 			new JCheckBoxMenuItem(i18n.getMenuLabel("view.leftPane"));
 		
 		m.add(cbmi1);
-		cbmi1.setState(true);
 		cbmi1.addActionListener(new ActionListener() {
 			public void
 			actionPerformed(ActionEvent e) { showLeftPane(cbmi1.getState()); }
 		});
 		
+		b = ClassicPrefs.shouldShowLeftPane();
+		cbmi1.setSelected(b);
+		showLeftPane(b);
+		
 		final JCheckBoxMenuItem cbmi2 =
 			new JCheckBoxMenuItem(i18n.getMenuLabel("view.statusbar"));
 		
 		m.add(cbmi2);
-		cbmi2.setState(true);
 		cbmi2.addActionListener(new ActionListener() {
 			public void
-			actionPerformed(ActionEvent e) {
-				statusbar.setVisible(cbmi2.getState());
-			}
+			actionPerformed(ActionEvent e) { showStatusbar(cbmi2.getState()); }
 		});
+		b = ClassicPrefs.shouldShowStatusbar();
+		cbmi2.setSelected(b);
+		showStatusbar(b);
 		
 		// Channels
 		m = new JMenu(i18n.getMenuLabel("channels"));
@@ -357,7 +398,31 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 	}
 	
 	private void
+	handleEvents() {
+		tabbedPane.addChangeListener(this);
+	}
+	
+	private void
+	showToolbar(boolean b) {
+		if(b) getContentPane().add(toolbar, BorderLayout.NORTH);
+		else getContentPane().remove(toolbar);
+		
+		ClassicPrefs.setShowToolbar(b);
+		
+		validate();
+		repaint();
+	}
+	
+	private void
+	showStatusbar(boolean b) {
+		ClassicPrefs.setShowStatusbar(b);
+		statusbar.setVisible(b);
+	}
+	
+	private void
 	showLeftPane(boolean b) {
+		ClassicPrefs.setShowLeftPane(b);
+		
 		mainPane.remove(splitPane);
 		mainPane.remove(channelsPane);
 		
@@ -370,11 +435,6 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		
 		validate();
 		repaint();
-	}
-	
-	private void
-	handleEvents() {
-		tabbedPane.addChangeListener(this);
 	}
 	
 	public void

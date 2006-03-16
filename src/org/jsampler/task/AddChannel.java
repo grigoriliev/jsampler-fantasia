@@ -24,8 +24,6 @@ package org.jsampler.task;
 
 import java.util.logging.Level;
 
-import net.sf.juife.AbstractTask;
-
 import org.jsampler.CC;
 import org.jsampler.HF;
 
@@ -36,15 +34,12 @@ import static org.jsampler.JSI18n.i18n;
  *
  * @author Grigor Iliev
  */
-public class AddChannel extends AbstractTask<Integer> {
+public class AddChannel extends EnhancedTask<Integer> {
 	public
 	AddChannel() {
 		setTitle("AddChannel_task");
 		setDescription(i18n.getMessage("AddChannel.description"));
 	}
-	
-	public void
-	stop() { CC.cleanExit(); }
 	
 	public void
 	run() {

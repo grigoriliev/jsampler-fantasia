@@ -24,8 +24,6 @@ package org.jsampler.task;
 
 import java.util.logging.Level;
 
-import net.sf.juife.AbstractTask;
-
 import org.jsampler.CC;
 import org.jsampler.HF;
 import org.jsampler.SamplerModel;
@@ -39,15 +37,12 @@ import static org.jsampler.JSI18n.i18n;
  *
  * @author Grigor Iliev
  */
-public class UpdateMidiDevices extends AbstractTask {
+public class UpdateMidiDevices extends EnhancedTask {
 	public
 	UpdateMidiDevices() {
 		setTitle("UpdateMidiDevices_task");
 		setDescription(i18n.getMessage("UpdateMidiDevices.description"));
 	}
-	
-	public void
-	stop() { CC.cleanExit(); }
 	
 	public void
 	run() {

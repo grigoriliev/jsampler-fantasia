@@ -31,16 +31,18 @@ import static org.jsampler.JSI18n.i18n;
 
 
 /**
- *
+ * This task resets the whole sampler.
  * @author Grigor Iliev
  */
 public class ResetSampler extends EnhancedTask {
+	/** Creates a new instance of <code>ResetSampler</code>. */
 	public
 	ResetSampler() {
 		setTitle("ResetSampler_task");
 		setDescription(i18n.getMessage("ResetSampler.description"));
 	}
 	
+	/** The entry point of the task. */
 	public void
 	run() {
 		try { CC.getClient().resetSampler(); }

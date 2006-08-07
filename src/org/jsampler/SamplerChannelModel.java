@@ -28,7 +28,7 @@ import org.linuxsampler.lscp.SamplerChannel;
 
 
 /**
- *
+ * A data model representing a sampler channel.
  * @author Grigor Iliev
  */
 public interface SamplerChannelModel {
@@ -146,4 +146,10 @@ public interface SamplerChannelModel {
 	 * @param InstrIndex The index of the instrument in the instrument file to be loaded.
 	 */
 	public void loadInstrument(String filename, int InstrIndex);
+	
+	/** Resets the channel. */
+	public void resetChannel();
+	
+	/** Duplicates the channel. */
+	public void duplicateChannel();
 }

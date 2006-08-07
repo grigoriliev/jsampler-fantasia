@@ -31,7 +31,7 @@ import org.linuxsampler.lscp.*;
 
 
 /**
- *
+ * A data model representing a sampler.
  * @author Grigor Iliev
  */
 public interface SamplerModel {
@@ -216,6 +216,9 @@ public interface SamplerModel {
 	
 	/**
 	 * Removes the specified sampler channel.
+	 * Note that this method doesn't remove the channel in the backend,
+	 * it is used to remove the channel from the model when those channel
+	 * is removed in the backend.
 	 * @param channelID The ID of the channel to be removed.
 	 * @return <code>true</code> if the channel is removed successfully, <code>false</code>
 	 * if the channel's list does not contain channel with ID <code>channelID</code>.

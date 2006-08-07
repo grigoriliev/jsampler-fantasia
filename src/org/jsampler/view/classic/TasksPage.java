@@ -66,6 +66,10 @@ public class TasksPage extends NavigationPage {
 		new LinkButton(i18n.getButtonLabel("TasksPage.lnkNewChannel"));
 	private LinkButton lnkNewChannelWizard =
 		new LinkButton(i18n.getButtonLabel("TasksPage.lnkNewChannelWizard"));
+	private LinkButton lnkOrchestras =
+		new LinkButton(i18n.getButtonLabel("TasksPage.lnkOrchestras"));
+	private LinkButton lnkManageOrchestras =
+		new LinkButton(i18n.getButtonLabel("TasksPage.lnkManageOrchestras"));
 	
 	
 	private LinkButton lnkRefreshSampler =
@@ -145,6 +149,24 @@ public class TasksPage extends NavigationPage {
 		
 		add(p);
 		
+		JLabel lOrchestras = new JLabel(i18n.getLabel("TasksPage.lOrchestras"));
+		add(lOrchestras);
+		
+		sep = new JSeparator();
+		sep.setMaximumSize(new Dimension(Short.MAX_VALUE, sep.getPreferredSize().height));
+		add(sep);
+		
+		p = new JPanel();
+		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+		p.setBorder(BorderFactory.createEmptyBorder(6, 12, 17, 0));
+		
+		p.add(lnkOrchestras);
+		p.add(lnkManageOrchestras);
+		p.add(Box.createGlue());
+		p.setMaximumSize(p.getPreferredSize());
+		
+		add(p);
+		
 		add(Box.createGlue());
 		
 		sep = new JSeparator();
@@ -197,6 +219,16 @@ public class TasksPage extends NavigationPage {
 		lnkAudioDevices.addActionListener(new ActionListener() {
 			public void
 			actionPerformed(ActionEvent e) { getLeftPane().showAudioDevicesPage(); }
+		});
+		
+		lnkOrchestras.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) {  getLeftPane().showOrchestrasPage(); }
+		});
+		
+		lnkManageOrchestras.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) { getLeftPane().showManageOrchestrasPage(); }
 		});
 		
 		lnkRefreshSampler.addActionListener(new ActionListener() {

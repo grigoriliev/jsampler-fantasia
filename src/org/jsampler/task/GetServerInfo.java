@@ -33,16 +33,18 @@ import static org.jsampler.JSI18n.i18n;
 
 
 /**
- *
+ * This task retrieves information about the LinuxSampler instance.
  * @author Grigor Iliev
  */
 public class GetServerInfo extends EnhancedTask<ServerInfo> {
+	/** Creates a new instance of <code>GetServerInfo</code>. */
 	public
 	GetServerInfo() {
 		setTitle("GetServerInfo_task");
 		setDescription(i18n.getMessage("GetServerInfo.description"));
 	}
 	
+	/** The entry point of the task. */
 	public void
 	run() {
 		try { setResult(CC.getClient().getServerInfo()); }

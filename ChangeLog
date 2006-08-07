@@ -1,24 +1,49 @@
+JSampler v0.3a: 2006-08-07
+  * Partially implemented a new view - Fantasia
+    (Graphic design: Olivier Boyer).
+  
+  * Implemented LS Console with command autocompletion
+    (using the Tab key), command history (using Up, Down keys),
+    command history search (Ctrl + R), command list search (Ctrl + F).
+    To edit the console settings (colors, command history size, etc),
+    choose Edit/Preferences, then click the `LS Console' tab.
+  
+  * Implemented Orchestras (something like Bookmarks/Favorites
+    for instruments). Instrument can also be added to orchestra using
+    Drag & Drop (drag the loaded instrument from a sampler channel
+    and drop it in the instrument list on the desired position).
+    Drag & Drop can also be used to load an instrument and to
+    autocomplete an instrument loading command in the LS Console.
+  
+  * Implemented LSCP script execution (Actions/Run Script).
+  
+  * Added more properties to the Preferences dialog.
+  
+  * API documentation updates.
+
+  * Some bugfixes, optimizations and code cleanup.
+	
 JSampler v0.2a: 2006-03-16
-	* Implemented a wizard for creating sampler channels
-	  (Channels/New Channel Wizard or Ctrl+Shift+N)
+  * Implemented a wizard for creating sampler channels
+    (Channels/New Channel Wizard or Ctrl+Shift+N)
 
-	* Improved the look of the sampler channels' border
+  * Improved the look of the sampler channels' border
 
-	* Added `Custom Colors' section in the Preferences dialog
-	  (choose Edit/Preferences, then click the View tab)
+  * Added `Custom Colors' section in the Preferences dialog
+    (choose Edit/Preferences, then click the View tab)
 
-	* Support for saving the window size and location for the
-	  next session (choose Edit/Preferences, then select 
-	  `Remember window size and location' checkbox)
+  * Support for saving the window size and location for the
+    next session (choose Edit/Preferences, then select 
+    `Remember window size and location' checkbox)
 	
-	* Support for saving the visibility state of the
-	  Toolbar, Statusbar and Left Pane for the next session
+  * Support for saving the visibility state of the
+    Toolbar, Statusbar and Left Pane for the next session
 	
-	* Added information about the total number of sampler
-	  channels in the statusbar.
-	
-	* Changes to the focus subsystem in some dialogs to
-	  improve the usability of the keyboard.
+  * Added information about the total number of sampler
+    channels in the statusbar.
 
-	* Some bugfixes
+  * Changes to the focus subsystem in some dialogs to
+    improve the usability of the keyboard.
+
+  * Some bugfixes
 

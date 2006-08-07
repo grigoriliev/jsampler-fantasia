@@ -32,19 +32,17 @@ import javax.swing.table.TableModel;
 
 import org.linuxsampler.lscp.Parameter;
 import org.linuxsampler.lscp.ParameterType;
-import org.jsampler.view.classic.*;
 
 
 /**
- *
+ * A table for representing LSCP parameters.
  * @author Grigor Iliev
  */
 public class ParameterTable extends JTable {
 	
-	/** Creates a new instance of ParameterTable */
-	public ParameterTable() {
-		super(new ParameterTableModel(new Parameter[0]));
-	}
+	/** Creates a new instance of <code>ParameterTable</code>. */
+	public
+	ParameterTable() { super(new ParameterTableModel(new Parameter[0])); }
 	
 	/**
 	 * Gets the <code>ParameterTableModel</code> that

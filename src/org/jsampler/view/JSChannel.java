@@ -34,15 +34,15 @@ import org.linuxsampler.lscp.SamplerChannel;
 
 
 /**
- * This class defines common behaviors for sampler channel.
+ * This class defines the skeleton of a sampler channel.
  * @author Grigor Iliev
  */
 public abstract class JSChannel extends JPanel {
 	private SamplerChannelModel model;
 	
 	/**
-	 * Creates a new instance of <code>JSChannel</code> using the specified non-null
-	 * channel model.
+	 * Creates a new instance of <code>JSChannel</code> using the specified
+	 * non-<code>null</code> channel model.
 	 * @param model The model to be used by this channel.
 	 * @throws IllegalArgumentException If the model is <code>null</code>.
 	 */

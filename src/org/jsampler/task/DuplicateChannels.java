@@ -36,26 +36,49 @@ import static org.jsampler.JSI18n.i18n;
 
 
 /**
- *
+ * This task duplicates the specified sampler channels.
  * @author Grigor Iliev
  */
 public class DuplicateChannels extends EnhancedTask {
-	JSChannel[] channels;
+	SamplerChannel[] chnS;
 	
+	/**
+	 * Creates a new instance of <code>DuplicateChannels</code>.
+	 * @param channel The channel to duplicate.
+	 */
+	public
+	DuplicateChannels(SamplerChannel channel) {
+		initTask();
+		
+		chnS = new SamplerChannel[1];
+		chnS[0] = channel;
+	}
+	
+	/**
+	 * Creates a new instance of <code>DuplicateChannels</code>.
+	 * @param channels The channels to duplicate.
+	 */
 	public
 	DuplicateChannels(JSChannel[] channels) {
-		this.channels = channels;
+		initTask();
 		
+		chnS = new SamplerChannel[channels.length];
+		
+		for(int i = 0; i < channels.length; i++) chnS[i] = channels[i].getChannelInfo();
+	}
+	
+	private void
+	initTask() {
 		setTitle("DuplicateChannels_task");
 		setDescription(i18n.getMessage("DuplicateChannels.description"));
 	}
 	
+	/** The entry point of the task. */
 	public void
 	run() {
 		try {
-			for(JSChannel c : channels) {
-				int i = CC.getClient().addSamplerChannel();
-				duplicateSettings(c.getChannelInfo(), i);
+			for(SamplerChannel c : chnS) {
+				duplicateSettings(c, CC.getClient().addSamplerChannel());
 			}
 		}
 		catch(Exception x) {

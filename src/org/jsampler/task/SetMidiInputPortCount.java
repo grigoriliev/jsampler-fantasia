@@ -33,7 +33,7 @@ import static org.jsampler.JSI18n.i18n;
 
 
 /**
- *
+ * This task changes the port number of a speicific MIDI input device.
  * @author Grigor Iliev
  */
 public class SetMidiInputPortCount extends EnhancedTask {
@@ -54,6 +54,7 @@ public class SetMidiInputPortCount extends EnhancedTask {
 		this.ports = ports;
 	}
 	
+	/** The entry point of the task. */
 	public void
 	run() {
 		try { 

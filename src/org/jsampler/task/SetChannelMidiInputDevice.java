@@ -31,13 +31,18 @@ import static org.jsampler.JSI18n.i18n;
 
 
 /**
- *
+ * This task sets the MIDI input device on a specific sampler channel.
  * @author Grigor Iliev
  */
 public class SetChannelMidiInputDevice extends EnhancedTask {
 	private int channel;
 	private int deviceID;
 	
+	/**
+	 * Creates new instance of <code>SetChannelMidiInputDevice</code>.
+	 * @param channel The sampler channel number.
+	 * @param deviceID The numerical ID of the MIDI input device.
+	 */
 	public
 	SetChannelMidiInputDevice(int channel, int deviceID) {
 		setTitle("SetChannelMidiInputDevice_task");
@@ -47,6 +52,7 @@ public class SetChannelMidiInputDevice extends EnhancedTask {
 		this.deviceID = deviceID;
 	}
 	
+	/** The entry point of the task. */
 	public void
 	run() {
 		try { CC.getClient().setChannelMidiInputDevice(channel, deviceID); }

@@ -33,10 +33,20 @@ import javax.swing.JButton;
  * @author Grigor Iliev
  */
 public class ToolbarButton extends JButton {
+	/** Creates a button. */
+	ToolbarButton() {
+		initToolbarButton();
+	}
+	
 	/** Creates a button where properties are taken from the Action supplied. */
 	ToolbarButton(javax.swing.Action a) {
 		super(a);
 		
+		initToolbarButton();
+	}
+	
+	private void
+	initToolbarButton() {
 		setBorderPainted(false);
 		setContentAreaFilled(false);
 		

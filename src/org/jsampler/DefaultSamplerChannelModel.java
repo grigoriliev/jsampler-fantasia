@@ -33,8 +33,10 @@ import net.sf.juife.event.TaskListener;
 import org.jsampler.event.SamplerChannelEvent;
 import org.jsampler.event.SamplerChannelListener;
 
+import org.jsampler.task.DuplicateChannels;
 import org.jsampler.task.LoadEngine;
 import org.jsampler.task.LoadInstrument;
+import org.jsampler.task.ResetChannel;
 import org.jsampler.task.SetChannelAudioOutputDevice;
 import org.jsampler.task.SetChannelMidiInputChannel;
 import org.jsampler.task.SetChannelMidiInputDevice;
@@ -47,7 +49,7 @@ import org.linuxsampler.lscp.SamplerChannel;
 
 
 /**
- *
+ * This class provides default implementation of the <code>SamplerChannelModel</code> interface.
  * @author Grigor Iliev
  */
 public class DefaultSamplerChannelModel implements SamplerChannelModel {
@@ -101,6 +103,9 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	
 	/**
 	 * Sets the current settings of the sampler channel.
+	 * Note that this method does not changes the channel settings on
+	 * the back-end. It is invoked to update them when the back-end
+	 * notifies that the channel settings are changed.
 	 * @param channel A <code>SamplerChannel</code> instance containing
 	 * the new settings for this sampler channel.
 	 * @throws IllegalArgumentException If <code>channel</code> is <code>null</code>.
@@ -367,6 +372,20 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 		CC.getTaskQueue().add(li);
 		
 		// We leave this event to be notified by the LinuxSampler notification system.
+	}
+	
+	/** Resets the channel. */
+	public void
+	resetChannel() {
+		CC.getTaskQueue().add(new ResetChannel(getChannelID()));
+		
+		// We leave this event to be notified by the LinuxSampler notification system.
+	}
+	
+	/** Duplicates the channel. */
+	public void
+	duplicateChannel() {
+		CC.getTaskQueue().add(new DuplicateChannels(getChannelInfo()));
 	}
 	
 	/** Notifies listeners that the sampler channel settings has changed. */

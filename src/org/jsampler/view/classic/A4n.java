@@ -36,7 +36,6 @@ import java.util.logging.Level;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
 
 import org.jsampler.CC;
 import org.jsampler.HF;
@@ -77,9 +76,7 @@ public class A4n {
 		}
 		
 		public void
-		actionPerformed(ActionEvent e) {
-			CC.initSamplerModel();
-		}
+		actionPerformed(ActionEvent e) { CC.reconnect(); }
 	}
 	
 	public final static Action samplerInfo = new SamplerInfo();
@@ -156,18 +153,7 @@ public class A4n {
 			super("");
 			
 			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("ttAddMidiDevice"));
-			
-			try {
-				URL url = ClassLoader.getSystemClassLoader().getResource (
-					"org/jsampler/view/classic/res/icons/New16.gif"
-				);
-				
-				ImageIcon icon = new ImageIcon(url);
-				if(icon.getImageLoadStatus() == MediaTracker.COMPLETE)
-					putValue(Action.SMALL_ICON, icon);
-			} catch(Exception x) {
-				CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
-			}
+			putValue(Action.SMALL_ICON, Res.iconNew16);
 		}
 		
 		public void
@@ -184,18 +170,7 @@ public class A4n {
 			super("");
 			
 			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("ttAddAudioDevice"));
-			
-			try {
-				URL url = ClassLoader.getSystemClassLoader().getResource (
-					"org/jsampler/view/classic/res/icons/New16.gif"
-				);
-				
-				ImageIcon icon = new ImageIcon(url);
-				if(icon.getImageLoadStatus() == MediaTracker.COMPLETE)
-					putValue(Action.SMALL_ICON, icon);
-			} catch(Exception x) {
-				CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
-			}
+			putValue(Action.SMALL_ICON, Res.iconNew16);
 		}
 		
 		public void
@@ -213,23 +188,16 @@ public class A4n {
 			super(i18n.getMenuLabel("edit.preferences"));
 			
 			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("ttPrefs"));
-			
-			try {
-				URL url = ClassLoader.getSystemClassLoader().getResource (
-					"org/jsampler/view/classic/res/icons/toolbar/Preferences24.gif"
-				);
-				
-				ImageIcon icon = new ImageIcon(url);
-				if(icon.getImageLoadStatus() == MediaTracker.COMPLETE)
-					putValue(Action.SMALL_ICON, icon);
-			} catch(Exception x) {
-				CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
-			}
+			putValue(Action.SMALL_ICON, Res.iconPreferences24);
 		}
 		
 		public void
 		actionPerformed(ActionEvent e) { new PrefsDlg(CC.getMainFrame()).setVisible(true); }
 	}
+	
+// VIEW
+	
+	
 
 // CHANNELS
 	public final static Action newChannel = new NewChannel();
@@ -252,18 +220,7 @@ public class A4n {
 			super(i18n.getMenuLabel("channels.new"));
 			
 			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("ttNewChannel"));
-			
-			try {
-				URL url = ClassLoader.getSystemClassLoader().getResource (
-					"org/jsampler/view/classic/res/icons/toolbar/New24.gif"
-				);
-				
-				ImageIcon icon = new ImageIcon(url);
-				if(icon.getImageLoadStatus() == MediaTracker.COMPLETE)
-					putValue(Action.SMALL_ICON, icon);
-			} catch(Exception x) {
-				CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
-			}
+			putValue(Action.SMALL_ICON, Res.iconNew24);
 		}
 		
 		public void
@@ -291,18 +248,7 @@ public class A4n {
 			super(i18n.getMenuLabel("channels.duplicate"));
 			
 			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("ttDuplicateChannels"));
-			
-			try {
-				URL url = ClassLoader.getSystemClassLoader().getResource (
-					"org/jsampler/view/classic/res/icons/toolbar/Copy24.gif"
-				);
-				
-				ImageIcon icon = new ImageIcon(url);
-				if(icon.getImageLoadStatus() == MediaTracker.COMPLETE)
-					putValue(Action.SMALL_ICON, icon);
-			} catch(Exception x) {
-				CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
-			}
+			putValue(Action.SMALL_ICON, Res.iconCopy24);
 			
 			setEnabled(false);
 		}
@@ -516,19 +462,8 @@ public class A4n {
 		removeChannel(final JSChannel c) {
 			final JSChannelsPane p = CC.getMainFrame().getSelectedChannelsPane();
 			int id = c.getChannelInfo().getChannelID();
-			final org.jsampler.task.RemoveChannel rc = 
-				new org.jsampler.task.RemoveChannel(id);
 			
-			rc.addTaskListener(new TaskListener() {
-				public void
-				taskPerformed(TaskEvent e) {
-					if(rc.doneWithErrors()) return;
-				
-					p.removeChannel(c);
-				}
-			});
-			
-			CC.getTaskQueue().add(rc);
+			CC.getTaskQueue().add(new org.jsampler.task.RemoveChannel(id));
 		}
 	}
 	

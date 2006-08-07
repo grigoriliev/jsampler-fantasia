@@ -35,7 +35,7 @@ import org.linuxsampler.lscp.Parameter;
 
 
 /**
- *
+ * The Default implementation of the <code>MidiDeviceModel</code> interface.
  * @author Grigor Iliev
  */
 public class DefaultMidiDeviceModel implements MidiDeviceModel {

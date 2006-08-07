@@ -38,13 +38,14 @@ import javax.swing.table.TableCellEditor;
 
 
 /**
- *
+ * This method implements a cell editor for numbers, using a spinner component.
  * @author Grigor Iliev
  */
 public class NumberCellEditor extends AbstractCellEditor implements TableCellEditor {
 	private final JSpinner editor = new JSpinner();
 	private SpinnerNumberModel spinnerModel;
 	
+	/** Creates a new instance of <code>NumberCellEditor</code>. */
 	public
 	NumberCellEditor() {
 		editor.setBorder(BorderFactory.createEmptyBorder());
@@ -60,6 +61,10 @@ public class NumberCellEditor extends AbstractCellEditor implements TableCellEdi
 		return false;
 	}
 	
+	/**
+	 * Gets the value contained in the editor.
+	 * @return Te value contained in the editor.
+	 */
 	public Object
 	getCellEditorValue() { return editor.getValue(); }
 	
@@ -75,18 +80,34 @@ public class NumberCellEditor extends AbstractCellEditor implements TableCellEdi
 		return editor;
 	}
 	
+	/**
+	 * Gets the <code>SpinnerNumberModel</code> used by this editor.
+	 * @return The <code>SpinnerNumberModel</code> used by this editor.
+	 */
 	public SpinnerNumberModel
 	getModel() { return spinnerModel; }
 	
+	/**
+	 * Sets the <code>SpinnerNumberModel</code> to be used by this editor.
+	 * @param model The <code>SpinnerNumberModel</code> to be used by this editor.
+	 */
 	public void
 	setModel(SpinnerNumberModel model) {
 		spinnerModel = model;
 		editor.setModel(spinnerModel);
 	}
 	
+	/**
+	 * Sets the minimum value allowed.
+	 * @param minimum The new minimum value.
+	 */
 	public void
 	setMinimum(Comparable minimum) { getModel().setMinimum(minimum); }
 	
+	/**
+	 * Sets the maximum value allowed.
+	 * @param maximum The new maximum value.
+	 */
 	public void
 	setMaximum(Comparable maximum) { getModel().setMaximum(maximum); }
 }

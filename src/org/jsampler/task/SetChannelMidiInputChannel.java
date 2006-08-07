@@ -31,13 +31,19 @@ import static org.jsampler.JSI18n.i18n;
 
 
 /**
- *
+ * This task sets the MIDI input channel the specified sampler channel should listen to.
  * @author Grigor Iliev
  */
 public class SetChannelMidiInputChannel extends EnhancedTask {
 	private int channel;
 	private int midiChannel;
 	
+	/**
+	 * Creates new instance of <code>SetChannelMidiInputChannel</code>.
+	 * @param channel The sampler channel number.
+	 * @param midiChannel The number of the new MIDI input channel where
+	 * <code>channel</code> should listen to or -1 to listen on all 16 MIDI channels.
+	 */
 	public
 	SetChannelMidiInputChannel(int channel, int midiChannel) {
 		setTitle("SetChannelMidiInputChannel_task");
@@ -49,6 +55,7 @@ public class SetChannelMidiInputChannel extends EnhancedTask {
 		this.midiChannel = midiChannel;
 	}
 	
+	/** The entry point of the task. */
 	public void
 	run() {
 		try { CC.getClient().setChannelMidiInputChannel(channel, midiChannel); }

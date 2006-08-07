@@ -45,7 +45,7 @@ import org.linuxsampler.lscp.*;
 
 
 /**
- *
+ * This class provides default implementation of the <code>SamplerModel</code> interface.
  * @author Grigor Iliev
  */
 public class DefaultSamplerModel implements SamplerModel {

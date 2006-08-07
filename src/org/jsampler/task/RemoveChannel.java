@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005 Grigor Kirilov Iliev
+ *   Copyright (C) 2005, 2006 Grigor Kirilov Iliev
  *
  *   This file is part of JSampler.
  *
@@ -31,20 +31,25 @@ import static org.jsampler.JSI18n.i18n;
 
 
 /**
- *
+ * This task removes the specified sampler channel.
  * @author Grigor Iliev
  */
 public class RemoveChannel extends EnhancedTask {
 	private int channel;
 	
+	/**
+	 * Creates new instance of <code>RemoveChannel</code>.
+	 * @param channel The numerical ID of the channel to remove.
+	 */
 	public
 	RemoveChannel(int channel) {
 		setTitle("RemoveChannel_task");
-		setDescription(i18n.getMessage("RemoveChannel.description"));
+		setDescription(i18n.getMessage("RemoveChannel.description", channel));
 		
 		this.channel = channel;
 	}
 	
+	/** The entry point of the task. */
 	public void
 	run() {
 		try { CC.getClient().removeSamplerChannel(channel); }

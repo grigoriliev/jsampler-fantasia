@@ -588,10 +588,7 @@ class InstrumentWizardPage extends UserInputPage {
 		if(model.getSelectedAudioDevice() == null) {
 			String s = i18n.getLabel("InstrumentWizardPage.additionalInstructions");
 			setAdditionalInstructions(s);
-		} else {
-			System.out.println("Exo");
-			setAdditionalInstructions("");
-		}
+		} else { setAdditionalInstructions(""); }
 	}
 	
 	public boolean

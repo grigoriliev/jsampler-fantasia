@@ -29,8 +29,13 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
+import java.awt.datatransfer.Transferable;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -41,9 +46,12 @@ import java.util.Vector;
 
 import java.util.logging.Level;
 
+import javax.swing.Action;
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JComponent;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -52,6 +60,7 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JSlider;
 import javax.swing.JToggleButton;
+import javax.swing.TransferHandler;
 
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
@@ -61,8 +70,10 @@ import javax.swing.event.ChangeListener;
 
 import net.sf.juife.JuifeUtils;
 
-import org.jsampler.CC;
 import org.jsampler.AudioDeviceModel;
+import org.jsampler.CC;
+import org.jsampler.HF;
+import org.jsampler.Instrument;
 import org.jsampler.MidiDeviceModel;
 import org.jsampler.SamplerChannelModel;
 import org.jsampler.SamplerModel;
@@ -73,6 +84,8 @@ import org.jsampler.event.MidiDeviceListEvent;
 import org.jsampler.event.MidiDeviceListListener;
 import org.jsampler.event.SamplerChannelAdapter;
 import org.jsampler.event.SamplerChannelEvent;
+import org.jsampler.event.SamplerChannelListEvent;
+import org.jsampler.event.SamplerChannelListListener;
 import org.jsampler.event.SamplerChannelListener;
 
 import org.linuxsampler.lscp.AudioOutputDevice;
@@ -127,8 +140,7 @@ public class Channel extends org.jsampler.view.JSChannel {
 		url = ClassLoader.getSystemClassLoader().getResource(path + "Back16.gif");
 		iconShowProperties = new ImageIcon(url);
 		
-		url = ClassLoader.getSystemClassLoader().getResource(path + "Down16.gif");
-		iconHideProperties = new ImageIcon(url);
+		iconHideProperties = Res.iconDown16;
 		
 		if(ClassicPrefs.getCustomChannelBorderColor())
 			setBorderColor(ClassicPrefs.getChannelBorderColor());
@@ -188,7 +200,8 @@ public class Channel extends org.jsampler.view.JSChannel {
 	
 	private final JPanel mainPane = new JPanel();
 	private final ChannelProperties propertiesPane;
-	private final JButton btnInstr = new JButton(i18n.getLabel("Channel.btnInstr"));
+	private final JButton btnInstr = new InstrumentButton(i18n.getLabel("Channel.btnInstr"));
+	private final Action actInstr;
 	private final JButton btnMute = new JButton();
 	private final JButton btnSolo = new JButton();
 	private final JSlider slVolume = new JSlider(0, 100);
@@ -196,8 +209,6 @@ public class Channel extends org.jsampler.view.JSChannel {
 	private final JLabel lStreams = new JLabel("--");
 	private final JLabel lVoices = new JLabel("--");
 	private final JToggleButton btnProperties = new JToggleButton();
-	
-	private final EventHandler eventHandler = new EventHandler();
 	
 	private static int count = 2;
 	
@@ -293,10 +304,14 @@ public class Channel extends org.jsampler.view.JSChannel {
 		
 		getModel().addSamplerChannelListener(getHandler());
 		
-		btnInstr.addActionListener(new ActionListener() {
+		actInstr = new AbstractAction() {
 			public void
-			actionPerformed(ActionEvent e) { loadInstrument(); }
-		});
+			actionPerformed(ActionEvent e) {
+				if(actInstr.isEnabled()) loadInstrument();
+			}
+		};
+		
+		btnInstr.addActionListener(actInstr);
 		
 		btnMute.addActionListener(new ActionListener() {
 			public void
@@ -341,6 +356,72 @@ public class Channel extends org.jsampler.view.JSChannel {
 		
 		updateChannelInfo();
 	}
+	
+	public class InstrumentButton extends JButton {
+		private boolean dragging = false;
+		
+		InstrumentButton(String s) {
+			super(s);
+			
+			setTransferHandler(new TransferHandler("instrument"));
+			
+			addMouseListener(new MouseAdapter() {
+				public void
+				mouseExited(MouseEvent e) {
+					if(!dragging) return;
+					
+					int b1 = e.BUTTON1_DOWN_MASK;
+					if((e.getModifiersEx() & b1) != b1) return;
+					
+					actInstr.setEnabled(false);
+					doClick(0);
+					actInstr.setEnabled(true);
+					
+					JComponent c = (JComponent)e.getSource();
+					TransferHandler handler = c.getTransferHandler();
+					handler.exportAsDrag(c, e, TransferHandler.COPY);
+				}
+				
+				public void
+				mouseReleased(MouseEvent e) { dragging = false; }
+			});
+			
+			addMouseMotionListener(new MouseMotionAdapter() {
+				public void
+				mouseDragged(MouseEvent e) { dragging = true; }
+			});
+		}
+		
+		public String
+		getInstrument() {
+			SamplerChannel sc = Channel.this.getChannelInfo();
+			
+			if(sc.getInstrumentName() == null || sc.getInstrumentStatus() < 0)
+				return null;
+			
+			Instrument instr = new Instrument();
+			instr.setName(sc.getInstrumentName());
+			instr.setInstrumentIndex(sc.getInstrumentIndex());
+			instr.setPath(sc.getInstrumentFile());
+			return instr.getDnDString();
+		}
+		
+		public void setInstrument(String instr) {
+			if(!Instrument.isDnDString(instr)) return;
+			
+			String[] args = instr.split("\n");
+			if(args.length < 6) return;
+			
+			try {
+				int idx = Integer.parseInt(args[5]);
+				Channel.this.getModel().loadInstrument(args[4], idx);
+			} catch(Exception x) {
+				CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
+			}
+		}
+	}
+	
+	private final EventHandler eventHandler = new EventHandler();
 	
 	private EventHandler
 	getHandler() { return eventHandler; }
@@ -419,12 +500,16 @@ public class Channel extends org.jsampler.view.JSChannel {
 		int status = sc.getInstrumentStatus();
 		if(status >= 0 && status < 100) {
 			btnInstr.setText(i18n.getLabel("Channel.loadingInstrument", status));
+		} else if(status == -1) {
+			btnInstr.setText(i18n.getLabel("Channel.btnInstr"));
+		} else if(status < -1) {
+			 btnInstr.setText(i18n.getLabel("Channel.errorLoadingInstrument"));
 		} else {
 			if(sc.getInstrumentName() != null) btnInstr.setText(sc.getInstrumentName());
 			else btnInstr.setText(i18n.getLabel("Channel.btnInstr"));
 		}
 		
-		updateMute(sc);
+		updateMuteIcon(sc);
 		
 		if(sc.isSoloChannel()) btnSolo.setIcon(iconSoloOn);
 		else btnSolo.setIcon(iconSoloOff);
@@ -528,7 +613,7 @@ public class Channel extends org.jsampler.view.JSChannel {
 	 * for this channel.
 	 */
 	private void
-	updateMute(SamplerChannel channel) {
+	updateMuteIcon(SamplerChannel channel) {
 		if(channel.isMutedBySolo()) btnMute.setIcon(iconMutedBySolo);
 		else if(channel.isMuted()) btnMute.setIcon(iconMuteOn);
 		else btnMute.setIcon(iconMuteOff);
@@ -690,6 +775,7 @@ class ChannelProperties extends JPanel {
 		
 		CC.getSamplerModel().addMidiDeviceListListener(getHandler());
 		CC.getSamplerModel().addAudioDeviceListListener(getHandler());
+		CC.getSamplerModel().addSamplerChannelListListener(getHandler());
 		
 		btnAudioProps.setToolTipText(i18n.getLabel("ChannelProperties.routing"));
 		btnAudioProps.addActionListener(new ActionListener() {
@@ -700,8 +786,6 @@ class ChannelProperties extends JPanel {
 			
 			}
 		});
-		
-		
 		
 		updateMidiDevices();
 		updateAudioDevices();
@@ -972,7 +1056,9 @@ class ChannelProperties extends JPanel {
 	private Handler
 	getHandler() { return handler; }
 	
-	private class Handler implements MidiDeviceListListener, AudioDeviceListListener {
+	private class Handler implements MidiDeviceListListener,
+				AudioDeviceListListener, SamplerChannelListListener {
+		
 		/**
 		 * Invoked when a new MIDI device is created.
 		 * @param e A <code>MidiDeviceListEvent</code>
@@ -1011,6 +1097,28 @@ class ChannelProperties extends JPanel {
 		public void
 		deviceRemoved(AudioDeviceListEvent e) {
 			cbAudioDevice.removeItem(e.getAudioDeviceModel().getDeviceInfo());
+		}
+		
+		/**
+		 * Invoked when a new sampler channel is created.
+		 * @param e A <code>SamplerChannelListEvent</code>
+		 * instance providing the event information.
+		 */
+		public void
+		channelAdded(SamplerChannelListEvent e) { }
+	
+		/**
+		 * Invoked when a sampler channel is removed.
+		 * @param e A <code>SamplerChannelListEvent</code>
+		 * instance providing the event information.
+		 */
+		public void
+		channelRemoved(SamplerChannelListEvent e) {
+			// Some cleanup when the channel is removed.
+			if(e.getChannelModel().getChannelID() == channelModel.getChannelID()) {
+				CC.getSamplerModel().removeMidiDeviceListListener(getHandler());
+				CC.getSamplerModel().removeAudioDeviceListListener(getHandler());
+			}
 		}
 	}
 }

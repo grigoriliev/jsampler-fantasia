@@ -34,7 +34,7 @@ import static org.jsampler.JSI18n.i18n;
 
 
 /**
- *
+ * This task loads and assigns an instrument to a sampler channel.
  * @author Grigor Iliev
  */
 public class LoadInstrument extends EnhancedTask {
@@ -42,6 +42,13 @@ public class LoadInstrument extends EnhancedTask {
 	private int instrIndex;
 	private int channel;
 	
+	/**
+	 * Creates new instance of <code>LoadInstrument</code>.
+	 * @param filename The name of the instrument file
+	 * on the LinuxSampler instance's host system.
+	 * @param instrIndex The index of the instrument in the instrument file.
+	 * @param channel The number of the sampler channel the instrument should be assigned to.
+	 */
 	public
 	LoadInstrument(String filename, int instrIndex, int channel) {
 		this.filename = filename;
@@ -52,6 +59,7 @@ public class LoadInstrument extends EnhancedTask {
 		setDescription(i18n.getMessage("LoadInstrument.description"));
 	}
 	
+	/** The entry point of the task. */
 	public void
 	run() {
 		try { CC.getClient().loadInstrument(filename, instrIndex, channel, true); }

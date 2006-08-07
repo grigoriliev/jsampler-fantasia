@@ -45,15 +45,15 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import net.sf.juife.ComponentList;
+import net.sf.juife.ComponentListModel;
+import net.sf.juife.DefaultComponentListModel;
+
 import org.jsampler.CC;
 import org.jsampler.SamplerChannelModel;
 
 import org.jsampler.view.JSChannel;
 import org.jsampler.view.JSChannelsPane;
-
-import net.sf.juife.ComponentList;
-import net.sf.juife.ComponentListModel;
-import net.sf.juife.DefaultComponentListModel;
 
 import org.linuxsampler.lscp.SamplerChannel;
 
@@ -68,7 +68,11 @@ public class ChannelsPane extends JSChannelsPane implements ListSelectionListene
 	private final ComponentList chnList = new ComponentList();
 	private final DefaultComponentListModel listModel = new DefaultComponentListModel();
 		
-	/** Creates a new instance of ChannelsPane */
+	/**
+	 * Creates a new instance of <code>ChannelsPane</code> with
+	 * the specified <code>title</code>.
+	 * @param title The title of this <code>ChannelsPane</code>
+	 */
 	public
 	ChannelsPane(String title) {
 		super(title);
@@ -107,7 +111,10 @@ public class ChannelsPane extends JSChannelsPane implements ListSelectionListene
 	 * Adds the specified channels to this channels pane.
 	 * @param chns The channels to be added.
 	 */
-	public void addChannels(JSChannel[] chns) {
+	public void
+	addChannels(JSChannel[] chns) {
+		if(chns == null || chns.length == 0) return;
+		
 		for(JSChannel c : chns) listModel.add(c);
 		chnList.setSelectionInterval (
 			listModel.getSize() - chns.length, listModel.getSize() - 1

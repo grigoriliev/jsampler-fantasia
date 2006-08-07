@@ -31,13 +31,19 @@ import static org.jsampler.JSI18n.i18n;
 
 
 /**
- *
+ * This task loads a sampler engine in a specific sampler channel.
  * @author Grigor Iliev
  */
 public class LoadEngine extends EnhancedTask {
 	private String engine;
 	private int channel;
 	
+	/**
+	 * Creates new instance of <code>LoadEngine</code>.
+	 * @param engine The name of the engine to load.
+	 * @param channel The number of the sampler channel
+	 * the deployed engine should be assigned to.
+	 */
 	public
 	LoadEngine(String engine, int channel) {
 		this.engine = engine;
@@ -49,6 +55,7 @@ public class LoadEngine extends EnhancedTask {
 		setDescription(i18n.getMessage("LoadEngine.description", objs));
 	}
 	
+	/** The entry point of the task. */
 	public void
 	run() {
 		try { CC.getClient().loadSamplerEngine(engine, channel); }

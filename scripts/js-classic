@@ -2,7 +2,7 @@
 #
 #   JSampler - a java front-end for LinuxSampler
 #
-#   Copyright (C) 2005 Grigor Kirilov Iliev
+#   Copyright (C) 2005, 2006 Grigor Kirilov Iliev
 #
 #   This file is part of JSampler.
 #
@@ -47,7 +47,7 @@ if [ -n "$JAVA" ] ; then
         $JAVA -jar js-classic.jar
     fi
 else
-    echo "Unable to find java! Please set JAVA_HOME to point to your JDK directory."
+    echo "Unable to find java! Please set JAVA_HOME to point to your JRE/JDK directory."
     echo "Example:"
     echo "export JAVA_HOME=/opt/jdk1.5.0_04"
 fi

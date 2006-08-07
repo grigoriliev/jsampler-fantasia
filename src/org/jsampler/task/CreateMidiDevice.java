@@ -34,7 +34,7 @@ import static org.jsampler.JSI18n.i18n;
 
 
 /**
- *
+ * This task creates a new MIDI input device.
  * @author Grigor Iliev
  */
 public class CreateMidiDevice extends EnhancedTask<Integer> {
@@ -42,6 +42,12 @@ public class CreateMidiDevice extends EnhancedTask<Integer> {
 	private Parameter[] parameters;
 	
 	
+	
+	/**
+	 * Creates a new instance of <code>CreateMidiDevice</code>.
+	 * @param driver The desired MIDI input system.
+	 * @param parameters An optional list of driver specific parameters.
+	 */
 	public
 	CreateMidiDevice(String driver, Parameter... parameters) {
 		setTitle("CreateMidiDevice_task");
@@ -51,6 +57,7 @@ public class CreateMidiDevice extends EnhancedTask<Integer> {
 		this.parameters = parameters;
 	}
 	
+	/** The entry point of the task. */
 	public void
 	run() {
 		try {

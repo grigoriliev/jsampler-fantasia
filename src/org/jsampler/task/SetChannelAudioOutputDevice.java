@@ -31,13 +31,18 @@ import static org.jsampler.JSI18n.i18n;
 
 
 /**
- *
+ * This task sets the audio output device of a specific sampler channel.
  * @author Grigor Iliev
  */
 public class SetChannelAudioOutputDevice extends EnhancedTask {
 	private int channel;
 	private int deviceID;
 	
+	/**
+	 * Creates new instance of <code>SetChannelAudioOutputDevice</code>.
+	 * @param channel The sampler channel number.
+	 * @param deviceID The numerical ID of the audio output device.
+	 */
 	public
 	SetChannelAudioOutputDevice(int channel, int deviceID) {
 		setTitle("SetChannelAudioOutputDevice_task");
@@ -49,6 +54,7 @@ public class SetChannelAudioOutputDevice extends EnhancedTask {
 		this.deviceID = deviceID;
 	}
 	
+	/** The entry point of the task. */
 	public void
 	run() {
 		try { CC.getClient().setChannelAudioOutputDevice(channel, deviceID); }

@@ -34,7 +34,7 @@ import static org.jsampler.JSI18n.i18n;
 
 
 /**
- *
+ * This task alters a specific setting of an audio output channel.
  * @author Grigor Iliev
  */
 public class SetAudioChannelParameter extends EnhancedTask {
@@ -58,6 +58,7 @@ public class SetAudioChannelParameter extends EnhancedTask {
 		this.prm = prm;
 	}
 	
+	/** The entry point of the task. */
 	public void
 	run() {
 		try { 

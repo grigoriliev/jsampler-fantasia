@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005 Grigor Kirilov Iliev
+ *   Copyright (C) 2005, 2006 Grigor Kirilov Iliev
  *
  *   This file is part of JSampler.
  *
@@ -31,16 +31,18 @@ import static org.jsampler.JSI18n.i18n;
 
 
 /**
- *
+ * Establishes connection to LinuxSampler.
  * @author Grigor Iliev
  */
 public class Connect extends EnhancedTask {
+	/** Creates a new instance of <code>Connect</code>. */
 	public
 	Connect() {
 		setTitle("Connect_task");
 		setDescription(i18n.getMessage("Connect.description"));
 	}
 	
+	/** The entry point of the task. */
 	public void
 	run() {
 		try { CC.getClient().connect(); }

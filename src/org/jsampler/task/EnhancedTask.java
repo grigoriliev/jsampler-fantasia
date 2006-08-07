@@ -26,7 +26,7 @@ import net.sf.juife.AbstractTask;
 
 
 /**
- *
+ * This class extends <code>AbstractTask</code> to add new features.
  * @author Grigor Iliev
  */
 public abstract class EnhancedTask<R> extends AbstractTask<R> {

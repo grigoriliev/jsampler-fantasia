@@ -31,13 +31,19 @@ import static org.jsampler.JSI18n.i18n;
 
 
 /**
- *
+ * This task sets the MIDI input port of a specific sampler channel.
  * @author Grigor Iliev
  */
 public class SetChannelMidiInputPort extends EnhancedTask {
 	private int channel;
 	private int port;
 	
+	/**
+	 * Creates new instance of <code>SetChannelMidiInputPort</code>.
+	 * @param channel The sampler channel number.
+	 * @param port The MIDI input port number
+	 * of the MIDI input device connected to the specified sampler channel.
+	 */
 	public
 	SetChannelMidiInputPort(int channel, int port) {
 		setTitle("SetChannelMidiInputPort_task");
@@ -49,6 +55,7 @@ public class SetChannelMidiInputPort extends EnhancedTask {
 		this.port = port;
 	}
 	
+	/** The entry point of the task. */
 	public void
 	run() {
 		try { CC.getClient().setChannelMidiInputPort(channel, port); }

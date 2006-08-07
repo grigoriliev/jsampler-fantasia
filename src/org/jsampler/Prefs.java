@@ -32,15 +32,6 @@ import java.util.prefs.Preferences;
 public class Prefs {
 	private final static String prefNode = "org.jsampler";
 	
-	private final static String WINDOW_SIZE_AND_LOCATION = "Mainframe.sizeAndLocation";
-	private final static String DEF_WINDOW_SIZE_AND_LOCATION = null;
-	
-	private final static String WINDOW_MAXIMIZED = "Mainframe.maximized";
-	private final static boolean DEF_WINDOW_MAXIMIZED = false;
-	
-	private final static String SAVE_WINDOW_PROPERTIES = "Mainframe.saveProperties";
-	private final static boolean DEF_SAVE_WINDOW_PROPERTIES = true;
-	
 	private final static String VIEW = "VIEW";
 	private final static String DEF_VIEW = "classic";
 	
@@ -59,8 +50,10 @@ public class Prefs {
 	private final static String LS_PORT = "LinuxSampler.port";
 	private final static int DEF_LS_PORT = 8888;
 	
+	private final static String ORCHESTRAS = "Orchestras";
+	private final static String DEF_ORCHESTRAS = null;
 	
-	
+		
 	private static Preferences userPrefs = Preferences.userRoot().node(prefNode);
 	
 	/**
@@ -70,72 +63,6 @@ public class Prefs {
 	private static Preferences
 	user() { return userPrefs; }
 	
-	/**
-	 * Gets a string representation of the main window's size and location.
-	 * The string representation is a comma-separated list
-	 * of x and y coordinates, and width and height of the window.
-	 * @return A string representation of the main window's size and location,
-	 * or <code>null</code> if the value is not set.
-	 */
-	public static String
-	getWindowSizeAndLocation() {
-		return user().get(WINDOW_SIZE_AND_LOCATION, DEF_WINDOW_SIZE_AND_LOCATION);
-	}
-	
-	/**
-	 * Sets the main window's size and location.
-	 * Use <code>null</code> to remove the current value.
-	 * @param s A string representation of the main window's size and location.
-	 */
-	public static void
-	setWindowSizeAndLocation(String s) {
-		if(s == null) {
-			user().remove(WINDOW_SIZE_AND_LOCATION);
-			return;
-		}
-		
-		user().put(WINDOW_SIZE_AND_LOCATION, s);
-	}
-	
-	/**
-	 * Determines whether the main window should be maximized.
-	 * @return <code>true</code> if the main window should be maximized,
-	 * <code>false</code> otherwise.
-	 */
-	public static boolean
-	getWindowMaximized() {
-		return user().getBoolean(WINDOW_MAXIMIZED, DEF_WINDOW_MAXIMIZED);
-	}
-	
-	/**
-	 * Sets whether the main window should be maximized.
-	 * @param b If <code>true</code> the main window should be maximized.
-	 */
-	public static void
-	setWindowMaximized(boolean b) {
-		if(b == getWindowMaximized()) return;
-		user().putBoolean(WINDOW_MAXIMIZED, b);
-	}
-	
-	/**
-	 * Determines whether the window properties (like size and location) should be saved.
-	 * @return <code>true</code> if the window properties should be saved,
-	 * <code>false</code> otherwise.
-	 */
-	public static boolean
-	getSaveWindowProperties() {
-		return user().getBoolean(SAVE_WINDOW_PROPERTIES, DEF_SAVE_WINDOW_PROPERTIES);
-	}
-	
-	/**
-	 * Sets whether the window properties (like size and location) should be saved.
-	 * @param b If <code>true</code> the window properties will be saved.
-	 */
-	public static void
-	setSaveWindowProperties(boolean b) {
-		if(b == getSaveWindowProperties()) return;
-		user().putBoolean(SAVE_WINDOW_PROPERTIES, b);
-	}
 	
 // VIEW
 	/**
@@ -263,5 +190,27 @@ public class Prefs {
 	setLSPort(int port) {
 		if(port == -1) user().remove(LS_PORT);
 		else if(port != getLSPort()) user().putInt(LS_PORT, port);
+	}
+	
+	/**
+	 * Gets the orchestras' content (in XML format).
+	 * @return The orchestras' content (in XML format).
+	 */
+	public static String
+	getOrchestras() { return user().get(ORCHESTRAS, DEF_ORCHESTRAS); }
+	
+	/**
+	 * Sets the orchestras' content (in XML format).
+	 * @param s The orchestras' content (in XML format).
+	 */
+	public static void
+	setOrchestras(String s) {
+		if(s == null) {
+			user().remove(ORCHESTRAS);
+			return;
+		}
+		if(s.equals(getOrchestras())) return;
+		
+		user().put(ORCHESTRAS, s);
 	}
 }

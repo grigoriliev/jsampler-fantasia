@@ -23,7 +23,7 @@
 package org.jsampler.view;
 
 /**
- *
+ * Defines the requirements for an object responsible for the indication of work in progress.
  * @author Grigor Iliev
  */
 public interface JSProgress {
@@ -33,11 +33,9 @@ public interface JSProgress {
 	 */
 	public void setString(String s);
 	
-	/** Starts to indicate that an operation is ongoing. */
+	/** Initiates the indication that an operation is ongoing. */
 	public void start();
 	
 	/** Stops the indication that an operation is ongoing. */
 	public void stop();
-	
-	
 }

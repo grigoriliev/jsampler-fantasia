@@ -33,10 +33,8 @@ import org.linuxsampler.lscp.SamplerChannel;
 public class SamplerEvent extends java.util.EventObject {
 	/**
 	 * Constructs a <code>SamplerEvent</code> object.
-	 *
 	 * @param source The object that originated the event.
 	 */
-	public SamplerEvent(Object source) {
-		super(source);
-	}
+	public
+	SamplerEvent(Object source) { super(source); }
 }

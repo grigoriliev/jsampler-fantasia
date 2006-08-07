@@ -33,7 +33,7 @@ import static org.jsampler.JSI18n.i18n;
 
 
 /**
- *
+ * This task changes the channel number of the speicifed audio output device.
  * @author Grigor Iliev
  */
 public class SetAudioOutputChannelCount extends EnhancedTask {
@@ -54,6 +54,7 @@ public class SetAudioOutputChannelCount extends EnhancedTask {
 		this.channels = channels;
 	}
 	
+	/** The entry point of the task. */
 	public void
 	run() {
 		try { 

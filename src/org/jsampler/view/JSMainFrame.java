@@ -40,12 +40,13 @@ import org.jsampler.event.SamplerChannelListEvent;
 import org.jsampler.event.SamplerChannelListListener;
 
 /**
- *
+ * Defines the skeleton of a JSampler's main frame.
  * @author Grigor Iliev
  */
 public abstract class JSMainFrame extends JFrame {
 	private final Vector<JSChannelsPane> chnPaneList = new Vector<JSChannelsPane>();
 	
+	/** Creates a new instance of <code>JSMainFrame</code>. */
 	public
 	JSMainFrame() {
 		super(JSampler.NAME + ' ' + JSampler.VERSION);
@@ -59,48 +60,83 @@ public abstract class JSMainFrame extends JFrame {
 		CC.getSamplerModel().addSamplerChannelListListener(new EventHandler());
 	}
 	
-	private void
+	/**
+	 * Invoked when this window is about to close.
+	 * Don't forget to call <code>super.onWindowClose()</code> at the end,
+	 * when override this method.
+	 */
+	protected void
 	onWindowClose() {
-		if(Prefs.getSaveWindowProperties()) {
-			Prefs.setWindowMaximized (
-				(getExtendedState() & MAXIMIZED_BOTH) == MAXIMIZED_BOTH
-			);
-			
-			setVisible(false);
-			if(Prefs.getWindowMaximized()) {
-				//setExtendedState(getExtendedState() & ~MAXIMIZED_BOTH);
-				CC.cleanExit();
-				return;
-			}
-			
-			java.awt.Point p = getLocation();
-			Dimension d = getSize();
-			StringBuffer sb = new StringBuffer();
-			sb.append(p.x).append(',').append(p.y).append(',');
-			sb.append(d.width).append(',').append(d.height);
-			Prefs.setWindowSizeAndLocation(sb.toString());
-		}
-		
 		CC.cleanExit();
 	}
 	
+	/**
+	 * Returns a list containing all <code>JSChannelsPane</code>s added to the view.
+	 * @return A list containing all <code>JSChannelsPane</code>s added to the view.
+	 * @see #addChannelsPane
+	 * @see #removeChannelsPane
+	 */
 	public Vector<JSChannelsPane>
 	getChannelsPaneList() { return chnPaneList; }
 	
+	/**
+	 * Return the <code>JSChannelsPane</code> at the specified position.
+	 * @param idx The position of the <code>JSChannelsPane</code> to be returned.
+	 * @return The <code>JSChannelsPane</code> at the specified position.
+	 */
 	public JSChannelsPane
 	getChannelsPane(int idx) { return chnPaneList.get(idx); }
 	
+	/**
+	 * Adds the specified <code>JSChannelsPane</code> to the view.
+	 * @param chnPane The <code>JSChannelsPane</code> to be added.
+	 */
 	public void
 	addChannelsPane(JSChannelsPane chnPane) { chnPaneList.add(chnPane); }
 	
+	/**
+	 * Removes the specified <code>JSChannelsPane</code> from the view.
+	 * Override this method to remove <code>chnPane</code> from the view,
+	 * and don't forget to call <code>super.removeChannelsPane(chnPane);</code>.
+	 * @param chnPane The <code>JSChannelsPane</code> to be removed.
+	 * @return <code>true</code> if the specified code>JSChannelsPane</code>
+	 * is actually removed from the view, <code>false</code> otherwise.
+	 */
 	public boolean
 	removeChannelsPane(JSChannelsPane chnPane) { return chnPaneList.remove(chnPane); }
 	
+	/**
+	 * Gets the current number of <code>JSChannelsPane</code>s added to the view.
+	 * @return The current number of <code>JSChannelsPane</code>s added to the view.
+	 */
 	public int
 	getChannelsPaneCount() { return chnPaneList.size(); }
 	
+	/**
+	 * Inserts the specified <code>JSChannelsPane</code> at the specified position
+	 * in the view and in the code>JSChannelsPane</code> list.
+	 * Where and how this pane will be shown depends on the view/GUI implementation.
+	 * Note that some GUI implementation may have only one pane containing sampler channels.
+	 * @param pane The <code>JSChannelsPane</code> to be inserted.
+	 * @param idx Specifies the position of the <code>JSChannelsPane</code>.
+	 * @see #getChannelsPaneList
+	 */
 	public abstract void insertChannelsPane(JSChannelsPane pane, int idx);
+	
+	/**
+	 * Gets the <code>JSChannelsPane</code> that is currently shown,
+	 * or has the focus if more than one channels' panes are shown.
+	 * If the GUI implementation has only one pane containing sampler channels,
+	 * than this method should always return that pane (the <code>JSChannelsPane</code>
+	 * with index 0).
+	 * @return The selected <code>JSChannelsPane</code>.
+	 */
 	public abstract JSChannelsPane getSelectedChannelsPane();
+	
+	/**
+	 * Sets the <code>JSChannelsPane</code> to be selected.
+	 * @param pane The <code>JSChannelsPane</code> to be shown.
+	 */
 	public abstract void setSelectedChannelsPane(JSChannelsPane pane);
 	
 	private class EventHandler implements SamplerChannelListListener {

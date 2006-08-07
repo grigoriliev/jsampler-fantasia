@@ -29,11 +29,17 @@ To build a distribution you need JDK version 1.5.0 or higher
 and the Ant tool (http://ant.apache.org/).
 
 
+Distributions
+=============
+
+All available distributions are located in the dist directory.
+
+
 Compilation
 ===========
 
 To build a JSampler distribution follow the next steps.
-(note that only one distribution is available for now - JS Classic)
+(there are two distribution available for now - JS Classic and Fantasia)
 
   1. Set the JAVA_HOME environment variable to point to your JDK directory.
      If the JDK is installed in /opt/jdk1.5.0 directory, this can be done
@@ -48,6 +54,45 @@ To build a JSampler distribution follow the next steps.
      - Building a JS Classic distribution: `ant build-jsclassic'
 
      - Cleaning the JS Classic distribution: `ant clean-jsclassic'
+
+     - Building a Fantasia distribution: `ant build-fantasia'
+
+     - Cleaning the Fantasia distribution: `ant clean-fantasia'
+
+
+Installation
+============
+
+Copy the desired file (dist/js-classic.jar or dist/fantasia.jar)
+to some location. That's it!
+
+You may also consider using a script for running particular distribution.
+Look at scripts directory to find an appropriate script for that.
+
+
+Running
+=======
+
+On some systems double clicking on the jar file will be enough.
+If you aren't that lucky use the following
+commands to run JS Classic or Fantasia:
+
+java -jar /<path-to-js-classic>/js-classic.jar
+java -jar /<path-to-fantasia>/fantasia.jar
+
+If the java command is not in your path, locate your jre directory and type:
+
+/<jre-dir>/bin/java -jar /<path-to-js-classic>/js-classic.jar
+/<jre-dir>/bin/java -jar /<path-to-fantasia>/fantasia.jar
+
+Note that you must run LinuxSampler before running a JSampler frontend.
+
+
+Credits
+=======
+
+Special thanks to Olivier Boyer - the creator
+of the impressive design of Fantasia.
 
 
 Thanks for using JSampler.

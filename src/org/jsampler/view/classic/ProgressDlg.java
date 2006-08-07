@@ -59,8 +59,8 @@ public class ProgressDlg extends JDialog implements JSProgress {
 	
 	/** Creates a new instance of ProgressDlg */
 	public
-	ProgressDlg(Frame frm) {
-		super(frm, "", true);
+	ProgressDlg() {
+		super(CC.getMainFrame(), "", true);
 		
 		pb.setIndeterminate(true);
 		//pb.setStringPainted(true);
@@ -93,7 +93,7 @@ public class ProgressDlg extends JDialog implements JSProgress {
 		setSize(d);
 		setResizable(false);
 		
-		setLocation(JuifeUtils.centerLocation(this, frm));
+		setLocation(JuifeUtils.centerLocation(this, CC.getMainFrame()));
 	}
 	
 	private void
@@ -125,7 +125,10 @@ public class ProgressDlg extends JDialog implements JSProgress {
 	
 	/** Starts to indicate that an operation is ongoing. */
 	public void
-	start() { setVisible(true); }
+	start() {
+		setLocation(JuifeUtils.centerLocation(this, CC.getMainFrame()));
+		setVisible(true);
+	}
 	
 	/** Stops the indication that an operation is ongoing. */
 	public void

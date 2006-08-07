@@ -144,6 +144,10 @@ public class AudioDevicesPage extends NavigationPage {
 		devicesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		JScrollPane sp = new JScrollPane(devicesTable);
 		
+		Dimension d;
+		d = new Dimension(sp.getMinimumSize().width, sp.getPreferredSize().height);
+		sp.setPreferredSize(d);
+			
 		JPanel p = new JPanel();
 		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
 		p.add(sp);
@@ -162,10 +166,14 @@ public class AudioDevicesPage extends NavigationPage {
 		p.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		channelsPane.add(p);
 		
+		sp = new JScrollPane(channelParamTable);
+		d = new Dimension(sp.getMinimumSize().width, sp.getPreferredSize().height);
+		sp.setPreferredSize(d);
+		
 		p = new JPanel();
 		p.setLayout(new BorderLayout());
 		p.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-		p.add(new JScrollPane(channelParamTable));
+		p.add(sp);
 		channelsPane.add(p);
 		
 		channelsPane.setBorder (

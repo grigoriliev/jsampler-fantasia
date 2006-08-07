@@ -31,16 +31,18 @@ import static org.jsampler.JSI18n.i18n;
 
 
 /**
- *
+ * This task creates a new sampler channel.
  * @author Grigor Iliev
  */
 public class AddChannel extends EnhancedTask<Integer> {
+	/** Creates a new instance of <code>AddChannel</code>. */
 	public
 	AddChannel() {
 		setTitle("AddChannel_task");
 		setDescription(i18n.getMessage("AddChannel.description"));
 	}
 	
+	/** The entry point of the task. */
 	public void
 	run() {
 		try { setResult(CC.getClient().addSamplerChannel()); }

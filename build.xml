@@ -2,10 +2,25 @@
     <description>This buildfile is used to build JSampler distributions</description>
     
     <property name="jlscp.version" value="0.3a"/>
-    <property name="juife.version" value="0.2a"/>
-    <property name="JSampler.version" value="0.2a"/>
+    <property name="juife.version" value="0.3a"/>
+    <property name="JSampler.version" value="0.3a"/>
     
     <target name="build-jsclassic" depends="clean-jsclassic,build-manifest">
+        <manifest file="dist/build/views.mf">
+            <attribute name="JS-Views" value="classic"/>
+            <attribute name="JS-Default-View" value="classic"/>
+            
+            <section name="classic">
+                <attribute name="View-Name" value="JS Classic"/>
+                <attribute name="Main-Frame" value="org.jsampler.view.classic.MainFrame"/>
+                <attribute name="Progress-Indicator" value="org.jsampler.view.classic.ProgressDlg"/>
+            </section>
+        </manifest>
+        
+        <copy todir="./dist/build/org/jsampler/view">
+            <fileset file="./dist/build/views.mf"/>
+        </copy>
+        
         <unjar src="lib/required/jlscp.jar" dest="dist/build">
             <patternset>
                 <include name="org/**"/>
@@ -31,11 +46,92 @@
         <copy todir="./dist/build/org/jsampler/view/classic/res">
             <fileset dir="res/js-classic"/>
         </copy>
+        <delete dir="./dist/build/org/jsampler/view/fantasia"/>
         <jar basedir="./dist/build" excludes="Manifest" destfile="./dist/js-classic.jar" manifest="./dist/build/Manifest"/>
         <delete dir="./dist/build"/>
     </target>
 
+    <target name="build-fantasia" depends="clean-fantasia,build-manifest">
+        <manifest file="dist/build/views.mf">
+            <attribute name="JS-Views" value="fantasia"/>
+            <attribute name="JS-Default-View" value="fantasia"/>
+            
+            <section name="fantasia">
+                <attribute name="View-Name" value="Fantasia"/>
+                <attribute name="Main-Frame" value="org.jsampler.view.fantasia.MainFrame"/>
+                <attribute name="Progress-Indicator" value="org.jsampler.view.fantasia.ProgressDlg"/>
+            </section>
+        </manifest>
+        
+        <copy todir="./dist/build/org/jsampler/view">
+            <fileset file="./dist/build/views.mf"/>
+        </copy>
+        
+        <unjar src="lib/required/jlscp.jar" dest="dist/build">
+            <patternset>
+                <include name="org/**"/>
+            </patternset>
+        </unjar>
+
+        <unjar src="lib/required/juife.jar" dest="dist/build">
+            <patternset>
+                <include name="net/**"/>
+            </patternset>
+        </unjar>
+        
+        <javac debug="true" debuglevel="source,lines,vars" srcdir="src" destdir="dist/build"/>
+        
+        <copy todir="./dist/build/org/jsampler/view/fantasia">
+            <fileset file="./src/org/jsampler/view/fantasia/gui.xml"/>
+        </copy>
+        
+        <copy todir="./dist/build/org/jsampler/langprops">
+            <fileset dir="./src/org/jsampler/langprops"/>
+        </copy>
+        <copy todir="./dist/build/org/jsampler/view/fantasia/langprops">
+            <fileset dir="./src/org/jsampler/view/fantasia/langprops"/>
+        </copy>
+        <copy todir="./dist/build/licenses">
+            <fileset dir="licenses"/>
+        </copy>
+        <copy todir="./dist/build/org/jsampler/view/fantasia/res">
+            <fileset dir="res/fantasia"/>
+        </copy>
+        <delete dir="./dist/build/org/jsampler/view/classic"/>
+        <jar basedir="./dist/build" excludes="Manifest" destfile="./dist/fantasia.jar" manifest="./dist/build/Manifest"/>
+        <delete dir="./dist/build"/>
+    </target>
+
+    <target name="build-coredoc" depends="clean-coredoc">
+        <mkdir dir="doc/api"/>
+        <javadoc sourcepath="./src" destdir="./doc/api" windowtitle="JSampler ${JSampler.version} API specification" overview="./src/overview.html" Author="false" splitindex="true" use="true">
+            <package name="org.jsampler"/>
+            <package name="org.jsampler.event"/>
+            <package name="org.jsampler.task  "/>
+            <package name="org.jsampler.view"/>
+            <doctitle>JSampler ${JSampler.version} API specification</doctitle>
+            <header><![CDATA[<b>JSampler</b><br><font size=-1>v${JSampler.version}</font>]]></header>
+            <bottom><![CDATA[<font size=-1>Copyright &copy; 2005 Grigor Iliev. All rights reserved.</font>]]></bottom>
+        </javadoc>
+    </target>
+    
     <target name="clean-jsclassic">
+        <delete file="dist/js-classic.jar"/>
+
+        
+    </target>
+
+    <target name="clean-fantasia">
+        <delete file="dist/fantasia.jar"/>
+
+        
+    </target>
+    
+    <target name="clean-coredoc">
+        <delete dir="doc"/>
+    </target>
+
+    <target name="clean-all" depends="clean-coredoc">
         <delete dir="dist"/>
 
         
@@ -57,7 +153,7 @@
 
             <section name="net/sf/juife/">
                 <attribute name="Specification-Title" value="Java User Interface Framework Extensions"/>
-                <attribute name="Specification-Version" value="0.2"/>
+                <attribute name="Specification-Version" value="0.3"/>
                 <attribute name="Specification-Vendor" value="Grigor Iliev"/>
                 <attribute name="Implementation-Title" value="net.sf.juife"/>
                 <attribute name="Implementation-Version" value="${juife.version}"/>
@@ -66,7 +162,7 @@
 
             <section name="org/jsampler/">
                 <attribute name="Specification-Title" value="A java front-end for LinuxSampler"/>
-                <attribute name="Specification-Version" value="0.2"/>
+                <attribute name="Specification-Version" value="0.3"/>
                 <attribute name="Specification-Vendor" value="Grigor Iliev"/>
                 <attribute name="Implementation-Title" value="org.jsampler"/>
                 <attribute name="Implementation-Version" value="${JSampler.version}"/>

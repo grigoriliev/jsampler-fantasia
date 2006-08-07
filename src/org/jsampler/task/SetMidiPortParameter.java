@@ -34,7 +34,7 @@ import static org.jsampler.JSI18n.i18n;
 
 
 /**
- *
+ * This task alters a specific setting of a MIDI input port.
  * @author Grigor Iliev
  */
 public class SetMidiPortParameter extends EnhancedTask {
@@ -58,6 +58,7 @@ public class SetMidiPortParameter extends EnhancedTask {
 		this.prm = prm;
 	}
 	
+	/** The entry point of the task. */
 	public void
 	run() {
 		try { 

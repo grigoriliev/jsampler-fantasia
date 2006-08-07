@@ -33,16 +33,18 @@ import static org.jsampler.JSI18n.i18n;
 
 
 /**
- *
+ * This task retrieves all MIDI input drivers currently available for the LinuxSampler instance.
  * @author Grigor Iliev
  */
 public class GetMIDrivers extends EnhancedTask<MidiInputDriver[]> {
+	/** Creates a new instance of <code>GetMIDrivers</code>. */
 	public
 	GetMIDrivers() {
 		setTitle("GetMIDrivers_task");
 		setDescription(i18n.getMessage("GetMIDrivers.description"));
 	}
 	
+	/** The entry point of the task. */
 	public void
 	run() {
 		try { setResult(CC.getClient().getMidiInputDrivers()); }

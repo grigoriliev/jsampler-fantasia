@@ -33,16 +33,18 @@ import static org.jsampler.JSI18n.i18n;
 
 
 /**
- *
+ * This task retrieves all audio output drivers currently available for the LinuxSampler instance.
  * @author Grigor Iliev
  */
 public class GetAODrivers extends EnhancedTask<AudioOutputDriver[]> {
+	/** Creates a new instance of <code>GetAODrivers</code>. */
 	public
 	GetAODrivers() {
 		setTitle("GetAODrivers_task");
 		setDescription(i18n.getMessage("GetAODrivers.description"));
 	}
 	
+	/** The entry point of the task. */
 	public void
 	run() {
 		try { setResult(CC.getClient().getAudioOutputDrivers()); }

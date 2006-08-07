@@ -29,21 +29,30 @@ import org.jsampler.SamplerChannelModel;
 
 
 /**
- *
+ * This class defines the skeleton of a pane containg sampler channels.
  * @author Grigor Iliev
  */
 public abstract class JSChannelsPane extends JPanel {
+	/** The key used for reporting title's property change. */
 	public final static String TITLE = "ChannelsPaneTitle";
 	
 	private String title;
 	
-	/** Creates a new instance of ChannelsPane */
+	/** Creates a new instance of <code>JSChannelsPane</code>. */
 	public
 	JSChannelsPane(String title) { this.title = title; }
 	
+	/**
+	 * Returns the title of this <code>JSChannelsPane</code>.
+	 * @return The title of this <code>JSChannelsPane</code>.
+	 */
 	public String
 	getTitle() { return title; }
 	
+	/**
+	 * Sets the title of this <code>JSChannelsPane</code>.
+	 * @param title The new title of this <code>JSChannelsPane</code>.
+	 */
 	public void
 	setTitle(String title) {
 		if(this.title.equals(title)) return;
@@ -53,6 +62,10 @@ public abstract class JSChannelsPane extends JPanel {
 		firePropertyChange(TITLE, oldTitle, title);
 	}
 	
+	/**
+	 * Returns the title of this <code>JSChannelsPane</code>.
+	 * @return The title of this <code>JSChannelsPane</code>.
+	 */
 	public String
 	toString() { return getTitle(); }
 	
@@ -136,6 +149,15 @@ public abstract class JSChannelsPane extends JPanel {
 	 */
 	public abstract int removeSelectedChannels();
 	
+	/**
+	 * Registers the specified listener for receiving list selection events.
+	 * @param listener The <code>ListSelectionListener</code> to register.
+	 */
 	public abstract void addListSelectionListener(ListSelectionListener listener);
+	
+	/**
+	 * Removes the specified listener.
+	 * @param listener The <code>ListSelectionListener</code> to remove.
+	 */
 	public abstract void removeListSelectionListener(ListSelectionListener listener);
 }

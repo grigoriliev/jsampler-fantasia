@@ -31,12 +31,16 @@ import static org.jsampler.JSI18n.i18n;
 
 
 /**
- *
+ * This task destroys the specified MIDI input device.
  * @author Grigor Iliev
  */
 public class DestroyMidiDevice extends EnhancedTask {
 	private int deviceID;
 	
+	/**
+	 * Creates a new instance of <code>DestroyMidiDevice</code>.
+	 * @param deviceID The ID of the MIDI input device to be destroyed.
+	 */
 	public
 	DestroyMidiDevice(int deviceID) {
 		setTitle("DestroyMidiDevice_task");
@@ -45,6 +49,7 @@ public class DestroyMidiDevice extends EnhancedTask {
 		this.deviceID = deviceID;
 	}
 	
+	/** The entry point of the task. */
 	public void
 	run() {
 		try {

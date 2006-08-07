@@ -34,7 +34,7 @@ import static org.jsampler.JSI18n.i18n;
 
 
 /**
- *
+ * This task alters a specific setting of a created MIDI input device.
  * @author Grigor Iliev
  */
 public class SetMidiDeviceParameter extends EnhancedTask {
@@ -66,6 +66,7 @@ public class SetMidiDeviceParameter extends EnhancedTask {
 		this.prm = prm;
 	}
 	
+	/** The entry point of the task. */
 	public void
 	run() {
 		try { 

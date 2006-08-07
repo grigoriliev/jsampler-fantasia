@@ -34,16 +34,18 @@ import static org.jsampler.JSI18n.i18n;
 
 
 /**
- *
+ * This task updates the audio device list and all audio devices' settings.
  * @author Grigor Iliev
  */
 public class UpdateAudioDevices extends EnhancedTask {
+	/** Creates a new instance of <code>UpdateAudioDevices</code>. */
 	public
 	UpdateAudioDevices() {
 		setTitle("UpdateAudioDevices_task");
 		setDescription(i18n.getMessage("UpdateAudioDevices.description"));
 	}
 	
+	/** The entry point of the task. */
 	public void
 	run() {
 		try { 

@@ -29,14 +29,22 @@ import org.jsampler.HF;
 
 
 /**
- * Because of the synchronization of <code>org.linuxsampler.lscp.Client</code> methods
- * setting the server address and port can be time consuming, so it needs to be done safely.
+ * This task sets the Linux Sampler address.
+ * This needs to be done out of the event-dispatching thread due to
+ * the synchronization of <code>org.linuxsampler.lscp.Client</code> methods
+ * (setting the server address and port can be time consuming).
  * @author Grigor Iliev
  */
 public class SetServerAddress extends EnhancedTask {
 	private String address;
 	private int port;
 	
+	/**
+	 * Creates new instance of <code>SetServerAddress</code>.
+	 * @param address The Linux Sampler address.
+	 * If <code>address</code> is <code>null</code>, sets to default address - 127.0.0.1.
+	 * @param port The Linux Sampler port number.
+	 */
 	public
 	SetServerAddress(String address, int port) {
 		setTitle("");
@@ -45,6 +53,7 @@ public class SetServerAddress extends EnhancedTask {
 		this.port = port;
 	}
 	
+	/** The entry point of the task. */
 	public void
 	run() {
 		try {

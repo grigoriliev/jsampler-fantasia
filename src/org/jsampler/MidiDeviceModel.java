@@ -29,7 +29,7 @@ import org.jsampler.event.MidiDeviceListener;
 
 
 /**
- *
+ * A data model for a MIDI input device.
  * @author Grigor Iliev
  */
 public interface MidiDeviceModel {

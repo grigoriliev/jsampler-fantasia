@@ -34,12 +34,16 @@ import static org.jsampler.JSI18n.i18n;
 
 
 /**
- *
+ * This task updates the settings of a specific sampler channel.
  * @author Grigor Iliev
  */
 public class UpdateChannelInfo extends EnhancedTask {
 	private int channel;
 	
+	/**
+	 * Creates new instance of <code>UpdateChannelInfo</code>.
+	 * @param channel The sampler channel to be updated.
+	 */
 	public
 	UpdateChannelInfo(int channel) {
 		setTitle("UpdateChannelInfo_task");
@@ -48,6 +52,7 @@ public class UpdateChannelInfo extends EnhancedTask {
 		this.channel = channel;
 	}
 	
+	/** The entry point of the task. */
 	public void
 	run() {
 		try {

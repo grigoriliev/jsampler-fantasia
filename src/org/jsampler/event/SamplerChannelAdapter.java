@@ -23,7 +23,9 @@
 package org.jsampler.event;
 
 /**
- *
+ * Adapter class for receiving events.
+ * This class exists as convenience for creating listener objects.
+ * The methods in this class are empty.
  * @author Grigor Iliev
  */
 public abstract class SamplerChannelAdapter implements SamplerChannelListener {

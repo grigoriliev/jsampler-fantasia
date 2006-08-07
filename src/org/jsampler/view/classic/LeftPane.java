@@ -36,6 +36,8 @@ public class LeftPane extends NavigationPane {
 	private TasksPage tasksPage = new TasksPage();
 	private MidiDevicesPage midiDevicesPage = new MidiDevicesPage();
 	private AudioDevicesPage audioDevicesPage = new AudioDevicesPage();
+	private OrchestrasPage orchestrasPage = new OrchestrasPage();
+	private ManageOrchestrasPage manageOrchestrasPage = new ManageOrchestrasPage();
 	
 	/** Creates a new instance of LeftPane */
 	private
@@ -43,7 +45,9 @@ public class LeftPane extends NavigationPane {
 		NavigationPage[] pages = {
 			tasksPage,
 			midiDevicesPage,
-			audioDevicesPage
+			audioDevicesPage,
+			orchestrasPage,
+			manageOrchestrasPage
 		};
 		
 		setPages(pages);
@@ -52,6 +56,9 @@ public class LeftPane extends NavigationPane {
 	
 	public static LeftPane
 	getLeftPane() { return leftPane; }
+	
+	public OrchestrasPage
+	getOrchestrasPage() { return orchestrasPage; }
 	
 	/** Shows the <code>TasksPage</code> in the left pane. */
 	public void
@@ -64,4 +71,12 @@ public class LeftPane extends NavigationPane {
 	/** Shows the <code>AudioDevicesPage</code> in the left pane. */
 	public void
 	showAudioDevicesPage() { getModel().addPage(audioDevicesPage); }
+	
+	/** Shows the <code>OrchestrasPage</code> in the left pane. */
+	public void
+	showOrchestrasPage() { getModel().addPage(orchestrasPage); }
+	
+	/** Shows the <code>ManageOrchestrasPage</code> in the left pane. */
+	public void
+	showManageOrchestrasPage() { getModel().addPage(manageOrchestrasPage); }
 }

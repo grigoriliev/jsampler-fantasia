@@ -31,7 +31,7 @@ import static org.jsampler.JSI18n.i18n;
 
 
 /**
- *
+ * This task enables/disables a specific MIDI input device.
  * @author Grigor Iliev
  */
 public class EnableMidiDevice extends EnhancedTask {
@@ -40,7 +40,7 @@ public class EnableMidiDevice extends EnhancedTask {
 	
 	/**
 	 * Creates new instance of <code>EnableMidiDevice</code>.
-	 * @param dev The id of the device whose parameter should be enabled/disabled.
+	 * @param dev The id of the device to be enabled/disabled.
 	 * @param enable Specify <code>true</code> to enable the MIDI device;
 	 * code>false</code> to disable it.
 	 */
@@ -53,6 +53,7 @@ public class EnableMidiDevice extends EnhancedTask {
 		this.enable = enable;
 	}
 	
+	/** The entry point of the task. */
 	public void
 	run() {
 		try { 

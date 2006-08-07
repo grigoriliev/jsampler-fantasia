@@ -146,7 +146,10 @@ public class MidiDevicesPage extends NavigationPage {
 		
 		devicesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		JScrollPane sp = new JScrollPane(devicesTable);
-		
+		Dimension d;
+		d = new Dimension(sp.getMinimumSize().width, sp.getPreferredSize().height);
+		sp.setPreferredSize(d);
+			
 		JPanel p = new JPanel();
 		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
 		p.add(sp);
@@ -170,7 +173,12 @@ public class MidiDevicesPage extends NavigationPage {
 		p = new JPanel();
 		p.setLayout(new BorderLayout());
 		p.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-		p.add(new JScrollPane(portParamTable));
+		
+		sp = new JScrollPane(portParamTable);
+		d = new Dimension(sp.getMinimumSize().width, sp.getPreferredSize().height);
+		sp.setPreferredSize(d);
+		
+		p.add(sp);
 		portsPane.add(p);
 		
 		portsPane.setBorder (
@@ -302,18 +310,7 @@ public class MidiDevicesPage extends NavigationPage {
 			super("");
 			
 			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("ttDuplicateMidiDevice"));
-			
-			try {
-				URL url = ClassLoader.getSystemClassLoader().getResource (
-					"org/jsampler/view/classic/res/icons/Copy16.gif"
-				);
-				
-				ImageIcon icon = new ImageIcon(url);
-				if(icon.getImageLoadStatus() == MediaTracker.COMPLETE)
-					putValue(Action.SMALL_ICON, icon);
-			} catch(Exception x) {
-				CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
-			}
+			putValue(Action.SMALL_ICON, Res.iconCopy16);
 			
 			setEnabled(false);
 		}
@@ -329,7 +326,6 @@ public class MidiDevicesPage extends NavigationPage {
 			m = ((MidiDevicesTableModel)devicesTable.getModel()).getMidiDeviceModel(i);
 			String d = m.getDeviceInfo().getDriverName();
 			Parameter[] pS = m.getDeviceInfo().getAdditionalParameters();
-			for(Parameter p : pS) System.out.println(p.getName());
 			CC.getTaskQueue().add(new CreateMidiDevice(d, pS));
 		}
 	}
@@ -339,18 +335,7 @@ public class MidiDevicesPage extends NavigationPage {
 			super("");
 			
 			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("ttRemoveMidiDevice"));
-			
-			try {
-				URL url = ClassLoader.getSystemClassLoader().getResource (
-					"org/jsampler/view/classic/res/icons/Delete16.gif"
-				);
-				
-				ImageIcon icon = new ImageIcon(url);
-				if(icon.getImageLoadStatus() == MediaTracker.COMPLETE)
-					putValue(Action.SMALL_ICON, icon);
-			} catch(Exception x) {
-				CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
-			}
+			putValue(Action.SMALL_ICON, Res.iconDelete16);
 			
 			setEnabled(false);
 		}
@@ -372,18 +357,7 @@ public class MidiDevicesPage extends NavigationPage {
 			super("");
 			
 			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("ttMidiDeviceProps"));
-			
-			try {
-				URL url = ClassLoader.getSystemClassLoader().getResource (
-					"org/jsampler/view/classic/res/icons/Properties16.gif"
-				);
-				
-				ImageIcon icon = new ImageIcon(url);
-				if(icon.getImageLoadStatus() == MediaTracker.COMPLETE)
-					putValue(Action.SMALL_ICON, icon);
-			} catch(Exception x) {
-				CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
-			}
+			putValue(Action.SMALL_ICON, Res.iconProps16);
 			
 			setEnabled(false);
 		}

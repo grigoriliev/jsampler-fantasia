@@ -34,7 +34,7 @@ import static org.jsampler.JSI18n.i18n;
 
 
 /**
- *
+ * This task creates a new audio output device.
  * @author Grigor Iliev
  */
 public class CreateAudioDevice extends EnhancedTask<Integer> {
@@ -42,6 +42,11 @@ public class CreateAudioDevice extends EnhancedTask<Integer> {
 	private Parameter[] parameters;
 	
 	
+	/**
+	 * Creates a new instance of <code>CreateAudioDevice</code>.
+	 * @param driver The desired audio output system.
+	 * @param parameters An optional list of driver specific parameters.
+	 */
 	public
 	CreateAudioDevice(String driver, Parameter... parameters) {
 		setTitle("CreateAudioDevice_task");
@@ -51,6 +56,7 @@ public class CreateAudioDevice extends EnhancedTask<Integer> {
 		this.parameters = parameters;
 	}
 	
+	/** The entry point of the task. */
 	public void
 	run() {
 		try {

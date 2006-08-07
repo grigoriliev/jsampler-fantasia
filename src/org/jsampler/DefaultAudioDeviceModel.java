@@ -33,7 +33,7 @@ import org.linuxsampler.lscp.AudioOutputDevice;
 
 
 /**
- *
+ * This class provides default implementation of the <code>AudioDeviceModel</code> interface.
  * @author Grigor Iliev
  */
 public class DefaultAudioDeviceModel implements AudioDeviceModel {

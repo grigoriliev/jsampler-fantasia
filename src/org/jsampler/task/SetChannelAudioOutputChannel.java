@@ -31,7 +31,7 @@ import static org.jsampler.JSI18n.i18n;
 
 
 /**
- *
+ * This task sets an audio output channel of a specific sampler channel.
  * @author Grigor Iliev
  */
 public class SetChannelAudioOutputChannel extends EnhancedTask {
@@ -39,6 +39,13 @@ public class SetChannelAudioOutputChannel extends EnhancedTask {
 	private int audioOut;
 	private int audioIn;
 	
+	/**
+	 * Creates new instance of <code>SetChannelAudioOutputChannel</code>.
+	 * @param channel The sampler channel number.
+	 * @param audioOut The sampler channel's audio output channel which should be rerouted.
+	 * @param audioIn The audio channel of the selected audio output device where
+	 * <code>audioOut</code> should be routed to.
+	 */
 	public
 	SetChannelAudioOutputChannel(int channel, int audioOut, int audioIn) {
 		setTitle("SetChannelAudioOutputChannel_task");
@@ -50,6 +57,7 @@ public class SetChannelAudioOutputChannel extends EnhancedTask {
 		this.audioIn = audioIn;
 	}
 	
+	/** The entry point of the task. */
 	public void
 	run() {
 		try { CC.getClient().setChannelAudioOutputChannel(channel, audioOut, audioIn); }

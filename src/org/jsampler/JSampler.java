@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005 Grigor Kirilov Iliev
+ *   Copyright (C) 2005, 2006 Grigor Kirilov Iliev
  *
  *   This file is part of JSampler.
  *
@@ -24,20 +24,28 @@ package org.jsampler;
 
 import java.awt.Frame;
 
-import org.jsampler.view.classic.ProgressDlg;
+import org.jsampler.view.JSViews;
 
 import static org.jsampler.JSI18n.i18n;
 
 
 /**
- *
+ * The main class of the application.
  * @author  Grigor Iliev
  */
 public class JSampler {
+	/** The application name. */
 	public final static String NAME = "JSampler";
-	public final static String VERSION = "0.02a";
+	
+	/** The application version. */
+	public final static String VERSION = "0.03a";
 	
 	
+	/**
+	 * The entry point of the application.
+	 * @param args The command line arguments.
+	 * @see CC#cleanExit
+	 */
 	public static void
 	main(String[] args) {
 		CC.initJSampler();
@@ -50,19 +58,9 @@ public class JSampler {
 	
 	private static void
 	initGUI() {
-		String view = Prefs.getView();
+		JSViews.parseManifest();
+		JSViews.setView(JSViews.getDefaultView());
 		
-		if(view.equals("classic")) {
-			CC.setMainFrame(new org.jsampler.view.classic.MainFrame());
-			CC.setProgressIndicator(new ProgressDlg(CC.getMainFrame()));
-		} else {
-			HF.showErrorMessage(i18n.getError("unknownError"), (Frame)null);
-			CC.cleanExit(-1);
-			return;
-		}
-		
-		CC.getMainFrame().setVisible(true);
-		
-		CC.initSamplerModel();
+		CC.reconnect();
 	}
 }

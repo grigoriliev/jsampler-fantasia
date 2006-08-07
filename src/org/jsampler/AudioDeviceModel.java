@@ -28,7 +28,7 @@ import org.linuxsampler.lscp.AudioOutputDevice;
 
 
 /**
- *
+ * A data model for an audio output device.
  * @author Grigor Iliev
  */
 public interface AudioDeviceModel {

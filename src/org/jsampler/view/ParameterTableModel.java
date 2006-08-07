@@ -64,14 +64,15 @@ import org.linuxsampler.lscp.StringListParameter;
 
 
 /**
- *
+ * A tabular data model for representing LSCP parameters.
+ * @see ParameterTable
  * @author Grigor Iliev
  */
 public class ParameterTableModel extends AbstractTableModel {
 	public final static int PARAMETER_NAME_COLUMN = 0;
 	public final static int PARAMETER_VALUE_COLUMN = 1;
 	
-	Parameter[] parameters;
+	private Parameter[] parameters;
 	
 	private final BooleanCellRenderer booleanRenderer = new BooleanCellRenderer();
 	private final BooleanCellEditor booleanEditor = new BooleanCellEditor();
@@ -151,6 +152,12 @@ public class ParameterTableModel extends AbstractTableModel {
 	public Parameter
 	getParameter(int row) { return parameters[row]; }
 	
+	/**
+	 * Returns an appropriate renderer for the cell specified by
+	 * <code>row</code> and <code>column</code>.
+	 * @param row The row of the cell to render, where 0 is the first row.
+	 * @param column The column of the cell to render, where 0 is the first column.
+	 */
 	public TableCellRenderer
 	getCellRenderer(int row, int column) {
 		if(column != PARAMETER_VALUE_COLUMN) return null;
@@ -165,6 +172,12 @@ public class ParameterTableModel extends AbstractTableModel {
 		return null;
 	}
 	
+	/**
+	 * Returns an appropriate editor for the cell specified by
+	 * <code>row</code> and <code>column</code>.
+	 * @param row The row of the cell to edit, where 0 is the first row.
+	 * @param column The column of the cell to edit, where 0 is the first column.
+	 */
 	public TableCellEditor
 	getCellEditor(int row, int column) {
 		if(column != PARAMETER_VALUE_COLUMN) return null;
@@ -258,8 +271,8 @@ public class ParameterTableModel extends AbstractTableModel {
 	}
 	
 	/**
-	 * Sets the value in the cell at <code>columnIndex</code>
-	 * and <code>rowIndex</code> to <code>value</code>.
+	 * Sets the value in the cell at <code>col</code>
+	 * and <code>row</code> to <code>value</code>.
 	 */
 	public void
 	setValueAt(Object value, int row, int col) {
@@ -272,7 +285,7 @@ public class ParameterTableModel extends AbstractTableModel {
 	
 	/**
 	 * Returns <code>true</code> if the cell at
-	 * <code>rowIndex</code> and <code>columnIndex</code> is editable.
+	 * <code>row</code> and <code>col</code> is editable.
 	 */
 	public boolean
 	isCellEditable(int row, int col) {

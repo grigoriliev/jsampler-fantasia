@@ -33,16 +33,18 @@ import static org.jsampler.JSI18n.i18n;
 
 
 /**
- *
+ * This task retrieves the list of all available engines.
  * @author Grigor Iliev
  */
 public class GetEngines extends EnhancedTask<SamplerEngine[]> {
+	/** Creates a new instance of <code>GetEngines</code>. */
 	public
 	GetEngines() {
 		setTitle("GetEngines_task");
 		setDescription(i18n.getMessage("GetEngines.description"));
 	}
 	
+	/** The entry point of the task. */
 	public void
 	run() {
 		try { setResult(CC.getClient().getEngines()); }

@@ -31,7 +31,7 @@ import net.sf.juife.I18n;
 
 
 /**
- * The <code>JSI18n</code> class manages the locale-specific data of JSampler core.
+ * The <code>JSI18n</code> class manages the locale-specific data of the JSampler core.
  * @author Grigor Iliev
  */
 public class JSI18n extends I18n {
@@ -44,7 +44,7 @@ public class JSI18n extends I18n {
 	JSI18n() {
 		setButtonsBundle("org.jsampler.langprops.ButtonsLabelsBundle");
 		setErrorsBundle("org.jsampler.langprops.ErrorsBundle");
-		//setLabelsBundle("org.jsampler.langprops.LabelsBundle");
+		setLabelsBundle("org.jsampler.langprops.LabelsBundle");
 		setLogsBundle("org.jsampler.langprops.LogsBundle");
 		//setMenusBundle("org.jsampler.langprops.MenuLabelsBundle");
 		setMessagesBundle("org.jsampler.langprops.MessagesBundle");

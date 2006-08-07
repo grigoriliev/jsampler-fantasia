@@ -31,13 +31,19 @@ import static org.jsampler.JSI18n.i18n;
 
 
 /**
- *
+ * This task solos/unsolos a specific sampler channel.
  * @author Grigor Iliev
  */
 public class SetSoloChannel extends EnhancedTask {
 	private int channel;
 	private boolean solo;
 	
+	/**
+	 * Creates new instance of <code>SetSoloChannel</code>.
+	 * @param channel The sampler channel number.
+	 * @param solo Specify <code>true</code> to solo the specified channel,
+	 * <code>false</code> otherwise.
+	 */
 	public
 	SetSoloChannel(int channel, boolean solo) {
 		setTitle("SetSoloChannel_task");
@@ -47,6 +53,7 @@ public class SetSoloChannel extends EnhancedTask {
 		this.solo = solo;
 	}
 	
+	/** The entry point of the task. */
 	public void
 	run() {
 		try { CC.getClient().setChannelSolo(channel, solo); }

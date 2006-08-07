@@ -34,16 +34,18 @@ import static org.jsampler.JSI18n.i18n;
 
 
 /**
- *
+ * This task updates the sampler channel list and all asampler channels' settings.
  * @author Grigor Iliev
  */
 public class UpdateChannels extends EnhancedTask {
+	/** Creates a new instance of <code>UpdateChannels</code>. */
 	public
 	UpdateChannels() {
 		setTitle("UpdateChannels_task");
 		setDescription(i18n.getMessage("UpdateChannels.description"));
 	}
 	
+	/** The entry point of the task. */
 	public void
 	run() {
 		try { 

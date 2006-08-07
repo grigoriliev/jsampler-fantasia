@@ -32,16 +32,19 @@ import static org.jsampler.JSI18n.i18n;
 
 
 /**
- * 
+ * This task updates the current number of all active voices
+ * and the maximum number of active voices allowed.
  * @author Grigor Iliev
  */
 public class UpdateTotalVoiceCount extends EnhancedTask {
+	/** Creates a new instance of <code>UpdateTotalVoiceCount</code>. */
 	public
 	UpdateTotalVoiceCount() {
 		setTitle("UpdateTotalVoiceCount_task");
 		setDescription(i18n.getMessage("UpdateTotalVoiceCount.description"));
 	}
 	
+	/** The entry point of the task. */
 	public void
 	run() {
 		try {

@@ -31,13 +31,17 @@ import static org.jsampler.JSI18n.i18n;
 
 
 /**
- *
+ * This task destroys the specified audio output device.
  * @author Grigor Iliev
  */
 public class DestroyAudioDevice extends EnhancedTask {
 	private int deviceID;
 	
 	
+	/**
+	 * Creates a new instance of <code>DestroyAudioDevice</code>.
+	 * @param deviceID The ID of the audio output device to be destroyed.
+	 */
 	public
 	DestroyAudioDevice(int deviceID) {
 		setTitle("DestroyAudioDevice_task");
@@ -46,6 +50,7 @@ public class DestroyAudioDevice extends EnhancedTask {
 		this.deviceID = deviceID;
 	}
 	
+	/** The entry point of the task. */
 	public void
 	run() {
 		try {

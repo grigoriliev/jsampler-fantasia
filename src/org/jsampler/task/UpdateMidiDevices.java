@@ -34,16 +34,18 @@ import static org.jsampler.JSI18n.i18n;
 
 
 /**
- *
+ * This task updates the MIDI device list and all MIDI devices' settings.
  * @author Grigor Iliev
  */
 public class UpdateMidiDevices extends EnhancedTask {
+	/** Creates a new instance of <code>UpdateMidiDevices</code>. */
 	public
 	UpdateMidiDevices() {
 		setTitle("UpdateMidiDevices_task");
 		setDescription(i18n.getMessage("UpdateMidiDevices.description"));
 	}
 	
+	/** The entry point of the task. */
 	public void
 	run() {
 		try { 

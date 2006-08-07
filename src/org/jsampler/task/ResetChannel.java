@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005 Grigor Kirilov Iliev
+ *   Copyright (C) 2005, 2006 Grigor Kirilov Iliev
  *
  *   This file is part of JSampler.
  *
@@ -27,33 +27,35 @@ import java.util.logging.Level;
 import org.jsampler.CC;
 import org.jsampler.HF;
 
-import org.linuxsampler.lscp.SamplerChannel;
-
 import static org.jsampler.JSI18n.i18n;
 
 
 /**
- *
+ * This task resets the specified sampler channel.
  * @author Grigor Iliev
  */
-public class GetChannelInfo extends EnhancedTask<SamplerChannel> {
-	private int channel = -1;
+public class ResetChannel extends EnhancedTask {
+	private int channel;
 	
+	/**
+	 * Creates new instance of <code>ResetChannel</code>.
+	 * @param channel The numerical ID of the channel to reset.
+	 */
 	public
-	GetChannelInfo() {
-		setTitle("GetChannelInfo_task");
-		setDescription(i18n.getMessage("GetChannelInfo.description"));
+	ResetChannel(int channel) {
+		setTitle("ResetChannel_task");
+		setDescription(i18n.getMessage("ResetChannel.description", channel));
+		
+		this.channel = channel;
 	}
 	
+	/** The entry point of the task. */
 	public void
 	run() {
-		try { setResult(CC.getClient().getSamplerChannelInfo(channel)); }
+		try { CC.getClient().resetChannel(channel); }
 		catch(Exception x) {
 			setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
 			CC.getLogger().log(Level.FINE, getErrorMessage(), x);
 		}
 	}
-	
-	public void
-	setChannelID(int channel) { this.channel = channel; }
 }

@@ -1,0 +1,160 @@
+<synth>
+    <style id="titlebar">
+        <state>
+            <imagePainter method="panelBackground" path="res/titlebar.png" sourceInsets="3 3 3 3" stretch="true" paintCenter="true"/>
+            
+        </state>
+    </style>
+    <bind style="titlebar" type="name" key="FantasiaTitleBar" />
+    
+    <style id="channel">
+        <state>
+            <imagePainter method="panelBackground" path="res/channel.png" sourceInsets="3 3 3 3" stretch="true" paintCenter="true"/>
+            
+        </state>
+    </style>
+    <bind style="channel" type="name" key="Channel" />
+
+    <style id="channel.screen">
+        <state>
+            <imagePainter method="panelBackground" path="res/channel.screen.png" sourceInsets="6 6 6 6" stretch="true" paintCenter="true"/>
+            
+        </state>
+    </style>
+    <bind style="channel.screen" type="name" key="ChannelScreen" />
+
+    <style id="channel.options">
+        <state>
+            <imagePainter method="panelBackground" path="res/channel.options.png" sourceInsets="1 1 1 1" stretch="true" paintCenter="true"/>
+            
+        </state>
+    </style>
+    <bind style="channel.options" type="name" key="ChannelOptions" />
+
+    <style id="vseparator">
+        <state>
+            <imagePainter method="panelBackground" path="res/line_vert.png" sourceInsets="0 0 0 0" stretch="true" paintCenter="true"/>
+            
+        </state>
+    </style>
+    <bind style="vseparator" type="name" key="VSeparator" />
+    
+    <!-- <style id="label">
+        <state>
+            <color type="BACKGROUND" value="#000000"/>
+            
+            <imagePainter method="labelBorder" path="/cbLabel.png" sourceInsets="3 3 1 3" paintCenter="false"/>
+            <imagePainter method="labelBackground" path="/bgLabel.png" sourceInsets="0 0 0 0" paintCenter="true"/>
+            
+            <insets top="3" left="3" bottom="1" right="3"/>
+        </state>
+    </style>
+    <bind style="label" type="region" key="Label"/>
+    
+    <bind style="label" type="region" key="PopupMenu"/>
+   
+    <style id="combobox">
+        <state>
+        </state>
+    </style>
+    <bind style="combobox" type="region" key="ComboBox"/>
+    -->
+    
+    <style id="default">
+        <state>
+            <font name="DIALOG" size="9" style="BOLD"/>
+            <color type="FOREGROUND" value="#FFA300"/>
+            <color type="BACKGROUND" value="#818181"/>
+            
+            <imagePainter method="scrollBarThumbBorder" path="res/button.png" sourceInsets="1 1 1 1" stretch="true" paintCenter="true"/>
+        </state>
+    </style>
+    <bind style="default" type="region" key=".*"/>
+    
+    <style id="cbArrow">
+        <imagePainter method="arrowButtonForeground" path="res/cb_arrow.png" sourceInsets="0 0 0 0" stretch="false"/>
+        <color type="BACKGROUND" value="#818181"/>
+    </style>
+    <bind style="cbArrow" type="name" key="ComboBox.arrowButton" />
+    
+    <style id="scrollbar">
+        <state>
+            <imagePainter method="arrowButtonForeground" path="res/arrow_up.png" sourceInsets="0 0 0 0" direction="north"/>
+            <imagePainter method="arrowButtonForeground" path="res/arrow_down.png" sourceInsets="0 0 0 0" direction="south"/>
+            <property key="ArrowButton.size" type="integer" value="10" />
+            
+        </state>
+    </style>
+    <bind style="scrollbar" type="name" key="ScrollBar.button"/>
+    
+    <style id="button">
+        <state>
+            <imagePainter method="buttonBorder" path="res/button.png" sourceInsets="1 1 1 1" stretch="true" paintCenter="false"/>
+            <insets top="4" left="8" bottom="4" right="8"/>
+            <opaque value="true"/>
+            <color type="BACKGROUND" value="#6d6d6d"/>
+        </state>
+    </style>
+    <bind style="button" type="region" key="Button"/>
+    
+    <style id="textfield">
+        <state>
+            <imagePainter method="textFieldBorder" path="res/border_tf.png" sourceInsets="1 1 1 1" stretch="true" paintCenter="false"/>
+            <insets top="4" left="4" bottom="4" right="4"/>
+            <opaque value="true"/>
+            <color type="BACKGROUND" value="#6d6d6d"/>
+        </state>
+    </style>
+    <bind style="textfield" type="region" key="TextField"/>
+    
+    <style id="spinner">
+        <state>
+            <imagePainter method="spinnerBorder" path="res/border_tf.png" sourceInsets="1 1 1 1" stretch="true" paintCenter="false"/>
+            <insets top="4" left="4" bottom="4" right="4"/>
+            <opaque value="true"/>
+            <color type="BACKGROUND" value="#6d6d6d"/>
+        </state>
+    </style>
+    <bind style="spinner" type="region" key="Spinner"/>
+    
+    <style id="progressbar">
+        <state>
+            <imagePainter method="progressBarBorder" path="res/border_tf.png" sourceInsets="1 1 1 1" stretch="true" paintCenter="false"/>
+            <imagePainter method="progressBarForeground" path="res/progress_fg.png" sourceInsets="1 1 1 1" stretch="true" paintCenter="true"/>
+            <insets top="2" left="2" bottom="2" right="2"/>
+            <opaque value="true"/>
+            <color type="BACKGROUND" value="#6d6d6d"/>
+        </state>
+    </style>
+    <bind style="progressbar" type="region" key="ProgressBar"/>
+    
+    <style id="popupmenu">
+        <state>
+            <imagePainter method="popupMenuBorder" path="res/button.png" sourceInsets="1 1 1 1" stretch="true" paintCenter="false"/>
+            <insets top="4" left="4" bottom="4" right="4"/>
+            <opaque value="true"/>
+            <color type="BACKGROUND" value="#6d6d6d"/>
+        </state>
+    </style>
+    <bind style="popupmenu" type="region" key="PopupMenu"/>
+    
+    <style id="cbrenderer">
+        <state>
+            
+            <imagePainter method="labelBackground" path="res/cb_label.png" sourceInsets="3 3 5 3" paintCenter="true"/>
+            <!-- <imagePainter method="labelBackground" path="res/bgLabel.png" sourceInsets="0 0 0 0" stretch="true" paintCenter="true"/> -->
+            
+            <insets top="3" left="5" bottom="6" right="3"/>
+        </state>
+    </style>
+    <bind style="cbrenderer" type="name" key="ComboBox.renderer"/>
+    
+    <style id="cblist">
+        <state>
+            <color type="BACKGROUND" value="#000000"/>
+        </state>
+    </style>
+    <bind style="cblist" type="name" key="ComboBox.list"/>
+    
+    
+</synth>

@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -22,7 +22,7 @@
 
 package org.jsampler;
 
-import org.jsampler.event.AudioDeviceListListener;
+import org.jsampler.event.ListListener;
 import org.jsampler.event.MidiDeviceListListener;
 import org.jsampler.event.SamplerChannelListListener;
 import org.jsampler.event.SamplerListener;
@@ -32,6 +32,8 @@ import org.linuxsampler.lscp.*;
 
 /**
  * A data model representing a sampler.
+ * Note that the setter methods does <b>not</b> alter any settings
+ * on the backend side unless otherwise specified.
  * @author Grigor Iliev
  */
 public interface SamplerModel {
@@ -49,15 +51,15 @@ public interface SamplerModel {
 	
 	/**
 	 * Registers the specified listener for receiving event messages.
-	 * @param listener The <code>AudioDeviceListListener</code> to register.
+	 * @param listener The <code>ListListener</code> to register.
 	 */
-	public void addAudioDeviceListListener(AudioDeviceListListener listener);
+	public void addAudioDeviceListListener(ListListener<AudioDeviceModel> listener);
 	
 	/**
 	 * Removes the specified listener.
-	 * @param listener The <code>AudioDeviceListListener</code> to remove.
+	 * @param listener The <code>ListListener</code> to remove.
 	 */
-	public void removeAudioDeviceListListener(AudioDeviceListListener listener);
+	public void removeAudioDeviceListListener(ListListener<AudioDeviceModel> listener);
 	
 	/**
 	 * Registers the specified listener for receiving event messages.
@@ -70,6 +72,18 @@ public interface SamplerModel {
 	 * @param listener The <code>MidiDeviceListListener</code> to remove.
 	 */
 	public void removeMidiDeviceListListener(MidiDeviceListListener listener);
+	
+	/**
+	 * Registers the specified listener for receiving event messages.
+	 * @param listener The <code>ListListener</code> to register.
+	 */
+	public void addMidiInstrumentMapListListener(ListListener<MidiInstrumentMap> listener);
+	
+	/**
+	 * Removes the specified listener.
+	 * @param listener The <code>ListListener</code> to remove.
+	 */
+	public void removeMidiInstrumentMapListListener(ListListener<MidiInstrumentMap> listener);
 	
 	/**
 	 * Registers the specified listener for receiving event messages.
@@ -100,12 +114,12 @@ public interface SamplerModel {
 	public AudioOutputDriver[] getAudioOutputDrivers();
 	
 	/**
-	 * Gets the model of the audio device with ID <code>deviceID</code>.
-	 * @param deviceID The ID of the audio device whose model should be obtained.
+	 * Gets the model of the audio device with ID <code>deviceId</code>.
+	 * @param deviceId The ID of the audio device whose model should be obtained.
 	 * @return The model of the specified audio device or <code>null</code> 
-	 * if there is no audio device with ID <code>deviceID</code>.
+	 * if there is no audio device with ID <code>deviceId</code>.
 	 */
-	public AudioDeviceModel getAudioDeviceModel(int deviceID);
+	public AudioDeviceModel getAudioDeviceModel(int deviceId);
 	
 	/**
 	 * Gets the current number of audio devices.
@@ -127,11 +141,17 @@ public interface SamplerModel {
 	
 	/**
 	 * Removes the specified audio device.
-	 * @param deviceID The ID of the audio device to be removed.
+	 * @param deviceId The ID of the audio device to be removed.
 	 * @return <code>true</code> if the audio device is removed successfully, <code>false</code>
-	 * if the device list does not contain audio device with ID <code>deviceID</code>.
+	 * if the device list does not contain audio device with ID <code>deviceId</code>.
 	 */
-	public boolean removeAudioDevice(int deviceID);
+	public boolean removeAudioDevice(int deviceId);
+	
+	/**
+	 * Removes (on the backend side) the specified audio device.
+	 * @param deviceId The ID of the audio device to be removed.
+	 */
+	public void removeBackendAudioDevice(int deviceId);
 	
 	/**
 	 * Gets all MIDI input drivers currently available for the LinuxSampler instance.
@@ -142,12 +162,12 @@ public interface SamplerModel {
 	public MidiInputDriver[] getMidiInputDrivers();
 	
 	/**
-	 * Gets the model of the MIDI device with ID <code>deviceID</code>.
-	 * @param deviceID The ID of the MIDI device whose model should be obtained.
+	 * Gets the model of the MIDI device with ID <code>deviceId</code>.
+	 * @param deviceId The ID of the MIDI device whose model should be obtained.
 	 * @return The model of the specified MIDI device or <code>null</code> 
-	 * if there is no MIDI device with ID <code>deviceID</code>.
+	 * if there is no MIDI device with ID <code>deviceId</code>.
 	 */
-	public MidiDeviceModel getMidiDeviceModel(int deviceID);
+	public MidiDeviceModel getMidiDeviceModel(int deviceId);
 	
 	/**
 	 * Gets the current number of MIDI input devices.
@@ -168,12 +188,118 @@ public interface SamplerModel {
 	public void addMidiDevice(MidiInputDevice device);
 	
 	/**
-	 * Removes the specified MIDI device.
-	 * @param deviceID The ID of the MIDI device to be removed.
-	 * @return <code>true</code> if the MIDI device is removed successfully, <code>false</code>
-	 * if the device list does not contain MIDI device with ID <code>deviceID</code>.
+	 * Schedules a new task for adding new MIDI device.
+	 * @param driver The desired MIDI input system.
+	 * @param parameters An optional list of driver specific parameters.
 	 */
-	public boolean removeMidiDevice(int deviceID);
+	public void addBackendMidiDevice(String driver, Parameter... parameters);
+	
+	/**
+	 * Removes the specified MIDI device.
+	 * @param deviceId The ID of the MIDI device to be removed.
+	 * @return <code>true</code> if the MIDI device is removed successfully, <code>false</code>
+	 * if the device list does not contain MIDI device with ID <code>deviceId</code>.
+	 */
+	public boolean removeMidiDevice(int deviceId);
+	
+	/**
+	 * Schedules a new task for removing the specified MIDI device.
+	 * @param deviceId The ID of the MIDI input device to be destroyed.
+	 */
+	public void removeBackendMidiDevice(int deviceId);
+	
+	/**
+	 * Gets the MIDI instrument map with ID <code>mapId</code>.
+	 * @param mapId The ID of the MIDI instrument map to obtain.
+	 * @return The MIDI instrument map with the specified ID or <code>null</code> 
+	 * if there is no MIDI instrument map with ID <code>mapId</code>.
+	 */
+	public MidiInstrumentMap getMidiInstrumentMapById(int mapId);
+	
+	/**
+	 * Gets the MIDI instrument map at the specified position.
+	 * @param index The position of the MIDI instrument map to return.
+	 * @return The MIDI instrument map at the specified position.
+	 */
+	public MidiInstrumentMap getMidiInstrumentMap(int index);
+	
+	/**
+	 * Gets the current number of MIDI instrument maps.
+	 * @return The current number of MIDI instrument maps.
+	 */
+	public int getMidiInstrumentMapCount();
+	
+	/**
+	 * Gets the current list of MIDI instrument maps.
+	 * @return The current list of MIDI instrument maps.
+	 */
+	public MidiInstrumentMap[] getMidiInstrumentMaps();
+	
+	/**
+	 * Adds the specified MIDI instrument map.
+	 * @param map The MIDI instrument map to be added.
+	 */
+	public void addMidiInstrumentMap(MidiInstrumentMap map);
+	
+	/**
+	 * Schedules a new task for creating a new MIDI instrument map on the backend side.
+	 * @param name The name of the MIDI instrument map.
+	 * @throws IllegalArgumentException If <code>name</code> is <code>null</code>.
+	 */
+	public void addBackendMidiInstrumentMap(String name);
+	
+	/**
+	 * Removes the specified MIDI instrument map.
+	 * @param mapId The ID of the MIDI instrument map to be removed.
+	 * @return <code>true</code> if the MIDI instrument map is removed successfully,
+	 * <code>false</code> if the MIDI instrument map's list does not contain
+	 * MIDI instrument map with ID <code>mapId</code>.
+	 */
+	public boolean removeMidiInstrumentMap(int mapId);
+	
+	/** Removes all MIDI instrument maps. */
+	public void removeAllMidiInstrumentMaps();
+	
+	/**
+	 * Schedules a new task for removing the
+	 * specified MIDI instrument map on the backend side.
+	 * @param mapId The numerical ID of the MIDI instrument map to remove.
+	 * @throws IllegalArgumentException If <code>mapId</code> is negative.
+	 */
+	public void removeBackendMidiInstrumentMap(int mapId);
+	
+	/**
+	 * Schedules a new task for changing the name of
+	 * the specified MIDI instrument map on the backend side.
+	 * @param mapId The numerical ID of the MIDI instrument map.
+	 * @param name The new name for the specified MIDI instrument map.
+	 */
+	public void setBackendMidiInstrumentMapName(int mapId, String name);
+	
+	/**
+	 * Gets the default MIDI instrument map.
+	 * @return The default MIDI instrument map or <code>null</code>
+	 * if there are no maps created.
+	 */
+	public MidiInstrumentMap getDefaultMidiInstrumentMap();
+	
+	/**
+	 * Schedules a new task for mapping a MIDI instrument on the backend side.
+	 * @param mapId The id of the MIDI instrument map.
+	 * @param bank The index of the MIDI bank, which shall contain the instrument.
+	 * @param program The MIDI program number of the new instrument.
+	 * @param instrInfo Provides the MIDI instrument settings.
+	 */
+	public void
+	mapBackendMidiInstrument(int mapId, int bank, int program, MidiInstrumentInfo instrInfo);
+	
+	/**
+	 * Schedules a new task for removing a MIDI instrument on the backend side.
+	 * @param mapId The id of the MIDI instrument map containing the instrument to be removed.
+	 * @param bank The index of the MIDI bank containing the instrument to be removed.
+	 * @param program The MIDI program number of the instrument to be removed.
+	 */
+	public void unmapBackendMidiInstrument(int mapId, int bank, int program);
 	
 	/**
 	 * Gets a list of all available engines.
@@ -188,12 +314,12 @@ public interface SamplerModel {
 	public SamplerChannelModel[] getChannelModels();
 	
 	/**
-	 * Gets the model of the sampler channel with ID <code>channelID</code>.
-	 * @param channelID The ID of the sampler channel whose model should be obtained.
+	 * Gets the model of the sampler channel with ID <code>channelId</code>.
+	 * @param channelId The ID of the sampler channel whose model should be obtained.
 	 * @return The model of the specified sampler channel or <code>null</code> 
-	 * if there is no channel with ID <code>channelID</code>.
+	 * if there is no channel with ID <code>channelId</code>.
 	 */
-	public SamplerChannelModel getChannelModel(int channelID);
+	public SamplerChannelModel getChannelModel(int channelId);
 	
 	/**
 	 * Gets the current number of sampler channels.
@@ -202,11 +328,11 @@ public interface SamplerModel {
 	public int getChannelCount();
 	
 	/**
-	 * Creates a new sampler channel. The channel will be actually added to this model
-	 * when the back-end notifies for its creation.
+	 * Adds a new sampler channel on the backend side. The channel will
+	 * be actually added to this model when the backend notifies for its creation.
 	 * @see #addChannel
 	 */
-	public void createChannel();
+	public void addBackendChannel();
 	
 	/**
 	 * Adds the specified sampler channel.
@@ -219,18 +345,24 @@ public interface SamplerModel {
 	 * Note that this method doesn't remove the channel in the backend,
 	 * it is used to remove the channel from the model when those channel
 	 * is removed in the backend.
-	 * @param channelID The ID of the channel to be removed.
+	 * @param channelId The ID of the channel to be removed.
 	 * @return <code>true</code> if the channel is removed successfully, <code>false</code>
-	 * if the channel's list does not contain channel with ID <code>channelID</code>.
+	 * if the channel's list does not contain channel with ID <code>channelId</code>.
 	 */
-	public boolean removeChannel(int channelID);
+	public boolean removeChannel(int channelId);
+	
+	/**
+	 * Schedules a new task for removing the specified sampler channel on the backend side.
+	 * @param channelId The ID of the channel to be removed.
+	 */
+	public void removeBackendChannel(int channelId);
 	
 	/**
 	 * Updates the settings of the specified channel.
 	 * @param channel A <code>SamplerChannel</code> instance containing the new settings
 	 * for the channel.
 	 */
-	public void changeChannel(SamplerChannel channel);
+	public void updateChannel(SamplerChannel channel);
 	
 	/**
 	 * Determines whether there is at least one solo channel in the current list
@@ -270,6 +402,29 @@ public interface SamplerModel {
 	 * @return The maximum number of active voices.
 	 */
 	public int getTotalVoiceCountMax();
+	
+	/**
+	 * Gets the golobal volume of the sampler.
+	 * @return The golobal volume of the sampler.
+	 */
+	public float getVolume();
+	
+	/**
+	 * Sets the global volume.
+	 * @param volume The new volume value.
+	 */
+	public void setVolume(float volume);
+	
+	/**
+	 * Sets the global volume on the backend side.
+	 * @param volume The new volume value.
+	 */
+	public void setBackendVolume(float volume);
+	
+	/**
+	 * Schedules a new task for resetting the sampler.
+	 */
+	public void resetBackend();
 	
 	/**
 	 * Updates the current and the maximum number of active voices in the sampler.

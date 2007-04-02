@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005, 2006 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -22,7 +22,7 @@
 
 package org.jsampler;
 
-import org.jsampler.event.OrchestraListListener;
+import org.jsampler.event.ListListener;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -37,13 +37,13 @@ public interface OrchestraListModel {
 	 * Registers the specified listener for receiving event messages.
 	 * @param l The <code>OrchestraListListener</code> to register.
 	 */
-	public void addOrchestraListListener(OrchestraListListener l);
+	public void addOrchestraListListener(ListListener<OrchestraModel> l);
 	
 	/**
 	 * Removes the specified listener.
 	 * @param l The <code>OrchestraListListener</code> to remove.
 	 */
-	public void removeOrchestraListListener(OrchestraListListener l);
+	public void removeOrchestraListListener(ListListener<OrchestraModel> l);
 	
 	/**
 	 * Gets the current number of orchestras in the list.
@@ -87,6 +87,9 @@ public interface OrchestraListModel {
 	 * <code>false</code> otherwise.
 	 */
 	public boolean removeOrchestra(OrchestraModel orchestraModel);
+	
+	/** Removes all orchestras from the list. */
+	public void removeAllOrchestras();
 	
 	/**
 	 * Gets the position of the specified orchestra in this orchestra list.

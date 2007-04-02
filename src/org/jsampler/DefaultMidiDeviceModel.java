@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -28,6 +28,8 @@ import javax.swing.SwingUtilities;
 
 import org.jsampler.event.MidiDeviceEvent;
 import org.jsampler.event.MidiDeviceListener;
+
+import org.jsampler.task.Midi;
 
 import org.linuxsampler.lscp.BoolParameter;
 import org.linuxsampler.lscp.MidiInputDevice;
@@ -79,7 +81,7 @@ public class DefaultMidiDeviceModel implements MidiDeviceModel {
 	 * -1 if the device number is not set.
 	 */
 	public int
-	getDeviceID() { return midiDevice.getDeviceID(); }
+	getDeviceId() { return midiDevice.getDeviceId(); }
 	
 	/**
 	 * Gets the current settings of the MIDI device represented by this model.
@@ -118,6 +120,36 @@ public class DefaultMidiDeviceModel implements MidiDeviceModel {
 	 */
 	public boolean
 	isActive() { return midiDevice.isActive(); }
+	
+	/**
+	 * Schedules a new task for enabling/disabling the MIDI device.
+	 * @param active If <code>true</code> the MIDI device is enabled,
+	 * else the device is disabled.
+	 */
+	public void
+	setBackendActive(boolean active) {
+		CC.getTaskQueue().add(new Midi.EnableDevice(getDeviceId(), active));
+	}
+	
+	/**
+	 * Schedules a new task for changing the port number of the MIDI device.
+	 * @param ports The new number of ports.
+	 */
+	public void
+	setBackendPortCount(int ports) {
+		CC.getTaskQueue().add(new Midi.SetPortCount(getDeviceId(), ports));
+	}
+	
+	/**
+	 * Schedules a new task for altering a specific
+	 * setting of the specified MIDI input port.
+	 * @param port The port number.
+	 * @param prm The parameter to be set.
+	 */
+	public void
+	setBackendPortParameter(int port, Parameter prm) {
+		CC.getTaskQueue().add(new Midi.SetPortParameter(getDeviceId(), port, prm));
+	}
 	
 	/**
 	 * Notifies listeners that the settings of the MIDI device are changed.

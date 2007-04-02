@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -77,8 +77,8 @@ public abstract class JSChannel extends JPanel {
 	 * @return The numerical ID of this sampler channel or -1 if the channel's ID is not set.
 	 */
 	public int
-	getChannelID() {
-		return getChannelInfo() == null ? -1 : getChannelInfo().getChannelID();
+	getChannelId() {
+		return getChannelInfo() == null ? -1 : getChannelInfo().getChannelId();
 	}
 	
 	/**

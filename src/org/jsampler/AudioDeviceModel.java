@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -25,6 +25,7 @@ package org.jsampler;
 import org.jsampler.event.AudioDeviceListener;
 
 import org.linuxsampler.lscp.AudioOutputDevice;
+import org.linuxsampler.lscp.Parameter;
 
 
 /**
@@ -51,7 +52,7 @@ public interface AudioDeviceModel {
 	 * @return The numerical ID of this audio device or
 	 * -1 if the device number is not set.
 	 */
-	public int getDeviceID();
+	public int getDeviceId();
 	
 	/**
 	 * Gets the current settings of the audio device represented by this model.
@@ -78,4 +79,25 @@ public interface AudioDeviceModel {
 	 * @return <code>true</code> if the device is enabled and <code>false</code> otherwise.
 	 */
 	public boolean isActive();
+	
+	/**
+	 * Schedules a new task for enabling/disabling the audio device.
+	 * @param active If <code>true</code> the audio device is enabled,
+	 * else the device is disabled.
+	 */
+	public void setBackendActive(boolean active);
+	
+	/**
+	 * Schedules a new task for changing the channel number of the audio device.
+	 * @param channels The new number of audio channels.
+	 */
+	public void setBackendChannelCount(int channels);
+	
+	/**
+	 * Schedules a new task for altering a specific
+	 * setting of the specified audio output channel.
+	 * @param channel The channel number.
+	 * @param prm The parameter to be set.
+	 */
+	public void setBackendChannelParameter(int channel, Parameter prm);
 }

@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005, 2006 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -118,10 +118,13 @@ public class LscpScriptDlg extends JDialog {
 	
 	private void
 	saveScript() {
-		JFileChooser fc = new JFileChooser();
+		JFileChooser fc = new JFileChooser(ClassicPrefs.getLastScriptLocation());
 		fc.setFileFilter(new LscpFileFilter());
 		int result = fc.showSaveDialog(this);
 		if(result != JFileChooser.APPROVE_OPTION) return;
+		
+		String path = fc.getCurrentDirectory().getAbsolutePath();
+		ClassicPrefs.setLastScriptLocation(path);
 		
 		try {
 			FileOutputStream fos = new FileOutputStream(fc.getSelectedFile());

@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -72,12 +72,6 @@ import org.jsampler.event.MidiDeviceListener;
 import org.jsampler.event.ParameterEvent;
 import org.jsampler.event.ParameterListener;
 
-import org.jsampler.task.CreateMidiDevice;
-import org.jsampler.task.DestroyMidiDevice;
-import org.jsampler.task.EnableMidiDevice;
-import org.jsampler.task.SetMidiInputPortCount;
-import org.jsampler.task.SetMidiPortParameter;
-
 import org.jsampler.view.NumberCellEditor;
 import org.jsampler.view.ParameterTable;
 
@@ -134,6 +128,9 @@ public class MidiDevicesPage extends NavigationPage {
 		tb.setFloatable(false);
 		tb.setAlignmentX(JPanel.RIGHT_ALIGNMENT);
 		
+		tb.add(Box.createRigidArea(new Dimension(3, 0)));
+		tb.add(new JLabel(Res.iconMidi24));
+		tb.add(Box.createRigidArea(new Dimension(3, 0)));
 		tb.add(btnNewDevice);
 		tb.add(btnDuplicateDevice);
 		tb.add(btnRemoveDevice);
@@ -194,6 +191,7 @@ public class MidiDevicesPage extends NavigationPage {
 		splitPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		splitPane.setAlignmentX(JPanel.RIGHT_ALIGNMENT);
 		splitPane.setDividerSize(3);
+		splitPane.setContinuousLayout(true);
 		add(splitPane);
 		
 		splitPane.setDividerLocation(150);
@@ -299,9 +297,7 @@ public class MidiDevicesPage extends NavigationPage {
 				return;
 			}
 			
-			CC.getTaskQueue().add (
-				new SetMidiPortParameter(m.getDeviceID(), port, e.getParameter())
-			);
+			m.setBackendPortParameter(port, e.getParameter());
 		}
 	}
 	
@@ -326,7 +322,7 @@ public class MidiDevicesPage extends NavigationPage {
 			m = ((MidiDevicesTableModel)devicesTable.getModel()).getMidiDeviceModel(i);
 			String d = m.getDeviceInfo().getDriverName();
 			Parameter[] pS = m.getDeviceInfo().getAdditionalParameters();
-			CC.getTaskQueue().add(new CreateMidiDevice(d, pS));
+			CC.getSamplerModel().addBackendMidiDevice(d, pS);
 		}
 	}
 	
@@ -348,7 +344,7 @@ public class MidiDevicesPage extends NavigationPage {
 				return;
 			}
 			
-			CC.getTaskQueue().add(new DestroyMidiDevice(m.getDeviceID()));
+			CC.getSamplerModel().removeBackendMidiDevice(m.getDeviceId());
 		}
 	}
 	
@@ -444,7 +440,7 @@ class MidiDevicesTableModel extends AbstractTableModel {
 		case ACTIVE_COLUMN_INDEX:
 			return deviceList[row].getDeviceInfo().isActive();
 		case DEVICE_ID_COLUMN_INDEX:
-			return deviceList[row].getDeviceID();
+			return deviceList[row].getDeviceId();
 		case PORTS_COLUMN_INDEX:
 			return deviceList[row].getDeviceInfo().getMidiPortCount();
 		}
@@ -462,14 +458,11 @@ class MidiDevicesTableModel extends AbstractTableModel {
 		case ACTIVE_COLUMN_INDEX:
 			boolean active = (Boolean)value;
 			deviceList[row].getDeviceInfo().setActive(active);
-			CC.getTaskQueue().add (
-				new EnableMidiDevice(deviceList[row].getDeviceID(), active)
-			);
+			deviceList[row].setBackendActive(active);
 			break;
 		case PORTS_COLUMN_INDEX:
-			int deviceID = getMidiDeviceModel(row).getDeviceID();
 			int ports = (Integer)value;
-			CC.getTaskQueue().add(new SetMidiInputPortCount(deviceID, ports));
+			getMidiDeviceModel(row).setBackendPortCount(ports);
 			break;
 		default: return;
 		}
@@ -547,7 +540,7 @@ class MidiDevicesTableModel extends AbstractTableModel {
 			for(int i = 0; i < deviceList.length; i++) {
 				MidiInputDevice d2 = deviceList[i].getDeviceInfo();
 				
-				if(d.getDeviceID() == d2.getDeviceID()) {
+				if(d.getDeviceId() == d2.getDeviceId()) {
 					fireTableRowsUpdated(i,  i);
 				}
 			}

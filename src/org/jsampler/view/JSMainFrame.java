@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -69,6 +69,17 @@ public abstract class JSMainFrame extends JFrame {
 	onWindowClose() {
 		CC.cleanExit();
 	}
+	
+	/**
+	 * Invoked on startup when no JSampler home directory is specified
+	 * or the specified JSampler home directory doesn't exist.
+	 * This method should ask the user to specify a JSampler
+	 * home directory and then set the specified JSampler home directory using
+	 * {@link org.jsampler.CC#setJSamplerHome} method.
+	 * @see org.jsampler.CC#getJSamplerHome
+	 * @see org.jsampler.CC#setJSamplerHome
+	 */
+	public abstract void installJSamplerHome();
 	
 	/**
 	 * Returns a list containing all <code>JSChannelsPane</code>s added to the view.
@@ -147,7 +158,7 @@ public abstract class JSMainFrame extends JFrame {
 		 */
 		public void
 		channelAdded(SamplerChannelListEvent e) {
-			Integer id = e.getChannelModel().getChannelID();
+			Integer id = e.getChannelModel().getChannelId();
 			if(findChannel(id) != null) {
 				CC.getLogger().log(Level.WARNING, "JSMainFrame.channelExist!", id);
 				return;
@@ -163,7 +174,7 @@ public abstract class JSMainFrame extends JFrame {
 		 */
 		public void
 		channelRemoved(SamplerChannelListEvent e) {
-			removeChannel(e.getChannelModel().getChannelID());
+			removeChannel(e.getChannelModel().getChannelId());
 		}
 	}
 	
@@ -177,7 +188,7 @@ public abstract class JSMainFrame extends JFrame {
 		if(id < 0) return null;
 		
 		for(JSChannelsPane cp : getChannelsPaneList()) {
-			for(JSChannel c : cp.getChannels()) if(c.getChannelID() == id) return c;
+			for(JSChannel c : cp.getChannels()) if(c.getChannelId() == id) return c;
 		}
 		
 		return null;
@@ -195,7 +206,7 @@ public abstract class JSMainFrame extends JFrame {
 		
 		for(JSChannelsPane cp : getChannelsPaneList()) {
 			for(JSChannel c : cp.getChannels()) {
-				if(c.getChannelID() == id) {
+				if(c.getChannelId() == id) {
 					cp.removeChannel(c);
 					return c;
 				}

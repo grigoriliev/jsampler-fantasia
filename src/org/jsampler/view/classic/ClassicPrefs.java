@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005, 2006 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -25,6 +25,8 @@ package org.jsampler.view.classic;
 import java.awt.Color;
 
 import java.util.prefs.Preferences;
+
+import org.jsampler.CC;
 
 
 /**
@@ -55,14 +57,17 @@ public class ClassicPrefs {
 	private final static String SHOW_LS_CONSOLE_WHEN_RUN_SCRIPT = "showLSConsoleWhenRunScript";
 	private final static boolean DEF_SHOW_LS_CONSOLE_WHEN_RUN_SCRIPT = true;
 	
-	private final static String SHOW_TOOLBAR = "Toolbar.visible";
-	private final static boolean DEF_SHOW_TOOLBAR = true;
+	private final static String SHOW_CHANNELS_BAR = "ChannelsBar.visible";
+	private final static boolean DEF_SHOW_CHANNELS_BAR = true;
 	
 	private final static String SHOW_STATUSBAR = "Statusbar.visible";
 	private final static boolean DEF_SHOW_STATUSBAR = true;
 	
 	private final static String SHOW_LEFT_PANE = "LeftPane.visible";
 	private final static boolean DEF_SHOW_LEFT_PANE = true;
+	
+	private final static String SHOW_STANDARD_BAR = "StandardBar.visible";
+	private final static boolean DEF_SHOW_STANDARD_BAR = true;
 	
 	private final static String RECENT_SCRIPTS = "recentScripts";
 	private final static String DEF_RECENT_SCRIPTS = "";
@@ -75,9 +80,6 @@ public class ClassicPrefs {
 	
 	private final static String LS_CONSOLE_POPOUT = "LSConsole.popout";
 	private final static boolean DEF_LS_CONSOLE_POPOUT = false;
-	
-	private final static String LS_CONSOLE_HISTORY = "LSConsole.history";
-	private final static String DEF_LS_CONSOLE_HISTORY = "";
 	
 	private final static String LS_CONSOLE_HISTSIZE = "LSConsole.histsize";
 	private final static int DEF_LS_CONSOLE_HISTSIZE = 1000;
@@ -97,17 +99,47 @@ public class ClassicPrefs {
 	private final static String LS_CONSOLE_ERROR_COLOR = "LSConsole.errorColor";
 	private final static int DEF_LS_CONSOLE_ERROR_COLOR = 0xff0000;
 	
+	private final static String SAVE_LS_CONSOLE_HISTORY = "LSConsole.saveCommandHistory";
+	private final static boolean DEF_SAVE_LS_CONSOLE_HISTORY = true;
+	
 	private final static String CHANNEL_BORDER_COLOR = "Channel.borderColor";
 	private final static int DEF_CHANNEL_BORDER_COLOR = 0xb8cfe5;
 	
 	private final static String CUSTOM_CHANNEL_BORDER_COLOR = "Channel.customBorderColor";
 	private final static boolean DEF_CUSTOM_CHANNEL_BORDER_COLOR = false;
 	
+	private final static String CHANNEL_BORDER_HL_COLOR = "Channel.borderMouseOverColor";
+	private final static int DEF_CHANNEL_BORDER_HL_COLOR = 0xb8cfe5;
+	
+	private final static String CUSTOM_CHANNEL_BORDER_HL_COLOR = "Channel.customHlColor";
+	private final static boolean DEF_CUSTOM_CHANNEL_BORDER_HL_COLOR = false;
+	
+	private final static String SEL_CHANNEL_BG_COLOR = "Channel.sel.BgColor";
+	private final static int DEF_SEL_CHANNEL_BG_COLOR = 0xe0e6eb;
+	
+	private final static String CUSTOM_SEL_CHANNEL_BG_COLOR = "Channel.sel.customBgColor";
+	private final static boolean DEF_CUSTOM_SEL_CHANNEL_BG_COLOR = false;
+	
+	private final static String HL_CHANNEL_BG_COLOR = "Channel.hl.BgColor";
+	private final static int DEF_HL_CHANNEL_BG_COLOR = -1;
+	
+	private final static String CUSTOM_HL_CHANNEL_BG_COLOR = "Channel.hl.customBgColor";
+	private final static boolean DEF_CUSTOM_HL_CHANNEL_BG_COLOR = false;
+	
 	private final static String VSPLIT_DIVIDER_LOCATION = "VSplit.dividerLocation";
 	private final static int DEF_VSPLIT_DIVIDER_LOCATION = 200;
 	
 	private final static String CURRENT_ORCHESTRA_IDX = "OrchestrasPage.currentOrchestraIndex";
 	private final static int DEF_CURRENT_ORCHESTRA_IDX = 0;
+	
+	private final static String LAST_SCRIPT_LOCATION = "lastScriptLocation";
+	private final static String DEF_LAST_SCRIPT_LOCATION = null;
+	
+	private final static String NEW_MIDI_INSTR_WIZARD_SKIP1 = "NewMidiInstrumentWizard.skip1";
+	private final static boolean DEF_NEW_MIDI_INSTR_WIZARD_SKIP1 = false;
+	
+	private final static String INSTR_LOCATION_METHOD = "InstrLocationMethod";
+	private final static int DEF_INSTR_LOCATION_METHOD = 0;
 	
 	private static Preferences userPrefs = Preferences.userRoot().node(prefNode);
 	
@@ -263,21 +295,23 @@ public class ClassicPrefs {
 	}
 	
 	/**
-	 * Determines whether the toolbar should be visible.
-	 * @return <code>true</code> if the toolbar should be visible,
+	 * Determines whether the <b>Channels</b> toolbar should be visible.
+	 * @return <code>true</code> if the <b>Channels</b> toolbar should be visible,
 	 * <code>false</code> otherwise.
 	 */
 	public static boolean
-	shouldShowToolbar() { return user().getBoolean(SHOW_TOOLBAR, DEF_SHOW_TOOLBAR); }
+	shouldShowChannelsBar() {
+		return user().getBoolean(SHOW_CHANNELS_BAR, DEF_SHOW_CHANNELS_BAR);
+	}
 	
 	/**
-	 * Sets whether the toolbar should be visible.
-	 * @param b If <code>true</code> the toolbar will be visible at startup.
+	 * Sets whether the <b>Channels</b> toolbar should be visible.
+	 * @param b If <code>true</code> the <b>Channels</b> toolbar will be visible at startup.
 	 */
 	public static void
-	setShowToolbar(boolean b) {
-		if(b == shouldShowToolbar()) return;
-		user().putBoolean(SHOW_TOOLBAR, b);
+	setShowChannelsBar(boolean b) {
+		if(b == shouldShowChannelsBar()) return;
+		user().putBoolean(SHOW_CHANNELS_BAR, b);
 	}
 	
 	/**
@@ -377,29 +411,6 @@ public class ClassicPrefs {
 	setLSConsolePopOut(boolean b) {
 		if(b == isLSConsolePopOut()) return;
 		user().putBoolean(LS_CONSOLE_POPOUT, b);
-	}
-	
-	/**
-	 * Gets the LS Console's command history.
-	 * @return The LS Console's command history.
-	 */
-	public static String
-	getLSConsoleHistory() {
-		return user().get(LS_CONSOLE_HISTORY, DEF_LS_CONSOLE_HISTORY);
-	}
-	
-	/**
-	 * Sets the LS Console's command history.
-	 * @param s The LS Console's command history.
-	 */
-	public static void
-	setLSConsoleHistory(String s) {
-		if(s == null) {
-			user().remove(LS_CONSOLE_HISTORY);
-			return;
-		}
-		
-		user().put(LS_CONSOLE_HISTORY, s);
 	}
 	
 	/**
@@ -557,6 +568,26 @@ public class ClassicPrefs {
 	}
 	
 	/**
+	 * Determines whether the command history should be saved on exit.
+	 * @return <code>true</code> if the command history should be saved on exit,
+	 * <code>false</code> otherwise.
+	 */
+	public static boolean
+	getSaveConsoleHistory() {
+		return user().getBoolean(SAVE_LS_CONSOLE_HISTORY, DEF_SAVE_LS_CONSOLE_HISTORY);
+	}
+	
+	/**
+	 * Sets whether the command history should be saved on exit.
+	 * @param b If <code>true</code> the command history will be saved on exit.
+	 */
+	public static void
+	setSaveConsoleHistory(boolean b) {
+		if(b == getSaveConsoleHistory()) return;
+		user().putBoolean(SAVE_LS_CONSOLE_HISTORY, b);
+	}
+	
+	/**
 	 * Determines whether the left pane should be visible.
 	 * @return <code>true</code> if the left pane should be visible,
 	 * <code>false</code> otherwise.
@@ -575,6 +606,26 @@ public class ClassicPrefs {
 	}
 	
 	/**
+	 * Determines whether the <b>Standard</b> toolbar should be visible.
+	 * @return <code>true</code> if the <b>Standard</b> toolbar should be visible,
+	 * <code>false</code> otherwise.
+	 */
+	public static boolean
+	shouldShowStandardBar() {
+		return user().getBoolean(SHOW_STANDARD_BAR, DEF_SHOW_STANDARD_BAR);
+	}
+	
+	/**
+	 * Sets whether the <b>Standard</b> toolbar should be visible.
+	 * @param b If <code>true</code> the <b>Standard</b> toolbar will be visible at startup.
+	 */
+	public static void
+	setShowStandardBar(boolean b) {
+		if(b == shouldShowStandardBar()) return;
+		user().putBoolean(SHOW_STANDARD_BAR, b);
+	}
+	
+	/**
 	 * Gets the default border color that is used for the selected channels.
 	 * @return The default border color that is used for the selected channels.
 	 */
@@ -583,7 +634,8 @@ public class ClassicPrefs {
 	
 	/**
 	 * Gets the custom border color to be used for the selected channels.
-	 * @return The custom border color to be used for the selected channels.
+	 * @return The custom border color to be used for the selected
+	 * channels or <code>null</code> if the color is not specified.
 	 */
 	public static Color
 	getChannelBorderColor() {
@@ -632,6 +684,180 @@ public class ClassicPrefs {
 	}
 	
 	/**
+	 * Gets the default highlighted border color that
+	 * is used when the mouse pointer is over a channel.
+	 * @return The default highlighted border color.
+	 */
+	public static Color
+	getDefaultChannelBorderHlColor() { return new Color(DEF_CHANNEL_BORDER_HL_COLOR); }
+	
+	/**
+	 * Gets the custom highlighted border color that
+	 * is used when the mouse pointer is over a channel.
+	 * @return The custom highlighted border color.
+	 */
+	public static Color
+	getChannelBorderHlColor() {
+		int c = user().getInt(CHANNEL_BORDER_HL_COLOR, DEF_CHANNEL_BORDER_HL_COLOR);
+		return new Color(c);
+	}
+	
+	/**
+	 * Sets the highlighted border color that
+	 * is used when the mouse pointer is over a channel.
+	 * Use <code>null</code> to remove the current value.
+	 * @param color The new highlighted border color.
+	 */
+	public static void
+	setChannelBorderHlColor(Color c) {
+		if(c == null) {
+			user().remove(CHANNEL_BORDER_HL_COLOR);
+			return;
+		}
+		
+		if(c.getRGB() == getChannelBorderHlColor().getRGB()) return;
+		
+		user().putInt(CHANNEL_BORDER_HL_COLOR, c.getRGB());
+	}
+	
+	/**
+	 * Determines whether to use a custom highlighted border color.
+	 * @return <code>true</code> if custom highlighted border color
+	 * must be used, <code>false</code> otherwise.
+	 */
+	public static boolean
+	getCustomChannelBorderHlColor() {
+		return user().getBoolean (
+			CUSTOM_CHANNEL_BORDER_HL_COLOR, DEF_CUSTOM_CHANNEL_BORDER_HL_COLOR
+		);
+	}
+	
+	/**
+	 * Sets whether to use a custom highlighted border color.
+	 * @param b specify <code>true</code> to use a custom highlighted
+	 * border color, <code>false</code> otherwise.
+	 */
+	public static void
+	setCustomChannelBorderHlColor(boolean b) {
+		if(b == getCustomChannelBorderHlColor()) return;
+		user().putBoolean(CUSTOM_CHANNEL_BORDER_HL_COLOR, b);
+	}
+	
+	/**
+	 * Gets the custom background color that
+	 * is used when the channel is selected.
+	 * @return The custom background color that
+	 * is used when the channel is selected.
+	 */
+	public static Color
+	getSelectedChannelBgColor() {
+		int c = user().getInt(SEL_CHANNEL_BG_COLOR, DEF_SEL_CHANNEL_BG_COLOR);
+		return c == -1 ? null : new Color(c);
+	}
+	
+	/**
+	 * Sets the custom background color to
+	 * be used when the channel is selected.
+	 * Use <code>null</code> to remove the current value.
+	 * @param color The new background color to
+	 * be used when the channel is selected.
+	 */
+	public static void
+	setSelectedChannelBgColor(Color c) {
+		if(c == null) {
+			user().remove(SEL_CHANNEL_BG_COLOR);
+			return;
+		}
+		
+		if(getSelectedChannelBgColor() != null) {
+			if(c.getRGB() == getSelectedChannelBgColor().getRGB()) return;
+		}
+		
+		user().putInt(SEL_CHANNEL_BG_COLOR, c.getRGB());
+	}
+	
+	/**
+	 * Determines whether to use a custom background color when a channel is selected.
+	 * @return <code>true</code> if custom background color
+	 * should be used, <code>false</code> otherwise.
+	 */
+	public static boolean
+	getCustomSelectedChannelBgColor() {
+		return user().getBoolean (
+			CUSTOM_SEL_CHANNEL_BG_COLOR, DEF_CUSTOM_SEL_CHANNEL_BG_COLOR
+		);
+	}
+	
+	/**
+	 * Sets whether to use a custom background color when a channel is selected.
+	 * @param b specify <code>true</code> to use a custom
+	 * background color, <code>false</code> otherwise.
+	 */
+	public static void
+	setCustomSelectedChannelBgColor(boolean b) {
+		if(b == getCustomSelectedChannelBgColor()) return;
+		user().putBoolean(CUSTOM_SEL_CHANNEL_BG_COLOR, b);
+	}
+	
+	/**
+	 * Gets the custom background color that
+	 * is used when the mouse pointer is over a channel.
+	 * @return The custom background color that
+	 * is used when the mouse pointer is over a channel.
+	 */
+	public static Color
+	getHighlightedChannelBgColor() {
+		int c = user().getInt(HL_CHANNEL_BG_COLOR, DEF_HL_CHANNEL_BG_COLOR);
+		return c == -1 ? null : new Color(c);
+	}
+	
+	/**
+	 * Sets the custom background color to
+	 * be used when the mouse pointer is over a channel.
+	 * Use <code>null</code> to remove the current value.
+	 * @param color The new background color to
+	 * be used when the mouse pointer is over a channel.
+	 */
+	public static void
+	setHighlightedChannelBgColor(Color c) {
+		if(c == null) {
+			user().remove(HL_CHANNEL_BG_COLOR);
+			return;
+		}
+		
+		if(getHighlightedChannelBgColor() != null) {
+			if(c.getRGB() == getHighlightedChannelBgColor().getRGB()) return;
+		}
+		
+		user().putInt(HL_CHANNEL_BG_COLOR, c.getRGB());
+	}
+	
+	/**
+	 * Determines whether to use a custom background
+	 * color when the mouse pointer is over a channel.
+	 * @return <code>true</code> if custom background color
+	 * should be used, <code>false</code> otherwise.
+	 */
+	public static boolean
+	getCustomHighlightedChannelBgColor() {
+		return user().getBoolean (
+			CUSTOM_HL_CHANNEL_BG_COLOR, DEF_CUSTOM_HL_CHANNEL_BG_COLOR
+		);
+	}
+	
+	/**
+	 * Sets whether to use a custom background
+	 * color when the mouse pointer is over a channel.
+	 * @param b specify <code>true</code> to use a custom
+	 * background color, <code>false</code> otherwise.
+	 */
+	public static void
+	setCustomHighlightedChannelBgColor(boolean b) {
+		if(b == getCustomHighlightedChannelBgColor()) return;
+		user().putBoolean(CUSTOM_HL_CHANNEL_BG_COLOR, b);
+	}
+	
+	/**
 	 * Gets the divider location of the vertical split pane.
 	 * @return The divider location of the vertical split pane.
 	 */
@@ -668,4 +894,74 @@ public class ClassicPrefs {
 		if(i == getCurrentOrchestraIndex()) return;
 		user().putInt(CURRENT_ORCHESTRA_IDX, i);
 	}
+	
+	/**
+	 * Gets the absolute path of the directory containing the last saved script.
+	 * @return The absolute path of the directory containing the last saved script or
+	 * <code>null</code>.
+	 */
+	public static String
+	getLastScriptLocation() {
+		return user().get(LAST_SCRIPT_LOCATION, DEF_LAST_SCRIPT_LOCATION);
+	}
+	
+	/**
+	 * Sets the absolute path of the directory containing the last saved script.
+	 * @param s The absolute path of the directory containing the last saved script.
+	 */
+	public static void
+	setLastScriptLocation(String s) {
+		if(s == null) {
+			user().remove(LAST_SCRIPT_LOCATION);
+			return;
+		}
+		
+		user().put(LAST_SCRIPT_LOCATION, s);
+	}
+	
+	/**
+	 * Determines whether the first step in the
+	 * <b>New MIDI Instrument Wizard</b> should be skipped.
+	 * @return <code>true</code> if the first step should be skipped,
+	 * <code>false</code> otherwise.
+	 */
+	public static boolean
+	getNewMidiInstrWizardSkip1() {
+		return user().getBoolean (
+			NEW_MIDI_INSTR_WIZARD_SKIP1, DEF_NEW_MIDI_INSTR_WIZARD_SKIP1
+		);
+	}
+	
+	/**
+	 * Sets whether the first step in the
+	 * <b>New MIDI Instrument Wizard</b> should be skipped.
+	 * @param b If <code>true</code> the first step will be skipped.
+	 */
+	public static void
+	setNewMidiInstrWizardSkip1(boolean b) {
+		if(b == getNewMidiInstrWizardSkip1()) return;
+		user().putBoolean(NEW_MIDI_INSTR_WIZARD_SKIP1, b);
+	}
+	
+	/**
+	 * Gets the instrument location method (locating an instrument by
+	 * choosing from orchestra, etc).
+	 * @return The index of the instrument location method.
+	 */
+	public static int
+	getInstrLocationMethod() {
+		return user().getInt(INSTR_LOCATION_METHOD, DEF_INSTR_LOCATION_METHOD);
+	}
+	
+	/**
+	 * Sets the instrument location method.
+	 * @param i Determines the instrument location method.
+	 */
+	public static void
+	setInstrLocationMethod(int i) {
+		if(i == getInstrLocationMethod()) return;
+		user().putInt(INSTR_LOCATION_METHOD, i);
+	}
+	
+	
 }

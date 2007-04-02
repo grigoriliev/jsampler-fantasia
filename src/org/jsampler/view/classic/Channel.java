@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -22,6 +22,7 @@
 
 package org.jsampler.view.classic;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -33,6 +34,8 @@ import java.awt.datatransfer.Transferable;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -64,10 +67,12 @@ import javax.swing.TransferHandler;
 
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import net.sf.juife.InformationDialog;
 import net.sf.juife.JuifeUtils;
 
 import org.jsampler.AudioDeviceModel;
@@ -75,18 +80,21 @@ import org.jsampler.CC;
 import org.jsampler.HF;
 import org.jsampler.Instrument;
 import org.jsampler.MidiDeviceModel;
+import org.jsampler.MidiInstrumentMap;
 import org.jsampler.SamplerChannelModel;
 import org.jsampler.SamplerModel;
 
-import org.jsampler.event.AudioDeviceListEvent;
-import org.jsampler.event.AudioDeviceListListener;
+import org.jsampler.event.ListEvent;
+import org.jsampler.event.ListListener;
 import org.jsampler.event.MidiDeviceListEvent;
 import org.jsampler.event.MidiDeviceListListener;
+import org.jsampler.event.SamplerAdapter;
 import org.jsampler.event.SamplerChannelAdapter;
 import org.jsampler.event.SamplerChannelEvent;
 import org.jsampler.event.SamplerChannelListEvent;
 import org.jsampler.event.SamplerChannelListListener;
 import org.jsampler.event.SamplerChannelListener;
+import org.jsampler.event.SamplerEvent;
 
 import org.linuxsampler.lscp.AudioOutputDevice;
 import org.linuxsampler.lscp.MidiInputDevice;
@@ -113,9 +121,14 @@ public class Channel extends org.jsampler.view.JSChannel {
 	private final static ImageIcon iconHideProperties;
 	
 	private static Border borderSelected;
+	private static Border borderHighlighted;
 	private static Border borderDeselected;
 	
+	private static Color chnColor;
 	private static Color borderColor;
+	private static Color borderHighlightedColor;
+	private static Color chnSelectedColor;
+	private static Color chnHighlightedColor;
 	
 	private final static Vector<PropertyChangeListener> propertyChangeListeners
 		= new Vector<PropertyChangeListener>();
@@ -146,8 +159,31 @@ public class Channel extends org.jsampler.view.JSChannel {
 			setBorderColor(ClassicPrefs.getChannelBorderColor());
 		else setBorderColor(ClassicPrefs.getDefaultChannelBorderColor());
 		
+		if(ClassicPrefs.getCustomChannelBorderHlColor())
+			setBorderHighlightedColor(ClassicPrefs.getChannelBorderHlColor());
+		else setBorderHighlightedColor(ClassicPrefs.getDefaultChannelBorderHlColor());
+		
 		borderSelected = new LineBorder(getBorderColor(), 2, true);
+		borderHighlighted = new LineBorder(getBorderHighlightedColor(), 2, true);
 		borderDeselected = BorderFactory.createEmptyBorder(2, 2, 2, 2);
+		
+		chnColor = new JPanel().getBackground();
+		
+		if(ClassicPrefs.getCustomSelectedChannelBgColor()) {
+			chnSelectedColor = ClassicPrefs.getSelectedChannelBgColor();
+		} else {
+			int r = chnColor.getRed() - 14 < 0 ? 0 : chnColor.getRed() - 14;
+			int g = chnColor.getGreen() - 8 < 0 ? 0 : chnColor.getGreen() - 8;
+			int b = chnColor.getBlue() - 3 < 0 ? 0 : chnColor.getBlue() - 3;
+		
+			chnSelectedColor = new Color(r, g, b);
+		}
+		
+		/*r = r + 5 > 255 ? 255 : r + 5;
+		g = g + 4 > 255 ? 255 : g + 4;
+		b = b + 1 > 255 ? 255 : b + 1;*/
+		
+		chnHighlightedColor = new Color(chnColor.getRGB());
 	}
 	
 	/**
@@ -189,6 +225,67 @@ public class Channel extends org.jsampler.view.JSChannel {
 		firePropertyChanged("borderColor", oldColor, borderColor);
 	}
 	
+	/**
+	 * Gets the border color that is used when the mouse pointer is over a channel.
+	 * @return The border color that is used when the mouse pointer is over a channel.
+	 */
+	public static Color
+	getBorderHighlightedColor() { return borderHighlightedColor; }
+	
+	/**
+	 * Sets the border color to be used when the mouse pointer is over a channel.
+	 * @param c The border color to be used when the mouse pointer is over a channel.
+	 */
+	public static void
+	setBorderHighlightedColor(Color c) {
+		Color oldColor = borderHighlightedColor;
+		if(oldColor != null && oldColor.getRGB() == c.getRGB()) return;
+		
+		borderHighlightedColor = c;
+		borderHighlighted = new LineBorder(getBorderHighlightedColor(), 2, true);
+		firePropertyChanged("borderHighlightedColor", oldColor, borderHighlightedColor);
+	}
+	
+	/**
+	 * Gets the background color that is used when a channel is selected.
+	 * @return The background color that is used when a channel is selected.
+	 */
+	public static Color
+	getSelectedChannelBgColor() { return chnSelectedColor; }
+	
+	/**
+	 * Sets the background color that is used when a channel is selected.
+	 * @param c The background color to be used when a channel is selected.
+	 */
+	public static void
+	setSelectedChannelBgColor(Color c) {
+		Color oldColor = chnSelectedColor;
+		if(oldColor != null && oldColor.getRGB() == c.getRGB()) return;
+		
+		chnSelectedColor = c;
+		firePropertyChanged("selectedChannelBgColor", oldColor, chnSelectedColor);
+	}
+	
+	/**
+	 * Gets the background color that is used when the mouse pointer is over a channel.
+	 * @return The background color that is used when the mouse pointer is over a channel.
+	 */
+	public static Color
+	getHighlightedChannelBgColor() { return chnHighlightedColor; }
+	
+	/**
+	 * Sets the background color to be used when the mouse pointer is over a channel.
+	 * @param c The background color to be used when the mouse pointer is over a channel.
+	 */
+	public static void
+	setHighlightedChannelBgColor(Color c) {
+		Color oldColor = chnHighlightedColor;
+		if(oldColor != null && oldColor.getRGB() == c.getRGB()) return;
+		
+		chnHighlightedColor = c;
+		firePropertyChanged("highlightedChannelBgColor", oldColor, chnHighlightedColor);
+	}
+	
 	private static void
 	firePropertyChanged(String propertyName, Object oldValue, Object newValue) {
 		PropertyChangeEvent e =
@@ -206,6 +303,7 @@ public class Channel extends org.jsampler.view.JSChannel {
 	private final JButton btnSolo = new JButton();
 	private final JSlider slVolume = new JSlider(0, 100);
 	private final JLabel lVolume = new JLabel();
+	private final JLabel lVolImg = new JLabel(Res.iconVolume16);
 	private final JLabel lStreams = new JLabel("--");
 	private final JLabel lVoices = new JLabel("--");
 	private final JToggleButton btnProperties = new JToggleButton();
@@ -213,6 +311,7 @@ public class Channel extends org.jsampler.view.JSChannel {
 	private static int count = 2;
 	
 	private boolean selected = false;
+	private boolean mouseOver = false;
 	
 	
 	/**
@@ -228,12 +327,14 @@ public class Channel extends org.jsampler.view.JSChannel {
 		setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
 		
 		mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.Y_AXIS));
+		addMouseListener(getHandler());
 		
 		JPanel p = new JPanel();
+		p.setOpaque(false);
 		p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
 		p.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
 		
-		//setToolTipText(" Channel: " + String.valueOf(getChannelID()) + " ");
+		setToolTipText(i18n.getLabel("Channel.tt", getModel().getChannelId()));
 		
 		Dimension d = btnInstr.getPreferredSize();
 		btnInstr.setMaximumSize(new Dimension(Short.MAX_VALUE, d.height));
@@ -244,6 +345,7 @@ public class Channel extends org.jsampler.view.JSChannel {
 		lVoices.setHorizontalAlignment(JLabel.CENTER);
 		
 		JPanel statPane = new JPanel();
+		statPane.setOpaque(false);
 		statPane.setBorder(BorderFactory.createLoweredBevelBorder());
 		statPane.setLayout(new BoxLayout(statPane, BoxLayout.X_AXIS));
 		statPane.add(Box.createRigidArea(new Dimension(6, 0)));
@@ -265,12 +367,17 @@ public class Channel extends org.jsampler.view.JSChannel {
 		p.add(Box.createRigidArea(new Dimension(6, 0)));
 		
 		JPanel volumePane = new JPanel();
+		volumePane.setOpaque(false);
 		volumePane.setBorder(BorderFactory.createLoweredBevelBorder());
 		volumePane.setLayout(new BoxLayout(volumePane, BoxLayout.X_AXIS));
 		volumePane.add(Box.createRigidArea(new Dimension(6, 0)));
 		
+		volumePane.add(lVolImg);
+		volumePane.add(Box.createRigidArea(new Dimension(1, 0)));
+		
 		d = slVolume.getPreferredSize();
 		slVolume.setMaximumSize(new Dimension(d.width > 300 ? d.width : 300, d.height));
+		slVolume.setOpaque(false);
 		volumePane.add(slVolume);
 		
 		lVolume.setBorder(BorderFactory.createEmptyBorder(3, 6, 3, 6));
@@ -414,7 +521,7 @@ public class Channel extends org.jsampler.view.JSChannel {
 			
 			try {
 				int idx = Integer.parseInt(args[5]);
-				Channel.this.getModel().loadInstrument(args[4], idx);
+				Channel.this.getModel().loadBackendInstrument(args[4], idx);
 			} catch(Exception x) {
 				CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
 			}
@@ -426,7 +533,8 @@ public class Channel extends org.jsampler.view.JSChannel {
 	private EventHandler
 	getHandler() { return eventHandler; }
 	
-	private class EventHandler implements SamplerChannelListener, PropertyChangeListener {
+	private class EventHandler extends MouseAdapter implements SamplerChannelListener,
+							PropertyChangeListener, HierarchyListener {
 		/**
 		 * Invoked when changes are made to a sampler channel.
 		 * @param e A <code>SamplerChannelEvent</code> instance
@@ -457,7 +565,39 @@ public class Channel extends org.jsampler.view.JSChannel {
 		
 		public void
 		propertyChange(PropertyChangeEvent e) {
-			if(e.getPropertyName() == "borderColor") setSelected(isSelected());
+			if (
+				e.getPropertyName() == "borderColor" ||
+				e.getPropertyName() == "borderHighlightedColor" ||
+				e.getPropertyName() == "selectedChannelBgColor" ||
+				e.getPropertyName() == "highlightedChannelBgColor"
+			) {
+				updateColors(isSelected());
+			}
+		}
+		
+		public void
+		mouseEntered(MouseEvent e) {
+			mouseOver = true;
+			updateColors(isSelected());
+		}
+		
+		public void
+		mouseExited(MouseEvent e) {
+			if(getMousePosition(true) != null) return;
+			
+			mouseOver = false;
+			updateColors(isSelected());
+		}
+		
+		
+	
+		/** Called when the hierarchy has been changed. */
+		public void
+		hierarchyChanged(HierarchyEvent e) {
+			if((e.getChangeFlags() & e.SHOWING_CHANGED) == e.SHOWING_CHANGED) {
+				if(getMousePosition() == null) mouseExited(null);
+				else mouseEntered(null);
+			}
 		}
 	}
 	
@@ -475,10 +615,29 @@ public class Channel extends org.jsampler.view.JSChannel {
 	 */
 	public void
 	setSelected(boolean select) {
-		if(select)  mainPane.setBorder(borderSelected);
-		else mainPane.setBorder(borderDeselected);
+		updateColors(select);
 		
 		selected = select;
+	}
+	
+	/**
+	 * Updates the channel background and border colors.
+	 * @param selected Specifies the selection state of this channel.
+	 */
+	private void
+	updateColors(boolean selected) {
+		if(selected) {
+			mainPane.setBorder(borderSelected);
+			mainPane.setBackground(chnSelectedColor);
+		} else {
+			if(mouseOver) {
+				mainPane.setBorder(borderHighlighted);
+				mainPane.setBackground(chnHighlightedColor);
+			} else {
+				mainPane.setBorder(borderDeselected);
+				mainPane.setBackground(chnColor);
+			}
+		}
 	}
 	
 	/** Hides the channel properties. */
@@ -540,7 +699,7 @@ public class Channel extends org.jsampler.view.JSChannel {
 			else btnMute.setIcon(iconMutedBySolo);
 		} else btnMute.setIcon(iconMuteOn);
 		
-		getModel().setMute(b);
+		getModel().setBackendMute(b);
 	}
 	
 	/** Invoked when the user clicks the solo button. */
@@ -562,7 +721,7 @@ public class Channel extends org.jsampler.view.JSChannel {
 				btnMute.setIcon(iconMutedBySolo);
 		}
 		
-		getModel().setSolo(b);
+		getModel().setBackendSolo(b);
 	}
 	
 	/** Invoked when the user changes the volume */
@@ -583,13 +742,14 @@ public class Channel extends org.jsampler.view.JSChannel {
 		 */
 		float volume = slVolume.getValue();
 		volume /= 100;
-		getModel().setVolume(volume);
+		getModel().setBackendVolume(volume);
 	}
 	
 	private void
 	updateVolume() {
 		int volume = slVolume.getValue();
 		slVolume.setToolTipText(i18n.getLabel("Channel.volume", volume));
+		lVolImg.setToolTipText(i18n.getLabel("Channel.volume", volume));
 		
 		setVolumeLabel(volume);
 		
@@ -656,20 +816,13 @@ public class Channel extends org.jsampler.view.JSChannel {
 		dlg.setVisible(true);
 		
 		if(!dlg.isCancelled()) {
-			getModel().loadInstrument(dlg.getFileName(), dlg.getInstrumentIndex());
+			int idx = dlg.getInstrumentIndex();
+			getModel().loadBackendInstrument(dlg.getFileName(), idx);
 		}
 	}
 }
 
 class ChannelProperties extends JPanel {
-	private final static ImageIcon iconAudioProps;
-	
-	static {
-		String path = "org/jsampler/view/classic/res/icons/";
-		URL url = ClassLoader.getSystemClassLoader().getResource(path + "Import16.gif");
-		iconAudioProps = new ImageIcon(url);
-	}
-	
 	private final JLabel lMidiDevice =
 		new JLabel(i18n.getLabel("ChannelProperties.lMidiDevice"));
 	private final JLabel lMidiPort =
@@ -677,21 +830,41 @@ class ChannelProperties extends JPanel {
 	private final JLabel lMidiChannel =
 		new JLabel(i18n.getLabel("ChannelProperties.lMidiChannel"));
 	
+	private final JLabel lInstrumentMap =
+		new JLabel(i18n.getLabel("ChannelProperties.lInstrumentMap"));
+	
 	private final JLabel lAudioDevice =
 		new JLabel(i18n.getLabel("ChannelProperties.lAudioDevice"));
 	
 	private final JComboBox cbEngines = new JComboBox();
 	
+	private final JComboBox cbInstrumentMap = new JComboBox();
 	private final JComboBox cbMidiDevice = new JComboBox();
 	private final JComboBox cbMidiPort = new JComboBox();
 	private final JComboBox cbMidiChannel = new JComboBox();
 	private final JComboBox cbAudioDevice = new JComboBox();
 	
-	private final JButton btnAudioProps = new JButton(iconAudioProps);
+	private final JButton btnFxSends = new JButton(Res.iconFxSends22);
+	private final JButton btnAudioProps = new JButton(Res.iconAudioProps16);
+	private InformationDialog fxSendsDlg = null;
 	
 	private SamplerChannelModel channelModel = null;
 	
 	private boolean update = false;
+	
+	private class NoMap {
+		public String
+		toString() { return "[None]"; }
+	}
+	
+	private NoMap noMap = new NoMap();
+	
+	private class DefaultMap {
+		public String
+		toString() { return "[Default]"; }
+	}
+	
+	private DefaultMap defaultMap = new DefaultMap();
 	
 	/**
 	 * Creates a new instance of <code>ChannelProperties</code> using the specified non-null
@@ -702,20 +875,14 @@ class ChannelProperties extends JPanel {
 		channelModel = model;
 		
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		setOpaque(false);
 		
 		add(new JSeparator());
 		
-		JPanel enginesPane = new JPanel();
-		
-		for(SamplerEngine e : CC.getSamplerModel().getEngines()) cbEngines.addItem(e);
-		
-		//cbEngines.setMaximumSize(cbEngines.getPreferredSize());
-		
-		enginesPane.add(cbEngines);
-		String s = i18n.getLabel("ChannelProperties.enginesPane");
-		enginesPane.setBorder(BorderFactory.createTitledBorder(s));
+		JPanel enginesPane = createEnginePane();		
 		
 		JPanel devicesPane = new JPanel();
+		devicesPane.setOpaque(false);
 		devicesPane.setLayout(new BoxLayout(devicesPane, BoxLayout.X_AXIS));
 		
 		devicesPane.add(Box.createRigidArea(new Dimension(3, 0)));
@@ -773,9 +940,46 @@ class ChannelProperties extends JPanel {
 			channelChanged(SamplerChannelEvent e) { updateChannelProperties(); }
 		});
 		
+		CC.getSamplerModel().addSamplerListener(new SamplerAdapter() {
+			/** Invoked when the default MIDI instrument map is changed. */
+			public void
+			defaultMapChanged(SamplerEvent e) {
+				updateCbInstrumentMapToolTipText();
+				
+			}
+		});
+		
+		cbInstrumentMap.addItem(noMap);
+		cbInstrumentMap.addItem(defaultMap);
+		for(MidiInstrumentMap map : CC.getSamplerModel().getMidiInstrumentMaps()) {
+			cbInstrumentMap.addItem(map);
+		}
+		
+		int map = getModel().getChannelInfo().getMidiInstrumentMapId();
+		cbInstrumentMap.setSelectedItem(CC.getSamplerModel().getMidiInstrumentMapById(map));
+		if(cbInstrumentMap.getSelectedItem() == null) {
+			if(map == -1) cbInstrumentMap.setSelectedItem(noMap);
+			else if(map == -2) {
+				cbInstrumentMap.setSelectedItem(defaultMap);
+			}
+		}
+		
+		updateCbInstrumentMapToolTipText();
+		
+		if(getModel().getChannelInfo().getEngine() == null) {
+			cbInstrumentMap.setEnabled(false);
+		}
+		
+		cbInstrumentMap.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) { updateInstrumentMap(); }
+		});
+		
 		CC.getSamplerModel().addMidiDeviceListListener(getHandler());
 		CC.getSamplerModel().addAudioDeviceListListener(getHandler());
 		CC.getSamplerModel().addSamplerChannelListListener(getHandler());
+		
+		CC.getSamplerModel().addMidiInstrumentMapListListener(new MapListListener());
 		
 		btnAudioProps.setToolTipText(i18n.getLabel("ChannelProperties.routing"));
 		btnAudioProps.addActionListener(new ActionListener() {
@@ -787,63 +991,132 @@ class ChannelProperties extends JPanel {
 			}
 		});
 		
+		btnFxSends.setToolTipText(i18n.getButtonLabel("ChannelProperties.btnFxSends"));
+		btnFxSends.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) {
+				if(fxSendsDlg != null && fxSendsDlg.isVisible()) {
+					fxSendsDlg.toFront();
+					return;
+				}
+				
+				FxSendsPane p = new FxSendsPane(getModel());
+				int id = getModel().getChannelId();
+				fxSendsDlg = new InformationDialog(CC.getMainFrame(), p);
+				fxSendsDlg.setTitle(i18n.getLabel("FxSendsPane.title", id));
+				fxSendsDlg.setModal(false);
+				fxSendsDlg.showCloseButton(false);
+				fxSendsDlg.setVisible(true);
+			}
+		});
+		
 		updateMidiDevices();
 		updateAudioDevices();
 		updateChannelProperties();
 	}
-
+	
+	private JPanel
+	createEnginePane() {
+		for(SamplerEngine e : CC.getSamplerModel().getEngines()) cbEngines.addItem(e);
+		
+		cbEngines.setMaximumSize(cbEngines.getPreferredSize());
+		
+		JPanel p = new JPanel();
+		p.setOpaque(false);
+		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+		p.add(cbEngines);
+		p.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
+		
+		//enginesPane.add(Box.createGlue());
+		JPanel enginesPane = new JPanel();
+		enginesPane.setOpaque(false);
+		enginesPane.setLayout(new BorderLayout());
+		enginesPane.add(p, BorderLayout.SOUTH);
+		//enginesPane.add(Box.createRigidArea(new Dimension(0, 3)));
+		
+		String s = i18n.getLabel("ChannelProperties.enginesPane");
+		enginesPane.setBorder(BorderFactory.createTitledBorder(s));
+		Dimension d = new Dimension(enginesPane.getPreferredSize().width, Short.MAX_VALUE);
+		enginesPane.setMaximumSize(d);
+		return enginesPane;
+	}
+	
 	private JPanel
 	createMidiPane() {
 		JPanel midiPane = new JPanel();
+		midiPane.setOpaque(false);
 		
 		GridBagLayout gridbag = new GridBagLayout();
 		GridBagConstraints c = new GridBagConstraints();
 		
 		midiPane.setLayout(gridbag);
 		
-		c.gridx = 0;
-		c.gridy = 0;
-		c.insets = new Insets(3, 3, 3, 3);
-		gridbag.setConstraints(lMidiDevice, c);
-		midiPane.add(lMidiDevice);
-		
 		c.gridx = 1;
 		c.gridy = 0;
-		gridbag.setConstraints(cbMidiDevice, c);
-		midiPane.add(cbMidiDevice);
+		c.insets = new Insets(0, 3, 3, 3);
+		gridbag.setConstraints(lMidiDevice, c);
+		midiPane.add(lMidiDevice);
 		
 		c.gridx = 2;
 		c.gridy = 0;
 		gridbag.setConstraints(lMidiPort, c);
 		midiPane.add(lMidiPort);
 		
-		c.gridx = 4;
+		c.gridx = 3;
 		c.gridy = 0;
 		gridbag.setConstraints(lMidiChannel, c);
 		midiPane.add(lMidiChannel);
 		
-		c.gridx = 5;
+		c.gridx = 4;
 		c.gridy = 0;
+		c.insets = new Insets(0, 10, 3, 3);
+		gridbag.setConstraints(lInstrumentMap, c);
+		midiPane.add(lInstrumentMap);
+		
+		btnFxSends.setMargin(new Insets(0, 0, 0, 0));
+		c.gridx = 0;
+		c.gridy = 0;
+		c.gridheight = 2;
+		c.insets = new Insets(0, 5, 0, 8);
+		gridbag.setConstraints(btnFxSends, c);
+		midiPane.add(btnFxSends);
+		
+		c.gridx = 1;
+		c.gridy = 1;
+		c.gridheight = 1;
+		c.insets = new Insets(0, 4, 4, 3);
+		c.fill = GridBagConstraints.HORIZONTAL;
+		gridbag.setConstraints(cbMidiDevice, c);
+		midiPane.add(cbMidiDevice);
+		
+		c.gridx = 3;
+		c.gridy = 1;
 		gridbag.setConstraints(cbMidiChannel, c);
 		midiPane.add(cbMidiChannel);
 		
-		c.gridx = 3;
-		c.gridy = 0;
-		c.weightx = 1.0;
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.insets = new Insets(3, 3, 3, 3);
+		c.gridx = 2;
+		c.gridy = 1;
 		gridbag.setConstraints(cbMidiPort, c);
 		midiPane.add(cbMidiPort);
 		
-		String s = i18n.getLabel("ChannelProperties.midiPane");
-		midiPane.setBorder(BorderFactory.createTitledBorder(s));
+		c.gridx = 4;
+		c.gridy = 1;
+		c.weightx = 1.0;
+		c.insets = new Insets(0, 10, 3, 3);
+		gridbag.setConstraints(cbInstrumentMap, c);
+		midiPane.add(cbInstrumentMap);
 		
+		String s = i18n.getLabel("ChannelProperties.midiPane");
+		TitledBorder border = BorderFactory.createTitledBorder(s);
+		//border.setTitlePosition(border.TOP);
+		midiPane.setBorder(border);
 		return midiPane;
 	}
 	
 	private JPanel
 	createAudioPane() {
 		JPanel audioPane = new JPanel();
+		audioPane.setOpaque(false);
 		
 		GridBagLayout gridbag = new GridBagLayout();
 		GridBagConstraints c = new GridBagConstraints();
@@ -852,19 +1125,20 @@ class ChannelProperties extends JPanel {
 		
 		c.gridx = 0;
 		c.gridy = 0;
-		c.insets = new Insets(3, 3, 3, 3);
+		c.insets = new Insets(0, 3, 3, 3);
 		gridbag.setConstraints(lAudioDevice, c);
 		audioPane.add(lAudioDevice);
 		
-		c.gridx = 1;
-		c.gridy = 0;
+		c.gridx = 0;
+		c.gridy = 1;
+		c.fill = GridBagConstraints.HORIZONTAL;
 		gridbag.setConstraints(cbAudioDevice, c);
 		audioPane.add(cbAudioDevice);
 		
 		btnAudioProps.setMargin(new Insets(0, 0, 0, 0));
-		c.gridx = 2;
-		c.gridy = 0;
-		c.insets = new Insets(3, 9, 3, 3);
+		c.gridx = 1;
+		c.gridy = 1;
+		c.fill = GridBagConstraints.NONE;
 		gridbag.setConstraints(btnAudioProps, c);
 		audioPane.add(btnAudioProps);
 		
@@ -882,6 +1156,41 @@ class ChannelProperties extends JPanel {
 	 */
 	public SamplerChannelModel
 	getModel() { return channelModel; }
+	
+	
+	private void
+	updateInstrumentMap() {
+		updateCbInstrumentMapToolTipText();
+		
+		int id = getModel().getChannelInfo().getMidiInstrumentMapId();
+		Object o = cbInstrumentMap.getSelectedItem();
+		if(o == null && id == -1) return;
+		
+		int cbId;
+		if(o == null || o == noMap) cbId = -1;
+		else if(o == defaultMap) cbId = -2;
+		else cbId = ((MidiInstrumentMap)o).getMapId();
+		
+		if(cbId == id) return;
+		
+		channelModel.setBackendMidiInstrumentMap(cbId);
+	}
+	
+	private void
+	updateCbInstrumentMapToolTipText() {
+		if(cbInstrumentMap.getSelectedItem() != defaultMap) {
+			cbInstrumentMap.setToolTipText(null);
+			return;
+		}
+		
+		MidiInstrumentMap m = CC.getSamplerModel().getDefaultMidiInstrumentMap();
+		if(m != null) {
+			String s = i18n.getLabel("Channel.ttDefault", m.getName());
+			cbInstrumentMap.setToolTipText(s);
+		} else {
+			cbInstrumentMap.setToolTipText(null);
+		}
+	}
 	
 	/**
 	 * Updates the channel settings. This method is invoked when changes to the
@@ -907,6 +1216,13 @@ class ChannelProperties extends JPanel {
 			cbAudioDevice.setSelectedItem(am == null ? null : am.getDeviceInfo());
 		} catch(Exception x) {
 			CC.getLogger().log(Level.WARNING, "Unkown error", x);
+		}
+		
+		if(sc.getEngine() != null) {
+			if(cbInstrumentMap.getItemCount() > 0) cbInstrumentMap.setEnabled(true);
+		} else {
+			cbInstrumentMap.setSelectedItem(noMap);
+			cbInstrumentMap.setEnabled(false);
 		}
 		
 		setUpdate(false);
@@ -967,7 +1283,7 @@ class ChannelProperties extends JPanel {
 		MidiInputDevice mid = (MidiInputDevice)cbMidiDevice.getSelectedItem();
 		
 		if(!isUpdate()) {
-			if(mid != null) getModel().setMidiInputDevice(mid.getDeviceID());
+			if(mid != null) getModel().setBackendMidiInputDevice(mid.getDeviceId());
 			return;
 		}
 		
@@ -999,7 +1315,7 @@ class ChannelProperties extends JPanel {
 	setMidiPort() {
 		if(isUpdate()) return;
 		
-		getModel().setMidiInputPort(cbMidiPort.getSelectedIndex());
+		getModel().setBackendMidiInputPort(cbMidiPort.getSelectedIndex());
 	}
 	
 	private void
@@ -1011,7 +1327,7 @@ class ChannelProperties extends JPanel {
 		
 		int c = o.toString().equals("All") ? -1 : Integer.parseInt(o.toString()) - 1;
 		
-		getModel().setMidiInputChannel(c);
+		getModel().setBackendMidiInputChannel(c);
 	}
 	
 	/** Invoked when the user selects an engine. */
@@ -1023,7 +1339,7 @@ class ChannelProperties extends JPanel {
 		if(oldEngine != null) { if(oldEngine.equals(newEngine)) return; }
 		else if(newEngine == null) return;
 		
-		getModel().setEngineType(newEngine.getName());
+		getModel().setBackendEngineType(newEngine.getName());
 		
 	}
 	
@@ -1031,7 +1347,7 @@ class ChannelProperties extends JPanel {
 	setAudioDevice() {
 		if(isUpdate()) return;
 		AudioOutputDevice dev = (AudioOutputDevice)cbAudioDevice.getSelectedItem();
-		if(dev != null) getModel().setAudioOutputDevice(dev.getDeviceID());
+		if(dev != null) getModel().setBackendAudioOutputDevice(dev.getDeviceId());
 	}
 	
 	/**
@@ -1057,7 +1373,7 @@ class ChannelProperties extends JPanel {
 	getHandler() { return handler; }
 	
 	private class Handler implements MidiDeviceListListener,
-				AudioDeviceListListener, SamplerChannelListListener {
+				ListListener<AudioDeviceModel>, SamplerChannelListListener {
 		
 		/**
 		 * Invoked when a new MIDI device is created.
@@ -1085,8 +1401,8 @@ class ChannelProperties extends JPanel {
 		 * instance providing the event information.
 		 */
 		public void
-		deviceAdded(AudioDeviceListEvent e) {
-			cbAudioDevice.addItem(e.getAudioDeviceModel().getDeviceInfo());
+		entryAdded(ListEvent<AudioDeviceModel> e) {
+			cbAudioDevice.addItem(e.getEntry().getDeviceInfo());
 		}
 	
 		/**
@@ -1095,8 +1411,8 @@ class ChannelProperties extends JPanel {
 		 * instance providing the event information.
 		 */
 		public void
-		deviceRemoved(AudioDeviceListEvent e) {
-			cbAudioDevice.removeItem(e.getAudioDeviceModel().getDeviceInfo());
+		entryRemoved(ListEvent<AudioDeviceModel> e) {
+			cbAudioDevice.removeItem(e.getEntry().getDeviceInfo());
 		}
 		
 		/**
@@ -1115,9 +1431,30 @@ class ChannelProperties extends JPanel {
 		public void
 		channelRemoved(SamplerChannelListEvent e) {
 			// Some cleanup when the channel is removed.
-			if(e.getChannelModel().getChannelID() == channelModel.getChannelID()) {
+			if(e.getChannelModel().getChannelId() == channelModel.getChannelId()) {
 				CC.getSamplerModel().removeMidiDeviceListListener(getHandler());
 				CC.getSamplerModel().removeAudioDeviceListListener(getHandler());
+			}
+		}
+	}
+	
+	private class MapListListener implements ListListener<MidiInstrumentMap> {
+		/** Invoked when a new MIDI instrument map is added to a list. */
+		public void
+		entryAdded(ListEvent<MidiInstrumentMap> e) {
+			//cbInstrumentMap.addItem(e.getEntry());
+			cbInstrumentMap.insertItemAt(e.getEntry(), cbInstrumentMap.getItemCount());
+			boolean b = getModel().getChannelInfo().getEngine() != null;
+			if(b && !cbInstrumentMap.isEnabled()) cbInstrumentMap.setEnabled(true);
+		}
+	
+		/** Invoked when a new MIDI instrument map is removed from a list. */
+		public void
+		entryRemoved(ListEvent<MidiInstrumentMap> e) {
+			cbInstrumentMap.removeItem(e.getEntry());
+			if(cbInstrumentMap.getItemCount() == 0) {
+				cbInstrumentMap.setSelectedItem(noMap);
+				cbInstrumentMap.setEnabled(false);
 			}
 		}
 	}

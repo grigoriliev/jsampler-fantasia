@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005, 2006 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -36,9 +36,6 @@ import org.jsampler.DefaultOrchestraListModel;
 import org.jsampler.OrchestraModel;
 
 import javax.swing.table.TableCellRenderer;
-
-import org.jsampler.event.OrchestraListEvent;
-import org.jsampler.event.OrchestraListListener;
 
 import static javax.swing.KeyStroke.*;
 

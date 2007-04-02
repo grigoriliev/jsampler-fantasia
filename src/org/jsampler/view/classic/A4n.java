@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -29,13 +29,17 @@ import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import java.io.FileOutputStream;
 import java.net.URL;
-
 import java.util.logging.Level;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+
+import net.sf.juife.event.TaskEvent;
+import net.sf.juife.event.TaskListener;
 
 import org.jsampler.CC;
 import org.jsampler.HF;
@@ -44,9 +48,7 @@ import org.jsampler.JSampler;
 import org.jsampler.view.JSChannel;
 import org.jsampler.view.JSChannelsPane;
 import org.jsampler.view.JSMainFrame;
-
-import net.sf.juife.event.TaskEvent;
-import net.sf.juife.event.TaskListener;
+import org.jsampler.view.LscpFileFilter;
 
 import static org.jsampler.view.classic.ClassicI18n.i18n;
 
@@ -86,18 +88,7 @@ public class A4n {
 			super(i18n.getMenuLabel("actions.samplerInfo"));
 			
 			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("ttSamplerInfo"));
-			
-			try {
-				URL url = ClassLoader.getSystemClassLoader().getResource (
-					"org/jsampler/view/classic/res/icons/toolbar/About24.gif"
-				);
-				
-				ImageIcon icon = new ImageIcon(url);
-				if(icon.getImageLoadStatus() == MediaTracker.COMPLETE)
-					putValue(Action.SMALL_ICON, icon);
-			} catch(Exception x) {
-				CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
-			}
+			putValue(Action.SMALL_ICON, Res.iconInfo32);
 		}
 		
 		public void
@@ -113,18 +104,7 @@ public class A4n {
 			super(i18n.getMenuLabel("actions.refresh"));
 			
 			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("ttRefresh"));
-			
-			try {
-				URL url = ClassLoader.getSystemClassLoader().getResource (
-					"org/jsampler/view/classic/res/icons/toolbar/Refresh24.gif"
-				);
-				
-				ImageIcon icon = new ImageIcon(url);
-				if(icon.getImageLoadStatus() == MediaTracker.COMPLETE)
-					putValue(Action.SMALL_ICON, icon);
-			} catch(Exception x) {
-				CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
-			}
+			putValue(Action.SMALL_ICON, Res.iconReload32);
 		}
 		
 		public void
@@ -138,11 +118,162 @@ public class A4n {
 			super(i18n.getMenuLabel("actions.resetSampler"));
 			
 			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("ttResetSampler"));
+			putValue(Action.SMALL_ICON, Res.iconReset32);
+		}
+		
+		public void
+		actionPerformed(ActionEvent e) { CC.getSamplerModel().resetBackend(); }
+	}
+	
+	public final static Action addMidiInstrumentMap = new AddMidiInstrumentMap();
+	
+	private static class AddMidiInstrumentMap extends AbstractAction {
+		AddMidiInstrumentMap() {
+			super(i18n.getMenuLabel("actions.midiInstruments.addMap"));
+			
+			String s = i18n.getMenuLabel("actions.midiInstruments.addMap.tt");
+			putValue(SHORT_DESCRIPTION, s);
+			putValue(Action.SMALL_ICON, Res.iconNew16);
 		}
 		
 		public void
 		actionPerformed(ActionEvent e) {
-			CC.getTaskQueue().add(new org.jsampler.task.ResetSampler());
+			AddMidiInstrumentMapDlg dlg = new AddMidiInstrumentMapDlg();
+			dlg.setVisible(true);
+			if(dlg.isCancelled()) return;
+			
+			CC.getSamplerModel().addBackendMidiInstrumentMap(dlg.getMapName());
+			LeftPane.getLeftPane().showMidiInstrumentMapsPage();
+		}
+	}
+	
+	public final static Action removeMidiInstrumentMap = new RemoveMidiInstrumentMap();
+	
+	private static class RemoveMidiInstrumentMap extends AbstractAction {
+		RemoveMidiInstrumentMap() {
+			super(i18n.getMenuLabel("actions.midiInstruments.removeMap"));
+			
+			String s = i18n.getMenuLabel("actions.midiInstruments.removeMap.tt");
+			putValue(SHORT_DESCRIPTION, s);
+			putValue(Action.SMALL_ICON, Res.iconDelete16);
+		}
+		
+		public void
+		actionPerformed(ActionEvent e) {
+			RemoveMidiInstrumentMapDlg dlg = new RemoveMidiInstrumentMapDlg();
+			dlg.setVisible(true);
+			if(dlg.isCancelled()) return;
+			int id = dlg.getSelectedMap().getMapId();
+			CC.getSamplerModel().removeBackendMidiInstrumentMap(id);
+		}
+	}
+	
+	public final static Action addMidiInstrumentWizard = new AddMidiInstrumentWizard();
+	
+	private static class AddMidiInstrumentWizard extends AbstractAction {
+		AddMidiInstrumentWizard() {
+			super(i18n.getMenuLabel("actions.midiInstruments.newMidiInstrumentWizard"));
+			
+			String s = "actions.midiInstruments.newMidiInstrumentWizard.tt";
+			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel(s));
+			putValue(Action.SMALL_ICON, Res.iconNew16);
+		}
+		
+		public void
+		actionPerformed(ActionEvent e) {
+			NewMidiInstrumentWizard wizard = new NewMidiInstrumentWizard();
+			wizard.getWizardDialog().setResizable(false);
+			
+			if(ClassicPrefs.getNewMidiInstrWizardSkip1()) {
+				if(wizard.getModel().getCurrentPage() == null) {
+					wizard.getModel().next();
+				}
+				wizard.getModel().next();
+			}
+			
+			wizard.showWizard();
+			
+		}
+	}
+	
+	public final static Action exportMidiInstrumentMaps = new ExportMidiInstrumentMaps();
+	
+	private static class ExportMidiInstrumentMaps extends AbstractAction {
+		ExportMidiInstrumentMaps() {
+			super(i18n.getMenuLabel("actions.export.MidiInstrumentMaps"));
+			
+			String s = i18n.getMenuLabel("actions.export.MidiInstrumentMaps.tt");
+			putValue(SHORT_DESCRIPTION, s);
+			putValue(Action.SMALL_ICON, Res.iconExport16);
+		}
+		
+		public void
+		actionPerformed(ActionEvent e) {
+			JFileChooser fc = new JFileChooser(ClassicPrefs.getLastScriptLocation());
+			fc.setFileFilter(new LscpFileFilter());
+			int result = fc.showSaveDialog(CC.getMainFrame());
+			if(result != JFileChooser.APPROVE_OPTION) return;
+			
+			String path = fc.getCurrentDirectory().getAbsolutePath();
+			ClassicPrefs.setLastScriptLocation(path);
+		
+			try {
+				FileOutputStream fos = new FileOutputStream(fc.getSelectedFile());
+				fos.write(CC.exportInstrMapsToLscpScript().getBytes("US-ASCII"));
+				fos.close();
+			} catch(Exception x) {
+				CC.getLogger().log(Level.FINE, HF.getErrorMessage(x), x);
+				HF.showErrorMessage(x);
+			};
+		}
+	}
+	
+	
+	public final static Action exportSamplerConfig = new ExportSamplerConfig();
+	
+	private static class ExportSamplerConfig extends AbstractAction {
+		ExportSamplerConfig() {
+			super(i18n.getMenuLabel("actions.export.samplerConfiguration"));
+			
+			String s = i18n.getMenuLabel("ttExportSamplerConfiguration");
+			putValue(SHORT_DESCRIPTION, s);
+			putValue(Action.SMALL_ICON, Res.iconExportSession32);
+		}
+		
+		public void
+		actionPerformed(ActionEvent e) {
+			JFileChooser fc = new JFileChooser(ClassicPrefs.getLastScriptLocation());
+			fc.setFileFilter(new LscpFileFilter());
+			int result = fc.showSaveDialog(CC.getMainFrame());
+			if(result != JFileChooser.APPROVE_OPTION) return;
+			
+			String path = fc.getCurrentDirectory().getAbsolutePath();
+			ClassicPrefs.setLastScriptLocation(path);
+		
+			try {
+				FileOutputStream fos = new FileOutputStream(fc.getSelectedFile());
+				fos.write(CC.exportSessionToLscpScript().getBytes("US-ASCII"));
+				fos.close();
+			} catch(Exception x) {
+				CC.getLogger().log(Level.FINE, HF.getErrorMessage(x), x);
+				HF.showErrorMessage(x);
+			}
+		}
+	}
+	
+	public final static Action loadScript = new LoadLscpScript();
+	
+	private static class LoadLscpScript extends AbstractAction {
+		LoadLscpScript() {
+			super(i18n.getMenuLabel("actions.runScript"));
+			
+			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("ttRunScript"));
+			putValue(Action.SMALL_ICON, Res.iconLoadScript32);
+		}
+		
+		public void
+		actionPerformed(ActionEvent e) {
+			((MainFrame)CC.getMainFrame()).runScript();
 		}
 	}
 	
@@ -188,7 +319,7 @@ public class A4n {
 			super(i18n.getMenuLabel("edit.preferences"));
 			
 			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("ttPrefs"));
-			putValue(Action.SMALL_ICON, Res.iconPreferences24);
+			putValue(Action.SMALL_ICON, Res.iconPreferences32);
 		}
 		
 		public void
@@ -226,7 +357,7 @@ public class A4n {
 		public void
 		actionPerformed(ActionEvent e) {
 			if(!verifyConnection()) return;
-			CC.getSamplerModel().createChannel();
+			CC.getSamplerModel().addBackendChannel();
 		}
 	}
 	
@@ -291,18 +422,7 @@ public class A4n {
 			super(i18n.getMenuLabel("channels.MoveUp"));
 			
 			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("ttMoveChannelsUp"));
-			
-			try {
-				URL url = ClassLoader.getSystemClassLoader().getResource (
-					"org/jsampler/view/classic/res/icons/toolbar/Up24.gif"
-				);
-				
-				ImageIcon icon = new ImageIcon(url);
-				if(icon.getImageLoadStatus() == MediaTracker.COMPLETE)
-					putValue(Action.SMALL_ICON, icon);
-			} catch(Exception x) {
-				CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
-			}
+			putValue(Action.SMALL_ICON, Res.iconUp24);
 			
 			setEnabled(false);
 		}
@@ -319,18 +439,7 @@ public class A4n {
 			super(i18n.getMenuLabel("channels.MoveDown"));
 			
 			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("ttMoveChannelsDown"));
-			
-			try {
-				URL url = ClassLoader.getSystemClassLoader().getResource (
-					"org/jsampler/view/classic/res/icons/toolbar/Down24.gif"
-				);
-				
-				ImageIcon icon = new ImageIcon(url);
-				if(icon.getImageLoadStatus() == MediaTracker.COMPLETE)
-					putValue(Action.SMALL_ICON, icon);
-			} catch(Exception x) {
-				CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
-			}
+			putValue(Action.SMALL_ICON, Res.iconDown24);
 			
 			setEnabled(false);
 		}
@@ -429,18 +538,7 @@ public class A4n {
 			super(i18n.getMenuLabel("channels.RemoveChannel"));
 			
 			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("ttRemoveChannels"));
-			
-			try {
-				URL url = ClassLoader.getSystemClassLoader().getResource (
-					"org/jsampler/view/classic/res/icons/toolbar/Delete24.gif"
-				);
-				
-				ImageIcon icon = new ImageIcon(url);
-				if(icon.getImageLoadStatus() == MediaTracker.COMPLETE)
-					putValue(Action.SMALL_ICON, icon);
-			} catch(Exception x) {
-				CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
-			}
+			putValue(Action.SMALL_ICON, Res.iconDelete24);
 			
 			setEnabled(false);
 		}
@@ -461,9 +559,9 @@ public class A4n {
 		private void
 		removeChannel(final JSChannel c) {
 			final JSChannelsPane p = CC.getMainFrame().getSelectedChannelsPane();
-			int id = c.getChannelInfo().getChannelID();
+			int id = c.getChannelInfo().getChannelId();
 			
-			CC.getTaskQueue().add(new org.jsampler.task.RemoveChannel(id));
+			CC.getSamplerModel().removeBackendChannel(id);
 		}
 	}
 	
@@ -485,15 +583,7 @@ public class A4n {
 			super(i18n.getMenuLabel("tabs.new"));
 			
 			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("ttNewTab"));
-			
-			/*try {
-				URL u = new URL(PATH + "general/Preferences24.gif");
-				ImageIcon ii = new ImageIcon(u);
-				if(ii.getImageLoadStatus() == MediaTracker.COMPLETE)
-					putValue(Action.SMALL_ICON, ii);
-			} catch(Exception x) {
-				CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
-			}*/
+			putValue(Action.SMALL_ICON, Res.iconTabNew22);
 		}
 		
 		public void
@@ -535,6 +625,7 @@ public class A4n {
 			super(i18n.getMenuLabel("tabs.move2Left"));
 			
 			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("ttMoveTab2Left"));
+			putValue(Action.SMALL_ICON, Res.iconTabMoveLeft22);
 			setEnabled(false);
 		}
 		
@@ -547,6 +638,7 @@ public class A4n {
 			super(i18n.getMenuLabel("tabs.move2Right"));
 			
 			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("ttMoveTab2Right"));
+			putValue(Action.SMALL_ICON, Res.iconTabMoveRight22);
 			setEnabled(false);
 		}
 		
@@ -571,7 +663,7 @@ public class A4n {
 			super(i18n.getMenuLabel("tabs.close"));
 			
 			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("ttCloseTab"));
-			
+			putValue(Action.SMALL_ICON, Res.iconTabRemove22);
 			setEnabled(false);
 		}
 		

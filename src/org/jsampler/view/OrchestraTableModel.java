@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005, 2006 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -27,10 +27,10 @@ import javax.swing.table.AbstractTableModel;
 import org.jsampler.OrchestraListModel;
 import org.jsampler.OrchestraModel;
 
+import org.jsampler.event.ListEvent;
+import org.jsampler.event.ListListener;
 import org.jsampler.event.OrchestraAdapter;
 import org.jsampler.event.OrchestraEvent;
-import org.jsampler.event.OrchestraListEvent;
-import org.jsampler.event.OrchestraListListener;
 
 import static org.jsampler.JSI18n.i18n;
 
@@ -128,18 +128,18 @@ public class OrchestraTableModel extends AbstractTableModel {
 	private Handler
 	getHandler() { return eventHandler; }
 	
-	private class Handler extends OrchestraAdapter implements OrchestraListListener {
+	private class Handler extends OrchestraAdapter implements ListListener<OrchestraModel> {
 		/** Invoked when an orchestra is added to the orchestra list. */
 		public void
-		orchestraAdded(OrchestraListEvent e) {
-			e.getOrchestraModel().addOrchestraListener(getHandler());
+		entryAdded(ListEvent<OrchestraModel> e) {
+			e.getEntry().addOrchestraListener(getHandler());
 			fireTableDataChanged();
 		}
 	
 		/** Invoked when an orchestra is removed from the orchestra list. */
 		public void
-		orchestraRemoved(OrchestraListEvent e) {
-			e.getOrchestraModel().removeOrchestraListener(getHandler());
+		entryRemoved(ListEvent<OrchestraModel> e) {
+			e.getEntry().removeOrchestraListener(getHandler());
 			fireTableDataChanged();
 		}
 		

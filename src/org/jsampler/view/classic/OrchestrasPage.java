@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005, 2006 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -54,8 +54,8 @@ import org.jsampler.OrchestraModel;
 
 import org.jsampler.event.OrchestraAdapter;
 import org.jsampler.event.OrchestraEvent;
-import org.jsampler.event.OrchestraListEvent;
-import org.jsampler.event.OrchestraListListener;
+import org.jsampler.event.ListEvent;
+import org.jsampler.event.ListListener;
 
 import org.jsampler.view.InstrumentTable;
 import org.jsampler.view.InstrumentTableModel;
@@ -105,7 +105,7 @@ public class OrchestrasPage extends NavigationPage {
 		cbOrchestras.setEnabled(cbOrchestras.getItemCount() != 0);
 		
 		Dimension d;
-		d= new Dimension(Short.MAX_VALUE, cbOrchestras.getPreferredSize().height);
+		d = new Dimension(Short.MAX_VALUE, cbOrchestras.getPreferredSize().height);
 		cbOrchestras.setMaximumSize(d);
 		cbOrchestras.setAlignmentX(LEFT_ALIGNMENT);
 		add(cbOrchestras);
@@ -164,7 +164,7 @@ public class OrchestrasPage extends NavigationPage {
 			return;
 		}
 		
-		chn.getModel().loadInstrument(instr.getPath(), instr.getInstrumentIndex());
+		chn.getModel().loadBackendInstrument(instr.getPath(), instr.getInstrumentIndex());
 	}
 	
 	/**
@@ -279,18 +279,18 @@ public class OrchestrasPage extends NavigationPage {
 	private Handler
 	getHandler() { return eventHandler; }
 	
-	private class Handler extends OrchestraAdapter implements OrchestraListListener {
+	private class Handler extends OrchestraAdapter implements ListListener<OrchestraModel> {
 		/** Invoked when an orchestra is added to the orchestra list. */
 		public void
-		orchestraAdded(OrchestraListEvent e) {
+		entryAdded(ListEvent<OrchestraModel> e) {
 			if(cbOrchestras.getItemCount() == 0) cbOrchestras.setEnabled(true);
-			cbOrchestras.addItem(e.getOrchestraModel());
+			cbOrchestras.addItem(e.getEntry());
 		}
 	
 		/** Invoked when an orchestra is removed from the orchestra list. */
 		public void
-		orchestraRemoved(OrchestraListEvent e) {
-			cbOrchestras.removeItem(e.getOrchestraModel());
+		entryRemoved(ListEvent<OrchestraModel> e) {
+			cbOrchestras.removeItem(e.getEntry());
 			if(cbOrchestras.getItemCount() == 0) cbOrchestras.setEnabled(false);
 		}
 		

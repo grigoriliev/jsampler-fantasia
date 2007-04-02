@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -51,7 +51,7 @@ public interface MidiDeviceModel {
 	 * @return The numerical ID of this MIDI device or
 	 * -1 if the device number is not set.
 	 */
-	public int getDeviceID();
+	public int getDeviceId();
 	
 	/**
 	 * Gets the current settings of the MIDI device represented by this model.
@@ -78,4 +78,25 @@ public interface MidiDeviceModel {
 	 * else the device is disabled.
 	 */
 	public void setActive(boolean active);
+	
+	/**
+	 * Schedules a new task for enabling/disabling the MIDI device.
+	 * @param active If <code>true</code> the MIDI device is enabled,
+	 * else the device is disabled.
+	 */
+	public void setBackendActive(boolean active);
+	
+	/**
+	 * Schedules a new task for changing the port number of the MIDI device.
+	 * @param ports The new number of ports.
+	 */
+	public void setBackendPortCount(int ports);
+	
+	/**
+	 * Schedules a new task for altering a specific
+	 * setting of the specified MIDI input port.
+	 * @param port The port number.
+	 * @param prm The parameter to be set.
+	 */
+	public void setBackendPortParameter(int port, Parameter prm);
 }

@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -58,7 +58,7 @@ import static org.jsampler.view.classic.ClassicI18n.i18n;
  */
 public class HelpAboutDlg extends InformationDialog {
 	private JLabel lProductName =
-		new JLabel("<html>\n<font size=+1>JS Classic (version 0.3a)</font>");
+		new JLabel("<html>\n<font size=+1>JS Classic (version 0.4a)</font>");
 	
 	private JLabel lAuthor = new JLabel(i18n.getLabel("HelpAboutDlg.lAuthor"));
 	private JTextField tfAuthor = new JTextField(i18n.getLabel("HelpAboutDlg.tfAuthor"));
@@ -229,7 +229,7 @@ public class HelpAboutDlg extends InformationDialog {
 		private JLabel lAuthorEmail =
 			new JLabel(i18n.getLabel("HelpAboutDlg.lAuthorEmail"));
 		private JLabel lLSWebsite = new JLabel(i18n.getLabel("HelpAboutDlg.lLSWebsite"));
-		private WebButton btnAuthorEmail = new WebButton("gr.iliev@gmail.com");
+		private WebButton btnAuthorEmail = new WebButton("grigor@grigoriliev.com");
 		private WebButton btnWebsite = new WebButton("http://www.linuxsampler.org");
 		
 		private JLabel lLSMailingList =

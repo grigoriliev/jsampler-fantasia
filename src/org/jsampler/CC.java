@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -27,7 +27,10 @@ import java.awt.event.ActionListener;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 
 import java.util.Vector;
 
@@ -47,9 +50,9 @@ import net.sf.juife.event.TaskListener;
 import net.sf.juife.event.TaskQueueEvent;
 import net.sf.juife.event.TaskQueueListener;
 
+import org.jsampler.event.ListEvent;
+import org.jsampler.event.ListListener;
 import org.jsampler.event.OrchestraEvent;
-import org.jsampler.event.OrchestraListEvent;
-import org.jsampler.event.OrchestraListListener;
 import org.jsampler.event.OrchestraListener;
 
 import org.jsampler.task.*;
@@ -57,11 +60,21 @@ import org.jsampler.task.*;
 import org.jsampler.view.JSMainFrame;
 import org.jsampler.view.JSProgress;
 
+import org.linuxsampler.lscp.AudioOutputChannel;
+import org.linuxsampler.lscp.AudioOutputDevice;
 import org.linuxsampler.lscp.Client;
+import org.linuxsampler.lscp.FxSend;
+import org.linuxsampler.lscp.MidiInputDevice;
+import org.linuxsampler.lscp.MidiPort;
+import org.linuxsampler.lscp.Parameter;
+import org.linuxsampler.lscp.SamplerChannel;
+
 import org.linuxsampler.lscp.event.*;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+
+import static org.jsampler.JSI18n.i18n;
 
 
 /**
@@ -78,9 +91,14 @@ public class CC {
 	
 	private final static Client lsClient = new Client();
 	
+	private static String jSamplerHome = null;
+	
 	private final static TaskQueue taskQueue = new TaskQueue();
 	private final static Timer timer = new Timer(2000, null);
 	
+	/** Forbits the instantiation of this class. */
+	private
+	CC() { }
 	
 	/**
 	 * Returns the logger to be used for logging events.
@@ -132,14 +150,39 @@ public class CC {
 	setProgressIndicator(JSProgress progress) { CC.progress = progress; }
 	
 	/**
+	 * Gets the absolute path to the JSampler's home location.
+	 * @return The absolute path to the JSampler's home location
+	 * or <code>null</code> if the JSampler's home location is not specified yet.
+	 */
+	public static String
+	getJSamplerHome() { return jSamplerHome; }
+	
+	/**
+	 * Sets the location of the JSampler's home.
+	 * @param path The new absolute path to the JSampler's home location.
+	 */
+	public static void
+	setJSamplerHome(String path) {
+		jSamplerHome = path;
+		Prefs.setJSamplerHome(jSamplerHome);
+	}
+	
+	/**
 	 * This method does the initial preparation of the application.
 	 */
 	protected static void
 	initJSampler() {
 		fos = null;
-		
-		try { fos = new FileOutputStream("JSampler.log"); }
-		catch(Exception x) { x.printStackTrace(); }
+		setJSamplerHome(Prefs.getJSamplerHome());
+		String s = getJSamplerHome();
+		try {
+			if(s != null) {
+				s += File.separator + "jsampler.log";
+				File f = new File(s);
+				if(f.isFile()) HF.createBackup("jsampler.log", "jsampler.log.0");
+				fos = new FileOutputStream(s);
+			}
+		} catch(Exception x) { x.printStackTrace(); }
 		
 		if(fos == null) handler = new StreamHandler(System.out, new SimpleFormatter());
 		else handler = new StreamHandler(fos, new SimpleFormatter());
@@ -160,8 +203,6 @@ public class CC {
 		
 		HF.setUIDefaultFont(Prefs.getInterfaceFont());
 		
-		
-		
 		getClient().setServerAddress(Prefs.getLSAddress());
 		getClient().setServerPort(Prefs.getLSPort());
 		
@@ -176,18 +217,115 @@ public class CC {
 		
 		taskQueue.start();
 		
+		getClient().removeChannelCountListener(getHandler());
 		getClient().addChannelCountListener(getHandler());
+		
+		getClient().removeChannelInfoListener(getHandler());
 		getClient().addChannelInfoListener(getHandler());
+		
+		getClient().removeFxSendCountListener(getHandler());
+		getClient().addFxSendCountListener(getHandler());
+		
+		getClient().removeFxSendInfoListener(getHandler());
+		getClient().addFxSendInfoListener(getHandler());
+		
+		getClient().removeStreamCountListener(getHandler());
 		getClient().addStreamCountListener(getHandler());
+		
+		getClient().removeVoiceCountListener(getHandler());
 		getClient().addVoiceCountListener(getHandler());
+		
+		getClient().removeTotalVoiceCountListener(getHandler());
 		getClient().addTotalVoiceCountListener(getHandler());
 		
-		loadOrchestras();
+		getClient().removeAudioDeviceCountListener(audioDeviceCountListener);
+		getClient().addAudioDeviceCountListener(audioDeviceCountListener);
 		
-		for(int i = 0; i < getOrchestras().getOrchestraCount(); i++) {
-			getOrchestras().getOrchestra(i).addOrchestraListener(getHandler());
+		getClient().removeAudioDeviceInfoListener(audioDeviceInfoListener);
+		getClient().addAudioDeviceInfoListener(audioDeviceInfoListener);
+		
+		getClient().removeMidiDeviceCountListener(midiDeviceCountListener);
+		getClient().addMidiDeviceCountListener(midiDeviceCountListener);
+		
+		getClient().removeMidiDeviceInfoListener(midiDeviceInfoListener);
+		getClient().addMidiDeviceInfoListener(midiDeviceInfoListener);
+		
+		getClient().removeMidiInstrumentMapCountListener(midiInstrMapCountListener);
+		getClient().addMidiInstrumentMapCountListener(midiInstrMapCountListener);
+		
+		getClient().removeMidiInstrumentMapInfoListener(midiInstrMapInfoListener);
+		getClient().addMidiInstrumentMapInfoListener(midiInstrMapInfoListener);
+		
+		getClient().removeMidiInstrumentCountListener(getHandler());
+		getClient().addMidiInstrumentCountListener(getHandler());
+		
+		getClient().removeMidiInstrumentInfoListener(getHandler());
+		getClient().addMidiInstrumentInfoListener(getHandler());
+		
+		getClient().removeGlobalInfoListener(getHandler());
+		getClient().addGlobalInfoListener(getHandler());
+	}
+	
+	/**
+	 * Checks whether the JSampler home directory is specified and exist.
+	 * If the JSampler home directory is not specifed, or is specified
+	 * but doesn't exist, a procedure of specifying a JSampler home
+	 * directory is initiated.
+	 * @see org.jsampler.view.JSMainFrame#installJSamplerHome
+	 */
+	public static void
+	checkJSamplerHome() {
+		if(getJSamplerHome() != null) {
+			File f = new File(getJSamplerHome());
+			if(f.isDirectory()) return;
 		}
-		getOrchestras().addOrchestraListListener(getHandler());
+		
+		CC.getMainFrame().installJSamplerHome();
+	}
+	
+	/**
+	 * Changes the JSampler's home directory and moves all files from
+	 * the old JSampler's home directory to the new one. If all files are
+	 * moved succesfully, the old directory is deleted.
+	 * @param path The location of the new JSampler's home directory. If
+	 * the last directory in the path doesn't exist, it is created.
+	 */
+	public static void
+	changeJSamplerHome(String path) {
+		File fNew = new File(path);
+		if(fNew.isFile()) {
+			HF.showErrorMessage(i18n.getError("CC.JSamplerHomeIsNotDir!"));
+			return;
+		}
+		
+		if(!fNew.isDirectory()) {
+			if(!fNew.mkdir()) {
+				String s = fNew.getAbsolutePath();
+				HF.showErrorMessage(i18n.getError("CC.mkdirFailed", s));
+				return;
+			}
+		}
+		
+		if(getJSamplerHome() == null) {
+			setJSamplerHome(fNew.getAbsolutePath());
+			return;
+		}
+		
+		File fOld = new File(getJSamplerHome());
+		if(!fOld.isDirectory()) {
+			setJSamplerHome(fNew.getAbsolutePath());
+			return;
+		}
+		
+		File[] files = fOld.listFiles();
+		boolean b = true;
+		if(files != null) {
+			String s = fNew.getAbsolutePath() + File.separator;
+			for(File f : files) if(!f.renameTo(new File(s + f.getName()))) b = false;
+		}
+		
+		if(b) fOld.delete();
+		setJSamplerHome(fNew.getAbsolutePath());
 	}
 	
 	private final static OrchestraListModel orchestras = new DefaultOrchestraListModel();
@@ -199,8 +337,62 @@ public class CC {
 	public static OrchestraListModel
 	getOrchestras() { return orchestras; }
 	
-	private static void
+	/**
+	 * Loads the orchestras described in <code>&lt;jsampler_home&gt;/orchestras.xml</code>.
+	 * If file with name <code>orchestras.xml.bkp</code> exist in the JSampler's home
+	 * directory, this means that the last save has failed. In that case a recovery file
+	 * <code>orchestras.xml.rec</code> is created and a recovery procedure
+	 * will be initiated.
+	 */
+	public static void
 	loadOrchestras() {
+		if(getJSamplerHome() == null) return;
+		
+		//TODO: This should be removed in the next release (including loadOrchestras0())
+		File f2 = new File(getJSamplerHome() + File.separator + "orchestras.xml");
+		if(!f2.isFile()) {
+			loadOrchestras0();
+			saveOrchestras();
+			return;
+		}
+		///////
+		
+		try {
+			String s = getJSamplerHome();
+			if(s == null) return;
+			
+			File f = new File(s + File.separator + "orchestras.xml.bkp");
+			if(f.isFile()) HF.createBackup("orchestras.xml.bkp", "orchestras.xml.rec");
+			
+			FileInputStream fis;
+			fis = new FileInputStream(s + File.separator + "orchestras.xml");
+			
+			loadOrchestras(fis);
+			fis.close();
+		} catch(Exception x) {
+			getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
+		}
+	}
+	
+	
+	private static void
+	loadOrchestras(InputStream in) {
+		Document doc = DOMUtils.readObject(in);
+		
+		try { getOrchestras().readObject(doc.getDocumentElement()); }
+		catch(Exception x) {
+			HF.showErrorMessage(x, "Loading orchestras: ");
+			return;
+		}
+		
+		for(int i = 0; i < getOrchestras().getOrchestraCount(); i++) {
+			getOrchestras().getOrchestra(i).addOrchestraListener(getHandler());
+		}
+		getOrchestras().addOrchestraListListener(getHandler());
+	}
+	
+	private static void
+	loadOrchestras0() {
 		String s = Prefs.getOrchestras();
 		if(s == null) return;
 		
@@ -213,18 +405,33 @@ public class CC {
 	
 	private static void
 	saveOrchestras() {
-		Document doc = DOMUtils.createEmptyDocument();
+		try {
+			String s = getJSamplerHome();
+			if(s == null) return;
+			
+			HF.createBackup("orchestras.xml", "orchestras.xml.bkp");
+			
+			FileOutputStream fos;
+			fos = new FileOutputStream(s + File.separator + "orchestras.xml", false);
+			
+			Document doc = DOMUtils.createEmptyDocument();
 		
-		Node node = doc.createElement("temp");
-		doc.appendChild(node);
+			Node node = doc.createElement("temp");
+			doc.appendChild(node);
+			
+			getOrchestras().writeObject(doc, doc.getDocumentElement());
+			
+			doc.replaceChild(node.getFirstChild(), node);
 		
-		getOrchestras().writeObject(doc, doc.getDocumentElement());
-		
-		doc.replaceChild(node.getFirstChild(), node);
-		
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		DOMUtils.writeObject(doc, baos);
-		Prefs.setOrchestras(baos.toString());
+			DOMUtils.writeObject(doc, fos);
+			
+			fos.close();
+			
+			HF.deleteFile("orchestras.xml.bkp");
+		} catch(Exception x) {
+			HF.showErrorMessage(x, "Saving orchestras: ");
+			return;
+		}
 	}
 	
 	/**
@@ -306,7 +513,7 @@ public class CC {
 			}
 		});
 		
-		final GetAODrivers gaod = new GetAODrivers();
+		final Audio.GetDrivers gaod = new Audio.GetDrivers();
 		gaod.addTaskListener(new TaskListener() {
 			public void
 			taskPerformed(TaskEvent e) {
@@ -323,7 +530,7 @@ public class CC {
 			}
 		});
 		
-		final GetMIDrivers gmid = new GetMIDrivers();
+		final Midi.GetDrivers gmid = new Midi.GetDrivers();
 		gmid.addTaskListener(new TaskListener() {
 			public void
 			taskPerformed(TaskEvent e) {
@@ -331,6 +538,44 @@ public class CC {
 					model.setMidiInputDrivers(gmid.getResult());
 			}
 		});
+		
+		final Global.GetVolume gv = new Global.GetVolume();
+		gv.addTaskListener(new TaskListener() {
+			public void
+			taskPerformed(TaskEvent e) {
+				if(!gv.doneWithErrors())
+					model.setVolume(gv.getResult());
+			}
+		});
+		
+		final Midi.GetInstrumentMaps mgim = new Midi.GetInstrumentMaps();
+		mgim.addTaskListener(new TaskListener() {
+			public void
+			taskPerformed(TaskEvent e) {
+				if(mgim.doneWithErrors()) return;
+				model.removeAllMidiInstrumentMaps();
+				
+				for(MidiInstrumentMap map : mgim.getResult()) {
+					model.addMidiInstrumentMap(map);
+				}
+			}
+		});
+		
+		final UpdateChannels uc = new UpdateChannels();
+		uc.addTaskListener(new TaskListener() {
+			public void
+			taskPerformed(TaskEvent e) {
+				for(SamplerChannelModel c : model.getChannelModels()) {
+					if(c.getChannelInfo().getEngine() == null) continue;
+					
+					Channel.GetFxSends gfs = new Channel.GetFxSends();
+					gfs.setChannel(c.getChannelId());
+					gfs.addTaskListener(new GetFxSendsListener());
+					getTaskQueue().add(gfs);
+				}
+			}
+		});
+		
 		
 		final Connect cnt = new Connect();
 		cnt.addTaskListener(new TaskListener() {
@@ -342,13 +587,232 @@ public class CC {
 				getTaskQueue().add(gaod);
 				getTaskQueue().add(gmid);
 				getTaskQueue().add(ge);
-				getTaskQueue().add(new UpdateMidiDevices());
-				getTaskQueue().add(new UpdateAudioDevices());
-				getTaskQueue().add(new UpdateChannels());
+				getTaskQueue().add(gv);
+				getTaskQueue().add(mgim);
+				getTaskQueue().add(new Midi.UpdateDevices());
+				getTaskQueue().add(new Audio.UpdateDevices());
+				getTaskQueue().add(uc);
 			}
 		});
 		getTaskQueue().add(cnt);
 	}
+	
+	private static class GetFxSendsListener implements TaskListener {
+		public void
+		taskPerformed(TaskEvent e) {
+			Channel.GetFxSends gfs = (Channel.GetFxSends)e.getSource();
+			if(gfs.doneWithErrors()) return;
+			SamplerChannelModel m = getSamplerModel().getChannelModel(gfs.getChannel());
+			m.removeAllFxSends();
+			
+			for(FxSend fxs : gfs.getResult()) m.addFxSend(fxs);
+		}
+	}
+	
+	public static String
+	exportInstrMapsToLscpScript() {
+		StringBuffer sb = new StringBuffer("# Exported by: ");
+		sb.append("JSampler - a java front-end for LinuxSampler\r\n# Version: ");
+		sb.append(JSampler.VERSION).append("\r\n");
+		sb.append("# Date: ").append(new java.util.Date().toString()).append("\r\n\r\n");
+		
+		Client lscpClient = new Client(true);
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		lscpClient.setPrintOnlyModeOutputStream(out);
+		
+		exportInstrMapsToLscpScript(lscpClient);
+		sb.append(out.toString());
+		out.reset();
+		
+		return sb.toString();
+	}
+	
+	private static void
+	exportInstrMapsToLscpScript(Client lscpClient) {
+		try {
+			lscpClient.removeAllMidiInstrumentMaps();
+			MidiInstrumentMap[] maps = CC.getSamplerModel().getMidiInstrumentMaps();
+			for(int i = 0; i < maps.length; i++) {
+				lscpClient.addMidiInstrumentMap(maps[i].getName());
+				exportInstrumentsToLscpScript(i, maps[i], lscpClient);
+			}
+		} catch(Exception e) {
+			CC.getLogger().log(Level.FINE, HF.getErrorMessage(e), e);
+			HF.showErrorMessage(e);
+		}
+	}
+	
+	private static void
+	exportInstrumentsToLscpScript(int mapId, MidiInstrumentMap map, Client lscpClient)
+										throws Exception {
+	
+		for(MidiInstrument i : map.getAllMidiInstruments()) {
+			lscpClient.mapMidiInstrument(mapId, i.getInfo().getEntry(), i.getInfo());
+		}
+	}
+	
+	public static String
+	exportSessionToLscpScript() {
+		StringBuffer sb = new StringBuffer("# Exported by: ");
+		sb.append("JSampler - a java front-end for LinuxSampler\r\n# Version: ");
+		sb.append(JSampler.VERSION).append("\r\n");
+		sb.append("# Date: ").append(new java.util.Date().toString()).append("\r\n\r\n");
+		
+		Client lscpClient = new Client(true);
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		lscpClient.setPrintOnlyModeOutputStream(out);
+		
+		try {
+			lscpClient.resetSampler();
+			sb.append(out.toString());
+			out.reset();
+			sb.append("\r\n");
+			lscpClient.setVolume(CC.getSamplerModel().getVolume());
+			sb.append(out.toString());
+			out.reset();
+			sb.append("\r\n");
+		} catch(Exception e) { CC.getLogger().log(Level.FINE, HF.getErrorMessage(e), e); }
+				
+		MidiDeviceModel[] mDevs = getSamplerModel().getMidiDeviceModels();
+		for(int i = 0; i < mDevs.length; i++) {
+			exportMidiDeviceToLscpScript(mDevs[i].getDeviceInfo(), i, lscpClient);
+			sb.append(out.toString());
+			out.reset();
+			sb.append("\r\n");
+		}
+		
+		AudioDeviceModel[] aDevs = getSamplerModel().getAudioDeviceModels();
+		for(int i = 0; i < aDevs.length; i++) {
+			exportAudioDeviceToLscpScript(aDevs[i].getDeviceInfo(), i, lscpClient);
+			sb.append(out.toString());
+			out.reset();
+			sb.append("\r\n");
+		}
+		
+		SamplerChannelModel[] channels = getSamplerModel().getChannelModels();
+		
+		for(int i = 0; i < channels.length; i++) {
+			SamplerChannelModel scm = getSamplerModel().getChannelModel(i);
+			exportChannelToLscpScript(scm.getChannelInfo(), i, lscpClient);
+			sb.append(out.toString());
+			out.reset();
+			
+			sb.append("\r\n");
+			
+			exportFxSendsToLscpScript(scm, i, lscpClient);
+			sb.append(out.toString());
+			out.reset();
+			
+			sb.append("\r\n");
+		}
+		
+		exportInstrMapsToLscpScript(lscpClient);
+		sb.append(out.toString());
+		out.reset();
+		
+		return sb.toString();
+	}
+	
+	private static void
+	exportMidiDeviceToLscpScript(MidiInputDevice mid, int devId, Client lscpCLient) {
+		try {
+			String s = mid.getDriverName();
+			lscpCLient.createMidiInputDevice(s, mid.getAdditionalParameters());
+			
+			MidiPort[] mPorts = mid.getMidiPorts();
+			int l = mPorts.length;
+			if(l != 1) lscpCLient.setMidiInputPortCount(devId, l);
+			
+			for(int i = 0; i < l; i++) {
+				Parameter[] prms = mPorts[i].getAllParameters();
+				for(Parameter p : prms) {
+					if(!p.isFixed() && p.getStringValue().length() > 0)
+						lscpCLient.setMidiInputPortParameter(devId, i, p);
+				}
+			}
+		} catch(Exception e) {
+			CC.getLogger().log(Level.FINE, HF.getErrorMessage(e), e);
+		}
+	}
+	
+	private static void
+	exportAudioDeviceToLscpScript(AudioOutputDevice aod, int devId, Client lscpCLient) {
+		try {
+			String s = aod.getDriverName();
+			lscpCLient.createAudioOutputDevice(s, aod.getAllParameters());
+			
+			AudioOutputChannel[] chns = aod.getAudioChannels();
+			
+			for(int i = 0; i < chns.length; i++) {
+				Parameter[] prms = chns[i].getAllParameters();
+				for(Parameter p : prms) {
+					if(p.isFixed() || p.getStringValue().length() == 0);
+					else lscpCLient.setAudioOutputChannelParameter(devId, i, p);
+				}
+			}
+		} catch(Exception e) {
+			CC.getLogger().log(Level.FINE, HF.getErrorMessage(e), e);
+		}
+	}
+	
+	private static void
+	exportChannelToLscpScript(SamplerChannel chn, int chnId, Client lscpCLient) {
+		try {
+			lscpCLient.addSamplerChannel();
+			
+			int i = chn.getMidiInputDevice();
+			if(i != -1) lscpCLient.setChannelMidiInputDevice(chnId, i);
+			lscpCLient.setChannelMidiInputPort(chnId, chn.getMidiInputPort());
+			lscpCLient.setChannelMidiInputChannel(chnId, chn.getMidiInputChannel());
+			
+			i = chn.getAudioOutputDevice();
+			if(i != -1) {
+				lscpCLient.setChannelAudioOutputDevice(chnId, i);
+				Integer[] routing = chn.getAudioOutputRouting();
+				
+				for(int j = 0; j < routing.length; j++) {
+					int k = routing[j];
+					if(k == j) continue;
+					
+					lscpCLient.setChannelAudioOutputChannel(chnId, j, k);
+				}
+			}
+			
+			if(chn.getEngine() != null) {
+				lscpCLient.loadSamplerEngine(chn.getEngine().getName(), chnId);
+				lscpCLient.setChannelVolume(chnId, chn.getVolume());
+			}
+			
+			String s = chn.getInstrumentFile();
+			i = chn.getInstrumentIndex();
+			if(s != null) lscpCLient.loadInstrument(s, i, chnId, true);
+			
+			if(chn.isMuted()) lscpCLient.setChannelMute(chnId, true);
+			if(chn.isSoloChannel()) lscpCLient.setChannelSolo(chnId, true);
+		} catch(Exception e) {
+			CC.getLogger().log(Level.FINE, HF.getErrorMessage(e), e);
+		}
+	}
+	
+	private static void
+	exportFxSendsToLscpScript(SamplerChannelModel scm, int chnId, Client lscpClient) {
+		try {
+			FxSend[] fxSends = scm.getFxSends();
+			
+			for(int i = 0; i < fxSends.length; i++) {
+				FxSend f = fxSends[i];
+				lscpClient.createFxSend(chnId, f.getMidiController(), f.getName());
+				
+				Integer[] r = f.getAudioOutputRouting();
+				for(int j = 0; j < r.length; j++) {
+					lscpClient.setFxSendAudioOutputChannel(chnId, i, j, r[j]);
+				}
+			}
+		} catch(Exception e) {
+			CC.getLogger().log(Level.FINE, HF.getErrorMessage(e), e);
+		}
+	}
+	
 	
 	private final static EventHandler eventHandler = new EventHandler();
 	
@@ -356,8 +820,10 @@ public class CC {
 	getHandler() { return eventHandler; }
 	
 	private static class EventHandler implements ChannelCountListener, ChannelInfoListener,
-		StreamCountListener, VoiceCountListener, TotalVoiceCountListener,
-		TaskQueueListener, OrchestraListener, OrchestraListListener {
+		FxSendCountListener, FxSendInfoListener, StreamCountListener, VoiceCountListener,
+		TotalVoiceCountListener, TaskQueueListener, OrchestraListener,
+		ListListener<OrchestraModel>, MidiInstrumentCountListener,
+		MidiInstrumentInfoListener, GlobalInfoListener {
 		
 		/** Invoked when the number of channels has changed. */
 		public void
@@ -378,9 +844,9 @@ public class CC {
 			for(int i = tS.length - 1; i >= 0; i--) {
 				Task t = tS[i];
 				
-				if(t instanceof UpdateChannelInfo) {
-					UpdateChannelInfo uci = (UpdateChannelInfo)t;
-					if(uci.getChannelID() == e.getSamplerChannel()) return;
+				if(t instanceof Channel.UpdateInfo) {
+					Channel.UpdateInfo cui = (Channel.UpdateInfo)t;
+					if(cui.getChannelId() == e.getSamplerChannel()) return;
 				} else {
 					b = false;
 					break;
@@ -389,14 +855,32 @@ public class CC {
 			
 			if(b) {
 				Task t = getTaskQueue().getRunningTask();
-				if(t instanceof UpdateChannelInfo) {
-					UpdateChannelInfo uci = (UpdateChannelInfo)t;
-					if(uci.getChannelID() == e.getSamplerChannel()) return;
+				if(t instanceof Channel.UpdateInfo) {
+					Channel.UpdateInfo cui = (Channel.UpdateInfo)t;
+					if(cui.getChannelId() == e.getSamplerChannel()) return;
 				}
 			}
 			
 			
-			getTaskQueue().add(new UpdateChannelInfo(e.getSamplerChannel()));
+			getTaskQueue().add(new Channel.UpdateInfo(e.getSamplerChannel()));
+		}
+		
+		/**
+		 * Invoked when the number of effect sends
+		 * on a particular sampler channel has changed.
+		 */
+		public void
+		fxSendCountChanged(FxSendCountEvent e) {
+			getTaskQueue().add(new Channel.UpdateFxSends(e.getChannel()));
+		}
+		
+		/**
+		 * Invoked when the settings of an effect sends are changed.
+		 */
+		public void
+		fxSendInfoChanged(FxSendInfoEvent e) {
+			Task t = new Channel.UpdateFxSendInfo(e.getChannel(), e.getFxSend());
+			getTaskQueue().add(t);
 		}
 		
 		/**
@@ -449,6 +933,28 @@ public class CC {
 			getTaskQueue().add(new UpdateTotalVoiceCount());
 		}
 		
+		/** Invoked when the number of MIDI instruments in a MIDI instrument map is changed. */
+		public void
+		instrumentCountChanged(MidiInstrumentCountEvent e) {
+			getTaskQueue().add(new Midi.UpdateInstruments(e.getMapId()));
+		}
+		
+		/** Invoked when a MIDI instrument in a MIDI instrument map is changed. */
+		public void
+		instrumentInfoChanged(MidiInstrumentInfoEvent e) {
+			Task t = new Midi.UpdateInstrumentInfo (
+				e.getMapId(), e.getMidiBank(), e.getMidiProgram()
+			); 
+			getTaskQueue().add(t);
+				
+		}
+		
+		/** Invoked when the global volume of the sampler is changed. */
+		public void
+		volumeChanged(GlobalInfoEvent e) {
+			getSamplerModel().setVolume(e.getVolume());
+		}
+		
 		/**
 		 * Invoked to indicate that the state of a task queue is changed.
 		 * This method is invoked only from the event-dispatching thread.
@@ -498,16 +1004,82 @@ public class CC {
 		
 		/** Invoked when an orchestra is added to the orchestra list. */
 		public void
-		orchestraAdded(OrchestraListEvent e) {
-			e.getOrchestraModel().addOrchestraListener(getHandler());
+		entryAdded(ListEvent<OrchestraModel> e) {
+			e.getEntry().addOrchestraListener(getHandler());
 			saveOrchestras();
 		}
 	
 		/** Invoked when an orchestra is removed from the orchestra list. */
 		public void
-		orchestraRemoved(OrchestraListEvent e) {
-			e.getOrchestraModel().removeOrchestraListener(getHandler());
+		entryRemoved(ListEvent<OrchestraModel> e) {
+			e.getEntry().removeOrchestraListener(getHandler());
 			saveOrchestras();
+		}
+	}
+	
+	private static final AudioDeviceCountListener audioDeviceCountListener = 
+		new AudioDeviceCountListener();
+	
+	private static class AudioDeviceCountListener implements ItemCountListener {
+		/** Invoked when the number of audio output devices has changed. */
+		public void
+		itemCountChanged(ItemCountEvent e) {
+			getTaskQueue().add(new Audio.UpdateDevices());
+		}
+	}
+	
+	private static final AudioDeviceInfoListener audioDeviceInfoListener = 
+		new AudioDeviceInfoListener();
+	
+	private static class AudioDeviceInfoListener implements ItemInfoListener {
+		/** Invoked when the audio output device's settings are changed. */
+		public void
+		itemInfoChanged(ItemInfoEvent e) {
+			getTaskQueue().add(new Audio.UpdateDeviceInfo(e.getItemID()));
+		}
+	}
+	
+	private static final MidiDeviceCountListener midiDeviceCountListener = 
+		new MidiDeviceCountListener();
+	
+	private static class MidiDeviceCountListener implements ItemCountListener {
+		/** Invoked when the number of MIDI input devices has changed. */
+		public void
+		itemCountChanged(ItemCountEvent e) {
+			getTaskQueue().add(new Midi.UpdateDevices());
+		}
+	}
+	
+	private static final MidiDeviceInfoListener midiDeviceInfoListener = 
+		new MidiDeviceInfoListener();
+	
+	private static class MidiDeviceInfoListener implements ItemInfoListener {
+		/** Invoked when the MIDI input device's settings are changed. */
+		public void
+		itemInfoChanged(ItemInfoEvent e) {
+			getTaskQueue().add(new Midi.UpdateDeviceInfo(e.getItemID()));
+		}
+	}
+	
+	private static final MidiInstrMapCountListener midiInstrMapCountListener = 
+		new MidiInstrMapCountListener();
+	
+	private static class MidiInstrMapCountListener implements ItemCountListener {
+		/** Invoked when the number of MIDI instrument maps is changed. */
+		public void
+		itemCountChanged(ItemCountEvent e) {
+			getTaskQueue().add(new Midi.UpdateInstrumentMaps());
+		}
+	}
+	
+	private static final MidiInstrMapInfoListener midiInstrMapInfoListener = 
+		new MidiInstrMapInfoListener();
+	
+	private static class MidiInstrMapInfoListener implements ItemInfoListener {
+		/** Invoked when the MIDI instrument map's settings are changed. */
+		public void
+		itemInfoChanged(ItemInfoEvent e) {
+			getTaskQueue().add(new Midi.UpdateInstrumentMapInfo(e.getItemID()));
 		}
 	}
 }

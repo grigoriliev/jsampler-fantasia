@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005, 2006 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -227,7 +227,8 @@ public class MainFrame extends JSMainFrame {
 		}
 	}
 	
-	
+	public void
+	installJSamplerHome() { }
 }
 
 class FantasiaTitleBar extends TitleBar {

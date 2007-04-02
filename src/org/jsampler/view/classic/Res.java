@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005, 2006 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -34,6 +34,9 @@ public class Res {
 	/** Forbits the instantiation of this class. */
 	private Res() { }
 	
+	protected final static ImageIcon iconClose8
+		= new ImageIcon(Res.class.getResource("res/icons/close8.png"));
+	
 	protected final static ImageIcon iconNew16
 		= new ImageIcon(Res.class.getResource("res/icons/New16.gif"));
 	
@@ -55,13 +58,80 @@ public class Res {
 	protected final static ImageIcon iconDown16
 		= new ImageIcon(Res.class.getResource("res/icons/Down16.gif"));
 	
+	protected final static ImageIcon iconAudioProps16
+		= new ImageIcon(Res.class.getResource("res/icons/Import16.gif"));
+	
+	protected final static ImageIcon iconVolume16
+		= new ImageIcon(Res.class.getResource("res/icons/Volume16.png"));
+	
+	protected final static ImageIcon iconFolder16
+		= new ImageIcon(Res.class.getResource("res/icons/folder16.png"));
+	
+	protected final static ImageIcon iconFolderOpen16
+		= new ImageIcon(Res.class.getResource("res/icons/folder_open16.png"));
+	
+	protected final static ImageIcon iconInstrument16
+		= new ImageIcon(Res.class.getResource("res/icons/instr16.png"));
+	
+	protected final static ImageIcon iconExport16
+		= new ImageIcon(Res.class.getResource("res/icons/save16.png"));
+	
+	protected final static ImageIcon iconTabNew22
+		= new ImageIcon(Res.class.getResource("res/icons/tab_new22.png"));
+	
+	protected final static ImageIcon iconTabRemove22
+		= new ImageIcon(Res.class.getResource("res/icons/tab_remove22.png"));
+	
+	protected final static ImageIcon iconTabMoveLeft22
+		= new ImageIcon(Res.class.getResource("res/icons/tab_move_left22.png"));
+	
+	protected final static ImageIcon iconTabMoveRight22
+		= new ImageIcon(Res.class.getResource("res/icons/tab_move_right22.png"));
+	
+	protected final static ImageIcon iconFxSends22
+		= new ImageIcon(Res.class.getResource("res/icons/fx_sends22.png"));
+	
+	protected final static ImageIcon iconVolume22
+		= new ImageIcon(Res.class.getResource("res/icons/Volume22.png"));
+	
+	protected final static ImageIcon iconUp24
+		= new ImageIcon(Res.class.getResource("res/icons/Up22.png"));
+	
+	protected final static ImageIcon iconDown24
+		= new ImageIcon(Res.class.getResource("res/icons/Down22.png"));
+	
 	protected final static ImageIcon iconNew24
-		= new ImageIcon(Res.class.getResource("res/icons/toolbar/New24.gif"));
+		= new ImageIcon(Res.class.getResource("res/icons/New24.png"));
 	
 	protected final static ImageIcon iconCopy24
-		= new ImageIcon(Res.class.getResource("res/icons/toolbar/Copy24.gif"));
+		= new ImageIcon(Res.class.getResource("res/icons/Copy24.png"));
 	
-	protected final static ImageIcon iconPreferences24
-		= new ImageIcon(Res.class.getResource("res/icons/toolbar/Preferences24.gif"));
+	protected final static ImageIcon iconDelete24
+		= new ImageIcon(Res.class.getResource("res/icons/Delete24.png"));
+	
+	protected final static ImageIcon iconMidi24
+		= new ImageIcon(Res.class.getResource("res/icons/midi24.png"));
+	
+	protected final static ImageIcon iconVol24
+		= new ImageIcon(Res.class.getResource("res/icons/Vol24.png"));
+	
+	protected final static ImageIcon iconExportSession32
+		= new ImageIcon(Res.class.getResource("res/icons/Save32.png"));
+	
+	protected final static ImageIcon iconLoadScript32
+		= new ImageIcon(Res.class.getResource("res/icons/Open32.png"));
+	
+	protected final static ImageIcon iconReset32
+		= new ImageIcon(Res.class.getResource("res/icons/purge.png"));
+	
+	protected final static ImageIcon iconReload32
+		= new ImageIcon(Res.class.getResource("res/icons/reload.png"));
+	
+	protected final static ImageIcon iconInfo32
+		= new ImageIcon(Res.class.getResource("res/icons/info32.png"));
+	
+	protected final static ImageIcon iconPreferences32
+		= new ImageIcon(Res.class.getResource("res/icons/Preferences32.png"));
+	
 	
 }

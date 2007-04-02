@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -34,6 +34,9 @@ public class Prefs {
 	
 	private final static String VIEW = "VIEW";
 	private final static String DEF_VIEW = "classic";
+	
+	private final static String JSAMPLER_HOME = "JSampler.home";
+	private final static String DEF_JSAMPLER_HOME = null;
 	
 	private final static String INTERFACE_LANGUAGE = "iface.language";
 	private final static String DEF_INTERFACE_LANGUAGE = "en";
@@ -156,6 +159,33 @@ public class Prefs {
 	}
 
 // PREFERENCES
+	/**
+	 * Gets the absolute path of JSampler home directory.
+	 * @return The absolute path of JSampler home directory or
+	 * <code>null</code> if the JSampler home directory is not set.
+	 */
+	public static String
+	getJSamplerHome() { return user().get(JSAMPLER_HOME, DEF_JSAMPLER_HOME); }
+	
+	/**
+	 * Sets the JSampler home directory.
+	 * @param home The absolute path of JSampler home directory.
+	 * @return <code>true</code> if the JSampler home directory has
+	 * been changed and <code>false</code> otherwise.
+	 */
+	public static boolean
+	setJSamplerHome(String home) {
+		if(home == null) {
+			if(getJSamplerHome() == null) return false;
+			user().remove(JSAMPLER_HOME);
+			return true;
+		} else if(!home.equals(getJSamplerHome())) {
+			user().put(JSAMPLER_HOME, home);
+			return true;
+		}
+		return false;
+	}
+	
 	/**
 	 * Gets the LinuxSampler address.
 	 * @return The LinuxSampler address.

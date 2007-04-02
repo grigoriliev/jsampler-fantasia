@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005, 2006 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -46,11 +46,14 @@ public class Res {
 	protected final static ImageIcon iconMuteOff
 		= new ImageIcon(Res.class.getResource("res/btn_mute_off.png"));
 	
+	protected final static ImageIcon iconMuteSoloDisabled
+		= new ImageIcon(Res.class.getResource("res/btn_mute_solo_disabled.png"));
+	
 	protected final static ImageIcon iconMutedBySolo
 		= new ImageIcon(Res.class.getResource("res/btn_mute_off.png"));
 	
 	protected final static ImageIcon iconSoloOn
-		= new ImageIcon(Res.class.getResource("res/btn_mute_on.png"));
+		= new ImageIcon(Res.class.getResource("res/btn_solo_on.png"));
 	
 	protected final static ImageIcon iconSoloOff
 		= new ImageIcon(Res.class.getResource("res/btn_mute_off.png"));
@@ -73,8 +76,14 @@ public class Res {
 	protected final static ImageIcon iconOptionsOn
 		= new ImageIcon(Res.class.getResource("res/btn_hide_channel_options.png"));
 	
+	protected final static ImageIcon iconOptionsOnRO
+		= new ImageIcon(Res.class.getResource("res/btn_hide_channel_options_ro.png"));
+	
 	protected final static ImageIcon iconOptionsOff
 		= new ImageIcon(Res.class.getResource("res/btn_show_channel_options.png"));
+	
+	protected final static ImageIcon iconOptionsOffRO
+		= new ImageIcon(Res.class.getResource("res/btn_show_channel_options_ro.png"));
 	
 	protected final static ImageIcon iconMidiInputTitle
 		= new ImageIcon(Res.class.getResource("res/title_midi_input.png"));

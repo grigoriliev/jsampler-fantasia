@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005, 2006 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -62,7 +62,8 @@ public class LscpNode {
 	}
 	
 	/**
-	 * Creates a new instance of <code>LscpNode</code>.
+	 * Creates a new instance of <code>LscpNode</code> with
+	 * the specified children which are not end of a command.
 	 * @param name The name of the node.
 	 * @param children The children nodes of this node.
 	 */
@@ -89,6 +90,7 @@ public class LscpNode {
 	 * @param endOfACommand Determines whether this node can be an end of a command.
 	 * @param hasParameters When the node is an end of a command,
 	 * determines whether the command has one or more parameters.
+	 * @see #isEndOfACommand
 	 */
 	public
 	LscpNode(String name, LscpNode[] children, boolean endOfACommand, boolean hasParameters) {
@@ -99,7 +101,8 @@ public class LscpNode {
 	}
 	
 	/**
-	 * Creates a new instance of <code>LscpNode</code>.
+	 * Creates a new instance of <code>LscpNode</code> with the specified
+	 * child wich is not an end of a command.
 	 * @param name The name of the node.
 	 * @param child The child node of this node.
 	 */

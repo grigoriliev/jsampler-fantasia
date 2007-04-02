@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -64,16 +64,11 @@ import org.jsampler.CC;
 import org.jsampler.HF;
 
 import org.jsampler.event.AudioDeviceEvent;
-import org.jsampler.event.AudioDeviceListEvent;
-import org.jsampler.event.AudioDeviceListListener;
 import org.jsampler.event.AudioDeviceListener;
+import org.jsampler.event.ListEvent;
+import org.jsampler.event.ListListener;
 import org.jsampler.event.ParameterEvent;
 import org.jsampler.event.ParameterListener;
-
-import org.jsampler.task.DestroyAudioDevice;
-import org.jsampler.task.EnableAudioDevice;
-import org.jsampler.task.SetAudioChannelParameter;
-import org.jsampler.task.SetAudioOutputChannelCount;
 
 import org.jsampler.view.NumberCellEditor;
 import org.jsampler.view.ParameterTable;
@@ -131,6 +126,9 @@ public class AudioDevicesPage extends NavigationPage {
 		tb.setFloatable(false);
 		tb.setAlignmentX(JPanel.RIGHT_ALIGNMENT);
 		
+		tb.add(Box.createRigidArea(new Dimension(3, 0)));
+		tb.add(new JLabel(Res.iconVol24));
+		tb.add(Box.createRigidArea(new Dimension(3, 0)));
 		tb.add(btnNewDevice);
 		tb.add(btnDuplicateDevice);
 		tb.add(btnRemoveDevice);
@@ -140,6 +138,7 @@ public class AudioDevicesPage extends NavigationPage {
 		add(tb);
 		
 		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+		splitPane.setContinuousLayout(true);
 		
 		devicesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		JScrollPane sp = new JScrollPane(devicesTable);
@@ -296,9 +295,7 @@ public class AudioDevicesPage extends NavigationPage {
 				return;
 			}
 			
-			CC.getTaskQueue().add (
-				new SetAudioChannelParameter(m.getDeviceID(), c, e.getParameter())
-			);
+			m.setBackendChannelParameter(c, e.getParameter());
 		}
 	}
 	
@@ -370,7 +367,7 @@ public class AudioDevicesPage extends NavigationPage {
 				return;
 			}
 			
-			CC.getTaskQueue().add(new DestroyAudioDevice(m.getDeviceID()));
+			CC.getSamplerModel().removeBackendAudioDevice(m.getDeviceId());
 		}
 	}
 	
@@ -477,7 +474,7 @@ class AudioDevicesTableModel extends AbstractTableModel {
 		case ACTIVE_COLUMN_INDEX:
 			return deviceList[row].getDeviceInfo().isActive();
 		case DEVICE_ID_COLUMN_INDEX:
-			return deviceList[row].getDeviceID();
+			return deviceList[row].getDeviceId();
 		case CHANNELS_COLUMN_INDEX:
 			return deviceList[row].getDeviceInfo().getChannelCount();
 		}
@@ -495,14 +492,11 @@ class AudioDevicesTableModel extends AbstractTableModel {
 		case ACTIVE_COLUMN_INDEX:
 			boolean active = (Boolean)value;
 			deviceList[row].getDeviceInfo().setActive(active);
-			CC.getTaskQueue().add (
-				new EnableAudioDevice(deviceList[row].getDeviceID(), active)
-			);
+			deviceList[row].setBackendActive(active);
 			break;
 		case CHANNELS_COLUMN_INDEX:
-			int deviceID = getAudioDeviceModel(row).getDeviceID();
 			int channels = (Integer)value;
-			CC.getTaskQueue().add(new SetAudioOutputChannelCount(deviceID, channels));
+			getAudioDeviceModel(row).setBackendChannelCount(channels);
 			break;
 		default: return;
 		}
@@ -540,14 +534,14 @@ class AudioDevicesTableModel extends AbstractTableModel {
 	}
 ///////
 	
-	private class Handler implements AudioDeviceListener, AudioDeviceListListener {
+	private class Handler implements AudioDeviceListener, ListListener<AudioDeviceModel> {
 		/**
 		 * Invoked when a new audio device is created.
 		 * @param e An <code>AudioDeviceListEvent</code>
 		 * instance providing the event information.
 		 */
 		public void
-		deviceAdded(AudioDeviceListEvent e) {
+		entryAdded(ListEvent<AudioDeviceModel> e) {
 			for(AudioDeviceModel m : deviceList) m.removeAudioDeviceListener(this);
 			deviceList = CC.getSamplerModel().getAudioDeviceModels();
 			for(AudioDeviceModel m : deviceList) m.addAudioDeviceListener(this);
@@ -560,7 +554,7 @@ class AudioDevicesTableModel extends AbstractTableModel {
 		 * instance providing the event information.
 		 */
 		public void
-		deviceRemoved(AudioDeviceListEvent e) {
+		entryRemoved(ListEvent<AudioDeviceModel> e) {
 			for(AudioDeviceModel m : deviceList) m.removeAudioDeviceListener(this);
 			deviceList = CC.getSamplerModel().getAudioDeviceModels();
 			for(AudioDeviceModel m : deviceList) m.addAudioDeviceListener(this);
@@ -574,7 +568,7 @@ class AudioDevicesTableModel extends AbstractTableModel {
 				AudioOutputDevice d = deviceList[i].getDeviceInfo();
 				AudioOutputDevice d2 = e.getAudioDeviceModel().getDeviceInfo();
 				
-				if(d.getDeviceID() == d2.getDeviceID()) {
+				if(d.getDeviceId() == d2.getDeviceId()) {
 					fireTableRowsUpdated(i,  i);
 				}
 			}

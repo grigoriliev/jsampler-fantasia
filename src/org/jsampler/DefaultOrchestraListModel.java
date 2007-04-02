@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005, 2006 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -24,8 +24,8 @@ package org.jsampler;
 
 import java.util.Vector;
 
-import org.jsampler.event.OrchestraListListener;
-import org.jsampler.event.OrchestraListEvent;
+import org.jsampler.event.ListEvent;
+import org.jsampler.event.ListListener;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -39,7 +39,8 @@ import org.w3c.dom.NodeList;
  */
 public class DefaultOrchestraListModel implements OrchestraListModel {
 	private final Vector<OrchestraModel> orchestras = new Vector<OrchestraModel>();
-	private final Vector<OrchestraListListener> listeners = new Vector<OrchestraListListener>();
+	private final Vector<ListListener<OrchestraModel>> listeners =
+		new Vector<ListListener<OrchestraModel>>();
 	
 	
 	/** Creates a new instance of <code>DefaultOrchestraListModel</code>. */
@@ -53,14 +54,14 @@ public class DefaultOrchestraListModel implements OrchestraListModel {
 	 * @param l The <code>OrchestraListListener</code> to register.
 	 */
 	public void
-	addOrchestraListListener(OrchestraListListener l) { listeners.add(l); }
+	addOrchestraListListener(ListListener<OrchestraModel> l) { listeners.add(l); }
 	
 	/**
 	 * Removes the specified listener.
 	 * @param l The <code>OrchestraListListener</code> to remove.
 	 */
 	public void
-	removeOrchestraListListener(OrchestraListListener l) { listeners.remove(l); }
+	removeOrchestraListListener(ListListener<OrchestraModel> l) { listeners.remove(l); }
 	
 	/**
 	 * Gets the current number of orchestras in the list.
@@ -125,6 +126,12 @@ public class DefaultOrchestraListModel implements OrchestraListModel {
 		boolean b = orchestras.removeElement(orchestraModel);
 		if(b) fireOrchestraRemoved(orchestraModel);
 		return b;
+	}
+	
+	/** Removes all orchestras from the list. */
+	public void
+	removeAllOrchestras() {
+		for(int i = 0; i < getOrchestraCount(); i++) removeOrchestra(i);
 	}
 	
 	/**
@@ -265,14 +272,14 @@ public class DefaultOrchestraListModel implements OrchestraListModel {
 	/** Notifies listeners that an orchestra has been added to the list. */
 	private void
 	fireOrchestraAdded(OrchestraModel orchestraModel) {
-		OrchestraListEvent e = new OrchestraListEvent(this, orchestraModel);
-		for(OrchestraListListener l : listeners) l.orchestraAdded(e);
+		ListEvent<OrchestraModel> e = new ListEvent<OrchestraModel>(this, orchestraModel);
+		for(ListListener<OrchestraModel> l : listeners) l.entryAdded(e);
 	}
 	
 	/** Notifies listeners that an orchestra has been removed from the list. */
 	private void
 	fireOrchestraRemoved(OrchestraModel orchestraModel) {
-		OrchestraListEvent e = new OrchestraListEvent(this, orchestraModel);
-		for(OrchestraListListener l : listeners) l.orchestraRemoved(e);
+		ListEvent<OrchestraModel> e = new ListEvent<OrchestraModel>(this, orchestraModel);
+		for(ListListener<OrchestraModel> l : listeners) l.entryRemoved(e);
 	}
 }

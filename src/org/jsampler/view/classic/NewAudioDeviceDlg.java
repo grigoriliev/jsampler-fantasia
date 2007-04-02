@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -49,7 +49,7 @@ import net.sf.juife.event.TaskEvent;
 import net.sf.juife.event.TaskListener;
 
 import org.jsampler.CC;
-import org.jsampler.task.CreateAudioDevice;
+import org.jsampler.task.Audio;
 
 import org.linuxsampler.lscp.AudioOutputDriver;
 
@@ -177,8 +177,8 @@ public class NewAudioDeviceDlg extends EnhancedDialog {
 		
 		AudioOutputDriver driver = (AudioOutputDriver)obj;
 		
-		final CreateAudioDevice cad =
-			new CreateAudioDevice(driver.getName(), driver.getParameters());
+		final Audio.CreateDevice cad =
+			new Audio.CreateDevice(driver.getName(), driver.getParameters());
 		
 		cad.addTaskListener(new TaskListener() {
 			public void

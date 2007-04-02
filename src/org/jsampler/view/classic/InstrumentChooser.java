@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -57,7 +57,7 @@ public class InstrumentChooser extends OkCancelDialog {
 	private final JSpinner spinnerIndex = new JSpinner(new SpinnerNumberModel(0, 0, 500, 1));
 	
 	private final JButton btnBrowse =
-		new JButton(i18n.getLabel("InstrumentChooser.btnBrowse"));
+		new JButton(Res.iconFolderOpen16);
 	
 	/** Creates a new instance of InstrumentChooser */
 	public InstrumentChooser(Frame owner) {
@@ -84,6 +84,8 @@ public class InstrumentChooser extends OkCancelDialog {
 		gridbag.setConstraints(lIndex, c);
 		mainPane.add(lIndex);
 		
+		btnBrowse.setMargin(new Insets(0, 0, 0, 0));
+		btnBrowse.setToolTipText(i18n.getLabel("InstrumentChooser.btnBrowse"));
 		c.gridx = 2;
 		c.gridy = 0;
 		gridbag.setConstraints(btnBrowse, c);
@@ -124,7 +126,7 @@ public class InstrumentChooser extends OkCancelDialog {
 				"",
 				JOptionPane.INFORMATION_MESSAGE
 			);
-			
+			setCancelled(true);
 			return;
 		}
 		

@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005, 2006 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -87,7 +87,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		if(url != null) applicationIcon = new ImageIcon(url);
 	}
 	
-	private final Toolbar toolbar = new Toolbar();
+	private final ChannelsBar channelsBar = new ChannelsBar();
 	private final Statusbar statusbar = new Statusbar();
 	private final JMenuBar menuBar = new JMenuBar();
 	private final JMenu recentScriptsMenu =
@@ -98,6 +98,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 	private final JSplitPane hSplitPane;
 	
 	private final JPanel mainPane = new JPanel();
+	private final StandardBar standardBar = new StandardBar();
 	private final JPanel channelsPane = new JPanel(new BorderLayout());
 	private final JPanel rightPane = new JPanel();
 	private final JPanel bottomPane = new JPanel();
@@ -111,6 +112,9 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 	private final JCheckBoxMenuItem cbmiLeftPaneVisible =
 			new JCheckBoxMenuItem(i18n.getMenuLabel("view.leftPane"));
 	
+	private final JCheckBoxMenuItem cbmiStandardBarVisible =
+			new JCheckBoxMenuItem(i18n.getMenuLabel("view.toolbars.standard"));
+	
 	private final JCheckBoxMenuItem cbmiLSConsoleShown =
 			new JCheckBoxMenuItem(i18n.getMenuLabel("view.lsconsole"));
 	
@@ -119,12 +123,12 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 	private final Vector<String> recentScripts = new Vector<String>();
 		
 	
-	/** Creates a new instance of JSMainFrame */
+	/** Creates a new instance of <code>MainFrame</code>. */
 	public
 	MainFrame() {
 		setTitle(i18n.getLabel("MainFrame.title"));
 		
-		getContentPane().add(toolbar, BorderLayout.NORTH);
+		getContentPane().add(standardBar, BorderLayout.NORTH);
 		getContentPane().add(mainPane);
 		
 		mainPane.setLayout(new BorderLayout());
@@ -140,6 +144,8 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		bottomPane.setLayout(new BorderLayout());
 		
 		rightPane.setLayout(new BorderLayout());
+		
+		rightPane.add(channelsBar, BorderLayout.NORTH);
 		rightPane.add(channelsPane);
 		
 		hSplitPane = new JSplitPane (
@@ -239,10 +245,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		for(String s : recentScripts) sb.append(s).append("\n");
 		ClassicPrefs.setRecentScripts(sb.toString());
 		
-		LSConsoleModel model = getLSConsoleModel();
-		sb = new StringBuffer();
-		for(String s : model.getCommandHistory()) sb.append(s).append("\n");
-		ClassicPrefs.setLSConsoleHistory(sb.toString());
+		if(ClassicPrefs.getSaveConsoleHistory()) lsConsolePane.saveConsoleHistory();
 		
 		ClassicPrefs.setShowLSConsole(isLSConsoleShown());
 		ClassicPrefs.setLSConsolePopOut(isLSConsolePopOut());
@@ -328,14 +331,40 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		mi.setIcon(null);
 		m.add(mi);
 		
+		JMenu midiInstrMenu = new JMenu(i18n.getMenuLabel("actions.midiInstruments"));
+		m.add(midiInstrMenu);
+		
+		mi = new JMenuItem(A4n.addMidiInstrumentMap);
+		mi.setIcon(null);
+		midiInstrMenu.add(mi);
+		
+		mi = new JMenuItem(A4n.removeMidiInstrumentMap);
+		mi.setIcon(null);
+		midiInstrMenu.add(mi);
+		
+		mi = new JMenuItem(A4n.addMidiInstrumentWizard);
+		mi.setIcon(null);
+		midiInstrMenu.add(mi);
+		
 		m.addSeparator();
 		
-		mi = new JMenuItem(i18n.getMenuLabel("actions.runScript"));
+		JMenu exportMenu = new JMenu(i18n.getMenuLabel("actions.export"));
+		m.add(exportMenu);
+		
+		mi = new JMenuItem(A4n.exportSamplerConfig);
+		mi.setIcon(null);
+		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_MASK));
+		exportMenu.add(mi);
+		
+		mi = new JMenuItem(A4n.exportMidiInstrumentMaps);
+		mi.setIcon(null);
+		exportMenu.add(mi);
+		
+		m.addSeparator();
+		
+		mi = new JMenuItem(A4n.loadScript);
+		mi.setIcon(null);
 		m.add(mi);
-		mi.addActionListener(new ActionListener() {
-			public void
-			actionPerformed(ActionEvent e) { runScript(); }
-		});
 		
 		String s = ClassicPrefs.getRecentScripts();
 		BufferedReader br = new BufferedReader(new StringReader(s));
@@ -410,18 +439,33 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		m = new JMenu(i18n.getMenuLabel("view"));
 		menuBar.add(m);
 		
-		final JCheckBoxMenuItem cbmi =
-			new JCheckBoxMenuItem(i18n.getMenuLabel("view.toolbar"));
+		JMenu toolbarsMenu = new JMenu(i18n.getMenuLabel("view.toolbars"));
+		m.add(toolbarsMenu);
 		
-		m.add(cbmi);
-		cbmi.addActionListener(new ActionListener() {
+		toolbarsMenu.add(cbmiStandardBarVisible);
+		cbmiStandardBarVisible.addActionListener(new ActionListener() {
 			public void
-			actionPerformed(ActionEvent e) { showToolbar(cbmi.getState()); }
+			actionPerformed(ActionEvent e) {
+				showStandardBar(cbmiStandardBarVisible.getState());
+			}
 		});
 		
-		boolean b = ClassicPrefs.shouldShowToolbar();
+		boolean b = ClassicPrefs.shouldShowStandardBar();
+		cbmiStandardBarVisible.setSelected(b);
+		showStandardBar(b);
+		
+		final JCheckBoxMenuItem cbmi =
+			new JCheckBoxMenuItem(i18n.getMenuLabel("view.toolbars.channels"));
+		
+		toolbarsMenu.add(cbmi);
+		cbmi.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) { showChannelsBar(cbmi.getState()); }
+		});
+		
+		b = ClassicPrefs.shouldShowChannelsBar();
 		cbmi.setSelected(b);
-		showToolbar(b);
+		showChannelsBar(b);
 		
 		m.add(cbmiLeftPaneVisible);
 		cbmiLeftPaneVisible.addActionListener(new ActionListener() {
@@ -606,11 +650,9 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 	}
 	
 	private void
-	showToolbar(boolean b) {
-		if(b) getContentPane().add(toolbar, BorderLayout.NORTH);
-		else getContentPane().remove(toolbar);
-		
-		ClassicPrefs.setShowToolbar(b);
+	showChannelsBar(boolean b) {
+		channelsBar.setVisible(b);
+		ClassicPrefs.setShowChannelsBar(b);
 		
 		validate();
 		repaint();
@@ -656,6 +698,14 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 			mainPane.add(rightPane);
 		}
 		
+		validate();
+		repaint();
+	}
+	
+	private void
+	showStandardBar(boolean b) {
+		ClassicPrefs.setShowStandardBar(b);
+		standardBar.setVisible(b);
 		validate();
 		repaint();
 	}
@@ -1045,11 +1095,14 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 	
 	protected void
 	runScript() {
-		JFileChooser fc = new JFileChooser();
+		JFileChooser fc = new JFileChooser(ClassicPrefs.getLastScriptLocation());
 		fc.setFileFilter(new LscpFileFilter());
 		int result = fc.showOpenDialog(this);
 		if(result != JFileChooser.APPROVE_OPTION) return;
 		
+		String path = fc.getCurrentDirectory().getAbsolutePath();
+		ClassicPrefs.setLastScriptLocation(path);
+					
 		runScript(fc.getSelectedFile());
 	}
 	
@@ -1113,5 +1166,14 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		}
 		
 		recentScriptsMenu.setEnabled(recentScripts.size() != 0);
+	}
+	
+	public void
+	installJSamplerHome() {
+		JSamplerHomeChooser chooser = new JSamplerHomeChooser(this);
+		chooser.setVisible(true);
+		if(chooser.isCancelled()) return;
+		
+		CC.changeJSamplerHome(chooser.getJSamplerHome());
 	}
 }

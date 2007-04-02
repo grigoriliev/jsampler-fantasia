@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -27,6 +27,12 @@ package org.jsampler.event;
  * @author Grigor Iliev
  */
 public interface SamplerListener extends java.util.EventListener {
+	/** Invoked when the global volume of the sampler is changed. */
+	public void volumeChanged(SamplerEvent e);
+	
 	/** Invoked when the total number of active voices is changed. */
 	public void totalVoiceCountChanged(SamplerEvent e);
+	
+	/** Invoked when the default MIDI instrument map is changed. */
+	public void defaultMapChanged(SamplerEvent e);
 }

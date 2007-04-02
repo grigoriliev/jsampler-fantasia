@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005, 2006 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -22,11 +22,6 @@
 
 package org.jsampler;
 
-import java.util.Vector;
-
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -38,65 +33,13 @@ import org.w3c.dom.NodeList;
  *
  * @author Grigor Iliev
  */
-public class Instrument {
-	private String name = "Untitled";
-	private String description = "";
+public class Instrument extends Resource {
 	private String path = null;
 	private int instrumentIndex = 0;
-	
-	private final Vector<ChangeListener> listeners = new Vector<ChangeListener>();
-	
+	private String engine = "GIG";
 	
 	/** Creates a new instance of <code>Instrument</code>. */
 	public Instrument() {
-	}
-	
-	/**
-	 * Registers the specified listener to be notified when the instrument settings are changed.
-	 * @param l The <code>OrchestraListener</code> to register.
-	 */
-	public void
-	addChangeListener(ChangeListener l) { listeners.add(l); }
-	
-	/**
-	 * Removes the specified listener.
-	 * @param l The <code>OrchestraListener</code> to remove.
-	 */
-	public void
-	removeChangeListener(ChangeListener l) { listeners.remove(l); }
-	
-	/**
-	 * Gets the name of this instrument.
-	 * @return The name of this instrument.
-	 */
-	public String
-	getName() { return name; }
-	
-	/**
-	 * Sets the name of this instrument.
-	 * @param name The new name of this instrument.
-	 */
-	public void
-	setName(String name) {
-		this.name = name;
-		fireChangeEvent();
-	}
-	
-	/**
-	 * Gets a brief description about this instrument.
-	 * @return A brief description about this instrument.
-	 */
-	public String
-	getDescription() { return description; }
-	
-	/**
-	 * Sets a description about this instrument.
-	 * @param desc A brief description about this instrument.
-	 */
-	public void
-	setDescription(String desc) {
-		description = desc;
-		fireChangeEvent();
 	}
 	
 	/**
@@ -132,6 +75,19 @@ public class Instrument {
 		instrumentIndex = idx;
 		fireChangeEvent();
 	}
+	
+	/**
+	 * Gets the engine to be used for loading this instrument.
+	 * @return The engine to be used for loading this instrument.
+	 */
+	public String
+	getEngine() { return engine; }
+	
+	/**
+	 * Sets the engine to be used for loading this instrument.
+	 */
+	public void
+	setEngine(String engine) { this.engine = engine; }
 	
 	/**
 	 * Returns the name of this instrument.
@@ -198,13 +154,6 @@ public class Instrument {
 	isDnDString(String s) {
 		if(s == null) return false;
 		return s.startsWith("[Instrument Definition]\n");
-	}
-	
-	/** Notifies listeners that the instrument settings has changed. */
-	private void
-	fireChangeEvent() {
-		ChangeEvent e = new ChangeEvent(this);
-		for(ChangeListener l : listeners) l.stateChanged(e);
 	}
 	
 	/**

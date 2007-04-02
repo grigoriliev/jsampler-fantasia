@@ -2,7 +2,7 @@
 #
 #   JSampler - a java front-end for LinuxSampler
 #
-#   Copyright (C) 2005, 2006 Grigor Kirilov Iliev
+#   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
 #
 #   This file is part of JSampler.
 #
@@ -24,6 +24,8 @@
 # Set the JAVA_HOME variable to specify the java distribution to be used.
 #JAVA_HOME=
 
+FANTASIA=fantasia.jar
+
 # If you want to run fantasia.jar from a different directory
 # you must define FANTASIA_PATH to point to fantasia.jar location.
 #FANTASIA_PATH=
@@ -42,12 +44,12 @@ fi
 
 if [ -n "$JAVA" ] ; then
     if [ -n "$FANTASIA" ] ; then
-        $JAVA -jar $FANTASIA/fantasia.jar
+        $JAVA -jar $FANTASIA_PATH/$FANTASIA
     else
-        $JAVA -jar fantasia.jar
+        $JAVA -jar $FANTASIA
     fi
 else
     echo "Unable to find java! Please set JAVA_HOME to point to your JRE/JDK directory."
     echo "Example:"
-    echo "export JAVA_HOME=/opt/jdk1.5.0_04"
+    echo "export JAVA_HOME=/opt/jdk1.6.0"
 fi

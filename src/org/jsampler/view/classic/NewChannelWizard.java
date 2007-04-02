@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -59,18 +59,17 @@ import org.jsampler.CC;
 import org.jsampler.HF;
 import org.jsampler.MidiDeviceModel;
 
-import org.jsampler.event.AudioDeviceListEvent;
-import org.jsampler.event.AudioDeviceListListener;
+import org.jsampler.event.ListEvent;
+import org.jsampler.event.ListListener;
 import org.jsampler.event.MidiDeviceListEvent;
 import org.jsampler.event.MidiDeviceListListener;
 
-import org.jsampler.task.AddChannel;
+import org.jsampler.task.Channel.SetAudioOutputDevice;
+import org.jsampler.task.Channel.SetMidiInputChannel;
+import org.jsampler.task.Channel.SetMidiInputDevice;
+import org.jsampler.task.Channel.SetMidiInputPort;
 import org.jsampler.task.LoadEngine;
 import org.jsampler.task.LoadInstrument;
-import org.jsampler.task.SetChannelAudioOutputDevice;
-import org.jsampler.task.SetChannelMidiInputChannel;
-import org.jsampler.task.SetChannelMidiInputDevice;
-import org.jsampler.task.SetChannelMidiInputPort;
 
 import org.linuxsampler.lscp.AudioOutputDevice;
 import org.linuxsampler.lscp.MidiInputDevice;
@@ -353,7 +352,7 @@ class MidiPortWizardPage extends UserInputPage {
 	}
 	
 	public void
-	initPage() {
+	preinitPage() {
 		updatePorts(((NewChannelWizardModel)getWizardModel()).getSelectedMidiDevice());
 	}
 	
@@ -471,14 +470,14 @@ class AudioDeviceWizardPage extends UserInputPage {
 	private Handler
 	getHandler() { return handler; }
 	
-	private class Handler implements AudioDeviceListListener {
+	private class Handler implements ListListener<AudioDeviceModel> {
 		public void
-		deviceAdded(AudioDeviceListEvent e) {
-			updateDeviceList(e.getAudioDeviceModel().getDeviceInfo());
+		entryAdded(ListEvent<AudioDeviceModel> e) {
+			updateDeviceList(e.getEntry().getDeviceInfo());
 		}
 	
 		public void
-		deviceRemoved(AudioDeviceListEvent e) { updateDeviceList(null); }
+		entryRemoved(ListEvent<AudioDeviceModel> e) { updateDeviceList(null); }
 			
 		private void
 		updateDeviceList(AudioOutputDevice dev) {
@@ -583,7 +582,7 @@ class InstrumentWizardPage extends UserInputPage {
 	}
 	
 	public void
-	initPage() {
+	preinitPage() {
 		NewChannelWizardModel model = (NewChannelWizardModel)getWizardModel();
 		if(model.getSelectedAudioDevice() == null) {
 			String s = i18n.getLabel("InstrumentWizardPage.additionalInstructions");
@@ -771,7 +770,7 @@ class ConfirmationWizardPage extends WizardPage {
 	}
 	
 	public void
-	initPage() {
+	preinitPage() {
 		NewChannelWizardModel model = (NewChannelWizardModel)getWizardModel();
 		setMidiDevice(model.getSelectedMidiDevice());
 		
@@ -801,7 +800,7 @@ class ConfirmationWizardPage extends WizardPage {
 	 */
 	public boolean
 	mayFinish() {
-		final AddChannel ac = new AddChannel();
+		final org.jsampler.task.Channel.Add ac = new org.jsampler.task.Channel.Add();
 		
 		ac.addTaskListener(new TaskListener() {
 			public void
@@ -827,7 +826,7 @@ class ConfirmationWizardPage extends WizardPage {
 		
 		MidiInputDevice d = getMidiDevice();
 		if(d != null) {
-			CC.getTaskQueue().add(new SetChannelMidiInputDevice(chn, d.getDeviceID()));
+			CC.getTaskQueue().add(new SetMidiInputChannel(chn, d.getDeviceId()));
 			
 			if(getMidiPort() != null) {
 				int port = -1;
@@ -839,19 +838,19 @@ class ConfirmationWizardPage extends WizardPage {
 				}
 				
 				if(port != -1) CC.getTaskQueue().add (
-					new SetChannelMidiInputPort(chn, port)
+					new SetMidiInputPort(chn, port)
 				);
 			}
 			
 		
 			int mc = (getMidiChannel() == -1 ? -1 : getMidiChannel() - 1);
-			CC.getTaskQueue().add(new SetChannelMidiInputChannel(chn, mc));
+			CC.getTaskQueue().add(new SetMidiInputChannel(chn, mc));
 		}
 			
 			
 		
 		if(getAudioDevice() != null) CC.getTaskQueue().add (
-			new SetChannelAudioOutputDevice(chn, getAudioDevice().getDeviceID())
+			new SetAudioOutputDevice(chn, getAudioDevice().getDeviceId())
 		);
 		
 		if(getInstrumentFile().length() > 0) CC.getTaskQueue().add (
@@ -876,7 +875,7 @@ class ConfirmationWizardPage extends WizardPage {
 		if(dev == null)	{
 			tfAudioDevice.setText(i18n.getLabel("ConfirmationWizardPage.notSpecified"));
 		} else {
-			tfAudioDevice.setText(dev.getDeviceID() + " (" + dev.getDriverName() + ")");
+			tfAudioDevice.setText(dev.getDeviceId() + " (" + dev.getDriverName() + ")");
 		}
 	}
 	
@@ -980,7 +979,7 @@ class ConfirmationWizardPage extends WizardPage {
 		if(dev == null) {
 			tfMidiDevice.setText(i18n.getLabel("ConfirmationWizardPage.notSpecified"));
 		} else {
-			tfMidiDevice.setText(dev.getDeviceID() + " (" + dev.getDriverName() + ")");
+			tfMidiDevice.setText(dev.getDeviceId() + " (" + dev.getDriverName() + ")");
 		}
 	}
 	

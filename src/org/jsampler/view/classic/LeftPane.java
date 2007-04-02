@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -38,6 +38,7 @@ public class LeftPane extends NavigationPane {
 	private AudioDevicesPage audioDevicesPage = new AudioDevicesPage();
 	private OrchestrasPage orchestrasPage = new OrchestrasPage();
 	private ManageOrchestrasPage manageOrchestrasPage = new ManageOrchestrasPage();
+	private MidiInstrumentMapsPage midiInstrumentMapsPage = new MidiInstrumentMapsPage();
 	
 	/** Creates a new instance of LeftPane */
 	private
@@ -45,6 +46,7 @@ public class LeftPane extends NavigationPane {
 		NavigationPage[] pages = {
 			tasksPage,
 			midiDevicesPage,
+			midiInstrumentMapsPage,
 			audioDevicesPage,
 			orchestrasPage,
 			manageOrchestrasPage
@@ -79,4 +81,8 @@ public class LeftPane extends NavigationPane {
 	/** Shows the <code>ManageOrchestrasPage</code> in the left pane. */
 	public void
 	showManageOrchestrasPage() { getModel().addPage(manageOrchestrasPage); }
+	
+	/** Shows the <code>MidiInstrumentMapsPage</code> in the left pane. */
+	public void
+	showMidiInstrumentMapsPage() { getModel().addPage(midiInstrumentMapsPage); }
 }

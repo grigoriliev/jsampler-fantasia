@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -37,8 +37,9 @@ import javax.swing.table.JTableHeader;
 import net.sf.juife.InformationDialog;
 import net.sf.juife.JuifeUtils;
 
+import org.jsampler.AudioDeviceModel;
 import org.jsampler.CC;
-import org.jsampler.task.SetChannelAudioOutputChannel;
+import org.jsampler.task.Channel.SetAudioOutputChannel;
 
 import org.linuxsampler.lscp.SamplerChannel;
 
@@ -74,16 +75,22 @@ public class ChannelOutputRoutingDlg extends InformationDialog {
 	
 	class ChannelRoutingTable extends JTable {
 		private String[] columnToolTips = {
-			i18n.getLabel("ChannelOutputRoutingDlg.ttChannel", channel.getChannelID()),
-			i18n.getLabel("ChannelOutputRoutingDlg.ttDevice"),
+			i18n.getLabel("ChannelOutputRoutingDlg.ttAudioOut", channel.getChannelId()),
+			i18n.getLabel("ChannelOutputRoutingDlg.ttAudioIn"),
 		};
 		
 		ChannelRoutingTable() {
 			super(new ChannelRoutingTableModel());
 			
 			JComboBox cb = new JComboBox();
-			for(Integer i = 0; i < channel.getAudioOutputChannels(); i++) {
-				cb.addItem(i);
+			int devId = channel.getAudioOutputDevice();
+			AudioDeviceModel adm = CC.getSamplerModel().getAudioDeviceModel(devId);
+			
+			if(adm == null) {
+				setEnabled(false);
+			} else {
+				int chns = adm.getDeviceInfo().getAudioChannelCount();
+				for(Integer i = 0; i < chns; i++) cb.addItem(i);
 			}
 		
 			TableColumn column = getColumnModel().getColumn(1);
@@ -148,10 +155,10 @@ public class ChannelOutputRoutingDlg extends InformationDialog {
 		public void
 		setValueAt(Object value, int row, int column) {
 			if(column == 0) return;
-			int c = channel.getChannelID();
+			int c = channel.getChannelId();
 			int o = (Integer)getValueAt(row, 0);
 			int i = (Integer)value;
-			CC.getTaskQueue().add(new SetChannelAudioOutputChannel(c, o, i));
+			CC.getTaskQueue().add(new SetAudioOutputChannel(c, o, i));
 			channel.getAudioOutputRouting()[row] = i;
 			
 			fireTableCellUpdated(row, column);

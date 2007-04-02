@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -26,15 +26,14 @@ import java.util.logging.Level;
 
 import org.jsampler.CC;
 import org.jsampler.HF;
-import org.jsampler.SamplerModel;
-
 import org.jsampler.SamplerChannelModel;
+import org.jsampler.SamplerModel;
 
 import static org.jsampler.JSI18n.i18n;
 
 
 /**
- * This task updates the sampler channel list and all asampler channels' settings.
+ * This task updates the sampler channel list.
  * @author Grigor Iliev
  */
 public class UpdateChannels extends EnhancedTask {
@@ -56,13 +55,13 @@ public class UpdateChannels extends EnhancedTask {
 				
 			for(SamplerChannelModel m : sm.getChannelModels()) {
 				for(int i = 0; i < chnIDs.length; i++) {
-					if(m.getChannelID() == chnIDs[i]) {
+					if(m.getChannelId() == chnIDs[i]) {
 						chnIDs[i] = -1;
 						found = true;
 					}
 				}
 				
-				if(!found) sm.removeChannel(m.getChannelID());
+				if(!found) sm.removeChannel(m.getChannelId());
 				found = false;
 			}
 			

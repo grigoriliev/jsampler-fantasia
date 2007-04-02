@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -49,7 +49,7 @@ import net.sf.juife.event.TaskEvent;
 import net.sf.juife.event.TaskListener;
 
 import org.jsampler.CC;
-import org.jsampler.task.CreateMidiDevice;
+import org.jsampler.task.Midi;
 import org.jsampler.view.ParameterTable;
 
 import org.linuxsampler.lscp.MidiInputDriver;
@@ -178,8 +178,8 @@ public class NewMidiDeviceDlg extends EnhancedDialog {
 		
 		MidiInputDriver driver = (MidiInputDriver)obj;
 		
-		final CreateMidiDevice cmd =
-			new CreateMidiDevice(driver.getName(), driver.getParameters());
+		final Midi.CreateDevice cmd =
+			new  Midi.CreateDevice(driver.getName(), driver.getParameters());
 		
 		cmd.addTaskListener(new TaskListener() {
 			public void

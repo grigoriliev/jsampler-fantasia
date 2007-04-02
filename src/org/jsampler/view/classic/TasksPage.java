@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -58,6 +58,8 @@ public class TasksPage extends NavigationPage {
 		new LinkButton(i18n.getButtonLabel("TasksPage.lnkMidiDevices"));
 	private LinkButton lnkNewMidiDevice =
 		new LinkButton(i18n.getButtonLabel("TasksPage.lnkNewMidiDevice"));
+	private LinkButton lnkMidiInstruments =
+		new LinkButton(i18n.getButtonLabel("TasksPage.lnkMidiInstruments"));
 	private LinkButton lnkAudioDevices =
 		new LinkButton(i18n.getButtonLabel("TasksPage.lnkAudioDevices"));
 	private LinkButton lnkNewAudioDevice =
@@ -72,27 +74,11 @@ public class TasksPage extends NavigationPage {
 		new LinkButton(i18n.getButtonLabel("TasksPage.lnkManageOrchestras"));
 	
 	
-	private LinkButton lnkRefreshSampler =
-		new LinkButton(i18n.getButtonLabel("TasksPage.lnkRefreshSampler"));
-	
 	/** Creates a new instance of <code>TasksPage</code> */
 	public
 	TasksPage() {
 		setTitle(i18n.getLabel("TasksPage.title"));
 		
-		int h = lnkRefreshSampler.getPreferredSize().height;
-		try {
-			URL url = ClassLoader.getSystemClassLoader().getResource (
-				"org/jsampler/view/classic/res/icons/Refresh16.gif"
-			);
-			
-			ImageIcon icon = new ImageIcon(url);
-			if(icon.getImageLoadStatus() == MediaTracker.COMPLETE)
-				lnkRefreshSampler.setIcon(icon);
-		} catch(Exception x) { CC.getLogger().log(Level.INFO, x.getMessage(), x); }
-		
-		lnkRefreshSampler.setText(i18n.getButtonLabel("TasksPage.lnkRefreshSampler"));
-		lnkRefreshSampler.setMaximumSize(lnkRefreshSampler.getPreferredSize());
 		setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
@@ -114,7 +100,8 @@ public class TasksPage extends NavigationPage {
 		
 		add(p);
 		
-		JLabel lMidiDevices = new JLabel(i18n.getLabel("TasksPage.lMidiDevices"));
+		String s = i18n.getLabel("TasksPage.lMidiDevices");
+		JLabel lMidiDevices = new JLabel(s, Res.iconMidi24, JLabel.LEFT);
 		add(lMidiDevices);
 		sep = new JSeparator();
 		sep.setMaximumSize(new Dimension(Short.MAX_VALUE, sep.getPreferredSize().height));
@@ -126,12 +113,14 @@ public class TasksPage extends NavigationPage {
 		
 		p.add(lnkNewMidiDevice);
 		p.add(lnkMidiDevices);
+		p.add(lnkMidiInstruments);
 		p.add(Box.createGlue());
 		p.setMaximumSize(p.getPreferredSize());
 		
 		add(p);
 		
-		JLabel lAudioDevices = new JLabel(i18n.getLabel("TasksPage.lAudioDevices"));
+		s = i18n.getLabel("TasksPage.lAudioDevices");
+		JLabel lAudioDevices = new JLabel(s, Res.iconVol24, JLabel.LEFT);
 		add(lAudioDevices);
 		
 		sep = new JSeparator();
@@ -169,15 +158,10 @@ public class TasksPage extends NavigationPage {
 		
 		add(Box.createGlue());
 		
-		sep = new JSeparator();
-		sep.setMaximumSize(new Dimension(Short.MAX_VALUE, sep.getPreferredSize().height));
-		add(sep);
-		
 		p = new JPanel();
 		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
 		p.setBorder(BorderFactory.createEmptyBorder(0, 12, 0, 0));
 		
-		p.add(lnkRefreshSampler);
 		p.add(Box.createGlue());
 		p.setMaximumSize(p.getPreferredSize());
 		
@@ -209,6 +193,13 @@ public class TasksPage extends NavigationPage {
 			actionPerformed(ActionEvent e) { getLeftPane().showMidiDevicesPage(); }
 		});
 		
+		lnkMidiInstruments.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) {
+				getLeftPane().showMidiInstrumentMapsPage();
+			}
+		});
+		
 		lnkNewAudioDevice.addActionListener(new ActionListener() {
 			public void
 			actionPerformed(ActionEvent e) {
@@ -229,11 +220,6 @@ public class TasksPage extends NavigationPage {
 		lnkManageOrchestras.addActionListener(new ActionListener() {
 			public void
 			actionPerformed(ActionEvent e) { getLeftPane().showManageOrchestrasPage(); }
-		});
-		
-		lnkRefreshSampler.addActionListener(new ActionListener() {
-			public void
-			actionPerformed(ActionEvent e) { A4n.refresh.actionPerformed(null); }
 		});
 	}
 	

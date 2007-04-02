@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005, 2006 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -38,7 +38,7 @@ public class JSampler {
 	public final static String NAME = "JSampler";
 	
 	/** The application version. */
-	public final static String VERSION = "0.03a";
+	public final static String VERSION = "0.4a";
 	
 	
 	/**
@@ -60,7 +60,8 @@ public class JSampler {
 	initGUI() {
 		JSViews.parseManifest();
 		JSViews.setView(JSViews.getDefaultView());
-		
+		CC.checkJSamplerHome();
+		CC.loadOrchestras();
 		CC.reconnect();
 	}
 }

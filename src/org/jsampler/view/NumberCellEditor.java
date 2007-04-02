@@ -1,7 +1,6 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
- *
- *   Copyright (C) 2005 Grigor Kirilov Iliev
+ *Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>Copyright (C) 2005 Grigor Kirilov Iliev
  *
  *   This file is part of JSampler.
  *

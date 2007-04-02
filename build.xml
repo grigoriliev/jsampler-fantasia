@@ -1,9 +1,11 @@
 <project name="JSampler" default="build-jsclassic" basedir=".">
     <description>This buildfile is used to build JSampler distributions</description>
     
-    <property name="jlscp.version" value="0.3a"/>
-    <property name="juife.version" value="0.3a"/>
-    <property name="JSampler.version" value="0.3a"/>
+    <property name="jlscp.version" value="0.4a"/>
+    <property name="jlscp.srcdir" value="lib/required/jlscp/src"/>
+    <property name="juife.version" value="0.4a"/>
+    <property name="juife.srcdir" value="lib/required/juife/src"/>
+    <property name="JSampler.version" value="0.4a"/>
     
     <target name="build-jsclassic" depends="clean-jsclassic,build-manifest">
         <manifest file="dist/build/views.mf">
@@ -47,7 +49,7 @@
             <fileset dir="res/js-classic"/>
         </copy>
         <delete dir="./dist/build/org/jsampler/view/fantasia"/>
-        <jar basedir="./dist/build" excludes="Manifest" destfile="./dist/js-classic.jar" manifest="./dist/build/Manifest"/>
+        <jar basedir="./dist/build" excludes="Manifest" destfile="./dist/JS_Classic-0.4a.jar" manifest="./dist/build/Manifest"/>
         <delete dir="./dist/build"/>
     </target>
 
@@ -105,6 +107,8 @@
     <target name="build-coredoc" depends="clean-coredoc">
         <mkdir dir="doc/api"/>
         <javadoc sourcepath="./src" destdir="./doc/api" windowtitle="JSampler ${JSampler.version} API specification" overview="./src/overview.html" Author="false" splitindex="true" use="true">
+            <fileset dir="${jlscp.srcdir}" defaultexcludes="yes"></fileset>
+            <fileset dir="${juife.srcdir}" defaultexcludes="yes"></fileset>
             <package name="org.jsampler"/>
             <package name="org.jsampler.event"/>
             <package name="org.jsampler.task  "/>

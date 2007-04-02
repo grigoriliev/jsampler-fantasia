@@ -1,3 +1,21 @@
+JSampler v0.4a: 2007-04-02
+  * Added support for MIDI instrument mapping
+
+  * Added support for effect sends
+
+  * Implemented export of the current sampler configuration
+    to LSCP script (Actions/Export/Sampler Configuration or Ctrl + S)
+
+  * The JSampler's data is now stored in a user specified location.
+    To change the JSampler's home directory choose Edit/Preferences.
+
+  * Implemented Global Controls bar (View/Global Controls).
+    
+  * Saving the LS Console's command history on exit is now optional.
+    (Edit/Preferences, then click the `LS Console' tab)
+
+  * Some GUI enhancements, bugfixes and code cleanup.
+
 JSampler v0.3a: 2006-08-07
   * Partially implemented a new view - Fantasia
     (Graphic design: Olivier Boyer).

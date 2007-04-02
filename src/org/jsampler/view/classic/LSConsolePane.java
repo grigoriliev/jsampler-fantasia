@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005, 2006 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -39,6 +39,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.StringReader;
 
 import java.util.logging.Level;
@@ -126,19 +129,8 @@ public class LSConsolePane extends JPanel {
 		setOwner(owner);
 		
 		model.setCommandHistorySize(ClassicPrefs.getLSConsoleHistSize());
-		String s = ClassicPrefs.getLSConsoleHistory();
 		
-		BufferedReader br = new BufferedReader(new StringReader(s));
-		
-		try {
-			s = br.readLine();
-			while(s != null) {
-				model.addToCommandHistory(s);
-				s = br.readLine();
-			}
-		} catch(Exception x) {
-			CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
-		}
+		loadConsoleHistory();
 		
 		lsConsoleViewMode = new LSConsoleViewMode();
 		
@@ -338,6 +330,63 @@ public class LSConsolePane extends JPanel {
 				menu.show(btnMenu, x, y);
 			}
 		});
+	}
+	
+	private void
+	loadConsoleHistory() {
+		String s = CC.getJSamplerHome();
+		if(s == null) return;
+		
+		File f = new File(s + File.separator + "console_history");
+		if(!f.isFile()) return;
+		
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(f));
+			s = br.readLine();
+			while(s != null) {
+				getModel().addToCommandHistory(s);
+				s = br.readLine();
+			}
+			br.close();
+		} catch(Exception x) {
+			CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
+		}
+	}
+	
+	/**
+	 * Saves the console history into the <code>console_history</code>
+	 * file, located in the JSampler's home directory.
+	 */
+	protected void
+	saveConsoleHistory() {
+		if(CC.getJSamplerHome() == null) return;
+		
+		try {
+			String s = CC.getJSamplerHome() + File.separator + "console_history";
+			FileOutputStream fos = new FileOutputStream(s, false);
+			
+			for(String line : getModel().getCommandHistory()) {
+				fos.write(line.getBytes("US-ASCII"));
+				fos.write('\n');
+			}
+			
+			fos.close();
+		} catch(Exception x) {
+			CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
+		}
+	}
+	
+	/**
+	 * Delete the <code>console_history</code> file, located in the
+	 * JSampler's home directory.
+	 */
+	protected static void
+	clearConsoleHistory() {
+		String s = CC.getJSamplerHome();
+		if(s == null) return;
+		
+		File f = new File(s + File.separator + "console_history");
+		if(f.isFile()) f.delete();
 	}
 	
 	/**

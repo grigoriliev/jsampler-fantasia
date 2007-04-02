@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -39,10 +39,10 @@ import javax.swing.JProgressBar;
 
 import org.jsampler.CC;
 
+import org.jsampler.event.SamplerAdapter;
 import org.jsampler.event.SamplerChannelListEvent;
 import org.jsampler.event.SamplerChannelListListener;
 import org.jsampler.event.SamplerEvent;
-import org.jsampler.event.SamplerListener;
 
 import static org.jsampler.view.classic.ClassicI18n.i18n;
 
@@ -125,7 +125,7 @@ public class Statusbar extends JPanel {
 	private Handler
 	getHandler() { return handler; }
 	
-	private class Handler implements SamplerListener, SamplerChannelListListener {
+	private class Handler extends SamplerAdapter implements SamplerChannelListListener {
 		/** Invoked when the total number of active voices is changed. */
 		public void
 		totalVoiceCountChanged(SamplerEvent e) {

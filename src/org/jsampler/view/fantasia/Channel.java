@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005, 2006 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -57,15 +57,13 @@ import org.jsampler.MidiDeviceModel;
 import org.jsampler.SamplerChannelModel;
 import org.jsampler.SamplerModel;
 
-import org.jsampler.event.AudioDeviceListEvent;
-import org.jsampler.event.AudioDeviceListListener;
+import org.jsampler.event.ListEvent;
+import org.jsampler.event.ListListener;
 import org.jsampler.event.MidiDeviceListEvent;
 import org.jsampler.event.MidiDeviceListListener;
 import org.jsampler.event.SamplerChannelAdapter;
 import org.jsampler.event.SamplerChannelEvent;
 import org.jsampler.event.SamplerChannelListener;
-
-import org.jsampler.task.RemoveChannel;
 
 import org.linuxsampler.lscp.AudioOutputDevice;
 import org.linuxsampler.lscp.MidiInputDevice;
@@ -257,7 +255,7 @@ public class Channel extends org.jsampler.view.JSChannel {
 		 */
 		float volume = dialVolume.getValue();
 		volume /= 100;
-		getModel().setVolume(volume);
+		getModel().setBackendVolume(volume);
 	}
 	
 	/**
@@ -369,7 +367,7 @@ public class Channel extends org.jsampler.view.JSChannel {
 		
 		public void
 		actionPerformed(ActionEvent e) {
-			CC.getTaskQueue().add(new RemoveChannel(getChannelID()));
+			CC.getSamplerModel().removeBackendChannel(getChannelId());
 		}
 		
 		public boolean
@@ -379,6 +377,7 @@ public class Channel extends org.jsampler.view.JSChannel {
 	private class MuteButton extends PixmapButton implements ActionListener {
 		MuteButton() {
 			super(Res.iconMuteOff);
+			setDisabledIcon(Res.iconMuteSoloDisabled);
 			addActionListener(this);
 		}
 		
@@ -399,7 +398,7 @@ public class Channel extends org.jsampler.view.JSChannel {
 				else setIcon(Res.iconMutedBySolo);
 			} else setIcon(Res.iconMuteOn);
 			
-			Channel.this.getModel().setMute(b);
+			Channel.this.getModel().setBackendMute(b);
 		}
 		
 		public boolean
@@ -409,6 +408,7 @@ public class Channel extends org.jsampler.view.JSChannel {
 	private class SoloButton extends PixmapButton implements ActionListener {
 		SoloButton() {
 			super(Res.iconSoloOff);
+			setDisabledIcon(Res.iconMuteSoloDisabled);
 			addActionListener(this);
 		}
 		
@@ -430,7 +430,7 @@ public class Channel extends org.jsampler.view.JSChannel {
 					btnMute.setIcon(Res.iconMutedBySolo);
 			}
 		
-			Channel.this.getModel().setSolo(b);
+			Channel.this.getModel().setBackendSolo(b);
 		}
 		
 		public boolean
@@ -440,6 +440,8 @@ public class Channel extends org.jsampler.view.JSChannel {
 	private class OptionsButton extends PixmapToggleButton implements ActionListener {
 		OptionsButton() {
 			super(Res.iconOptionsOff, Res.iconOptionsOn);
+			setRolloverIcon(Res.iconOptionsOffRO);
+			this.setRolloverSelectedIcon(Res.iconOptionsOnRO);
 			addActionListener(this);
 		}
 		
@@ -461,7 +463,7 @@ public class Channel extends org.jsampler.view.JSChannel {
 		}
 		
 		public boolean
-		contains(int x, int y) { return y < 13; }
+		contains(int x, int y) { return super.contains(x, y) & y < 13; }
 	}
 }
 
@@ -539,12 +541,14 @@ class ChannelScreen extends JPanel {
 	
 		btnReset.addActionListener(new ActionListener() {
 			public void
-			actionPerformed(ActionEvent e) { channel.getModel().resetChannel(); }
+			actionPerformed(ActionEvent e) { channel.getModel().resetBackendChannel(); }
 		});
 		
 		btnDuplicate.addActionListener(new ActionListener() {
 			public void
-			actionPerformed(ActionEvent e) { channel.getModel().duplicateChannel(); }
+			actionPerformed(ActionEvent e) {
+				channel.getModel().duplicateBackendChannel();
+			}
 		});
 	}
 
@@ -555,7 +559,7 @@ class ChannelScreen extends JPanel {
 		
 		if(!dlg.isCancelled()) {
 			SamplerChannelModel m = channel.getModel();
-			m.loadInstrument(dlg.getFileName(), dlg.getInstrumentIndex());
+			m.loadBackendInstrument(dlg.getFileName(), dlg.getInstrumentIndex());
 		}
 	}
 	
@@ -764,7 +768,7 @@ class ChannelOptions extends JPanel {
 		
 		cbAudioDevice.addActionListener(new ActionListener() {
 			public void
-			actionPerformed(ActionEvent e) { setAudioDevice(); }
+			actionPerformed(ActionEvent e) { setBackendAudioDevice(); }
 		});
 		
 		channel.getModel().addSamplerChannelListener(new SamplerChannelAdapter() {
@@ -864,7 +868,10 @@ class ChannelOptions extends JPanel {
 		MidiInputDevice mid = (MidiInputDevice)cbMidiDevice.getSelectedItem();
 		
 		if(!isUpdate()) {
-			if(mid != null) channel.getModel().setMidiInputDevice(mid.getDeviceID());
+			if(mid != null) {
+				channel.getModel().setBackendMidiInputDevice(mid.getDeviceId());
+			}
+			
 			return;
 		}
 		
@@ -894,7 +901,7 @@ class ChannelOptions extends JPanel {
 	setMidiPort() {
 		if(isUpdate()) return;
 		
-		channel.getModel().setMidiInputPort(cbMidiPort.getSelectedIndex());
+		channel.getModel().setBackendMidiInputPort(cbMidiPort.getSelectedIndex());
 	}
 	
 	private void
@@ -907,7 +914,7 @@ class ChannelOptions extends JPanel {
 		
 		int c = s.equals("All") ? -1 : Integer.parseInt(s.substring(8)) - 1;
 		
-		channel.getModel().setMidiInputChannel(c);
+		channel.getModel().setBackendMidiInputChannel(c);
 	}
 	
 	/** Invoked when the user selects an engine. */
@@ -919,15 +926,15 @@ class ChannelOptions extends JPanel {
 		if(oldEngine != null) { if(oldEngine.equals(newEngine)) return; }
 		else if(newEngine == null) return;
 		
-		channel.getModel().setEngineType(newEngine.getName());
+		channel.getModel().setBackendEngineType(newEngine.getName());
 		
 	}
 	
 	private void
-	setAudioDevice() {
+	setBackendAudioDevice() {
 		if(isUpdate()) return;
 		AudioOutputDevice dev = (AudioOutputDevice)cbAudioDevice.getSelectedItem();
-		if(dev != null) channel.getModel().setAudioOutputDevice(dev.getDeviceID());
+		if(dev != null) channel.getModel().setBackendAudioOutputDevice(dev.getDeviceId());
 	}
 	
 	/**
@@ -952,7 +959,7 @@ class ChannelOptions extends JPanel {
 	private Handler
 	getHandler() { return handler; }
 	
-	private class Handler implements MidiDeviceListListener, AudioDeviceListListener {
+	private class Handler implements MidiDeviceListListener, ListListener<AudioDeviceModel> {
 		/**
 		 * Invoked when a new MIDI device is created.
 		 * @param e A <code>MidiDeviceListEvent</code>
@@ -979,8 +986,8 @@ class ChannelOptions extends JPanel {
 		 * instance providing the event information.
 		 */
 		public void
-		deviceAdded(AudioDeviceListEvent e) {
-			cbAudioDevice.addItem(e.getAudioDeviceModel().getDeviceInfo());
+		entryAdded(ListEvent<AudioDeviceModel> e) {
+			cbAudioDevice.addItem(e.getEntry().getDeviceInfo());
 		}
 	
 		/**
@@ -989,8 +996,8 @@ class ChannelOptions extends JPanel {
 		 * instance providing the event information.
 		 */
 		public void
-		deviceRemoved(AudioDeviceListEvent e) {
-			cbAudioDevice.removeItem(e.getAudioDeviceModel().getDeviceInfo());
+		entryRemoved(ListEvent<AudioDeviceModel> e) {
+			cbAudioDevice.removeItem(e.getEntry().getDeviceInfo());
 		}
 	}
 }

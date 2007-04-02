@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005, 2006 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -54,7 +54,6 @@ import net.sf.juife.NavigationPage;
 
 import org.jsampler.CC;
 import org.jsampler.DOMUtils;
-import org.jsampler.DefaultOrchestraListModel;
 import org.jsampler.DefaultOrchestraModel;
 import org.jsampler.HF;
 import org.jsampler.Instrument;
@@ -148,7 +147,7 @@ public class ManageOrchestrasPage extends NavigationPage {
 		p.add(sp);
 		
 		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-		
+		splitPane.setContinuousLayout(true);
 		splitPane.setTopComponent(p);
 		
 		p = new JPanel();

@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005, 2006 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -22,30 +22,17 @@
 
 package org.jsampler.event;
 
-import org.jsampler.OrchestraModel;
-
 /**
- * A semantic event which indicates orchestra list's changes.
+ * The listener interface that is notified about effect sends changes.
  * @author Grigor Iliev
  */
-public class OrchestraListEvent extends java.util.EventObject {
-	private OrchestraModel orchestraModel;
+public interface EffectSendsListener extends java.util.EventListener {
+	/** Invoked when a new effect send is added to a sampler channel. */
+	public void effectSendAdded(EffectSendsEvent e);
 	
-	/**
-	 * Constructs an <code>OrchestraListEvent</code> object.
-	 * @param source The object that originated the event.
-	 * @param orchestraModel The model of the orchestra that has been added or removed.
-	 */
-	public
-	OrchestraListEvent(Object source, OrchestraModel orchestraModel) {
-		super(source);
-		this.orchestraModel = orchestraModel;
-	}
+	/** Invoked when an effect send is removed from a sampler channel. */
+	public void effectSendRemoved(EffectSendsEvent e);
 	
-	/**
-	 * Returns the model of the orchestra that has been added or removed.
-	 * @return The model of the orchestra that has been added or removed.
-	 */
-	public OrchestraModel
-	getOrchestraModel() { return orchestraModel; }
+	/** Invoked when an effect send's setting are changed. */
+	public void effectSendChanged(EffectSendsEvent e);
 }

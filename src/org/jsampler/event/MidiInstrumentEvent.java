@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005, 2006 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -23,13 +23,18 @@
 package org.jsampler.event;
 
 /**
- * The listener interface for receiving events about adding and removing orchestras from the list.
+ * A semantic event which indicates MIDI instrument changes.
  * @author Grigor Iliev
  */
-public interface OrchestraListListener extends java.util.EventListener {
-	/** Invoked when an orchestra is added (or inserted) to the orchestra list. */
-	public void orchestraAdded(OrchestraListEvent e);
+public class MidiInstrumentEvent extends java.util.EventObject {
+	/**
+	 * Constructs a <code>MidiInstrumentEvent</code> object.
+	 * @param source The object that originated the event.
+	 */
+	public
+	MidiInstrumentEvent(Object source) {
+		super(source);
+	}
 	
-	/** Invoked when an orchestra is removed from the orchestra list. */
-	public void orchestraRemoved(OrchestraListEvent e);
+	
 }

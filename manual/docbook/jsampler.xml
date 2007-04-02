@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<book>
+  <title>JSampler Manual</title>
+
+  <bookinfo>
+    <author>
+      <firstname>by Grigor</firstname>
+
+      <surname>Iliev</surname>
+    </author>
+
+    <copyright>
+      <year>2007</year>
+
+      <holder>Grigor Iliev &lt;grigor@grigoriliev.com&gt;</holder>
+    </copyright>
+
+    <legalnotice>
+      <para>This document is released under the terms of the <ulink
+      url="gfdl.html">GNU Free Documentation License</ulink>.</para>
+    </legalnotice>
+
+    <pubdate>Updated: Mon, 2 Apr 2007</pubdate>
+  </bookinfo>
+
+  <chapter>
+    <title>Introduction</title>
+
+    <section>
+      <title>What is JSampler?</title>
+
+      <para>JSampler is an opensource, platform-independent, GUI front-end for
+      <ulink url="http://www.linuxsampler.org">LinuxSampler</ulink>, written
+      entirely in <ulink url="http://java.sun.com">Java</ulink>. The main goal
+      of the JSampler's design is to be extensible and more flexible regarding
+      the integration of different GUI implementations. JSampler consists of
+      two parts:</para>
+
+      <para><itemizedlist>
+          <listitem>
+            <para>JSampler core - handles the LSCP command processing and
+            event notifications, sent by LinuxSampler, and provides convenient
+            data models and controllers to be used instead. The core also
+            provides the necessary interfaces that should be implemented by
+            all JSamler views.</para>
+          </listitem>
+
+          <listitem>
+            <para>JSampler view - an extension to the JSampler core, which
+            provides the user interface part of JSampler.</para>
+          </listitem>
+        </itemizedlist>The main reason for that is the TCP/IP based
+      communication between the LinuxSampler and its front-ends, enabling the
+      sampler to be controlled from another computer or device, which may have
+      different display requirements and limitations.</para>
+    </section>
+
+    <section>
+      <title>What is a JSampler distribution?</title>
+
+      <para>A JSampler distribution consist of the JSampler core and at least
+      one view, providing the GUI implementation. Each distribution has its
+      own name, which is based on the integrated view extension. Currently,
+      there are two distributions:</para>
+
+      <para><itemizedlist>
+          <listitem>
+            <para>JS Classic - A distribution with a standard GUI, capable of
+            controlling all features available in LinuxSampler at the time of
+            this writing. JS Classic also provides some additional features to
+            facilitate the every day work with the sampler and to automate the
+            most frequently used configurations.</para>
+          </listitem>
+
+          <listitem>
+            <para>Fantasia - A distribution with a skin based view, which is
+            in early development stage and is only partially implemented
+            (graphic design by Olivier Boyer).</para>
+          </listitem>
+        </itemizedlist></para>
+    </section>
+  </chapter>
+
+  <chapter>
+    <title>Screenshots</title>
+
+    <para>JS Classic with left pane, LS console, statusbar and
+    toolbars<graphic fileref="images/js-classic1.png" /></para>
+
+    <para>JS Classic without left pane, LS console, statusbar and
+    toolbars<graphic fileref="images/js-classic2.png" /></para>
+
+    <para>Fantasia<graphic fileref="images/fantasia.png" /></para>
+  </chapter>
+
+  <chapter>
+    <title>Installation</title>
+
+    <para></para>
+
+    <section>
+      <title id="download">What to download?</title>
+
+      <para>Currently, there are two distributions available for download - JS
+      Classic and Fantasia. However, for now the preferred choice is JS
+      Classic, because Fantasia is only partially implemented. The latest
+      version of JS Classic is available for download from <ulink
+      url="http://downloads.sourceforge.net/jsampler/JS_Classic-0.4a.jar">here</ulink>.</para>
+
+      <para>The source code is available in the <ulink
+      url="http://downloads.sourceforge.net/jsampler/JSampler-0.4a.tar.bz2">JSampler
+      package</ulink>, which also contains this manual and startup scripts
+      that can be used to run a particular JSampler distribution.</para>
+
+      <para>The latest source code can be obtained from cvs with the following
+      command:</para>
+
+      <para><command>cvs -z3
+      -d:pserver:anonymous@cvs.linuxsampler.org:/var/cvs/linuxsampler co
+      jsampler</command></para>
+    </section>
+
+    <section>
+      <title id="requirements">Requirements</title>
+
+      <para>To run JSampler you need Java Runtime Environment (JRE) version 5
+      or higher. The latest version can be downloaded from <ulink
+      url="http://java.sun.com/javase/downloads/">here</ulink>.</para>
+
+      <para>To build JSampler distribution from source you need JDK version
+      5.0 or higher and the <ulink url="http://ant.apache.org/">Ant
+      tool</ulink>.</para>
+    </section>
+
+    <section>
+      <title id="running-js-dist">Running a JSampler distribution</title>
+
+      <para>Let's assume that you want to run from the command line
+      <code>JS_Classic-0.4a.jar</code>, which is located in
+      <code>/home/me/soft</code> directory. First you should check whether the
+      <code>java</code> command is in your path and the version requirements
+      are met. This can be done by issuing the following command:</para>
+
+      <para><command>java -version</command></para>
+
+      <para>If the version is 1.5.0 or higher you can run JS Classic by
+      issuing the following command:</para>
+
+      <para><command>java -jar
+      /home/me/soft/JS_Classic-0.4a.jar</command></para>
+
+      <para>Otherwise, if the shell response is something like</para>
+
+      <para><command>bash: java: command not found</command></para>
+
+      <para>or the version requirements are not met, make sure that you have
+      installed JRE (or JDK) with the proper version and find its
+      location:</para>
+
+      <para><literallayout><command>updatedb
+locate bin/java</command></literallayout></para>
+
+      <para>The shell should return something like:</para>
+
+      <para><literallayout><command>/opt/jdk1.6.0/bin/java
+/opt/jdk1.6.0/bin/javac
+/opt/jdk1.6.0/bin/javadoc
+/opt/jdk1.6.0/bin/javah
+/opt/jdk1.6.0/bin/javap
+/opt/jdk1.6.0/jre/bin/java
+/usr/bin/java</command></literallayout></para>
+
+      <para>Now, we know that we have a JDK with a proper version installed
+      and its location is <code>/opt/jdk1.6.0</code>. In that case, to run JS
+      Classic issue the following command:</para>
+
+      <para><command>/opt/jdk1.6.0/bin/java -jar
+      /home/me/soft/JS_Classic-0.4a.jar</command></para>
+
+      <para><note>
+          <para>On some systems double clicking on the jar file will be
+          enough.</para>
+        </note></para>
+    </section>
+
+    <section>
+      <title>Using a script to run a JSampler distribution</title>
+
+      <para>There are scripts In the <code>scripts</code> directory of the
+      <ulink
+      url="http://downloads.sourceforge.net/jsampler/JSampler-0.4a.tar.bz2">JSampler
+      package</ulink> that, with a little adjustments (if needed), can be used
+      to run a JSampler distribution. Copy them to a desired location and edit
+      with your preferred editor.</para>
+    </section>
+
+    <section>
+      <title>Telling Gnome how to handle jar files</title>
+
+      <para>This configuration is optional, but necessary if you want to run
+      jar files by (double) clicking on them. In Gnome, by default jar files
+      are opened with the Archive Manager. To change that, run a file browser,
+      right click on an arbitrary jar file and choose
+      <guimenu>Properties</guimenu>, than go to the <guilabel>Open
+      With</guilabel> tab and click the <guibutton>Add</guibutton>
+      button.</para>
+
+      <para><graphic fileref="images/file-properties.png" /></para>
+
+      <para>In the <guilabel>Add Application</guilabel> dialog click onto
+      <guilabel>Use a custom command</guilabel> label and a text field will
+      appear below. If the location of your JRE is <code>/opt/jre1.6.0</code>,
+      then enter the following command in the text box:</para>
+
+      <para><command>/opt/jre1.6.0/bin/java -jar</command></para>
+
+      <para>And then click the <guibutton>Add</guibutton> button.</para>
+
+      <para><graphic fileref="images/add-application.png" /></para>
+    </section>
+
+    <section>
+      <title>Adding an application launcher to a Gnome panel</title>
+
+      <para>To add an application launcher to a Gnome panel, right click on
+      the panel and choose <guimenu>Add to Panel</guimenu>.</para>
+
+      <para><graphic fileref="images/add-to-panel.png" /></para>
+
+      <para>Then select <guilabel>Custom Application Launcher</guilabel> and
+      click the <guibutton>Add</guibutton> button. In the
+      <guilabel>Command</guilabel> field, of the <guilabel>Create
+      Launcher</guilabel> dialog, fill in the exact command that you use to
+      run the JSampler. For more information on how to run a JSampler
+      distribution from the command line <link linkend="running-js-dist">click
+      here</link>.</para>
+
+      <para><graphic
+      fileref="images/add-to-panel-create-launcher.png" /></para>
+    </section>
+
+    <section>
+      <title>Running JSampler on Windows</title>
+
+      <para>To run JSampler distribution on Windows, put a shortcut on the
+      Desktop or Quick Launch, right click on the shortcut and choose
+      <guimenu>Properties</guimenu>. In the <guilabel>Target</guilabel> field
+      insert the command <code>javaw -jar</code> in the beginning.</para>
+
+      <para><graphic fileref="images/win-shortcut.png" /></para>
+    </section>
+  </chapter>
+
+  <chapter>
+    <title>Building from source</title>
+
+    <para>If you want to build a JSampler distribution from source, first make
+    sure that all <link linkend="requirements">requirements</link> are
+    met.</para>
+
+    <section>
+      <title>Building from CVS</title>
+
+      <para>When building from CVS, there are some additional steps that
+      should be done. JSampler uses two additional libraries, that should be
+      downloaded and placed in the <code>lib/required</code> directory:</para>
+
+      <para><itemizedlist>
+          <listitem>
+            <para><ulink
+            url="http://sourceforge.net/projects/jlscp/">jlscp</ulink> - A
+            java LinuxSampler control protocol API</para>
+          </listitem>
+
+          <listitem>
+            <para><ulink
+            url="http://sourceforge.net/projects/juife/">juife</ulink> - Java
+            User Interface Framework Extensions</para>
+          </listitem>
+        </itemizedlist>Download these libraries, create a
+      <code>lib/required</code> directory in the JSampler root and copy the
+      <code>jlscp.jar</code> and <code>juife.jar</code> files in that
+      directory:</para>
+
+      <para><literallayout><command>cd /home/me/soft
+wget -c http://downloads.sourceforge.net/jlscp/jlscp-0.4a.tar.bz2
+tar -xjf jlscp-0.4a.tar.bz2
+wget -c http://downloads.sourceforge.net/juife/juife-0.4a.tar.bz2
+tar -xjf juife-0.4a.tar.bz2
+cvs -z3 -d:pserver:anonymous@cvs.linuxsampler.org:/var/cvs/linuxsampler co jsampler
+cd jsampler
+mkdirhier lib/required
+cp ../jlscp-0.4a/lib/jlscp.jar lib/required/jlscp.jar
+cp ../juife-0.4a/lib/juife.jar lib/required/juife.jar</command></literallayout></para>
+
+      <para>Then follow the steps in the next section.</para>
+    </section>
+
+    <section>
+      <title>Compilation</title>
+
+      <para>To build a JSampler distribution, first set the
+      <code>JAVA_HOME</code> environment variable to point to your JDK
+      directory. If the JDK is installed in /opt/jdk1.6.0 directory, this can
+      be done by issuing the following command:</para>
+
+      <para><command>export JAVA_HOME=/opt/jdk1.6.0</command></para>
+
+      <para>Windows users should do something like:</para>
+
+      <para><command>set JAVA_HOME=c:\jdk1.6.0</command></para>
+
+      <para>Go to the JSampler root directory and issue the following
+      command:</para>
+
+      <para><command>ant [target]</command></para>
+
+      <para>Where <code>target</code> can be one of the following:</para>
+
+      <para><itemizedlist>
+          <listitem>
+            <para><command>build-jsclassic</command> - Builds a JS Classic
+            distribution.</para>
+          </listitem>
+
+          <listitem>
+            <para><command>clean-jsclassic</command> - Removes the JS Classic
+            distribution.</para>
+          </listitem>
+
+          <listitem>
+            <para><command>build-fantasia</command> - Builds a Fantasia
+            distribution.</para>
+          </listitem>
+
+          <listitem>
+            <para><command>clean-fantasia</command> - Removes the Fantasia
+            distribution.</para>
+          </listitem>
+
+          <listitem>
+            <para><command>build-coredoc</command> - Generates the API
+            documentation for the JSampler core.</para>
+          </listitem>
+
+          <listitem>
+            <para><command>clean-coredoc</command> - Removes the API
+            documentation for the JSampler core.</para>
+          </listitem>
+        </itemizedlist></para>
+
+      <para>So, if you want to build a JS Classic distribution, just issue the
+      following command:</para>
+
+      <para><command>ant build-jsclassic</command></para>
+
+      <para>Then copy the jar file from the <code>dist</code> directory to the
+      desired location.</para>
+    </section>
+  </chapter>
+</book>

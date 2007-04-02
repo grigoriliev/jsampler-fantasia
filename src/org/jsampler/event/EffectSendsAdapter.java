@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -23,22 +23,21 @@
 package org.jsampler.event;
 
 /**
- * The listener interface for receiving events about adding and removing
- * audio devices from an audio device list.
+ * Adapter class for receiving events.
+ * This class exists as convenience for creating listener objects.
+ * The methods in this class are empty.
  * @author Grigor Iliev
  */
-public interface AudioDeviceListListener extends java.util.EventListener {
-	/**
-	 * Invoked when a new audio device is created.
-	 * @param e An <code>AudioDeviceListEvent</code>
-	 * instance providing the event information.
-	 */
-	public void deviceAdded(AudioDeviceListEvent e);
+public class EffectSendsAdapter implements EffectSendsListener {
+	/** Invoked when a new effect send is added to a sampler channel. */
+	public void
+	effectSendAdded(EffectSendsEvent e) { }
 	
-	/**
-	 * Invoked when an audio device is removed.
-	 * @param e An <code>AudioDeviceListEvent</code>
-	 * instance providing the event information.
-	 */
-	public void deviceRemoved(AudioDeviceListEvent e);
+	/** Invoked when an effect send is removed from a sampler channel. */
+	public void
+	effectSendRemoved(EffectSendsEvent e) { }
+	
+	/** Invoked when an effect send's setting are changed. */
+	public void
+	effectSendChanged(EffectSendsEvent e) { }
 }

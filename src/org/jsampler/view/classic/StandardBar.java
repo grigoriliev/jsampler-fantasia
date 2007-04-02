@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -22,10 +22,7 @@
 
 package org.jsampler.view.classic;
 
-import javax.swing.JButton;
 import javax.swing.JToolBar;
-
-import org.jsampler.view.classic.A4n;
 
 import static org.jsampler.view.classic.ClassicI18n.i18n;
 
@@ -34,39 +31,31 @@ import static org.jsampler.view.classic.ClassicI18n.i18n;
  *
  * @author Grigor Iliev
  */
-public class Toolbar extends JToolBar {
-	private final JButton btnNew = new ToolbarButton(A4n.newChannel);
-	private final JButton btnDuplicate = new ToolbarButton(A4n.duplicateChannels);
-	private final JButton btnUp = new ToolbarButton(A4n.moveChannelsUp);
-	private final JButton btnDown = new ToolbarButton(A4n.moveChannelsDown);
-	private final JButton btnRemove = new ToolbarButton(A4n.removeChannels);
-	
-	private final JButton btnSamplerInfo = new ToolbarButton(A4n.samplerInfo);
-	private final JButton btnRefresh = new ToolbarButton(A4n.refresh);
-	
-	private final JButton btnPreferences = new ToolbarButton(A4n.preferences);
+public class StandardBar extends JToolBar {
+	private final ToolbarButton btnLoadScript = new ToolbarButton(A4n.loadScript);
+	private final ToolbarButton btnExportSession = new ToolbarButton(A4n.exportSamplerConfig);
+	private final ToolbarButton btnSamplerInfo = new ToolbarButton(A4n.samplerInfo);
+	private final ToolbarButton btnRefresh = new ToolbarButton(A4n.refresh);
+	private final ToolbarButton btnResetSampler = new ToolbarButton(A4n.resetSampler);
+	private final ToolbarButton btnPreferences = new ToolbarButton(A4n.preferences);
 	
 	
-	/** Creates a new instance of Toolbar */
-	public Toolbar() {
-		super(i18n.getLabel("Toolbar.name"));
+	/**
+	 * Creates a new instance of StandardBar
+	 */
+	public
+	StandardBar() {
+		super(i18n.getLabel("StandardBar.name"));
 		
+		setFloatable(false);
 		add(btnSamplerInfo);
-		//add(btnRefresh);
-		
 		addSeparator();
-		
-		add(btnNew);
-		add(btnDuplicate);
-		add(btnRemove);
-		
+		add(btnLoadScript);
+		add(btnExportSession);
+		add(btnRefresh);
+		add(btnResetSampler);
 		addSeparator();
-		
-		add(btnUp);
-		add(btnDown);
-		
-		addSeparator();
-		
 		add(btnPreferences);
 	}
+	
 }

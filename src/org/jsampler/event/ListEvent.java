@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005 Grigor Kirilov Iliev
+ *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -22,32 +22,29 @@
 
 package org.jsampler.event;
 
-import org.jsampler.AudioDeviceModel;
-
-
 /**
- * A semantic event which indicates changes of an audio device list.
+ * A semantic event which indicates changes of list.
  * @author Grigor Iliev
  */
-public class AudioDeviceListEvent extends java.util.EventObject {
-	private AudioDeviceModel audioDeviceModel;
+public class ListEvent<E> extends java.util.EventObject {
+	private E entry;
 	
 	/**
-	 * Constructs an <code>AudioDeviceListEvent</code> object.
+	 * Constructs a <code>ListEvent</code> object.
 	 *
 	 * @param source The object that originated the event.
-	 * @param audioDeviceModel The model of the audio device for which this event occurs.
+	 * @param entry The entry for which this event occurs.
 	 */
 	public
-	AudioDeviceListEvent(Object source, AudioDeviceModel audioDeviceModel) {
+	ListEvent(Object source, E entry) {
 		super(source);
-		this.audioDeviceModel = audioDeviceModel;
+		this.entry = entry;
 	}
 	
 	/**
-	 * Gets the audio device model for which this event occurs.
-	 * @return The audio device model for which this event occurs.
+	 * Gets the entry for which this event occurs.
+	 * @return The entry for which this event occurs.
 	 */
-	public AudioDeviceModel
-	getAudioDeviceModel() { return audioDeviceModel; }
+	public E
+	getEntry() { return entry; }
 }

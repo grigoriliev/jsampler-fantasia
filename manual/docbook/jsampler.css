@@ -1,0 +1,26 @@
+/* Images */
+
+img {
+	border: 0px none;
+}
+
+.guilabel {
+	font-weight: bold;
+}
+
+.guibutton {
+	font-weight: bold;
+}
+
+.guimenu {
+	font-weight: bold;
+}
+
+.guisubmenu {
+	font-weight: bold;
+}
+
+.command {
+	font-size: -1;
+	font-family: monospace;
+}

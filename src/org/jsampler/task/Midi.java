@@ -173,7 +173,7 @@ public class Midi {
 				CC.getClient().enableMidiInputDevice(dev, enable);
 			
 				// Not needed, but eventually speeds up the change.
-				CC.getSamplerModel().getMidiDeviceModel(dev).setActive(enable);
+				CC.getSamplerModel().getMidiDeviceById(dev).setActive(enable);
 			} catch(Exception x) {
 				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
 				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
@@ -219,7 +219,7 @@ public class Midi {
 			try { 
 				CC.getClient().setMidiInputDeviceParameter(dev, prm);
 				
-				CC.getSamplerModel().getMidiDeviceModel(dev);
+				CC.getSamplerModel().getMidiDeviceById(dev);
 			} catch(Exception x) {
 				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
 				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
@@ -317,7 +317,7 @@ public class Midi {
 		run() {
 			try { 
 				MidiInputDevice mid = CC.getClient().getMidiInputDeviceInfo(dev);
-				CC.getSamplerModel().getMidiDeviceModel(dev).setDeviceInfo(mid);
+				CC.getSamplerModel().getMidiDeviceById(dev).setDeviceInfo(mid);
 			} catch(Exception x) {
 				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
 				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
@@ -345,7 +345,7 @@ public class Midi {
 			
 				boolean found = false;
 				
-				for(MidiDeviceModel m : sm.getMidiDeviceModels()) {
+				for(MidiDeviceModel m : sm.getMidiDevices()) {
 					for(int i = 0; i < deviceIDs.length; i++) {
 						if(m.getDeviceId() == deviceIDs[i]) {
 							deviceIDs[i] = -1;
@@ -353,7 +353,7 @@ public class Midi {
 						}
 					}
 				
-					if(!found) sm.removeMidiDevice(m.getDeviceId());
+					if(!found) sm.removeMidiDeviceById(m.getDeviceId());
 					found = false;
 				}
 			
@@ -573,7 +573,7 @@ public class Midi {
 						}
 					}
 					
-					if(!found) sm.removeMidiInstrumentMap(m.getMapId());
+					if(!found) sm.removeMidiInstrumentMapById(m.getMapId());
 					found = false;
 				}
 				
@@ -625,7 +625,7 @@ public class Midi {
 		run() {
 			try { 
 				MidiInstrumentEntry entry = new MidiInstrumentEntry(bank, program);
-				CC.getClient().mapMidiInstrument(mapId, entry, instrInfo);
+				CC.getClient().mapMidiInstrument(mapId, entry, instrInfo, true);
 			} catch(Exception x) {
 				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
 				CC.getLogger().log(Level.FINE, getErrorMessage(), x);

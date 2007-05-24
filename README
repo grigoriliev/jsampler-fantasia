@@ -1,7 +1,7 @@
 
 JSampler - A java front-end for LinuxSampler
 
-by Grigor Iliev <gr.iliev@gmail.com>
+by Grigor Iliev <grigor@grigoriliev.com>
 
 
 The Latest Version
@@ -23,9 +23,9 @@ the GNU General Public License Version 2 (see COPYING file).
 Requirements
 ============
 
-To run JSampler you need Java Runtime Environment (JRE) version 5 or higher.
+To run JSampler you need Java Runtime Environment (JRE) version 6 or higher.
 
-To build a distribution you need JDK version 5.0 or higher
+To build a distribution you need JDK version 6.0 or higher
 and the Ant tool (http://ant.apache.org/).
 
 
@@ -42,12 +42,12 @@ To build a JSampler distribution follow the next steps.
 (there are two distribution available for now - JS Classic and Fantasia)
 
   1. Set the JAVA_HOME environment variable to point to your JDK directory.
-     If the JDK is installed in /opt/jdk1.5.0 directory, this can be done
+     If the JDK is installed in /opt/jdk1.6.0 directory, this can be done
      by issuing the following command:
 
-     export JAVA_HOME=/opt/jdk1.5.0
+     export JAVA_HOME=/opt/jdk1.6.0
 
-     (Windows users should do something like `set JAVA_HOME=c:\jdk1.5.0')
+     (Windows users should do something like `set JAVA_HOME=c:\jdk1.6.0')
 
   2. Choose one or more of the following options.
 
@@ -95,5 +95,6 @@ Special thanks to Olivier Boyer - the creator
 of the impressive design of Fantasia.
 
 
+For more information read the manual, which is located at `manual' directory.
 Thanks for using JSampler.
 

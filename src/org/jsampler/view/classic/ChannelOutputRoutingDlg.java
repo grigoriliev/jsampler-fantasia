@@ -84,7 +84,7 @@ public class ChannelOutputRoutingDlg extends InformationDialog {
 			
 			JComboBox cb = new JComboBox();
 			int devId = channel.getAudioOutputDevice();
-			AudioDeviceModel adm = CC.getSamplerModel().getAudioDeviceModel(devId);
+			AudioDeviceModel adm = CC.getSamplerModel().getAudioDeviceById(devId);
 			
 			if(adm == null) {
 				setEnabled(false);

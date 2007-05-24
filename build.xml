@@ -1,11 +1,11 @@
 <project name="JSampler" default="build-jsclassic" basedir=".">
     <description>This buildfile is used to build JSampler distributions</description>
     
-    <property name="jlscp.version" value="0.4a"/>
+    <property name="jlscp.version" value="0.5a"/>
     <property name="jlscp.srcdir" value="lib/required/jlscp/src"/>
     <property name="juife.version" value="0.4a"/>
     <property name="juife.srcdir" value="lib/required/juife/src"/>
-    <property name="JSampler.version" value="0.4a"/>
+    <property name="JSampler.version" value="0.5a"/>
     
     <target name="build-jsclassic" depends="clean-jsclassic,build-manifest">
         <manifest file="dist/build/views.mf">
@@ -49,7 +49,7 @@
             <fileset dir="res/js-classic"/>
         </copy>
         <delete dir="./dist/build/org/jsampler/view/fantasia"/>
-        <jar basedir="./dist/build" excludes="Manifest" destfile="./dist/JS_Classic-0.4a.jar" manifest="./dist/build/Manifest"/>
+        <jar basedir="./dist/build" excludes="Manifest" destfile="./dist/JS_Classic-0.5a.jar" manifest="./dist/build/Manifest"/>
         <delete dir="./dist/build"/>
     </target>
 
@@ -148,7 +148,7 @@
             
             <section name="org/linuxsampler/lscp/">
                 <attribute name="Specification-Title" value="A java LinuxSampler control protocol API"/>
-                <attribute name="Specification-Version" value="1.0"/>
+                <attribute name="Specification-Version" value="1.2"/>
                 <attribute name="Specification-Vendor" value="Grigor Iliev"/>
                 <attribute name="Implementation-Title" value="org.linuxsampler.lscp"/>
                 <attribute name="Implementation-Version" value="${jlscp.version}"/>
@@ -157,7 +157,7 @@
 
             <section name="net/sf/juife/">
                 <attribute name="Specification-Title" value="Java User Interface Framework Extensions"/>
-                <attribute name="Specification-Version" value="0.3"/>
+                <attribute name="Specification-Version" value="0.4"/>
                 <attribute name="Specification-Vendor" value="Grigor Iliev"/>
                 <attribute name="Implementation-Title" value="net.sf.juife"/>
                 <attribute name="Implementation-Version" value="${juife.version}"/>
@@ -166,7 +166,7 @@
 
             <section name="org/jsampler/">
                 <attribute name="Specification-Title" value="A java front-end for LinuxSampler"/>
-                <attribute name="Specification-Version" value="0.3"/>
+                <attribute name="Specification-Version" value="0.5"/>
                 <attribute name="Specification-Vendor" value="Grigor Iliev"/>
                 <attribute name="Implementation-Title" value="org.jsampler"/>
                 <attribute name="Implementation-Version" value="${JSampler.version}"/>

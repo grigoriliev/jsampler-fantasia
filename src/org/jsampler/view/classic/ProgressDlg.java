@@ -36,6 +36,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.SwingUtilities;
 
 import org.jsampler.CC;
 import org.jsampler.HF;
@@ -60,7 +61,7 @@ public class ProgressDlg extends JDialog implements JSProgress {
 	/** Creates a new instance of ProgressDlg */
 	public
 	ProgressDlg() {
-		super(CC.getMainFrame(), "", true);
+		super((Frame)null, "", true);
 		
 		pb.setIndeterminate(true);
 		//pb.setStringPainted(true);
@@ -123,14 +124,37 @@ public class ProgressDlg extends JDialog implements JSProgress {
 	public void
 	setString(String s) { l.setText(s); }
 	
+	private void
+	initProgressDlg() {
+		pack();
+		Dimension d = getPreferredSize();
+		d.width = d.width > 300 ? d.width : 300;
+		setSize(d);
+		setResizable(false);
+		
+		setLocation(JuifeUtils.centerLocation(this, CC.getMainFrame()));
+	}
+	
 	/** Starts to indicate that an operation is ongoing. */
 	public void
 	start() {
 		setLocation(JuifeUtils.centerLocation(this, CC.getMainFrame()));
-		setVisible(true);
+		
+		SwingUtilities.invokeLater(new Runnable() {
+			public void
+			run() {
+				initProgressDlg();
+				setVisible(true);
+			}
+		});
 	}
 	
 	/** Stops the indication that an operation is ongoing. */
 	public void
-	stop() { setVisible(false); }
+	stop() {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void
+			run() { dispose(); }
+		});
+	}
 }

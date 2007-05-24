@@ -236,7 +236,7 @@ public class MidiDevicesPage extends NavigationPage {
 		valueChanged(ListSelectionEvent e) {
 			if(e.getValueIsAdjusting()) return;
 			
-			for(MidiDeviceModel m : CC.getSamplerModel().getMidiDeviceModels()) {
+			for(MidiDeviceModel m : CC.getSamplerModel().getMidiDevices()) {
 				m.removeMidiDeviceListener(this);
 			}
 			
@@ -396,7 +396,7 @@ class MidiDevicesTableModel extends AbstractTableModel {
 	
 	MidiDevicesTableModel() {
 		CC.getSamplerModel().addMidiDeviceListListener(getHandler());
-		deviceList = CC.getSamplerModel().getMidiDeviceModels();
+		deviceList = CC.getSamplerModel().getMidiDevices();
 		for(MidiDeviceModel m : deviceList) m.addMidiDeviceListener(getHandler());
 	}
 	
@@ -514,7 +514,7 @@ class MidiDevicesTableModel extends AbstractTableModel {
 		public void
 		deviceAdded(MidiDeviceListEvent e) {
 			for(MidiDeviceModel m : deviceList) m.removeMidiDeviceListener(this);
-			deviceList = CC.getSamplerModel().getMidiDeviceModels();
+			deviceList = CC.getSamplerModel().getMidiDevices();
 			for(MidiDeviceModel m : deviceList) m.addMidiDeviceListener(this);
 			fireTableDataChanged();
 		}
@@ -527,7 +527,7 @@ class MidiDevicesTableModel extends AbstractTableModel {
 		public void
 		deviceRemoved(MidiDeviceListEvent e) {
 			for(MidiDeviceModel m : deviceList) m.removeMidiDeviceListener(this);
-			deviceList = CC.getSamplerModel().getMidiDeviceModels();
+			deviceList = CC.getSamplerModel().getMidiDevices();
 			for(MidiDeviceModel m : deviceList) m.addMidiDeviceListener(this);
 			fireTableDataChanged();
 		}

@@ -1,3 +1,7 @@
+JSampler v0.5a: 2007-05-24
+  * Implemented instruments database support
+  * Added context menu to the MIDI instrument tree
+
 JSampler v0.4a: 2007-04-02
   * Added support for MIDI instrument mapping
 

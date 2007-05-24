@@ -22,7 +22,7 @@
       url="gfdl.html">GNU Free Documentation License</ulink>.</para>
     </legalnotice>
 
-    <pubdate>Updated: Mon, 2 Apr 2007</pubdate>
+    <pubdate>Updated: Thu, 17 May 2007</pubdate>
   </bookinfo>
 
   <chapter>
@@ -107,10 +107,10 @@
       Classic and Fantasia. However, for now the preferred choice is JS
       Classic, because Fantasia is only partially implemented. The latest
       version of JS Classic is available for download from <ulink
-      url="http://downloads.sourceforge.net/jsampler/JS_Classic-0.4a.jar">here</ulink>.</para>
+      url="http://downloads.sourceforge.net/jsampler/JS_Classic-0.5a.jar">here</ulink>.</para>
 
       <para>The source code is available in the <ulink
-      url="http://downloads.sourceforge.net/jsampler/JSampler-0.4a.tar.bz2">JSampler
+      url="http://downloads.sourceforge.net/jsampler/JSampler-0.5a.tar.bz2">JSampler
       package</ulink>, which also contains this manual and startup scripts
       that can be used to run a particular JSampler distribution.</para>
 
@@ -125,12 +125,12 @@
     <section>
       <title id="requirements">Requirements</title>
 
-      <para>To run JSampler you need Java Runtime Environment (JRE) version 5
+      <para>To run JSampler you need Java Runtime Environment (JRE) version 6
       or higher. The latest version can be downloaded from <ulink
       url="http://java.sun.com/javase/downloads/">here</ulink>.</para>
 
       <para>To build JSampler distribution from source you need JDK version
-      5.0 or higher and the <ulink url="http://ant.apache.org/">Ant
+      6.0 or higher and the <ulink url="http://ant.apache.org/">Ant
       tool</ulink>.</para>
     </section>
 
@@ -138,18 +138,18 @@
       <title id="running-js-dist">Running a JSampler distribution</title>
 
       <para>Let's assume that you want to run from the command line
-      <code>JS_Classic-0.4a.jar</code>, which is located in
+      <code>JS_Classic-0.5a.jar</code>, which is located in
       <code>/home/me/soft</code> directory. First you should check whether the
       <code>java</code> command is in your path and the version requirements
       are met. This can be done by issuing the following command:</para>
 
       <para><command>java -version</command></para>
 
-      <para>If the version is 1.5.0 or higher you can run JS Classic by
+      <para>If the version is 1.6.0 or higher you can run JS Classic by
       issuing the following command:</para>
 
       <para><command>java -jar
-      /home/me/soft/JS_Classic-0.4a.jar</command></para>
+      /home/me/soft/JS_Classic-0.5a.jar</command></para>
 
       <para>Otherwise, if the shell response is something like</para>
 
@@ -177,7 +177,7 @@ locate bin/java</command></literallayout></para>
       Classic issue the following command:</para>
 
       <para><command>/opt/jdk1.6.0/bin/java -jar
-      /home/me/soft/JS_Classic-0.4a.jar</command></para>
+      /home/me/soft/JS_Classic-0.5a.jar</command></para>
 
       <para><note>
           <para>On some systems double clicking on the jar file will be
@@ -190,7 +190,7 @@ locate bin/java</command></literallayout></para>
 
       <para>There are scripts In the <code>scripts</code> directory of the
       <ulink
-      url="http://downloads.sourceforge.net/jsampler/JSampler-0.4a.tar.bz2">JSampler
+      url="http://downloads.sourceforge.net/jsampler/JSampler-0.5a.tar.bz2">JSampler
       package</ulink> that, with a little adjustments (if needed), can be used
       to run a JSampler distribution. Copy them to a desired location and edit
       with your preferred editor.</para>
@@ -285,14 +285,14 @@ locate bin/java</command></literallayout></para>
       directory:</para>
 
       <para><literallayout><command>cd /home/me/soft
-wget -c http://downloads.sourceforge.net/jlscp/jlscp-0.4a.tar.bz2
-tar -xjf jlscp-0.4a.tar.bz2
+wget -c http://downloads.sourceforge.net/jlscp/jlscp-0.5a.tar.bz2
+tar -xjf jlscp-0.5a.tar.bz2
 wget -c http://downloads.sourceforge.net/juife/juife-0.4a.tar.bz2
 tar -xjf juife-0.4a.tar.bz2
 cvs -z3 -d:pserver:anonymous@cvs.linuxsampler.org:/var/cvs/linuxsampler co jsampler
 cd jsampler
 mkdirhier lib/required
-cp ../jlscp-0.4a/lib/jlscp.jar lib/required/jlscp.jar
+cp ../jlscp-0.5a/lib/jlscp.jar lib/required/jlscp.jar
 cp ../juife-0.4a/lib/juife.jar lib/required/juife.jar</command></literallayout></para>
 
       <para>Then follow the steps in the next section.</para>

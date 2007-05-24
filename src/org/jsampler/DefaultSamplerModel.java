@@ -216,7 +216,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * if there is no audio device with ID <code>deviceId</code>.
 	 */
 	public AudioDeviceModel
-	getAudioDeviceModel(int deviceId) {
+	getAudioDeviceById(int deviceId) {
 		for(AudioDeviceModel m : audioDeviceModels)
 			if(m.getDeviceId() == deviceId) return m;
 		
@@ -235,7 +235,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * @return The current list of audio device models.
 	 */
 	public AudioDeviceModel[]
-	getAudioDeviceModels() {
+	getAudioDevices() {
 		return audioDeviceModels.toArray(new AudioDeviceModel[audioDeviceModels.size()]);
 	}
 	
@@ -257,7 +257,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * if the device list does not contain audio device with ID <code>deviceId</code>.
 	 */
 	public boolean
-	removeAudioDevice(int deviceId) {
+	removeAudioDeviceById(int deviceId) {
 		for(int i = 0; i < audioDeviceModels.size(); i++) {
 			AudioDeviceModel m = audioDeviceModels.get(i);
 			if(m.getDeviceId() == deviceId) {
@@ -304,7 +304,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * if there is no MIDI device with ID <code>deviceId</code>.
 	 */
 	public MidiDeviceModel
-	getMidiDeviceModel(int deviceId) {
+	getMidiDeviceById(int deviceId) {
 		for(MidiDeviceModel m : midiDeviceModels)
 			if(m.getDeviceId() == deviceId) return m;
 		
@@ -323,7 +323,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * @return The current list of MIDI device models.
 	 */
 	public MidiDeviceModel[]
-	getMidiDeviceModels() {
+	getMidiDevices() {
 		return midiDeviceModels.toArray(new MidiDeviceModel[midiDeviceModels.size()]);
 	}
 	
@@ -355,7 +355,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * if the device list does not contain MIDI device with ID <code>deviceId</code>.
 	 */
 	public boolean
-	removeMidiDevice(int deviceId) {
+	removeMidiDeviceById(int deviceId) {
 		for(int i = 0; i < midiDeviceModels.size(); i++) {
 			MidiDeviceModel m = midiDeviceModels.get(i);
 			if(m.getDeviceId() == deviceId) {
@@ -450,7 +450,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * MIDI instrument map with ID <code>mapId</code>.
 	 */
 	public boolean
-	removeMidiInstrumentMap(int mapId) {
+	removeMidiInstrumentMapById(int mapId) {
 		for(int i = 0; i < midiInstrMaps.size(); i++) {
 			MidiInstrumentMap m = getMidiInstrumentMap(i);
 			if(m.getMapId() == mapId) {
@@ -591,7 +591,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * if there is no channel with ID <code>channelId</code>.
 	 */
 	public SamplerChannelModel
-	getChannelModel(int channelId) {
+	getChannelById(int channelId) {
 		for(SamplerChannelModel m : channelModels)
 			if(m.getChannelId() == channelId) return m;
 		
@@ -610,7 +610,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * @return The current list of sampler channel models.
 	 */
 	public SamplerChannelModel[]
-	getChannelModels() {
+	getChannels() {
 		return channelModels.toArray(new SamplerChannelModel[channelModels.size()]);
 	}
 	
@@ -663,7 +663,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * if the channel's list does not contain channel with ID <code>channelId</code>.
 	 */
 	public boolean
-	removeChannel(int channelId) {
+	removeChannelById(int channelId) {
 		for(int i = 0; i < channelModels.size(); i++) {
 			SamplerChannelModel m = channelModels.get(i);
 			if(m.getChannelId() == channelId) {
@@ -785,7 +785,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * Schedules a new task for resetting the sampler.
 	 */
 	public void
-	resetBackend() { CC.getTaskQueue().add(new org.jsampler.task.ResetSampler()); }
+	resetBackend() { CC.getTaskQueue().add(new org.jsampler.task.Global.ResetSampler()); }
 	
 	/**
 	 * Updates the current and the maximum number of active voices in the sampler.

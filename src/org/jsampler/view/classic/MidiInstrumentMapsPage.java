@@ -119,8 +119,8 @@ public class MidiInstrumentMapsPage extends NavigationPage {
 		tbMaps.add(btnAddMap);
 		tbMaps.add(btnEditMap);
 		tbMaps.add(btnRemoveMap);
-		//tbMaps.addSeparator();
-		//tbMaps.add(btnExportMaps);
+		tbMaps.addSeparator();
+		tbMaps.add(btnExportMaps);
 		
 		/*tbMaps.add(Box.createHorizontalGlue());
 		tbMaps.add(btnCloseMapBar);*/

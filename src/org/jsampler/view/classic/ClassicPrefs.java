@@ -36,10 +36,10 @@ import org.jsampler.CC;
 public class ClassicPrefs {
 	private final static String prefNode = "org.jsampler.view.classic";
 	
-	private final static String WINDOW_SIZE_AND_LOCATION = "Mainframe.sizeAndLocation";
+	private final static String WINDOW_SIZE_AND_LOCATION = ".sizeAndLocation";
 	private final static String DEF_WINDOW_SIZE_AND_LOCATION = null;
 	
-	private final static String WINDOW_MAXIMIZED = "Mainframe.maximized";
+	private final static String WINDOW_MAXIMIZED = ".maximized";
 	private final static boolean DEF_WINDOW_MAXIMIZED = false;
 	
 	private final static String SAVE_WINDOW_PROPERTIES = "Mainframe.saveProperties";
@@ -147,50 +147,54 @@ public class ClassicPrefs {
 	user() { return userPrefs; }
 	
 	/**
-	 * Gets a string representation of the main window's size and location.
+	 * Gets a string representation of a window's size and location.
 	 * The string representation is a comma-separated list
 	 * of x and y coordinates, and width and height of the window.
-	 * @return A string representation of the main window's size and location,
+	 * @param window The name of the window whose size and location should be obtained.
+	 * @return A string representation of the window's size and location,
 	 * or <code>null</code> if the value is not set.
 	 */
 	public static String
-	getWindowSizeAndLocation() {
-		return user().get(WINDOW_SIZE_AND_LOCATION, DEF_WINDOW_SIZE_AND_LOCATION);
+	getWindowSizeAndLocation(String window) {
+		return user().get(window + WINDOW_SIZE_AND_LOCATION, DEF_WINDOW_SIZE_AND_LOCATION);
 	}
 	
 	/**
-	 * Sets the main window's size and location.
+	 * Sets the window's size and location.
 	 * Use <code>null</code> to remove the current value.
-	 * @param s A string representation of the main window's size and location.
+	 * @param window The name of the window whose size and location should be set.
+	 * @param s A string representation of the window's size and location.
 	 */
 	public static void
-	setWindowSizeAndLocation(String s) {
+	setWindowSizeAndLocation(String window, String s) {
 		if(s == null) {
-			user().remove(WINDOW_SIZE_AND_LOCATION);
+			user().remove(window + WINDOW_SIZE_AND_LOCATION);
 			return;
 		}
 		
-		user().put(WINDOW_SIZE_AND_LOCATION, s);
+		user().put(window + WINDOW_SIZE_AND_LOCATION, s);
 	}
 	
 	/**
-	 * Determines whether the main window should be maximized.
-	 * @return <code>true</code> if the main window should be maximized,
+	 * Determines whether the specified window should be maximized.
+	 * @param window The name of the window.
+	 * @return <code>true</code> if the specified window should be maximized,
 	 * <code>false</code> otherwise.
 	 */
 	public static boolean
-	getWindowMaximized() {
-		return user().getBoolean(WINDOW_MAXIMIZED, DEF_WINDOW_MAXIMIZED);
+	getWindowMaximized(String window) {
+		return user().getBoolean(window + WINDOW_MAXIMIZED, DEF_WINDOW_MAXIMIZED);
 	}
 	
 	/**
-	 * Sets whether the main window should be maximized.
-	 * @param b If <code>true</code> the main window should be maximized.
+	 * Sets whether the specified window should be maximized.
+	 * @param window The name of the window.
+	 * @param b If <code>true</code> the specified window should be maximized.
 	 */
 	public static void
-	setWindowMaximized(boolean b) {
-		if(b == getWindowMaximized()) return;
-		user().putBoolean(WINDOW_MAXIMIZED, b);
+	setWindowMaximized(String window, boolean b) {
+		if(b == getWindowMaximized(window)) return;
+		user().putBoolean(window + WINDOW_MAXIMIZED, b);
 	}
 	
 	/**
@@ -964,4 +968,48 @@ public class ClassicPrefs {
 	}
 	
 	
+	/**
+	 * Gets an integer property.
+	 * @param name The name of the property.
+	 * @return The value of the specified property.
+	 * If the property is not set, the return value is zero.
+	 */
+	public static int
+	getIntProperty(String name) {
+		return user().getInt(name, 0);
+	}
+	
+	/**
+	 * Sets an integer property.
+	 * @param name The name of the property.
+	 * @param i The new value for the specified property.
+	 */
+	public static void
+	setIntProperty(String name, int i) {
+		if(i == getIntProperty(name)) return;
+		user().putInt(name, i);
+	}
+	
+	
+	/**
+	 * Gets a boolean property.
+	 * @param name The name of the property.
+	 * @return The value of the specified property.
+	 * If the property is not set, the return value is <code>false</code>.
+	 */
+	public static boolean
+	getBoolProperty(String name) {
+		return user().getBoolean(name, false);
+	}
+	
+	/**
+	 * Sets a boolean property.
+	 * @param name The name of the property.
+	 * @param b The new value for the specified property.
+	 */
+	public static void
+	setBoolProperty(String name, boolean b) {
+		if(b == getBoolProperty(name)) return;
+		user().putBoolean(name, b);
+	}
 }

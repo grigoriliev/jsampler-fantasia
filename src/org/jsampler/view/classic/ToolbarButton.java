@@ -49,6 +49,7 @@ public class ToolbarButton extends JButton {
 	initToolbarButton() {
 		setBorderPainted(false);
 		setContentAreaFilled(false);
+		setFocusPainted(false);
 		
 		addMouseListener(new MouseAdapter() {
 			public void

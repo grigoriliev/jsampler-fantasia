@@ -22,7 +22,9 @@
 
 package org.jsampler.view;
 
+import java.awt.Dialog;
 import java.awt.Dimension;
+import java.awt.Frame;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -38,6 +40,7 @@ import org.jsampler.Prefs;
 
 import org.jsampler.event.SamplerChannelListEvent;
 import org.jsampler.event.SamplerChannelListListener;
+
 
 /**
  * Defines the skeleton of a JSampler's main frame.
@@ -80,6 +83,16 @@ public abstract class JSMainFrame extends JFrame {
 	 * @see org.jsampler.CC#setJSamplerHome
 	 */
 	public abstract void installJSamplerHome();
+	
+	/**
+	 * Shows a detailed error information about the specified exception.
+	 */
+	public abstract void showDetailedErrorMessage(Frame owner, String err, String details);
+	
+	/**
+	 * Shows a detailed error information about the specified exception.
+	 */
+	public abstract void showDetailedErrorMessage(Dialog owner, String err, String details);
 	
 	/**
 	 * Returns a list containing all <code>JSChannelsPane</code>s added to the view.
@@ -215,4 +228,11 @@ public abstract class JSMainFrame extends JFrame {
 		
 		return null;
 	}
+	
+	/**
+	 * Determines whether this view has instruments database support.
+	 * @return <code>true</code>
+	 */
+	public boolean
+	getInstrumentsDbSupport() { return false; }
 }

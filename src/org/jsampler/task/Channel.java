@@ -298,6 +298,80 @@ public class Channel {
 	}
 	
 	/**
+	 * This task loads a sampler engine in a specific sampler channel.
+	 * @author Grigor Iliev
+	 */
+	public static class LoadEngine extends EnhancedTask {
+		private String engine;
+		private int channel;
+		
+		/**
+		 * Creates new instance of <code>LoadEngine</code>.
+		 * @param engine The name of the engine to load.
+		 * @param channel The number of the sampler channel
+		 * the deployed engine should be assigned to.
+		 */
+		public
+		LoadEngine(String engine, int channel) {
+			this.engine = engine;
+			this.channel = channel;
+			
+			setTitle("Channel.LoadEngine_task");
+			
+			Object[] objs = { engine, new Integer(channel) };
+			setDescription(i18n.getMessage("Channel.LoadEngine.desc", objs));
+		}
+		
+		/** The entry point of the task. */
+		public void
+		run() {
+			try { CC.getClient().loadSamplerEngine(engine, channel); }
+			catch(Exception x) {
+				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
+				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
+			}
+		}
+	}
+	
+	/**
+	 * This task loads and assigns an instrument to a sampler channel.
+	 * @author Grigor Iliev
+	 */
+	public static class LoadInstrument extends EnhancedTask {
+		private String filename;
+		private int instrIndex;
+		private int channel;
+		
+		/**
+		 * Creates new instance of <code>LoadInstrument</code>.
+		 * @param filename The name of the instrument file
+		 * on the LinuxSampler instance's host system.
+		 * @param instrIndex The index of the instrument in the instrument file.
+		 * @param channel The number of the sampler channel the
+		 * instrument should be assigned to.
+		 */
+		public
+		LoadInstrument(String filename, int instrIndex, int channel) {
+			this.filename = filename;
+			this.instrIndex = instrIndex;
+			this.channel = channel;
+			
+			setTitle("Channel.LoadInstrument_task");
+			setDescription(i18n.getMessage("Channel.LoadInstrument.desc"));
+		}
+		
+		/** The entry point of the task. */
+		public void
+		run() {
+			try { CC.getClient().loadInstrument(filename, instrIndex, channel, true); }
+			catch(Exception x) {
+				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
+				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
+			}
+		}
+	}
+	
+	/**
 	 * This task assigns the specifed MIDI instrument map to the specified sampler channel.
 	 */
 	public static class SetMidiInstrumentMap extends EnhancedTask {
@@ -653,7 +727,7 @@ public class Channel {
 		run() {
 			try { 
 				SamplerChannelModel scm;
-				scm = CC.getSamplerModel().getChannelModel(channel);
+				scm = CC.getSamplerModel().getChannelById(channel);
 				Integer[] fxSendIDs = CC.getClient().getFxSendIDs(channel);
 			
 				boolean found = false;
@@ -714,7 +788,7 @@ public class Channel {
 		run() {
 			try {
 				SamplerChannelModel scm;
-				scm = CC.getSamplerModel().getChannelModel(channel);
+				scm = CC.getSamplerModel().getChannelById(channel);
 				scm.updateFxSend(CC.getClient().getFxSendInfo(channel, fxSend));
 			} catch(Exception x) {
 				/*

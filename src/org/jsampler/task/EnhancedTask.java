@@ -24,6 +24,8 @@ package org.jsampler.task;
 
 import net.sf.juife.AbstractTask;
 
+import org.linuxsampler.lscp.LSException;
+
 
 /**
  * This class extends <code>AbstractTask</code> to add new features.
@@ -45,4 +47,20 @@ public abstract class EnhancedTask<R> extends AbstractTask<R> {
 	 */
 	public boolean
 	isStopped() { return stopped; }
+	
+	/**
+	 * Sets the error details provided by the given exception (if the given
+	 * exception is <code>LSException</code> instance and contains error details).
+	 */
+	public void
+	setErrorDetails(Exception e) {
+		if(e == null) return;
+		
+		if(e instanceof LSException) {
+			LSException x = (LSException)e;
+			if(x.getDetails() != null && x.getDetails().length() > 0) {
+				setErrorDetails(x.getDetails());
+			}
+		}
+	}
 }

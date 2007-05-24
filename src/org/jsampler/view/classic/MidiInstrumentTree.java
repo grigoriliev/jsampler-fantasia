@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -22,10 +22,17 @@
 
 package org.jsampler.view.classic;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JTree;
+
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
@@ -76,11 +83,20 @@ public class MidiInstrumentTree extends JTree {
 				if(e.getButton() != e.BUTTON3) return;
 				setSelectionPath(getClosestPathForLocation(e.getX(), e.getY()));
 			}
+			
+			public void
+			mouseClicked(MouseEvent e) {
+				if(e.getButton() != e.BUTTON1) return;
+				if(e.getClickCount() > 1) editSelectedInstrument();
+			}
 		});
 		
 		setMidiInstrumentMap(null);
 		
 		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		ContextMenu contextMenu = new ContextMenu();
+		addMouseListener(contextMenu);
+		addTreeSelectionListener(contextMenu);
 	}
 	
 	/**
@@ -350,6 +366,21 @@ public class MidiInstrumentTree extends JTree {
 		public boolean
 		isLeaf() { return true; }
 	}
+		
+	private void
+	editSelectedInstrument() {
+		MidiInstrument i = getSelectedInstrument();
+		if(i == null) return;
+		EditMidiInstrumentDlg dlg = new EditMidiInstrumentDlg(i.getInfo());
+		dlg.setVisible(true);
+		
+		if(dlg.isCancelled()) return;
+		
+		MidiInstrumentInfo info = dlg.getInstrument();
+		CC.getSamplerModel().mapBackendMidiInstrument (
+			info.getMapId(), info.getMidiBank(), info.getMidiProgram(), info
+		);
+	}
 	
 	private final EventHandler eventHandler = new EventHandler();
 	
@@ -381,6 +412,51 @@ public class MidiInstrumentTree extends JTree {
 		instrumentRemoved(MidiInstrumentMapEvent e) {
 			unmapInstrument(e.getInstrument());
 			e.getInstrument().removeMidiInstrumentListener(getHandler());
+		}
+	}
+	
+	class ContextMenu extends MouseAdapter implements TreeSelectionListener {
+		private final JPopupMenu cmenu = new JPopupMenu();
+		JMenuItem miEdit = new JMenuItem(i18n.getMenuLabel("ContextMenu.edit"));
+		
+		ContextMenu() {
+			cmenu.add(miEdit);
+			miEdit.addActionListener(new ActionListener() {
+				public void
+				actionPerformed(ActionEvent e) {
+					editSelectedInstrument();
+				}
+			});
+			
+			JMenuItem mi = new JMenuItem(i18n.getMenuLabel("ContextMenu.delete"));
+			cmenu.add(mi);
+			mi.addActionListener(new ActionListener() {
+				public void
+				actionPerformed(ActionEvent e) {
+					removeSelectedInstrumentOrBank();
+				}
+			});
+			
+		}
+		
+		public void
+		mousePressed(MouseEvent e) {
+			if(e.isPopupTrigger()) show(e);
+		}
+	
+		public void
+		mouseReleased(MouseEvent e) {
+			if(e.isPopupTrigger()) show(e);
+		}
+	
+		void
+		show(MouseEvent e) {
+			cmenu.show(e.getComponent(), e.getX(), e.getY());
+		}
+		
+		public void
+		valueChanged(TreeSelectionEvent e) {
+			miEdit.setVisible(getSelectedInstrument() != null);
 		}
 	}
 }

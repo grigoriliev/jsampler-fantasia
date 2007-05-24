@@ -232,7 +232,7 @@ public class AudioDevicesPage extends NavigationPage {
 		valueChanged(ListSelectionEvent e) {
 			if(e.getValueIsAdjusting()) return;
 			
-			for(AudioDeviceModel m : CC.getSamplerModel().getAudioDeviceModels()) {
+			for(AudioDeviceModel m : CC.getSamplerModel().getAudioDevices()) {
 				m.removeAudioDeviceListener(this);
 			}
 			
@@ -430,7 +430,7 @@ class AudioDevicesTableModel extends AbstractTableModel {
 	
 	AudioDevicesTableModel() {
 		CC.getSamplerModel().addAudioDeviceListListener(new Handler());
-		deviceList = CC.getSamplerModel().getAudioDeviceModels();
+		deviceList = CC.getSamplerModel().getAudioDevices();
 		
 	}
 	
@@ -543,7 +543,7 @@ class AudioDevicesTableModel extends AbstractTableModel {
 		public void
 		entryAdded(ListEvent<AudioDeviceModel> e) {
 			for(AudioDeviceModel m : deviceList) m.removeAudioDeviceListener(this);
-			deviceList = CC.getSamplerModel().getAudioDeviceModels();
+			deviceList = CC.getSamplerModel().getAudioDevices();
 			for(AudioDeviceModel m : deviceList) m.addAudioDeviceListener(this);
 			fireTableDataChanged();
 		}
@@ -556,7 +556,7 @@ class AudioDevicesTableModel extends AbstractTableModel {
 		public void
 		entryRemoved(ListEvent<AudioDeviceModel> e) {
 			for(AudioDeviceModel m : deviceList) m.removeAudioDeviceListener(this);
-			deviceList = CC.getSamplerModel().getAudioDeviceModels();
+			deviceList = CC.getSamplerModel().getAudioDevices();
 			for(AudioDeviceModel m : deviceList) m.addAudioDeviceListener(this);
 			fireTableDataChanged();
 		}

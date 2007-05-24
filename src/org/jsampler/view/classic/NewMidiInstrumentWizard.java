@@ -147,12 +147,12 @@ class NewMidiInstrumentWizardModel extends DefaultWizardModel {
 		MidiInstrumentInfo instr = new MidiInstrumentInfo();
 		if(instrLocationMethodWizardPage.isOrchestraMethodSelected()) {
 			Instrument i = orchestraSelectWizardPage.getInstrument();
-			instr.setFileName(i.getPath());
+			instr.setFilePath(i.getPath());
 			instr.setInstrumentIndex(i.getInstrumentIndex());
 			instr.setEngine(i.getEngine());
 			instr.setLoadMode(orchestraSelectWizardPage.getLoadMode());
 		} else {
-			instr.setFileName(manualSelectWizardPage.getSelectedFile());
+			instr.setFilePath(manualSelectWizardPage.getSelectedFile());
 			instr.setInstrumentIndex(manualSelectWizardPage.getInstrumentIndex());
 			instr.setEngine(manualSelectWizardPage.getEngine());
 			instr.setLoadMode(manualSelectWizardPage.getLoadMode());
@@ -400,8 +400,7 @@ class ManualSelectWizardPage extends UserInputPage {
 	private final JTextField tfFilename = new JTextField();
 	private final JSpinner spinnerIndex = new JSpinner(new SpinnerNumberModel(0, 0, 500, 1));
 	
-	private final JButton btnBrowse =
-		new JButton(Res.iconFolderOpen16);
+	private final JButton btnBrowse = new JButton(Res.iconFolderOpen16);
 	
 	private final JComboBox cbEngine = new JComboBox();
 	private final JComboBox cbLoadMode = new JComboBox();

@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -24,7 +24,9 @@ package org.jsampler.view.classic;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dialog;
 import java.awt.Dimension;
+import java.awt.Frame;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -79,13 +81,7 @@ import static org.jsampler.view.classic.LeftPane.getLeftPane;
  */
 public class
 MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListSelectionListener {
-	public static ImageIcon applicationIcon = null;
-	
-	static {
-		String s = "org/jsampler/view/classic/res/icons/app-icon.png";
-		java.net.URL url = ClassLoader.getSystemClassLoader().getResource(s);
-		if(url != null) applicationIcon = new ImageIcon(url);
-	}
+	public static ImageIcon applicationIcon = Res.appIcon;
 	
 	private final ChannelsBar channelsBar = new ChannelsBar();
 	private final Statusbar statusbar = new Statusbar();
@@ -197,6 +193,8 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 				getLeftPane().getOrchestrasPage().setSelectedOrchestra(om);
 			}
 		}
+		
+		//CC.getInstrumentsDbTreeModel(); // used to initialize the db tree model
 	}
 	
 	/** Invoked when this window is about to close. */
@@ -204,11 +202,11 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 	onWindowClose() {
 		if(ClassicPrefs.getSaveWindowProperties()) {
 			ClassicPrefs.setWindowMaximized (
-				(getExtendedState() & MAXIMIZED_BOTH) == MAXIMIZED_BOTH
+				"Mainframe", (getExtendedState() & MAXIMIZED_BOTH) == MAXIMIZED_BOTH
 			);
 			
 			setVisible(false);
-			if(ClassicPrefs.getWindowMaximized()) {
+			if(ClassicPrefs.getWindowMaximized("Mainframe")) {
 				//setExtendedState(getExtendedState() & ~MAXIMIZED_BOTH);
 				CC.cleanExit();
 				return;
@@ -219,7 +217,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 			StringBuffer sb = new StringBuffer();
 			sb.append(p.x).append(',').append(p.y).append(',');
 			sb.append(d.width).append(',').append(d.height);
-			ClassicPrefs.setWindowSizeAndLocation(sb.toString());
+			ClassicPrefs.setWindowSizeAndLocation("Mainframe", sb.toString());
 			
 			ClassicPrefs.setHSplitDividerLocation(hSplitPane.getDividerLocation());
 		}
@@ -270,7 +268,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 	
 	private void
 	setSavedSize() {
-		String s = ClassicPrefs.getWindowSizeAndLocation();
+		String s = ClassicPrefs.getWindowSizeAndLocation("Mainframe");
 		if(s == null) {
 			setDefaultSize();
 			return;
@@ -298,7 +296,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 			setDefaultSize();
 		}
 		
-		if(ClassicPrefs.getWindowMaximized())
+		if(ClassicPrefs.getWindowMaximized("Mainframe"))
 			setExtendedState(getExtendedState() | MAXIMIZED_BOTH);
 	}
 	
@@ -623,6 +621,15 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		mi = new JMenuItem(A4n.closeChannelsTab);
 		mi.setIcon(null);
 		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, KeyEvent.CTRL_MASK));
+		m.add(mi);
+		
+		
+		// Window
+		m = new JMenu(i18n.getMenuLabel("window"));
+		menuBar.add(m);
+		
+		mi = new JMenuItem(A4n.windowInstrumentsDb);
+		mi.setIcon(null);
 		m.add(mi);
 		
 		
@@ -1175,5 +1182,18 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		if(chooser.isCancelled()) return;
 		
 		CC.changeJSamplerHome(chooser.getJSamplerHome());
+	}
+	
+	public boolean
+	getInstrumentsDbSupport() { return true; }
+	
+	public void
+	showDetailedErrorMessage(Frame owner, String err, String details) {
+		new DetailedErrorDlg(owner, i18n.getError("error"), err, details).setVisible(true);
+	}
+	
+	public void
+	showDetailedErrorMessage(Dialog owner, String err, String details) {
+		new DetailedErrorDlg(owner, i18n.getError("error"), err, details).setVisible(true);
 	}
 }

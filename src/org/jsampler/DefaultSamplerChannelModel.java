@@ -36,6 +36,8 @@ import org.jsampler.event.SamplerChannelEvent;
 import org.jsampler.event.SamplerChannelListener;
 
 import org.jsampler.task.Channel;
+import org.jsampler.task.Channel.LoadEngine;
+import org.jsampler.task.Channel.LoadInstrument;
 import org.jsampler.task.Channel.SetMidiInputChannel;
 import org.jsampler.task.Channel.SetMidiInputDevice;
 import org.jsampler.task.Channel.SetMidiInputPort;
@@ -44,8 +46,6 @@ import org.jsampler.task.Channel.SetSolo;
 import org.jsampler.task.Channel.SetVolume;
 import org.jsampler.task.Channel.UpdateFxSendInfo;
 import org.jsampler.task.DuplicateChannels;
-import org.jsampler.task.LoadEngine;
-import org.jsampler.task.LoadInstrument;
 
 import org.linuxsampler.lscp.FxSend;
 import org.linuxsampler.lscp.SamplerChannel;

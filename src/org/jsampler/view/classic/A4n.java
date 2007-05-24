@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -694,7 +694,37 @@ public class A4n {
 			frm.removeChannelsPane(chnPane);
 		}
 	}
-
+	
+// WINDOW
+	public final static WindowInstrumentsDb windowInstrumentsDb  = new WindowInstrumentsDb();
+	
+	private static class WindowInstrumentsDb extends AbstractAction {
+		InstrumentsDbFrame instrumentsDbFrame = null;
+		
+		WindowInstrumentsDb() {
+			super(i18n.getMenuLabel("window.instrumentsDb"));
+			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("window.instrumentsDb.tt"));
+			putValue(Action.SMALL_ICON, Res.iconDb32);
+		}
+		
+		public void
+		actionPerformed(ActionEvent e) {
+			if(CC.getInstrumentsDbTreeModel() == null) {
+				String s = i18n.getMessage("A4n.noInstrumentsDbSupport!");
+				HF.showErrorMessage(s, CC.getMainFrame());
+				return;
+			}
+			
+			if(instrumentsDbFrame != null && instrumentsDbFrame.isVisible()) {
+				instrumentsDbFrame.toFront();
+				return;
+			}
+			
+			instrumentsDbFrame = new InstrumentsDbFrame();
+			instrumentsDbFrame.setVisible(true);
+		}
+	}
+	
 // HELP
 	public final static HelpAbout helpAbout = new HelpAbout();
 	

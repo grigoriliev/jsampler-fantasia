@@ -162,7 +162,7 @@ public class Audio {
 				CC.getClient().enableAudioOutputDevice(dev, enable);
 			
 				// Not needed, but eventually speeds up the change.
-				CC.getSamplerModel().getAudioDeviceModel(dev).setActive(enable);
+				CC.getSamplerModel().getAudioDeviceById(dev).setActive(enable);
 			} catch(Exception x) {
 				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
 				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
@@ -261,7 +261,7 @@ public class Audio {
 		run() {
 			try { 
 				AudioOutputDevice d = CC.getClient().getAudioOutputDeviceInfo(dev);
-				CC.getSamplerModel().getAudioDeviceModel(dev).setDeviceInfo(d);
+				CC.getSamplerModel().getAudioDeviceById(dev).setDeviceInfo(d);
 			} catch(Exception x) {
 				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
 				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
@@ -289,7 +289,7 @@ public class Audio {
 			
 				boolean found = false;
 				
-				for(AudioDeviceModel m : sm.getAudioDeviceModels()) {
+				for(AudioDeviceModel m : sm.getAudioDevices()) {
 					for(int i = 0; i < devIDs.length; i++) {
 						if(m.getDeviceId() == devIDs[i]) {
 							devIDs[i] = -1;
@@ -297,7 +297,7 @@ public class Audio {
 						}
 					}
 				
-					if(!found) sm.removeAudioDevice(m.getDeviceId());
+					if(!found) sm.removeAudioDeviceById(m.getDeviceId());
 					found = false;
 				}
 			

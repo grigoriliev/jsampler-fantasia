@@ -168,7 +168,7 @@ public class EditMidiInstrumentDlg extends OkCancelDialog {
 		setMainPane(p);
 		
 		tfName.setText(instr.getName());
-		tfFilename.setText(instr.getFileName());
+		tfFilename.setText(instr.getFilePath());
 		spinnerIndex.setValue(instr.getInstrumentIndex());
 		slVolume.setValue((int)(instr.getVolume() * 100));
 		
@@ -193,7 +193,7 @@ public class EditMidiInstrumentDlg extends OkCancelDialog {
 	public void
 	onOk() {
 		instrument.setName(tfName.getText());
-		instrument.setFileName(tfFilename.getText());
+		instrument.setFilePath(tfFilename.getText());
 		instrument.setInstrumentIndex(Integer.parseInt(spinnerIndex.getValue().toString()));
 		String s = ((SamplerEngine)cbEngine.getSelectedItem()).getName();
 		instrument.setEngine(s);

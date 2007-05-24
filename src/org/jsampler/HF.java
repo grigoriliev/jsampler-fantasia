@@ -158,7 +158,7 @@ public class HF {
 		String msg = getErrorMessage(e);
 		
 		CC.getLogger().log(Level.INFO, msg, e);
-			
+		
 		JOptionPane.showMessageDialog (
 			dlg, msg,
 			i18n.getError("error"),
@@ -170,6 +170,7 @@ public class HF {
 	 * Brings up a question dialog with Yes, No options, empty title and the specified message.
 	 * @param parent The parent <code>Component</code> for the dialog.
 	 * @param message The message to display.
+	 * @return <code>true</code> if the user chooses "yes", <code>false</code> otherwise.
 	 */
 	public static boolean
 	showYesNoDialog(Component parent, String message) {
@@ -181,6 +182,7 @@ public class HF {
 	 * @param parent The parent <code>Component</code> for the dialog.
 	 * @param message The message to display.
 	 * @param title The dialog's title.
+	 * @return <code>true</code> if the user chooses "yes", <code>false</code> otherwise.
 	 */
 	public static boolean
 	showYesNoDialog(Component parent, String message, String title) {

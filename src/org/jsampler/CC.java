@@ -59,6 +59,7 @@ import org.jsampler.task.*;
 
 import org.jsampler.view.JSMainFrame;
 import org.jsampler.view.JSProgress;
+import org.jsampler.view.InstrumentsDbTreeModel;
 
 import org.linuxsampler.lscp.AudioOutputChannel;
 import org.linuxsampler.lscp.AudioOutputDevice;
@@ -120,6 +121,21 @@ public class CC {
 	 */
 	public static TaskQueue
 	getTaskQueue() { return taskQueue; }
+	
+	/**
+	 * Adds the specified task to the task queue. All task in the
+	 * queue equal to the specified task are removed from the queue.
+	 */
+	public static void
+	scheduleTask(Task t) {
+		while(getTaskQueue().removeTask(t)) { }
+		
+		if(getTaskQueue().getPendingTaskCount() == 0) {
+			if(t.equals(getTaskQueue().getRunningTask())) return;
+		}
+		
+		getTaskQueue().add(t);
+	}
 	
 	/**
 	 * Returns the main window of this application.
@@ -190,8 +206,8 @@ public class CC {
 		handler.setLevel(Level.FINE);
 		getLogger().addHandler(handler);
 		getLogger().setLevel(Level.FINE);
-		Logger.getLogger("org.linuxsampler.lscp").addHandler(handler);
 		Logger.getLogger("org.linuxsampler.lscp").setLevel(Level.FINE);
+		Logger.getLogger("org.linuxsampler.lscp").addHandler(handler);
 		
 		// Flushing logs on every second
 		new java.util.Timer().schedule(new java.util.TimerTask() {
@@ -336,6 +352,26 @@ public class CC {
 	 */
 	public static OrchestraListModel
 	getOrchestras() { return orchestras; }
+	
+	private static InstrumentsDbTreeModel instrumentsDbTreeModel = null;
+	/**
+	 * Gets the tree model of the instruments database.
+	 * If the currently used view doesn't have instruments
+	 * database support the tree model is initialized on first use.
+	 * @return The tree model of the instruments database or
+	 * <code>null</code> if the backend doesn't have instruments database support.
+	 * @see org.jsampler.view.JSMainFrame#getInstrumentsDbSupport
+	 */
+	public static InstrumentsDbTreeModel
+	getInstrumentsDbTreeModel() {
+		if(!CC.getSamplerModel().getServerInfo().hasInstrumentsDbSupport()) return null;
+		
+		if(instrumentsDbTreeModel == null) {
+			instrumentsDbTreeModel = new InstrumentsDbTreeModel();
+		}
+		
+		return instrumentsDbTreeModel;
+	}
 	
 	/**
 	 * Loads the orchestras described in <code>&lt;jsampler_home&gt;/orchestras.xml</code>.
@@ -505,11 +541,17 @@ public class CC {
 	initSamplerModel() {
 		final DefaultSamplerModel model = (DefaultSamplerModel)getSamplerModel();
 		
-		final GetServerInfo gsi = new GetServerInfo();
+		final Global.GetServerInfo gsi = new Global.GetServerInfo();
 		gsi.addTaskListener(new TaskListener() {
 			public void
 			taskPerformed(TaskEvent e) {
-				if(!gsi.doneWithErrors()) model.setServerInfo(gsi.getResult());
+				if(gsi.doneWithErrors()) return;
+				
+				model.setServerInfo(gsi.getResult());
+				
+				if(CC.getMainFrame().getInstrumentsDbSupport()) {
+					getInstrumentsDbTreeModel();
+				}
 			}
 		});
 		
@@ -565,7 +607,7 @@ public class CC {
 		uc.addTaskListener(new TaskListener() {
 			public void
 			taskPerformed(TaskEvent e) {
-				for(SamplerChannelModel c : model.getChannelModels()) {
+				for(SamplerChannelModel c : model.getChannels()) {
 					if(c.getChannelInfo().getEngine() == null) continue;
 					
 					Channel.GetFxSends gfs = new Channel.GetFxSends();
@@ -602,7 +644,7 @@ public class CC {
 		taskPerformed(TaskEvent e) {
 			Channel.GetFxSends gfs = (Channel.GetFxSends)e.getSource();
 			if(gfs.doneWithErrors()) return;
-			SamplerChannelModel m = getSamplerModel().getChannelModel(gfs.getChannel());
+			SamplerChannelModel m = getSamplerModel().getChannelById(gfs.getChannel());
 			m.removeAllFxSends();
 			
 			for(FxSend fxs : gfs.getResult()) m.addFxSend(fxs);
@@ -673,7 +715,7 @@ public class CC {
 			sb.append("\r\n");
 		} catch(Exception e) { CC.getLogger().log(Level.FINE, HF.getErrorMessage(e), e); }
 				
-		MidiDeviceModel[] mDevs = getSamplerModel().getMidiDeviceModels();
+		MidiDeviceModel[] mDevs = getSamplerModel().getMidiDevices();
 		for(int i = 0; i < mDevs.length; i++) {
 			exportMidiDeviceToLscpScript(mDevs[i].getDeviceInfo(), i, lscpClient);
 			sb.append(out.toString());
@@ -681,7 +723,7 @@ public class CC {
 			sb.append("\r\n");
 		}
 		
-		AudioDeviceModel[] aDevs = getSamplerModel().getAudioDeviceModels();
+		AudioDeviceModel[] aDevs = getSamplerModel().getAudioDevices();
 		for(int i = 0; i < aDevs.length; i++) {
 			exportAudioDeviceToLscpScript(aDevs[i].getDeviceInfo(), i, lscpClient);
 			sb.append(out.toString());
@@ -689,10 +731,10 @@ public class CC {
 			sb.append("\r\n");
 		}
 		
-		SamplerChannelModel[] channels = getSamplerModel().getChannelModels();
+		SamplerChannelModel[] channels = getSamplerModel().getChannels();
 		
 		for(int i = 0; i < channels.length; i++) {
-			SamplerChannelModel scm = getSamplerModel().getChannelModel(i);
+			SamplerChannelModel scm = getSamplerModel().getChannelById(i);
 			exportChannelToLscpScript(scm.getChannelInfo(), i, lscpClient);
 			sb.append(out.toString());
 			out.reset();
@@ -890,7 +932,7 @@ public class CC {
 		public void
 		streamCountChanged(StreamCountEvent e) {
 			SamplerChannelModel scm = 
-				getSamplerModel().getChannelModel(e.getSamplerChannel());
+				getSamplerModel().getChannelById(e.getSamplerChannel());
 			
 			if(scm == null) {
 				CC.getLogger().log (
@@ -912,7 +954,7 @@ public class CC {
 		public void
 		voiceCountChanged(VoiceCountEvent e) {
 			SamplerChannelModel scm = 
-				getSamplerModel().getChannelModel(e.getSamplerChannel());
+				getSamplerModel().getChannelById(e.getSamplerChannel());
 			
 			if(scm == null) {
 				CC.getLogger().log (
@@ -969,8 +1011,17 @@ public class CC {
 				break;
 			case TASK_DONE:
 				EnhancedTask t = (EnhancedTask)e.getSource();
-				if(t.doneWithErrors() && !t.isStopped()) 
-					HF.showErrorMessage(t.getErrorMessage());
+				if(t.doneWithErrors() && !t.isStopped()) {
+					if(t.getErrorDetails() == null) {
+						HF.showErrorMessage(t.getErrorMessage());
+					} else {
+						getMainFrame().showDetailedErrorMessage (
+							getMainFrame(),
+							t.getErrorMessage(),
+							t.getErrorDetails()
+						);
+					}
+				}
 				break;
 			case NOT_IDLE:
 				timer.start();

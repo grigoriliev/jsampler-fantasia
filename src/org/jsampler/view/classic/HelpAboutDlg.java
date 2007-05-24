@@ -58,7 +58,7 @@ import static org.jsampler.view.classic.ClassicI18n.i18n;
  */
 public class HelpAboutDlg extends InformationDialog {
 	private JLabel lProductName =
-		new JLabel("<html>\n<font size=+1>JS Classic (version 0.4a)</font>");
+		new JLabel("<html>\n<font size=+1>JS Classic (version 0.5a)</font>");
 	
 	private JLabel lAuthor = new JLabel(i18n.getLabel("HelpAboutDlg.lAuthor"));
 	private JTextField tfAuthor = new JTextField(i18n.getLabel("HelpAboutDlg.tfAuthor"));

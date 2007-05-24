@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -119,7 +119,7 @@ public interface SamplerModel {
 	 * @return The model of the specified audio device or <code>null</code> 
 	 * if there is no audio device with ID <code>deviceId</code>.
 	 */
-	public AudioDeviceModel getAudioDeviceModel(int deviceId);
+	public AudioDeviceModel getAudioDeviceById(int deviceId);
 	
 	/**
 	 * Gets the current number of audio devices.
@@ -131,7 +131,7 @@ public interface SamplerModel {
 	 * Gets the current list of audio device models.
 	 * @return The current list of audio device models.
 	 */
-	public AudioDeviceModel[] getAudioDeviceModels();
+	public AudioDeviceModel[] getAudioDevices();
 	
 	/**
 	 * Adds the specified audio device.
@@ -145,7 +145,7 @@ public interface SamplerModel {
 	 * @return <code>true</code> if the audio device is removed successfully, <code>false</code>
 	 * if the device list does not contain audio device with ID <code>deviceId</code>.
 	 */
-	public boolean removeAudioDevice(int deviceId);
+	public boolean removeAudioDeviceById(int deviceId);
 	
 	/**
 	 * Removes (on the backend side) the specified audio device.
@@ -167,7 +167,7 @@ public interface SamplerModel {
 	 * @return The model of the specified MIDI device or <code>null</code> 
 	 * if there is no MIDI device with ID <code>deviceId</code>.
 	 */
-	public MidiDeviceModel getMidiDeviceModel(int deviceId);
+	public MidiDeviceModel getMidiDeviceById(int deviceId);
 	
 	/**
 	 * Gets the current number of MIDI input devices.
@@ -179,7 +179,7 @@ public interface SamplerModel {
 	 * Gets the current list of MIDI device models.
 	 * @return The current list of MIDI device models.
 	 */
-	public MidiDeviceModel[] getMidiDeviceModels();
+	public MidiDeviceModel[] getMidiDevices();
 	
 	/**
 	 * Adds the specified MIDI device.
@@ -200,7 +200,7 @@ public interface SamplerModel {
 	 * @return <code>true</code> if the MIDI device is removed successfully, <code>false</code>
 	 * if the device list does not contain MIDI device with ID <code>deviceId</code>.
 	 */
-	public boolean removeMidiDevice(int deviceId);
+	public boolean removeMidiDeviceById(int deviceId);
 	
 	/**
 	 * Schedules a new task for removing the specified MIDI device.
@@ -255,7 +255,7 @@ public interface SamplerModel {
 	 * <code>false</code> if the MIDI instrument map's list does not contain
 	 * MIDI instrument map with ID <code>mapId</code>.
 	 */
-	public boolean removeMidiInstrumentMap(int mapId);
+	public boolean removeMidiInstrumentMapById(int mapId);
 	
 	/** Removes all MIDI instrument maps. */
 	public void removeAllMidiInstrumentMaps();
@@ -311,7 +311,7 @@ public interface SamplerModel {
 	 * Gets the current list of sampler channel models.
 	 * @return The current list of sampler channel models.
 	 */
-	public SamplerChannelModel[] getChannelModels();
+	public SamplerChannelModel[] getChannels();
 	
 	/**
 	 * Gets the model of the sampler channel with ID <code>channelId</code>.
@@ -319,7 +319,7 @@ public interface SamplerModel {
 	 * @return The model of the specified sampler channel or <code>null</code> 
 	 * if there is no channel with ID <code>channelId</code>.
 	 */
-	public SamplerChannelModel getChannelModel(int channelId);
+	public SamplerChannelModel getChannelById(int channelId);
 	
 	/**
 	 * Gets the current number of sampler channels.
@@ -349,7 +349,7 @@ public interface SamplerModel {
 	 * @return <code>true</code> if the channel is removed successfully, <code>false</code>
 	 * if the channel's list does not contain channel with ID <code>channelId</code>.
 	 */
-	public boolean removeChannel(int channelId);
+	public boolean removeChannelById(int channelId);
 	
 	/**
 	 * Schedules a new task for removing the specified sampler channel on the backend side.

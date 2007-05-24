@@ -37,6 +37,7 @@ public class StandardBar extends JToolBar {
 	private final ToolbarButton btnSamplerInfo = new ToolbarButton(A4n.samplerInfo);
 	private final ToolbarButton btnRefresh = new ToolbarButton(A4n.refresh);
 	private final ToolbarButton btnResetSampler = new ToolbarButton(A4n.resetSampler);
+	private final ToolbarButton btnInstrumentsDb = new ToolbarButton(A4n.windowInstrumentsDb);
 	private final ToolbarButton btnPreferences = new ToolbarButton(A4n.preferences);
 	
 	
@@ -54,6 +55,8 @@ public class StandardBar extends JToolBar {
 		add(btnExportSession);
 		add(btnRefresh);
 		add(btnResetSampler);
+		addSeparator();
+		add(btnInstrumentsDb);
 		addSeparator();
 		add(btnPreferences);
 	}

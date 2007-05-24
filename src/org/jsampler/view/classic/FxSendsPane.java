@@ -81,7 +81,8 @@ public class FxSendsPane extends JPanel implements ListSelectionListener {
 	private SamplerChannelModel channelModel;
 	private final FxSendTable fxSendsTable;
 	
-	private final ToolbarButton btnNewFxSend = new ToolbarButton(new AddFxSend());
+	private final AddFxSend addFxSend = new AddFxSend();
+	private final ToolbarButton btnNewFxSend = new ToolbarButton(addFxSend);
 	private final ToolbarButton btnRemoveFxSend = new ToolbarButton(new RemoveFxSend());
 	private final JComboBox cbMidiCtrls = new JComboBox();
 	private final JSlider slVolume = new JSlider(0, 100);
@@ -244,6 +245,8 @@ public class FxSendsPane extends JPanel implements ListSelectionListener {
 	}
 	
 	class AddFxSend extends AbstractAction {
+		private int fxSendId = -1;
+		
 		AddFxSend() {
 			super(i18n.getLabel("FxSendPane.AddFxSend"));
 			
@@ -254,22 +257,27 @@ public class FxSendsPane extends JPanel implements ListSelectionListener {
 		
 		public void
 		actionPerformed(ActionEvent e) {
-			//channelModel.addBackendFxSend(0, "New effect send");
 			int id = channelModel.getChannelId();
 			final Channel.AddFxSend t = new Channel.AddFxSend(id, 0, "New effect send");
 			
 			t.addTaskListener(new TaskListener() {
 				public void
 				taskPerformed(TaskEvent e) {
-					if(t.doneWithErrors()) return;
-					
-					int i = t.getResult();
-					//channelModel.get
-					
+					if(t.doneWithErrors()) {
+						fxSendId = -1;
+						return;
+					}
+					setFxSendId(t.getResult());
 				}
 			});
 			CC.getTaskQueue().add(t);
 		}
+		
+		public int
+		getFxSendId() { return fxSendId; }
+		
+		public void
+		setFxSendId(int id) { fxSendId = id; }
 	}
 	
 	class RemoveFxSend extends AbstractAction {
@@ -300,7 +308,7 @@ public class FxSendsPane extends JPanel implements ListSelectionListener {
 			
 			JComboBox cb = new JComboBox();
 			int devId = channelModel.getChannelInfo().getAudioOutputDevice();
-			AudioDeviceModel adm = CC.getSamplerModel().getAudioDeviceModel(devId);
+			AudioDeviceModel adm = CC.getSamplerModel().getAudioDeviceById(devId);
 			
 			int chns;
 			if(adm == null) {
@@ -419,9 +427,13 @@ public class FxSendsPane extends JPanel implements ListSelectionListener {
 		/** Invoked when a new effect send is added to a sampler channel. */
 		public void
 		effectSendAdded(EffectSendsEvent e) {
-			e.getFxSend();
+			FxSend fxs = fxSendsTable.getSelectedFxSend();
+			if(fxs == null) return;
+			if(fxs.getFxSendId() != addFxSend.getFxSendId()) return;
+			
 			fxSendsTable.requestFocus();
 			fxSendsTable.editSelectedFxSend();
+			addFxSend.setFxSendId(-1);
 		}
 		
 		/** Invoked when an effect send is removed from a sampler channel. */

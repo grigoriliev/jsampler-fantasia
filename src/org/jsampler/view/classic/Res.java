@@ -34,20 +34,23 @@ public class Res {
 	/** Forbits the instantiation of this class. */
 	private Res() { }
 	
+	protected final static ImageIcon appIcon
+		= new ImageIcon(Res.class.getResource("res/icons/app-icon.png"));
+	
 	protected final static ImageIcon iconClose8
 		= new ImageIcon(Res.class.getResource("res/icons/close8.png"));
 	
 	protected final static ImageIcon iconNew16
-		= new ImageIcon(Res.class.getResource("res/icons/New16.gif"));
+		= new ImageIcon(Res.class.getResource("res/icons/new16.png"));
 	
 	protected final static ImageIcon iconEdit16
-		= new ImageIcon(Res.class.getResource("res/icons/Edit16.gif"));
+		= new ImageIcon(Res.class.getResource("res/icons/edit16.png"));
 	
 	protected final static ImageIcon iconCopy16
 		= new ImageIcon(Res.class.getResource("res/icons/Copy16.gif"));
 	
 	protected final static ImageIcon iconDelete16
-		= new ImageIcon(Res.class.getResource("res/icons/Delete16.gif"));
+		= new ImageIcon(Res.class.getResource("res/icons/delete16.png"));
 	
 	protected final static ImageIcon iconProps16
 		= new ImageIcon(Res.class.getResource("res/icons/Properties16.gif"));
@@ -57,6 +60,9 @@ public class Res {
 	
 	protected final static ImageIcon iconDown16
 		= new ImageIcon(Res.class.getResource("res/icons/Down16.gif"));
+	
+	protected final static ImageIcon iconBack16
+		= new ImageIcon(Res.class.getResource("res/icons/Back16.gif"));
 	
 	protected final static ImageIcon iconAudioProps16
 		= new ImageIcon(Res.class.getResource("res/icons/Import16.gif"));
@@ -76,6 +82,9 @@ public class Res {
 	protected final static ImageIcon iconExport16
 		= new ImageIcon(Res.class.getResource("res/icons/save16.png"));
 	
+	protected final static ImageIcon iconDb16
+		= new ImageIcon(Res.class.getResource("res/icons/collection16.png"));
+	
 	protected final static ImageIcon iconTabNew22
 		= new ImageIcon(Res.class.getResource("res/icons/tab_new22.png"));
 	
@@ -94,11 +103,32 @@ public class Res {
 	protected final static ImageIcon iconVolume22
 		= new ImageIcon(Res.class.getResource("res/icons/Volume22.png"));
 	
+	protected final static ImageIcon iconFind22
+		= new ImageIcon(Res.class.getResource("res/icons/Find22.png"));
+	
+	protected final static ImageIcon iconGoUp22
+		= new ImageIcon(Res.class.getResource("res/icons/GoUp22.png"));
+	
+	protected final static ImageIcon iconGoBack22
+		= new ImageIcon(Res.class.getResource("res/icons/GoBack22.png"));
+	
+	protected final static ImageIcon iconGoForward22
+		= new ImageIcon(Res.class.getResource("res/icons/GoForward22.png"));
+	
 	protected final static ImageIcon iconUp24
 		= new ImageIcon(Res.class.getResource("res/icons/Up22.png"));
 	
 	protected final static ImageIcon iconDown24
 		= new ImageIcon(Res.class.getResource("res/icons/Down22.png"));
+	
+	protected final static ImageIcon iconFolderOpen22
+		= new ImageIcon(Res.class.getResource("res/icons/folder_open22.png"));
+	
+	protected final static ImageIcon iconPreferences22
+		= new ImageIcon(Res.class.getResource("res/icons/Preferences22.png"));
+	
+	protected final static ImageIcon iconReload22
+		= new ImageIcon(Res.class.getResource("res/icons/reload22.png"));
 	
 	protected final static ImageIcon iconNew24
 		= new ImageIcon(Res.class.getResource("res/icons/New24.png"));
@@ -125,7 +155,7 @@ public class Res {
 		= new ImageIcon(Res.class.getResource("res/icons/purge.png"));
 	
 	protected final static ImageIcon iconReload32
-		= new ImageIcon(Res.class.getResource("res/icons/reload.png"));
+		= new ImageIcon(Res.class.getResource("res/icons/reload32.png"));
 	
 	protected final static ImageIcon iconInfo32
 		= new ImageIcon(Res.class.getResource("res/icons/info32.png"));
@@ -133,5 +163,10 @@ public class Res {
 	protected final static ImageIcon iconPreferences32
 		= new ImageIcon(Res.class.getResource("res/icons/Preferences32.png"));
 	
+	protected final static ImageIcon iconDb32
+		= new ImageIcon(Res.class.getResource("res/icons/db32.png"));
+	
+	protected final static ImageIcon iconWarning32
+		= new ImageIcon(Res.class.getResource("res/icons/warning32.png"));
 	
 }

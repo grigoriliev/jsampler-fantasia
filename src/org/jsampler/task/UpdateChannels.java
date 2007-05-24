@@ -53,7 +53,7 @@ public class UpdateChannels extends EnhancedTask {
 			
 			boolean found = false;
 				
-			for(SamplerChannelModel m : sm.getChannelModels()) {
+			for(SamplerChannelModel m : sm.getChannels()) {
 				for(int i = 0; i < chnIDs.length; i++) {
 					if(m.getChannelId() == chnIDs[i]) {
 						chnIDs[i] = -1;
@@ -61,7 +61,7 @@ public class UpdateChannels extends EnhancedTask {
 					}
 				}
 				
-				if(!found) sm.removeChannel(m.getChannelId());
+				if(!found) sm.removeChannelById(m.getChannelId());
 				found = false;
 			}
 			

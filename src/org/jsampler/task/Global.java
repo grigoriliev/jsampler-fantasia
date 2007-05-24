@@ -27,6 +27,8 @@ import java.util.logging.Level;
 import org.jsampler.CC;
 import org.jsampler.HF;
 
+import org.linuxsampler.lscp.ServerInfo;
+
 import static org.jsampler.JSI18n.i18n;
 
 
@@ -38,6 +40,52 @@ public class Global {
 	
 	/** Forbits the instantiation of this class. */
 	private Global() { }
+	
+	/**
+	 * This task retrieves information about the LinuxSampler instance.
+	 * @author Grigor Iliev
+	 */
+	public static class GetServerInfo extends EnhancedTask<ServerInfo> {
+		/** Creates a new instance of <code>GetServerInfo</code>. */
+		public
+		GetServerInfo() {
+			setTitle("Global.GetServerInfo_task");
+			setDescription(i18n.getMessage("Global.GetServerInfo.desc"));
+		}
+		
+		/** The entry point of the task. */
+		public void
+		run() {
+			try { setResult(CC.getClient().getServerInfo()); }
+			catch(Exception x) {
+				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
+				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
+			}
+		}
+	}
+	
+	/**
+	 * This task resets the whole sampler.
+	 * @author Grigor Iliev
+	 */
+	public static class ResetSampler extends EnhancedTask {
+		/** Creates a new instance of <code>ResetSampler</code>. */
+		public
+		ResetSampler() {
+			setTitle("Global.ResetSampler_task");
+			setDescription(i18n.getMessage("Global.ResetSampler.desc"));
+		}
+		
+		/** The entry point of the task. */
+		public void
+		run() {
+			try { CC.getClient().resetSampler(); }
+			catch(Exception x) {
+				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
+				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
+			}
+		}
+	}
 	
 	/**
 	 * This task gets the global volume of the sampler.

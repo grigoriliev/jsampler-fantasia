@@ -23,7 +23,9 @@
 package org.jsampler.view.fantasia;
 
 import java.awt.BorderLayout;
+import java.awt.Dialog;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.Point;
 
 import java.awt.event.ActionEvent;
@@ -229,6 +231,16 @@ public class MainFrame extends JSMainFrame {
 	
 	public void
 	installJSamplerHome() { }
+	
+	public void
+	showDetailedErrorMessage(Frame owner, String err, String details) {
+		// TODO: 
+	}
+	
+	public void
+	showDetailedErrorMessage(Dialog owner, String err, String details) {
+		// TODO: 
+	}
 }
 
 class FantasiaTitleBar extends TitleBar {

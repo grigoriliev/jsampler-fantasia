@@ -64,12 +64,12 @@ import org.jsampler.event.ListListener;
 import org.jsampler.event.MidiDeviceListEvent;
 import org.jsampler.event.MidiDeviceListListener;
 
+import org.jsampler.task.Channel.LoadEngine;
+import org.jsampler.task.Channel.LoadInstrument;
 import org.jsampler.task.Channel.SetAudioOutputDevice;
 import org.jsampler.task.Channel.SetMidiInputChannel;
 import org.jsampler.task.Channel.SetMidiInputDevice;
 import org.jsampler.task.Channel.SetMidiInputPort;
-import org.jsampler.task.LoadEngine;
-import org.jsampler.task.LoadInstrument;
 
 import org.linuxsampler.lscp.AudioOutputDevice;
 import org.linuxsampler.lscp.MidiInputDevice;
@@ -233,7 +233,7 @@ class MidiDeviceWizardPage extends UserInputPage {
 		
 		p.add(Box.createRigidArea(new Dimension(6, 0)));
 		
-		for(MidiDeviceModel m : CC.getSamplerModel().getMidiDeviceModels()) {
+		for(MidiDeviceModel m : CC.getSamplerModel().getMidiDevices()) {
 			cbDevices.addItem(m.getDeviceInfo());
 		}
 		
@@ -314,7 +314,7 @@ class MidiDeviceWizardPage extends UserInputPage {
 		updateDeviceList(MidiInputDevice dev) {
 			cbDevices.removeAllItems();
 			
-			for(MidiDeviceModel m : CC.getSamplerModel().getMidiDeviceModels()) {
+			for(MidiDeviceModel m : CC.getSamplerModel().getMidiDevices()) {
 				cbDevices.addItem(m.getDeviceInfo());
 			}
 			
@@ -434,7 +434,7 @@ class AudioDeviceWizardPage extends UserInputPage {
 		
 		p.add(Box.createRigidArea(new Dimension(6, 0)));
 		
-		for(AudioDeviceModel m : CC.getSamplerModel().getAudioDeviceModels()) {
+		for(AudioDeviceModel m : CC.getSamplerModel().getAudioDevices()) {
 			cbDevices.addItem(m.getDeviceInfo());
 		}
 		
@@ -483,7 +483,7 @@ class AudioDeviceWizardPage extends UserInputPage {
 		updateDeviceList(AudioOutputDevice dev) {
 			cbDevices.removeAllItems();
 			
-			for(AudioDeviceModel m : CC.getSamplerModel().getAudioDeviceModels()) {
+			for(AudioDeviceModel m : CC.getSamplerModel().getAudioDevices()) {
 				cbDevices.addItem(m.getDeviceInfo());
 			}
 			

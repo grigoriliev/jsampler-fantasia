@@ -793,8 +793,8 @@ class ChannelOptions extends JPanel {
 		SamplerModel sm = CC.getSamplerModel();
 		SamplerChannel sc = channel.getModel().getChannelInfo();
 		
-		MidiDeviceModel mm = sm.getMidiDeviceModel(sc.getMidiInputDevice());
-		AudioDeviceModel am = sm.getAudioDeviceModel(sc.getAudioOutputDevice());
+		MidiDeviceModel mm = sm.getMidiDeviceById(sc.getMidiInputDevice());
+		AudioDeviceModel am = sm.getAudioDeviceById(sc.getAudioOutputDevice());
 		
 		if(isUpdate()) CC.getLogger().warning("Unexpected update state!");
 		
@@ -826,10 +826,10 @@ class ChannelOptions extends JPanel {
 		try {
 			cbMidiDevice.removeAllItems();
 		
-			for(MidiDeviceModel m : sm.getMidiDeviceModels())
+			for(MidiDeviceModel m : sm.getMidiDevices())
 				cbMidiDevice.addItem(m.getDeviceInfo());
 		
-			MidiDeviceModel mm = sm.getMidiDeviceModel(sc.getMidiInputDevice());
+			MidiDeviceModel mm = sm.getMidiDeviceById(sc.getMidiInputDevice());
 			cbMidiDevice.setSelectedItem(mm == null ? null : mm.getDeviceInfo());
 		} catch(Exception x) {
 			CC.getLogger().log(Level.WARNING, "Unkown error", x);
@@ -851,10 +851,10 @@ class ChannelOptions extends JPanel {
 		try {
 			cbAudioDevice.removeAllItems();
 		
-			for(AudioDeviceModel m : sm.getAudioDeviceModels()) 
+			for(AudioDeviceModel m : sm.getAudioDevices()) 
 				cbAudioDevice.addItem(m.getDeviceInfo());
 		
-			AudioDeviceModel am = sm.getAudioDeviceModel(sc.getAudioOutputDevice());
+			AudioDeviceModel am = sm.getAudioDeviceById(sc.getAudioOutputDevice());
 			cbAudioDevice.setSelectedItem(am == null ? null : am.getDeviceInfo());
 		} catch(Exception x) {
 			CC.getLogger().log(Level.WARNING, "Unkown error", x);

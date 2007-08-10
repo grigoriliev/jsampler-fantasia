@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -20,22 +20,38 @@
  *   MA  02111-1307  USA
  */
 
-package org.jsampler.view.fantasia;
+package org.jsampler.view;
+
+import org.jsampler.JSPrefs;
 
 /**
- * This class manages the locale-specific data of Fantasia.
+ * Provides the view configuration.
  * @author Grigor Iliev
  */
-public class FantasiaI18n extends net.sf.juife.I18n {
-	/** Provides the locale-specific data of Fantasia. */
-	public static FantasiaI18n i18n = new FantasiaI18n();
+public abstract class JSViewConfig {
 	
-	private
-	FantasiaI18n() {
-		setButtonsBundle("org.jsampler.view.fantasia.langprops.ButtonsLabelsBundle");
-		setErrorsBundle("org.jsampler.view.fantasia.langprops.ErrorsBundle");
-		setLabelsBundle("org.jsampler.view.fantasia.langprops.LabelsBundle");
-		setMenusBundle("org.jsampler.view.fantasia.langprops.MenuLabelsBundle");
-		setMessagesBundle("org.jsampler.view.fantasia.langprops.MessagesBundle");
+	/** Creates a new instance of <code>JSViewConfig</code> */
+	public
+	JSViewConfig() {
+		
 	}
+	
+	/**
+	 * Provides UI information for instruments database trees.
+	 */
+	public abstract InstrumentsDbTreeView getInstrumentsDbTreeView();
+	
+	/**
+	 * Provides UI information for instruments database tables.
+	 */
+	public abstract InstrumentsDbTableView getInstrumentsDbTableView();
+	
+	public abstract JSPrefs preferences();
+	
+	/**
+	 * Determines whether this view provides instruments database support.
+	 * @return <code>false</code>
+	 */
+	public boolean
+	getInstrumentsDbSupport() { return false; }
 }

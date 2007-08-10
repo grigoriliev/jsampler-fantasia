@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -33,9 +33,10 @@ import java.util.jar.Manifest;
 
 import java.util.logging.Level;
 
+import javax.swing.SwingUtilities;
+
 import org.jsampler.CC;
 import org.jsampler.HF;
-
 
 /**
  * This class provides information about the available views in the current distribution.
@@ -100,23 +101,42 @@ public class JSViews {
 			CC.getLogger().info("Missing view: " + viewName);
 			return;
 		}
+		if(CC.getMainFrame() != null) {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void
+				run() { CC.getMainFrame().setVisible(false); }
+			});
+		}
 		
-		if(CC.getMainFrame() != null) CC.getMainFrame().setVisible(false);
-		
-		try { CC.setMainFrame((JSMainFrame) Class.forName(entry.mainFrame).newInstance()); }
-		catch(Exception e) {
+		try {
+			CC.setViewConfig (
+				(JSViewConfig)Class.forName(entry.viewConfig).newInstance()
+			);
+		} catch(Exception e) {
 			CC.getLogger().info(HF.getErrorMessage(e));
-			if(CC.getMainFrame() != null) CC.getMainFrame().setVisible(true);
 			return;
 		}
 		
-		try { CC.setProgressIndicator (
-			(JSProgress)Class.forName(entry.progressIndicator).newInstance()
-		);} catch(Exception e) { CC.getLogger().info(HF.getErrorMessage(e)); }
-		
-		CC.getMainFrame().setVisible(true);
-		
-		currentView = viewName;
+		final ViewEntry e = entry;
+		SwingUtilities.invokeLater(new Runnable() {
+			public void
+			run() { setView0(e); }
+		});
+	}
+	
+	private static void
+	setView0(ViewEntry entry) {
+		try {
+			CC.setMainFrame((JSMainFrame)Class.forName(entry.mainFrame).newInstance());
+			CC.setProgressIndicator (
+				(JSProgress)Class.forName(entry.progressIndicator).newInstance()
+			);
+			CC.getMainFrame().setVisible(true);
+			currentView = entry.name;
+		} catch(Exception e) {
+			CC.getLogger().log(Level.INFO, HF.getErrorMessage(e), e);
+			return;
+		}
 	}
 	
 	/**
@@ -147,6 +167,7 @@ public class JSViews {
 				
 				ViewEntry ve = new ViewEntry();
 				ve.name = a.getValue("View-Name");
+				ve.viewConfig = a.getValue("View-Config");
 				ve.mainFrame = a.getValue("Main-Frame");
 				ve.progressIndicator = a.getValue("Progress-Indicator");
 				
@@ -163,6 +184,7 @@ public class JSViews {
 	
 	private static class ViewEntry {
 		String name;
+		String viewConfig;
 		String mainFrame;
 		String progressIndicator;
 	}

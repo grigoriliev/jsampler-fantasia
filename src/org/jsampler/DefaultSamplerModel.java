@@ -418,6 +418,24 @@ public class DefaultSamplerModel implements SamplerModel {
 	}
 	
 	/**
+	 * Gets the position of the specified MIDI instrument map in the list.
+	 * @param map The map whose index should be returned.
+	 * @return The position of the specified map in the list,
+	 * or -1 if <code>map</code> is <code>null</code> or
+	 * the map list does not contain the specified map.
+	 */
+	public int
+	getMidiInstrumentMapIndex(MidiInstrumentMap map) {
+		if(map == null) return -1;
+		
+		for(int i = 0; i < getMidiInstrumentMapCount(); i++) {
+			if(getMidiInstrumentMap(i) == map) return i;
+		}
+		
+		return -1;
+	}
+	
+	/**
 	 * Adds the specified MIDI instrument map.
 	 * @param map The MIDI instrument map to be added.
 	 * @throws IllegalArgumentException If <code>map</code> is <code>null</code>.

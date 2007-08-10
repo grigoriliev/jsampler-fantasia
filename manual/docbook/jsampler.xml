@@ -22,7 +22,7 @@
       url="gfdl.html">GNU Free Documentation License</ulink>.</para>
     </legalnotice>
 
-    <pubdate>Updated: Thu, 17 May 2007</pubdate>
+    <pubdate>Updated: Fri, 10 August 2007</pubdate>
   </bookinfo>
 
   <chapter>
@@ -75,9 +75,8 @@
           </listitem>
 
           <listitem>
-            <para>Fantasia - A distribution with a skin based view, which is
-            in early development stage and is only partially implemented
-            (graphic design by Olivier Boyer).</para>
+            <para>Fantasia - A distribution with a modern skin based view
+            (initial graphic design by Olivier Boyer).</para>
           </listitem>
         </itemizedlist></para>
     </section>
@@ -86,13 +85,21 @@
   <chapter>
     <title>Screenshots</title>
 
-    <para>JS Classic with left pane, LS console, statusbar and
-    toolbars<graphic fileref="images/js-classic1.png" /></para>
+    <para>JS Classic with left pane, LS console, statusbar and toolbars</para>
+
+    <para><ulink url="images/js-classic1.png"><inlinegraphic
+    fileref="images/js-classic1-preview.png" /></ulink></para>
 
     <para>JS Classic without left pane, LS console, statusbar and
-    toolbars<graphic fileref="images/js-classic2.png" /></para>
+    toolbars</para>
 
-    <para>Fantasia<graphic fileref="images/fantasia.png" /></para>
+    <para><ulink url="images/js-classic2.png"><inlinegraphic
+    fileref="images/js-classic2-preview.png" /></ulink></para>
+
+    <para>Fantasia</para>
+
+    <para><ulink url="images/fantasia.png"><inlinegraphic
+    fileref="images/fantasia-preview.png" /></ulink></para>
   </chapter>
 
   <chapter>
@@ -100,17 +107,17 @@
 
     <para></para>
 
-    <section>
-      <title id="download">What to download?</title>
+    <section id="download">
+      <title>What to download?</title>
 
-      <para>Currently, there are two distributions available for download - JS
-      Classic and Fantasia. However, for now the preferred choice is JS
-      Classic, because Fantasia is only partially implemented. The latest
-      version of JS Classic is available for download from <ulink
-      url="http://downloads.sourceforge.net/jsampler/JS_Classic-0.5a.jar">here</ulink>.</para>
+      <para>Currently, there are two distributions available for download -
+      <ulink
+      url="http://downloads.sourceforge.net/jsampler/JS_Classic-0.6a.jar">JS
+      Classic</ulink> and <ulink
+      url="http://downloads.sourceforge.net/jsampler/Fantasia-0.6a.jar">Fantasia</ulink>.</para>
 
       <para>The source code is available in the <ulink
-      url="http://downloads.sourceforge.net/jsampler/JSampler-0.5a.tar.bz2">JSampler
+      url="http://downloads.sourceforge.net/jsampler/JSampler-0.6a.tar.bz2">JSampler
       package</ulink>, which also contains this manual and startup scripts
       that can be used to run a particular JSampler distribution.</para>
 
@@ -122,8 +129,8 @@
       jsampler</command></para>
     </section>
 
-    <section>
-      <title id="requirements">Requirements</title>
+    <section id="requirements">
+      <title lang="" xreflabel="">Requirements</title>
 
       <para>To run JSampler you need Java Runtime Environment (JRE) version 6
       or higher. The latest version can be downloaded from <ulink
@@ -134,11 +141,11 @@
       tool</ulink>.</para>
     </section>
 
-    <section>
-      <title id="running-js-dist">Running a JSampler distribution</title>
+    <section id="running-js-dist">
+      <title>Running a JSampler distribution</title>
 
       <para>Let's assume that you want to run from the command line
-      <code>JS_Classic-0.5a.jar</code>, which is located in
+      <code>JS_Classic-0.6a.jar</code>, which is located in
       <code>/home/me/soft</code> directory. First you should check whether the
       <code>java</code> command is in your path and the version requirements
       are met. This can be done by issuing the following command:</para>
@@ -149,7 +156,7 @@
       issuing the following command:</para>
 
       <para><command>java -jar
-      /home/me/soft/JS_Classic-0.5a.jar</command></para>
+      /home/me/soft/JS_Classic-0.6a.jar</command></para>
 
       <para>Otherwise, if the shell response is something like</para>
 
@@ -177,7 +184,7 @@ locate bin/java</command></literallayout></para>
       Classic issue the following command:</para>
 
       <para><command>/opt/jdk1.6.0/bin/java -jar
-      /home/me/soft/JS_Classic-0.5a.jar</command></para>
+      /home/me/soft/JS_Classic-0.6a.jar</command></para>
 
       <para><note>
           <para>On some systems double clicking on the jar file will be
@@ -190,7 +197,7 @@ locate bin/java</command></literallayout></para>
 
       <para>There are scripts In the <code>scripts</code> directory of the
       <ulink
-      url="http://downloads.sourceforge.net/jsampler/JSampler-0.5a.tar.bz2">JSampler
+      url="http://downloads.sourceforge.net/jsampler/JSampler-0.6a.tar.bz2">JSampler
       package</ulink> that, with a little adjustments (if needed), can be used
       to run a JSampler distribution. Copy them to a desired location and edit
       with your preferred editor.</para>

@@ -63,7 +63,7 @@ To build a JSampler distribution follow the next steps.
 Installation
 ============
 
-Copy the desired file (dist/js-classic.jar or dist/fantasia.jar)
+Copy the desired file (dist/JS_Classic-0.6a.jar or dist/Fantasia-0.6a.jar)
 to some location. That's it!
 
 You may also consider using a script for running particular distribution.
@@ -77,22 +77,46 @@ On some systems double clicking on the jar file will be enough.
 If you aren't that lucky use the following
 commands to run JS Classic or Fantasia:
 
-java -jar /<path-to-js-classic>/js-classic.jar
-java -jar /<path-to-fantasia>/fantasia.jar
+java -jar /<path-to-js-classic>/JS_Classic-0.6a.jar
+java -jar /<path-to-fantasia>/Fantasia-0.6a.jar
 
 If the java command is not in your path, locate your jre directory and type:
 
-/<jre-dir>/bin/java -jar /<path-to-js-classic>/js-classic.jar
-/<jre-dir>/bin/java -jar /<path-to-fantasia>/fantasia.jar
+/<jre-dir>/bin/java -jar /<path-to-js-classic>/JS_Classic-0.6a.jar
+/<jre-dir>/bin/java -jar /<path-to-fantasia>/Fantasia-0.6a.jar
 
 Note that you must run LinuxSampler before running a JSampler frontend.
+
+Libraries Used
+==============
+The following libraries are used in the JSampler core:
+  * Library: jlscp
+    License: GNU General Public License Version 2
+    Website: http://sourceforge.net/projects/jlscp/
+
+  * Library: juife
+    License: GNU Lesser General Public License (LGPL)
+    Website: http://sourceforge.net/projects/juife/
+
+The following libraries are used in the Fantasia distribution:
+  * Library: substance
+    License: Berkeley Software Distribution (BSD)
+    Website: http://substance.dev.java.net
+
+  * Library: swingx
+    License: GNU Lesser General Public License (LGPL)
+    Website: http://swingx.dev.java.net
+
+  * Library: substance-swingx
+    License: GNU Lesser General Public License (LGPL)
+    Website: http://substance-swingx.dev.java.net
 
 
 Credits
 =======
 
 Special thanks to Olivier Boyer - the creator
-of the impressive design of Fantasia.
+of the initial graphic design of Fantasia.
 
 
 For more information read the manual, which is located at `manual' directory.

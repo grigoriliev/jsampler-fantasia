@@ -1,3 +1,12 @@
+JSampler v0.6a: 2007-08-10
+  * The Fantasia distribution is now capable of
+    controlling all features available in LinuxSampler
+
+  * Refactoring: all common UI components are moved
+    to a new package - org.jsampler.view.std
+
+  * Some GUI enhancements, bugfixes and code cleanup.
+
 JSampler v0.5a: 2007-05-24
   * Implemented instruments database support
   * Added context menu to the MIDI instrument tree

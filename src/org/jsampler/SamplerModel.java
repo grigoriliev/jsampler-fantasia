@@ -236,6 +236,15 @@ public interface SamplerModel {
 	public MidiInstrumentMap[] getMidiInstrumentMaps();
 	
 	/**
+	 * Gets the position of the specified MIDI instrument map in the list.
+	 * @param map The map whose index should be returned.
+	 * @return The position of the specified map in the list,
+	 * or -1 if <code>map</code> is <code>null</code> or
+	 * the map list does not contain the specified map.
+	 */
+	public int getMidiInstrumentMapIndex(MidiInstrumentMap map);
+	
+	/**
 	 * Adds the specified MIDI instrument map.
 	 * @param map The MIDI instrument map to be added.
 	 */

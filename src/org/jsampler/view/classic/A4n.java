@@ -22,20 +22,15 @@
 
 package org.jsampler.view.classic;
 
-import java.awt.MediaTracker;
-
 import java.awt.event.ActionEvent;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import java.io.FileOutputStream;
-import java.net.URL;
 import java.util.logging.Level;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 
 import net.sf.juife.event.TaskEvent;
@@ -48,7 +43,12 @@ import org.jsampler.JSampler;
 import org.jsampler.view.JSChannel;
 import org.jsampler.view.JSChannelsPane;
 import org.jsampler.view.JSMainFrame;
-import org.jsampler.view.LscpFileFilter;
+import org.jsampler.view.std.JSAddMidiInstrumentMapDlg;
+
+import org.jsampler.view.std.JSNewMidiDeviceDlg;
+import org.jsampler.view.std.JSNewAudioDeviceDlg;
+import org.jsampler.view.std.JSNewMidiInstrumentWizard;
+import org.jsampler.view.std.StdA4n;
 
 import static org.jsampler.view.classic.ClassicI18n.i18n;
 
@@ -57,7 +57,22 @@ import static org.jsampler.view.classic.ClassicI18n.i18n;
  * This class provides an <code>Action</code> instances performing all needed tasks.
  * @author Grigor Iliev
  */
-public class A4n {
+public class A4n extends StdA4n {
+	protected static A4n a4n = new A4n();
+	
+	/** Forbids the instantiation of <code>A4n</code> */
+	private A4n() {
+		refresh.putValue(Action.SMALL_ICON, Res.iconReload32);
+		resetSampler.putValue(Action.SMALL_ICON, Res.iconReset32);
+		exportSamplerConfig.putValue(Action.SMALL_ICON, Res.iconExportSession32);
+		exportMidiInstrumentMaps.putValue(Action.SMALL_ICON, Res.iconExport16);
+	}
+	
+	protected ClassicPrefs
+	preferences() {
+		return ClassicPrefs.preferences();
+	}
+	
 	private static boolean
 	verifyConnection() {
 		if(!CC.getClient().isConnected()) {
@@ -66,19 +81,6 @@ public class A4n {
 		}
 		
 		return true;
-	}
-	
-	public final static Action connect = new Connect();
-		
-	private static class Connect extends AbstractAction {
-		Connect() {
-			super(i18n.getMenuLabel("actions.connect"));
-			
-			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("ttConnect"));
-		}
-		
-		public void
-		actionPerformed(ActionEvent e) { CC.reconnect(); }
 	}
 	
 	public final static Action samplerInfo = new SamplerInfo();
@@ -97,34 +99,6 @@ public class A4n {
 		}
 	}
 	
-	public final static Action refresh = new Refresh();
-	
-	private static class Refresh extends AbstractAction {
-		Refresh() {
-			super(i18n.getMenuLabel("actions.refresh"));
-			
-			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("ttRefresh"));
-			putValue(Action.SMALL_ICON, Res.iconReload32);
-		}
-		
-		public void
-		actionPerformed(ActionEvent e) { CC.initSamplerModel(); }
-	}
-	
-	public final static Action resetSampler = new Reset();
-		
-	private static class Reset extends AbstractAction {
-		Reset() {
-			super(i18n.getMenuLabel("actions.resetSampler"));
-			
-			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("ttResetSampler"));
-			putValue(Action.SMALL_ICON, Res.iconReset32);
-		}
-		
-		public void
-		actionPerformed(ActionEvent e) { CC.getSamplerModel().resetBackend(); }
-	}
-	
 	public final static Action addMidiInstrumentMap = new AddMidiInstrumentMap();
 	
 	private static class AddMidiInstrumentMap extends AbstractAction {
@@ -138,7 +112,7 @@ public class A4n {
 		
 		public void
 		actionPerformed(ActionEvent e) {
-			AddMidiInstrumentMapDlg dlg = new AddMidiInstrumentMapDlg();
+			JSAddMidiInstrumentMapDlg dlg = new JSAddMidiInstrumentMapDlg();
 			dlg.setVisible(true);
 			if(dlg.isCancelled()) return;
 			
@@ -181,10 +155,13 @@ public class A4n {
 		
 		public void
 		actionPerformed(ActionEvent e) {
-			NewMidiInstrumentWizard wizard = new NewMidiInstrumentWizard();
+			ClassicPrefs prefs = ClassicPrefs.preferences();
+			JSNewMidiInstrumentWizard wizard =
+				new JSNewMidiInstrumentWizard(prefs, Res.iconFolderOpen16);
+			
 			wizard.getWizardDialog().setResizable(false);
 			
-			if(ClassicPrefs.getNewMidiInstrWizardSkip1()) {
+			if(prefs.getBoolProperty("NewMidiInstrumentWizard.skip1")) {
 				if(wizard.getModel().getCurrentPage() == null) {
 					wizard.getModel().next();
 				}
@@ -193,71 +170,6 @@ public class A4n {
 			
 			wizard.showWizard();
 			
-		}
-	}
-	
-	public final static Action exportMidiInstrumentMaps = new ExportMidiInstrumentMaps();
-	
-	private static class ExportMidiInstrumentMaps extends AbstractAction {
-		ExportMidiInstrumentMaps() {
-			super(i18n.getMenuLabel("actions.export.MidiInstrumentMaps"));
-			
-			String s = i18n.getMenuLabel("actions.export.MidiInstrumentMaps.tt");
-			putValue(SHORT_DESCRIPTION, s);
-			putValue(Action.SMALL_ICON, Res.iconExport16);
-		}
-		
-		public void
-		actionPerformed(ActionEvent e) {
-			JFileChooser fc = new JFileChooser(ClassicPrefs.getLastScriptLocation());
-			fc.setFileFilter(new LscpFileFilter());
-			int result = fc.showSaveDialog(CC.getMainFrame());
-			if(result != JFileChooser.APPROVE_OPTION) return;
-			
-			String path = fc.getCurrentDirectory().getAbsolutePath();
-			ClassicPrefs.setLastScriptLocation(path);
-		
-			try {
-				FileOutputStream fos = new FileOutputStream(fc.getSelectedFile());
-				fos.write(CC.exportInstrMapsToLscpScript().getBytes("US-ASCII"));
-				fos.close();
-			} catch(Exception x) {
-				CC.getLogger().log(Level.FINE, HF.getErrorMessage(x), x);
-				HF.showErrorMessage(x);
-			};
-		}
-	}
-	
-	
-	public final static Action exportSamplerConfig = new ExportSamplerConfig();
-	
-	private static class ExportSamplerConfig extends AbstractAction {
-		ExportSamplerConfig() {
-			super(i18n.getMenuLabel("actions.export.samplerConfiguration"));
-			
-			String s = i18n.getMenuLabel("ttExportSamplerConfiguration");
-			putValue(SHORT_DESCRIPTION, s);
-			putValue(Action.SMALL_ICON, Res.iconExportSession32);
-		}
-		
-		public void
-		actionPerformed(ActionEvent e) {
-			JFileChooser fc = new JFileChooser(ClassicPrefs.getLastScriptLocation());
-			fc.setFileFilter(new LscpFileFilter());
-			int result = fc.showSaveDialog(CC.getMainFrame());
-			if(result != JFileChooser.APPROVE_OPTION) return;
-			
-			String path = fc.getCurrentDirectory().getAbsolutePath();
-			ClassicPrefs.setLastScriptLocation(path);
-		
-			try {
-				FileOutputStream fos = new FileOutputStream(fc.getSelectedFile());
-				fos.write(CC.exportSessionToLscpScript().getBytes("US-ASCII"));
-				fos.close();
-			} catch(Exception x) {
-				CC.getLogger().log(Level.FINE, HF.getErrorMessage(x), x);
-				HF.showErrorMessage(x);
-			}
 		}
 	}
 	
@@ -290,7 +202,7 @@ public class A4n {
 		public void
 		actionPerformed(ActionEvent e) {
 			if(!verifyConnection()) return;
-			new NewMidiDeviceDlg(CC.getMainFrame()).setVisible(true);
+			new JSNewMidiDeviceDlg(CC.getMainFrame()).setVisible(true);
 		}
 	}
 	
@@ -307,7 +219,7 @@ public class A4n {
 		public void
 		actionPerformed(ActionEvent e) {
 			if(!verifyConnection()) return;
-			new NewAudioDeviceDlg(CC.getMainFrame()).setVisible(true);
+			new JSNewAudioDeviceDlg(CC.getMainFrame()).setVisible(true);
 		}
 	}
 
@@ -716,7 +628,8 @@ public class A4n {
 			}
 			
 			if(instrumentsDbFrame != null && instrumentsDbFrame.isVisible()) {
-				instrumentsDbFrame.toFront();
+				instrumentsDbFrame.setVisible(false);
+				instrumentsDbFrame.setVisible(true);
 				return;
 			}
 			

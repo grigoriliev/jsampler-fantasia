@@ -86,6 +86,7 @@ public class InstrumentsDbTableModel extends AbstractTableModel {
 	private boolean showInstrumentFileColumn = false;
 	private boolean showInstrumentNrColumn = false;
 	private boolean showKeywordsColumn = false;
+	private boolean showDummyColumn = false;
 	
 	private DbDirectoryTreeNode directoryNode;
 	
@@ -250,6 +251,18 @@ public class InstrumentsDbTableModel extends AbstractTableModel {
 		updateColumns();
 	}
 	
+	/** Gets whether the <b>Dummy</b> column is shown. */
+	public boolean
+	getShowDummyColumn() { return showDummyColumn; }
+	
+	/** Sets whether the <b>Dummy</b> column should be shown. */
+	public void
+	setShowDummyColumn(boolean b) {
+		if(b == showDummyColumn) return;
+		showDummyColumn = b;
+		updateColumns();
+	}
+	
 	/**
 	 * Returns a comparator for the specified column or <code>null</code>
 	 * if there is no suitable comparator for the specified column.
@@ -367,7 +380,7 @@ public class InstrumentsDbTableModel extends AbstractTableModel {
 		if(showInstrumentFileColumn) columns.add(ColumnType.INSTRUMENT_FILE);
 		if(showInstrumentNrColumn) columns.add(ColumnType.INSTRUMENT_NR);
 		if(showKeywordsColumn) columns.add(ColumnType.KEYWORDS);
-		columns.add(ColumnType.DUMMY);
+		if(showDummyColumn) columns.add(ColumnType.DUMMY);
 		
 		fireTableStructureChanged();
 	}

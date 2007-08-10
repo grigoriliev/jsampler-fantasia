@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -22,12 +22,9 @@
 
 package org.jsampler;
 
-import java.awt.Frame;
-
 import org.jsampler.view.JSViews;
 
 import static org.jsampler.JSI18n.i18n;
-
 
 /**
  * The main class of the application.
@@ -38,7 +35,7 @@ public class JSampler {
 	public final static String NAME = "JSampler";
 	
 	/** The application version. */
-	public final static String VERSION = "0.5a";
+	public final static String VERSION = "0.6a";
 	
 	
 	/**
@@ -49,19 +46,21 @@ public class JSampler {
 	public static void
 	main(String[] args) {
 		CC.initJSampler();
-		
-		javax.swing.SwingUtilities.invokeLater(new Runnable() {
-			public void
-			run() { initGUI(); }
-		});
+		initGUI();
 	}
 	
 	private static void
 	initGUI() {
 		JSViews.parseManifest();
 		JSViews.setView(JSViews.getDefaultView());
-		CC.checkJSamplerHome();
-		CC.loadOrchestras();
-		CC.reconnect();
+		
+		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+			public void
+			run() {
+				CC.checkJSamplerHome();
+				CC.loadOrchestras();
+				CC.reconnect();
+			}
+		});
 	}
 }

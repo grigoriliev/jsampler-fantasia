@@ -39,6 +39,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.Icon;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -77,15 +78,18 @@ import org.jsampler.JSI18n;
 
 import org.jsampler.task.InstrumentsDb;
 
-import org.jsampler.view.DbClipboard;
 import org.jsampler.view.DbDirectoryTreeNode;
 import org.jsampler.view.InstrumentsDbTableModel;
+import org.jsampler.view.InstrumentsDbTableView;
+import org.jsampler.view.std.JSInstrumentsDbTable;
+import org.jsampler.view.std.JSInstrumentsDbTree;
 
 import org.linuxsampler.lscp.DbDirectoryInfo;
 import org.linuxsampler.lscp.DbInstrumentInfo;
 import org.linuxsampler.lscp.DbSearchQuery;
 
 import static org.jsampler.view.classic.ClassicI18n.i18n;
+import static org.jsampler.view.classic.ClassicPrefs.preferences;
 
 /**
  *
@@ -93,7 +97,7 @@ import static org.jsampler.view.classic.ClassicI18n.i18n;
  */
 public class InstrumentsDbFrame extends JFrame {
 	private final JMenuBar menuBar = new JMenuBar();
-	private final InstrumentsDbTree instrumentsDbTree;
+	private final JSInstrumentsDbTree instrumentsDbTree;
 	private final SidePane sidePane;
 	private final JSplitPane splitPane;
 	private final MainPane mainPane;
@@ -103,8 +107,6 @@ public class InstrumentsDbFrame extends JFrame {
 	private final GoForward goForward = new GoForward();
 	
 	private final NavigationHistoryModel navigationHistoryModel = new NavigationHistoryModel();
-	
-	private static final DbClipboard dbClipboard = new DbClipboard();
 	
 	private JMenu loadInstrumentMenu;
 	private JMenu addToMidiMapMenu;
@@ -118,7 +120,7 @@ public class InstrumentsDbFrame extends JFrame {
 		setTitle(i18n.getLabel("InstrumentsDbFrame.title"));
 		if(Res.appIcon != null) setIconImage(Res.appIcon.getImage());
 		
-		instrumentsDbTree = new InstrumentsDbTree(CC.getInstrumentsDbTreeModel());
+		instrumentsDbTree = new JSInstrumentsDbTree(CC.getInstrumentsDbTreeModel());
 		
 		sidePane = new SidePane();
 		mainPane = new MainPane();
@@ -281,9 +283,6 @@ public class InstrumentsDbFrame extends JFrame {
 		});
 	}
 	
-	public static DbClipboard
-	getDbClipboard() { return dbClipboard; }
-	
 	/** Invoked when this window is about to close. */
 	private void
 	onWindowClose() {
@@ -298,7 +297,7 @@ public class InstrumentsDbFrame extends JFrame {
 		sb.append(d.width).append(',').append(d.height);
 		ClassicPrefs.setWindowSizeAndLocation("InstrumentsDbFrame", sb.toString());
 		int i = splitPane.getDividerLocation();
-		ClassicPrefs.setIntProperty("InstrumentsDbFrame.dividerLocation", i);
+		preferences().setIntProperty("InstrumentsDbFrame.dividerLocation", i);
 		
 		mainPane.getInstrumentsTable().saveColumnsVisibleState();
 		mainPane.getInstrumentsTable().saveColumnWidths();
@@ -337,7 +336,7 @@ public class InstrumentsDbFrame extends JFrame {
 			
 			setBounds(x, y, width, height);
 			
-			i = ClassicPrefs.getIntProperty("InstrumentsDbFrame.dividerLocation");
+			i = preferences().getIntProperty("InstrumentsDbFrame.dividerLocation");
 			if(i != 0) splitPane.setDividerLocation(i);
 			
 		} catch(Exception x) {
@@ -355,14 +354,14 @@ public class InstrumentsDbFrame extends JFrame {
 		getContentPane().remove(mainPane);
 		splitPane.setRightComponent(mainPane);
 		getContentPane().add(splitPane);
-		int i = ClassicPrefs.getIntProperty("InstrumentsDbFrame.dividerLocation");
+		int i = preferences().getIntProperty("InstrumentsDbFrame.dividerLocation");
 		if(i != 0) splitPane.setDividerLocation(i);
 	}
 	
 	private void
 	removeSidePane() {
 		int i = splitPane.getDividerLocation();
-		ClassicPrefs.setIntProperty("InstrumentsDbFrame.dividerLocation", i);
+		preferences().setIntProperty("InstrumentsDbFrame.dividerLocation", i);
 		getContentPane().remove(splitPane);
 		getContentPane().add(mainPane);
 	}
@@ -583,7 +582,7 @@ public class InstrumentsDbFrame extends JFrame {
 		}
 	}
 	
-	public InstrumentsDbTree
+	public JSInstrumentsDbTree
 	getInstrumentsDbTree() { return instrumentsDbTree; }
 	
 	public void
@@ -623,8 +622,8 @@ public class InstrumentsDbFrame extends JFrame {
 	}
 	
 	class MainPane extends JPanel {
-		private final InstrumentsDbTable instrumentsTable =
-			new InstrumentsDbTable(instrumentsDbTree);
+		private final JSInstrumentsDbTable instrumentsTable =
+			new JSInstrumentsDbTable(instrumentsDbTree);
 		
 		private final DbDirectoryTreeNode searchResultsNode = new DbDirectoryTreeNode(null);
 		
@@ -632,12 +631,18 @@ public class InstrumentsDbFrame extends JFrame {
 			setLayout(new BorderLayout());
 			JScrollPane sp = new JScrollPane(instrumentsTable);
 			add(sp);
+			instrumentsTable.reloadAction.putValue(Action.SMALL_ICON, Res.iconReload22);
+			
+			instrumentsTable.createDirectoryAction.putValue (
+				Action.SMALL_ICON, Res.iconNew16
+			);
+			
 			instrumentsTable.getParent().setBackground(instrumentsTable.getBackground());
 			instrumentsTable.getRowSorter().toggleSortOrder(0);
 			searchResultsNode.setDetached(true);
 		}
 		
-		public InstrumentsDbTable
+		public JSInstrumentsDbTable
 		getInstrumentsTable() { return instrumentsTable; }
 		
 		public DbDirectoryTreeNode

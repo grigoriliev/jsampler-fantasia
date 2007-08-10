@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -22,6 +22,7 @@
 
 package org.jsampler.view.classic;
 
+import java.awt.Desktop;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -32,6 +33,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import java.net.URI;
 import java.net.URL;
 
 import javax.swing.BorderFactory;
@@ -49,6 +51,8 @@ import net.sf.juife.InformationDialog;
 import net.sf.juife.JuifeUtils;
 import net.sf.juife.LinkButton;
 
+import org.jsampler.HF;
+
 import static org.jsampler.view.classic.ClassicI18n.i18n;
 
 
@@ -58,7 +62,7 @@ import static org.jsampler.view.classic.ClassicI18n.i18n;
  */
 public class HelpAboutDlg extends InformationDialog {
 	private JLabel lProductName =
-		new JLabel("<html>\n<font size=+1>JS Classic (version 0.5a)</font>");
+		new JLabel("<html>\n<font size=+1>JS Classic (version 0.6a)</font>");
 	
 	private JLabel lAuthor = new JLabel(i18n.getLabel("HelpAboutDlg.lAuthor"));
 	private JTextField tfAuthor = new JTextField(i18n.getLabel("HelpAboutDlg.tfAuthor"));
@@ -75,8 +79,7 @@ public class HelpAboutDlg extends InformationDialog {
 		= new LinkButton("juife - Java User Interface Framework Extensions");
 	
 	
-	private JLabel lCopyright =
-		new JLabel(i18n.getLabel("HelpAboutDlg.lCopyright"));
+	private JLabel lCopyright = new JLabel(i18n.getLabel("HelpAboutDlg.lCopyright"));
 	
 	private JPanel mainPane = new JPanel();
 	
@@ -229,14 +232,14 @@ public class HelpAboutDlg extends InformationDialog {
 		private JLabel lAuthorEmail =
 			new JLabel(i18n.getLabel("HelpAboutDlg.lAuthorEmail"));
 		private JLabel lLSWebsite = new JLabel(i18n.getLabel("HelpAboutDlg.lLSWebsite"));
-		private WebButton btnAuthorEmail = new WebButton("grigor@grigoriliev.com");
-		private WebButton btnWebsite = new WebButton("http://www.linuxsampler.org");
+		private LinkButton btnAuthorEmail = new LinkButton("grigor@grigoriliev.com");
+		private LinkButton btnLSWebsite = new LinkButton("www.linuxsampler.org");
 		
 		private JLabel lLSMailingList =
 			new JLabel(i18n.getLabel("HelpAboutDlg.lLSMailingList"));
 		
-		private WebButton btnMailingList = new WebButton (
-			"http://lists.sourceforge.net/lists/listinfo/linuxsampler-devel"
+		private LinkButton btnMailingList = new LinkButton (
+			"lists.sourceforge.net/lists/listinfo/linuxsampler-devel"
 		);
 	
 		ContactInfoPane() {
@@ -272,8 +275,8 @@ public class HelpAboutDlg extends InformationDialog {
 			
 			c.gridx = 1;
 			c.gridy = 1;
-			gridbag.setConstraints(btnWebsite, c);
-			add(btnWebsite);
+			gridbag.setConstraints(btnLSWebsite, c);
+			add(btnLSWebsite);
 			
 			c.gridx = 1;
 			c.gridy = 2;
@@ -282,9 +285,62 @@ public class HelpAboutDlg extends InformationDialog {
 			add(btnMailingList);
 			
 			setBorder(BorderFactory.createTitledBorder (
-				i18n.getLabel("HelpAboutDlg.ContactInfoPane")
+				i18n.getLabel("HelpAboutDlg.contactInfoPane")
 			));
+			
+			installListeners();
 		}
+		
+		private void
+		installListeners() {
+			btnAuthorEmail.addActionListener(new ActionListener() {
+				public void
+				actionPerformed(ActionEvent e) {
+					browse("mailto:grigor@grigoriliev.com");
+				}
+			});
+		
+			btnLSWebsite.addActionListener(new ActionListener() {
+				public void
+				actionPerformed(ActionEvent e) {
+					browse("http://www.linuxsampler.org");
+				}
+			});
+		
+			btnMailingList.addActionListener(new ActionListener() {
+				public void
+				actionPerformed(ActionEvent e) {
+					browse("http://lists.sourceforge.net/lists/listinfo/linuxsampler-devel");
+				}
+			});
+		}
+	}
+	
+	private boolean
+	checkDesktopSupported() {
+		if(Desktop.isDesktopSupported()) return true;
+		
+		HF.showErrorMessage(i18n.getError("HelpAboutDlg.DesktopApiNotSupported"), this);
+		
+		return false;
+	}
+	
+	private void
+	browse(String uri) {
+		if(!checkDesktopSupported()) return;
+		
+		try { Desktop.getDesktop().browse(new URI(uri)); }
+		catch(Exception x) { x.printStackTrace(); }
+	}
+	
+	private void
+	mail(String uri) {
+		if(!checkDesktopSupported()) return;
+		
+		Desktop desktop = Desktop.getDesktop();
+		
+		try { Desktop.getDesktop().mail(new URI(uri)); }
+		catch(Exception x) { x.printStackTrace(); }
 	}
 }
 

@@ -24,10 +24,10 @@
 # Set the JAVA_HOME variable to specify the java distribution to be used.
 #JAVA_HOME=
 
-FANTASIA=fantasia.jar
+FANTASIA=Fantasia-0.6a.jar
 
-# If you want to run fantasia.jar from a different directory
-# you must define FANTASIA_PATH to point to fantasia.jar location.
+# If you want to run Fantasia-0.6a.jar from a different directory
+# you must define FANTASIA_PATH to point to Fantasia-0.6a.jar location.
 #FANTASIA_PATH=
 
 if [ -n "$JAVA_HOME" ]  ; then

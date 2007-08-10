@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -23,11 +23,17 @@
 package org.jsampler.view.fantasia;
 
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Insets;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JToggleButton;
+
+import org.jvnet.lafwidget.animation.FadeConfigurationManager;
+import org.jvnet.lafwidget.animation.FadeKind;
+
+import org.jvnet.substance.SubstanceLookAndFeel;
 
 
 /**
@@ -43,18 +49,20 @@ public class PixmapToggleButton extends JToggleButton {
 		this.defaultIcon = defaultIcon;
 		this.selectedIcon = selectedIcon;
 		
-		setBorder(BorderFactory.createEmptyBorder());
 		setContentAreaFilled(false);
 		setFocusPainted(false);
 		setMargin(new Insets(0, 0, 0, 0));
-	
+		putClientProperty(SubstanceLookAndFeel.BUTTON_PAINT_NEVER_PROPERTY, Boolean.TRUE);
+		putClientProperty(SubstanceLookAndFeel.BUTTON_NO_MIN_SIZE_PROPERTY, Boolean.TRUE);
+		FadeConfigurationManager.getInstance().disallowFades(FadeKind.ROLLOVER, this);
+		
 		setIcon(defaultIcon);
 		setSelectedIcon(selectedIcon);
 		setRolloverEnabled(false);
-		this.setPressedIcon(defaultIcon);
-		
-		setPreferredSize(getMinimumSize());
-		setMaximumSize(getMinimumSize());
+		setPressedIcon(defaultIcon);
+		Dimension d = new Dimension(defaultIcon.getIconWidth(), defaultIcon.getIconHeight());
+		setPreferredSize(d);
+		setMaximumSize(d);
 		
 		setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 	}

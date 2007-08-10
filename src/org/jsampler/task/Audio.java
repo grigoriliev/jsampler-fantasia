@@ -93,6 +93,14 @@ public class Audio {
 		public void
 		run() {
 			try {
+				// TODO: move this to jlscp
+				java.util.Vector<Parameter> v = new java.util.Vector<Parameter>();
+				for(Parameter p : parameters) {
+					if(p.getValue() != null) v.add(p);
+				}
+				parameters = v.toArray(new Parameter[v.size()]);
+				///////
+				
 				Integer deviceId =
 					CC.getClient().createAudioOutputDevice(driver, parameters);
 				setResult(deviceId);

@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -24,6 +24,7 @@ package org.jsampler.view.fantasia;
 
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.Insets;
 
 import java.awt.event.ActionEvent;
@@ -31,8 +32,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import java.util.logging.Level;
 
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -40,30 +45,54 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
+import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import net.sf.juife.Dial;
+import net.sf.juife.InformationDialog;
 import net.sf.juife.JuifeUtils;
 import net.sf.juife.TitleBar;
+
+import org.jdesktop.swingx.JXCollapsiblePane;
 
 import org.jsampler.AudioDeviceModel;
 import org.jsampler.CC;
 import org.jsampler.MidiDeviceModel;
+import org.jsampler.MidiInstrumentMap;
 import org.jsampler.SamplerChannelModel;
 import org.jsampler.SamplerModel;
 
 import org.jsampler.event.ListEvent;
 import org.jsampler.event.ListListener;
+import org.jsampler.event.MidiDeviceEvent;
 import org.jsampler.event.MidiDeviceListEvent;
 import org.jsampler.event.MidiDeviceListListener;
+import org.jsampler.event.MidiDeviceListener;
+import org.jsampler.event.SamplerAdapter;
 import org.jsampler.event.SamplerChannelAdapter;
 import org.jsampler.event.SamplerChannelEvent;
+import org.jsampler.event.SamplerChannelListEvent;
+import org.jsampler.event.SamplerChannelListListener;
 import org.jsampler.event.SamplerChannelListener;
+import org.jsampler.event.SamplerEvent;
+import org.jsampler.event.SamplerListener;
+
+import org.jsampler.view.std.JSChannelOutputRoutingDlg;
+import org.jsampler.view.std.JSFxSendsPane;
+import org.jsampler.view.std.JSInstrumentChooser;
+
+import org.jvnet.lafwidget.animation.FadeConfigurationManager;
+import org.jvnet.lafwidget.animation.FadeKind;
+
+import org.jvnet.substance.SubstanceImageCreator;
+import org.jvnet.substance.SubstanceLookAndFeel;
 
 import org.linuxsampler.lscp.AudioOutputDevice;
 import org.linuxsampler.lscp.MidiInputDevice;
@@ -72,6 +101,7 @@ import org.linuxsampler.lscp.SamplerChannel;
 import org.linuxsampler.lscp.SamplerEngine;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
+import static org.jsampler.view.fantasia.FantasiaPrefs.*;
 
 
 /**
@@ -79,6 +109,7 @@ import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
  * @author Grigor Iliev
  */
 public class Channel extends org.jsampler.view.JSChannel {
+	private final JXCollapsiblePane mainPane;
 	private final ChannelScreen screen = new ChannelScreen(this);
 	private final ChannelOptions optionsPane = new ChannelOptions(this);
 	
@@ -102,15 +133,14 @@ public class Channel extends org.jsampler.view.JSChannel {
 		super(model);
 		
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		JPanel p = new JPanel();
-		p.setName("Channel");
+		ChannelPane p = new ChannelPane();
 		p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
 		
 		//p.add(Box.createRigidArea(new Dimension(3, 0)));
 		
 		btnPower.setAlignmentY(JPanel.TOP_ALIGNMENT);
 		
-		TitleBar tb = new TitleBar();
+		JPanel tb = new JPanel();
 		tb.setBorder(BorderFactory.createEmptyBorder(3, 3, 0, 4));
 		tb.setLayout(new BoxLayout(tb, BoxLayout.X_AXIS));
 		tb.setOpaque(false);
@@ -142,9 +172,9 @@ public class Channel extends org.jsampler.view.JSChannel {
 		p2.setLayout(new BoxLayout(p2, BoxLayout.Y_AXIS));
 		p2.setAlignmentY(JPanel.TOP_ALIGNMENT);
 		p2.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
-		p2.add(new JLabel(Res.iconMuteTitle));
+		p2.add(new JLabel(Res.gfxMuteTitle));
 		p2.add(btnMute);
-		p2.add(new JLabel(Res.iconSoloTitle));
+		p2.add(new JLabel(Res.gfxSoloTitle));
 		p2.add(btnSolo);
 		
 		p.add(p2);
@@ -156,11 +186,11 @@ public class Channel extends org.jsampler.view.JSChannel {
 		p2.setLayout(new BoxLayout(p2, BoxLayout.Y_AXIS));
 		p2.setAlignmentY(JPanel.TOP_ALIGNMENT);
 		p2.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
-		JLabel l = new JLabel(Res.iconVolumeTitle);
+		JLabel l = new JLabel(Res.gfxVolumeTitle);
 		l.setAlignmentX(JPanel.CENTER_ALIGNMENT);
 		l.setBorder(BorderFactory.createEmptyBorder(0, 0, 2, 0));
 		p2.add(l);
-		dialVolume.setDialPixmap(Res.iconVolumeDial, 30, 330);
+		dialVolume.setDialPixmap(Res.gfxVolumeDial, 30, 330);
 		dialVolume.setAlignmentX(JPanel.CENTER_ALIGNMENT);
 		p2.add(dialVolume);
 		p.add(p2);
@@ -172,7 +202,7 @@ public class Channel extends org.jsampler.view.JSChannel {
 		p2.setLayout(new BoxLayout(p2, BoxLayout.Y_AXIS));
 		p2.setAlignmentY(JPanel.TOP_ALIGNMENT);
 		p2.setBorder(BorderFactory.createEmptyBorder(27, 0, 0, 0));
-		l = new JLabel(Res.iconOptionsTitle);
+		l = new JLabel(Res.gfxOptionsTitle);
 		l.setAlignmentX(JPanel.CENTER_ALIGNMENT);
 		l.setBorder(BorderFactory.createEmptyBorder(0, 0, 2, 0));
 		p2.add(l);
@@ -191,21 +221,39 @@ public class Channel extends org.jsampler.view.JSChannel {
 
 		p.setAlignmentX(JPanel.CENTER_ALIGNMENT);
 		optionsPane.setAlignmentX(JPanel.CENTER_ALIGNMENT);
-		add(p);
-		add(optionsPane);
 		
-		setOpaque(true);
+		mainPane = new JXCollapsiblePane();
+		mainPane.getContentPane().setLayout (
+			new BoxLayout(mainPane.getContentPane(), BoxLayout.Y_AXIS)
+		);
+		
+		mainPane.add(p);
+		mainPane.add(optionsPane);
+		
+		setOpaque(false);
 		
 		getModel().addSamplerChannelListener(getHandler());
 		
 		updateChannelInfo();
+		
+		add(mainPane);
+		
+		mainPane.setAnimated(false);
+		mainPane.setCollapsed(true);
+		mainPane.setAnimated(preferences().getBoolProperty(ANIMATED));
+		mainPane.setCollapsed(false);
+		
+		preferences().addPropertyChangeListener(ANIMATED, new PropertyChangeListener() {
+			public void
+			propertyChange(PropertyChangeEvent e) {
+				mainPane.setAnimated(preferences().getBoolProperty(ANIMATED));
+			}
+		});
 	}
 	
 	private JPanel
 	createVSeparator() {
-		JPanel p = new JPanel();
-		p.setName("VSeparator");
-		p.setOpaque(false);
+		PixmapPane p = new PixmapPane(Res.gfxVLine);
 		p.setAlignmentY(JPanel.TOP_ALIGNMENT);
 		p.setPreferredSize(new Dimension(2, 60));
 		p.setMinimumSize(p.getPreferredSize());
@@ -233,7 +281,18 @@ public class Channel extends org.jsampler.view.JSChannel {
 	
 	/** Shows the channel properties. */
 	public void
-	expandChannel() { if(!btnOptions.isSelected()) btnOptions.doClick(); }
+	expandChannel() { expandChannel(optionsPane.isAnimated()); }
+	
+	/** Shows the channel properties. */
+	public void
+	expandChannel(boolean animated) {
+		if(btnOptions.isSelected()) return;
+		
+		boolean b = optionsPane.isAnimated();
+		optionsPane.setAnimated(animated);
+		btnOptions.doClick();
+		optionsPane.setAnimated(b);
+	}
 	
 	
 	/** Invoked when the user changes the volume */
@@ -269,8 +328,8 @@ public class Channel extends org.jsampler.view.JSChannel {
 		screen.updateScreenInfo(sc);
 		updateMuteIcon(sc);
 		
-		if(sc.isSoloChannel()) btnSolo.setIcon(Res.iconSoloOn);
-		else btnSolo.setIcon(Res.iconSoloOff);
+		if(sc.isSoloChannel()) btnSolo.setIcon(Res.gfxSoloOn);
+		else btnSolo.setIcon(Res.gfxSoloOff);
 		
 		dialVolume.setValue((int)(sc.getVolume() * 100));
 		
@@ -288,9 +347,9 @@ public class Channel extends org.jsampler.view.JSChannel {
 	 */
 	private void
 	updateMuteIcon(SamplerChannel channel) {
-		if(channel.isMutedBySolo()) btnMute.setIcon(Res.iconMutedBySolo);
-		else if(channel.isMuted()) btnMute.setIcon(Res.iconMuteOn);
-		else btnMute.setIcon(Res.iconMuteOff);
+		if(channel.isMutedBySolo()) btnMute.setIcon(Res.gfxMutedBySolo);
+		else if(channel.isMuted()) btnMute.setIcon(Res.gfxMuteOn);
+		else btnMute.setIcon(Res.gfxMuteOff);
 	}
 	
 	private class EnhancedDial extends Dial {
@@ -357,9 +416,11 @@ public class Channel extends org.jsampler.view.JSChannel {
 	}
 	
 	
-	private class PowerButton extends PixmapToggleButton implements ActionListener {
+	private class PowerButton extends PixmapToggleButton
+			implements ActionListener, PropertyChangeListener {
+		
 		PowerButton() {
-			super(Res.iconPowerOff, Res.iconPowerOn);
+			super(Res.gfxPowerOff, Res.gfxPowerOn);
 		
 			setSelected(true);
 			addActionListener(this);
@@ -367,7 +428,21 @@ public class Channel extends org.jsampler.view.JSChannel {
 		
 		public void
 		actionPerformed(ActionEvent e) {
-			CC.getSamplerModel().removeBackendChannel(getChannelId());
+			if(!mainPane.isAnimated()) {
+				CC.getSamplerModel().removeBackendChannel(getChannelId());
+				return;
+			}
+			
+			String s = JXCollapsiblePane.ANIMATION_STATE_KEY;
+			mainPane.addPropertyChangeListener(s, this);
+			mainPane.setCollapsed(true);
+		}
+		
+		public void
+		propertyChange(PropertyChangeEvent e) {
+			if(e.getNewValue() == "collapsed") {
+				CC.getSamplerModel().removeBackendChannel(getChannelId());
+			}
 		}
 		
 		public boolean
@@ -376,8 +451,11 @@ public class Channel extends org.jsampler.view.JSChannel {
 	
 	private class MuteButton extends PixmapButton implements ActionListener {
 		MuteButton() {
-			super(Res.iconMuteOff);
-			setDisabledIcon(Res.iconMuteSoloDisabled);
+			super(Res.gfxMuteOff);
+			//setDisabledIcon(Res.gfxMuteSoloDisabled);
+			setDisabledIcon (
+				SubstanceImageCreator.makeTransparent(this, Res.gfxMuteOff, 0.4)
+			);
 			addActionListener(this);
 		}
 		
@@ -394,9 +472,9 @@ public class Channel extends org.jsampler.view.JSChannel {
 				b = false;
 				boolean hasSolo = CC.getSamplerModel().hasSoloChannel();
 			
-				if(sc.isSoloChannel() || !hasSolo) setIcon(Res.iconMuteOff);
-				else setIcon(Res.iconMutedBySolo);
-			} else setIcon(Res.iconMuteOn);
+				if(sc.isSoloChannel() || !hasSolo) setIcon(Res.gfxMuteOff);
+				else setIcon(Res.gfxMutedBySolo);
+			} else setIcon(Res.gfxMuteOn);
 			
 			Channel.this.getModel().setBackendMute(b);
 		}
@@ -407,8 +485,11 @@ public class Channel extends org.jsampler.view.JSChannel {
 	
 	private class SoloButton extends PixmapButton implements ActionListener {
 		SoloButton() {
-			super(Res.iconSoloOff);
-			setDisabledIcon(Res.iconMuteSoloDisabled);
+			super(Res.gfxSoloOff);
+			//setDisabledIcon(Res.gfxMuteSoloDisabled);
+			setDisabledIcon (
+				SubstanceImageCreator.makeTransparent(this, Res.gfxSoloOff, 0.4)
+			);
 			addActionListener(this);
 		}
 		
@@ -422,12 +503,12 @@ public class Channel extends org.jsampler.view.JSChannel {
 			 * leaving the work to the notification mechanism of the LinuxSampler.
 			 */
 			if(b) {
-				setIcon(Res.iconSoloOn);
-				if(sc.isMutedBySolo()) btnMute.setIcon(Res.iconMuteOff);
+				setIcon(Res.gfxSoloOn);
+				if(sc.isMutedBySolo()) btnMute.setIcon(Res.gfxMuteOff);
 			} else {
-				setIcon(Res.iconSoloOff);
+				setIcon(Res.gfxSoloOff);
 				if(!sc.isMuted() && CC.getSamplerModel().getSoloChannelCount() > 1)
-					btnMute.setIcon(Res.iconMutedBySolo);
+					btnMute.setIcon(Res.gfxMutedBySolo);
 			}
 		
 			Channel.this.getModel().setBackendSolo(b);
@@ -439,9 +520,9 @@ public class Channel extends org.jsampler.view.JSChannel {
 	
 	private class OptionsButton extends PixmapToggleButton implements ActionListener {
 		OptionsButton() {
-			super(Res.iconOptionsOff, Res.iconOptionsOn);
-			setRolloverIcon(Res.iconOptionsOffRO);
-			this.setRolloverSelectedIcon(Res.iconOptionsOnRO);
+			super(Res.gfxOptionsOff, Res.gfxOptionsOn);
+			setRolloverIcon(Res.gfxOptionsOffRO);
+			this.setRolloverSelectedIcon(Res.gfxOptionsOnRO);
 			addActionListener(this);
 		}
 		
@@ -458,8 +539,7 @@ public class Channel extends org.jsampler.view.JSChannel {
 		
 		private void
 		showOptionsPane(boolean show) {
-			optionsPane.setVisible(show);
-			MainFrame.repack(CC.getMainFrame());
+			optionsPane.setCollapsed(!show);
 		}
 		
 		public boolean
@@ -467,61 +547,114 @@ public class Channel extends org.jsampler.view.JSChannel {
 	}
 }
 
-class ChannelScreen extends JPanel {
+class ChannelPane extends PixmapPane {
+	ChannelPane() {
+		super(Res.gfxChannel);
+		setPixmapInsets(new Insets(3, 3, 3, 3));
+	}
+}
+
+class ChannelScreen extends PixmapPane {
 	private final Channel channel;
 	private JButton btnInstr = new ScreenButton(i18n.getButtonLabel("ChannelScreen.btnInstr"));
-	private JButton btnReset = new ScreenButton(i18n.getButtonLabel("ChannelScreen.btnReset"));
-	private JButton btnDuplicate =
-		new ScreenButton(i18n.getButtonLabel("ChannelScreen.btnDuplicate"));
 	
-	private final JLabel lVolume = new JLabel();
-	private final JLabel lStreams = new JLabel("--");
-	private final JLabel lVoices = new JLabel("--");
+	private final JButton btnFxSends =
+		new ScreenButton(i18n.getButtonLabel("ChannelScreen.btnFxSends"));
 	
-	ChannelScreen(Channel channel) {
+	private final JButton btnEngine
+		= new ScreenButton(i18n.getButtonLabel("ChannelScreen.btnEngine"));
+	
+	private final JPopupMenu menuEngines = new JPopupMenu();
+	
+	private final JLabel lVolume = new Label();
+	private final JLabel lStreams = new Label("--");
+	private final JLabel lVoices = new Label("--");
+	
+	private InformationDialog fxSendsDlg = null;
+	
+	private Dimension dimVolume;
+	
+	class Label extends JLabel {
+		Label() { this(""); }
+		
+		Label(String s) {
+			super(s);
+			setFont(Res.fontScreen);
+			setForeground(new java.awt.Color(0xFFA300));
+		}
+	}
+	
+	ChannelScreen(final Channel channel) {
+		super(Res.gfxChannelScreen);
+		setPixmapInsets(new Insets(6, 6, 6, 6));
+		setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+		
 		this.channel = channel;
 		
-		setName("ChannelScreen");
-		setOpaque(true);
+		setOpaque(false);
 		
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
-		btnInstr.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
 		btnInstr.setAlignmentX(CENTER_ALIGNMENT);
+		btnInstr.setRolloverEnabled(false);
+		btnInstr.setBorder(BorderFactory.createEmptyBorder(3, 0, 0, 0));
 		
 		add(btnInstr);
 		
 		JPanel p = new JPanel();
-		p.setOpaque(false);
 		p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
 		p.setAlignmentX(CENTER_ALIGNMENT);
-		p.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
-		//lVolume.setFont(lVolume.getFont().deriveFont(java.awt.Font.PLAIN));
+		p.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
 		
-		p.add(btnDuplicate);
+		btnFxSends.setToolTipText(i18n.getButtonLabel("ChannelScreen.btnFxSends.tt"));
+		btnFxSends.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) {
+				if(fxSendsDlg != null && fxSendsDlg.isVisible()) {
+					fxSendsDlg.toFront();
+					return;
+				}
+				FxSendsPane p = new FxSendsPane(channel.getModel());
+				int id = channel.getModel().getChannelId();
+				fxSendsDlg = new InformationDialog(CC.getMainFrame(), p);
+				fxSendsDlg.setTitle(i18n.getLabel("FxSendsDlg.title", id));
+				fxSendsDlg.setModal(false);
+				fxSendsDlg.showCloseButton(false);
+				fxSendsDlg.setVisible(true);
+			}
+		});
+		
+		p.add(btnFxSends);
 		
 		p.add(Box.createRigidArea(new Dimension(6, 0)));
 		
-		p.add(new JLabel("|"));
+		btnEngine.setIcon(Res.iconEngine12);
+		p.add(btnEngine);
+		//p.add(new Label("|"));
 		
-		p.add(Box.createRigidArea(new Dimension(6, 0)));
+		//p.add(Box.createRigidArea(new Dimension(6, 0)));
 		
-		p.add(btnReset);
+		//p.add(btnReset);
 		
 		p.add(Box.createGlue());
 		
 		p.add(lStreams);
-		p.add(new JLabel("/"));
+		p.add(new Label("/"));
 		p.add(lVoices);
 		
 		p.add(Box.createRigidArea(new Dimension(12, 0)));
 		
+		lVolume.setIcon(Res.iconVolume14);
 		lVolume.setAlignmentX(RIGHT_ALIGNMENT);
+		updateVolumeInfo(100);
+		dimVolume = lVolume.getPreferredSize();
 		p.add(lVolume);
 		p.setPreferredSize(new Dimension(250, p.getPreferredSize().height));
 		p.setMinimumSize(p.getPreferredSize());
 		p.setMaximumSize(p.getPreferredSize());
 		
+		//btnInstr.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
+		p.setOpaque(false);
 		add(p);
 		
 		
@@ -529,7 +662,24 @@ class ChannelScreen extends JPanel {
 		setMinimumSize(getPreferredSize());
 		setMaximumSize(getPreferredSize());
 		
+		createEngineMenu();
 		installListeners();
+	}
+	
+	private void
+	createEngineMenu() {
+		for(final SamplerEngine engine : CC.getSamplerModel().getEngines()) {
+			JMenuItem mi = new JMenuItem(engine.getDescription());
+			
+			mi.addActionListener(new ActionListener() {
+				public void
+				actionPerformed(ActionEvent e) {
+					channel.getModel().setBackendEngineType(engine.getName());
+				}
+			});
+			
+			menuEngines.add(mi);
+		}
 	}
 	
 	private void
@@ -538,28 +688,24 @@ class ChannelScreen extends JPanel {
 			public void
 			actionPerformed(ActionEvent e) { loadInstrument(); }
 		});
-	
-		btnReset.addActionListener(new ActionListener() {
-			public void
-			actionPerformed(ActionEvent e) { channel.getModel().resetBackendChannel(); }
-		});
 		
-		btnDuplicate.addActionListener(new ActionListener() {
+		btnEngine.addActionListener(new ActionListener() {
 			public void
 			actionPerformed(ActionEvent e) {
-				channel.getModel().duplicateBackendChannel();
+				int y = btnEngine.getHeight() + 1;
+				menuEngines.show(btnEngine, 0, y);
 			}
 		});
 	}
-
+	
 	private void
 	loadInstrument() {
-		InstrumentChooser dlg = new InstrumentChooser(CC.getMainFrame());
+		JSInstrumentChooser dlg = new JSInstrumentChooser(CC.getMainFrame());
 		dlg.setVisible(true);
 		
 		if(!dlg.isCancelled()) {
 			SamplerChannelModel m = channel.getModel();
-			m.loadBackendInstrument(dlg.getFileName(), dlg.getInstrumentIndex());
+			m.loadBackendInstrument(dlg.getInstrumentFile(), dlg.getInstrumentIndex());
 		}
 	}
 	
@@ -577,13 +723,18 @@ class ChannelScreen extends JPanel {
 			else btnInstr.setText(i18n.getButtonLabel("ChannelScreen.btnInstr"));
 		}
 	
-		
+		if(sc.getEngine() != null) {
+			String s = sc.getEngine().getDescription();
+			if(!s.equals(btnEngine.getText())) btnEngine.setText(s);
+		}
 		
 	}
 	
 	protected void
 	updateVolumeInfo(int volume) {
 		lVolume.setText(i18n.getLabel("ChannelScreen.volume", volume));
+		lVolume.setMinimumSize(dimVolume);
+		lVolume.setPreferredSize(dimVolume);
 		
 	}
 	
@@ -615,6 +766,29 @@ class ChannelScreen extends JPanel {
 		lVoices.setMaximumSize(d);
 	}
 	
+	class FxSendsPane extends JSFxSendsPane {
+		FxSendsPane(SamplerChannelModel model) {
+			super(model);
+			
+			actionAddFxSend.putValue(Action.SMALL_ICON, Res.iconNew16);
+			actionRemoveFxSend.putValue(Action.SMALL_ICON, Res.iconDelete16);
+		}
+		
+		protected JToolBar
+		createToolBar() {
+			JToolBar tb = new JToolBar();
+			Dimension d = new Dimension(Short.MAX_VALUE, tb.getPreferredSize().height);
+			tb.setMaximumSize(d);
+			tb.setFloatable(false);
+			tb.setAlignmentX(JPanel.RIGHT_ALIGNMENT);
+			
+			tb.add(new ToolbarButton(actionAddFxSend));
+			tb.add(new ToolbarButton(actionRemoveFxSend));
+		
+			return tb;
+		}
+	}
+	
 	static class ScreenButton extends JButton {
 		ScreenButton(String s) {
 			super(s);
@@ -622,39 +796,85 @@ class ChannelScreen extends JPanel {
 			setFocusPainted(false);
 			setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 			setMargin(new Insets(0, 0, 0, 0));
+			
+			putClientProperty (
+				SubstanceLookAndFeel.BUTTON_NO_MIN_SIZE_PROPERTY, Boolean.TRUE
+			);
+			
+			putClientProperty (
+				SubstanceLookAndFeel.BUTTON_PAINT_NEVER_PROPERTY, Boolean.TRUE
+			);
+			
+			putClientProperty(SubstanceLookAndFeel.FLAT_PROPERTY, Boolean.TRUE);
+			
+			FadeConfigurationManager.getInstance().disallowFades(FadeKind.ROLLOVER, this);
+			
 			setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+			setFont(Res.fontScreen);
+			setForeground(new java.awt.Color(0xFFA300));
 		}
 	}
 }
 
-class ChannelOptions extends JPanel {
+class ChannelOptions extends JXCollapsiblePane {
 	private final Channel channel;
+	private MidiDeviceModel midiDevice = null;
 	
-	private final JComboBox cbMidiDevice = new JComboBox();
-	private final JComboBox cbMidiPort = new JComboBox();
-	private final JComboBox cbMidiChannel = new JComboBox();
-	private final JComboBox cbEngine = new JComboBox();
-	private final JComboBox cbAudioDevice = new JComboBox();
+	private final JComboBox cbMidiDevice = new FantasiaComboBox();
+	private final JComboBox cbMidiPort = new FantasiaComboBox();
+	private final JComboBox cbMidiChannel = new FantasiaComboBox();
+	private final JComboBox cbInstrumentMap = new FantasiaComboBox();
+	private final JComboBox cbAudioDevice = new FantasiaComboBox();
+	
+	private final PixmapButton btnChannelRouting;
 	
 	private boolean update = false;
 	
-	ChannelOptions(Channel channel) {
+	private final SamplerListener samplerListener;
+	private final MapListListener mapListListener = new MapListListener();
+	
+	private class NoMap {
+		public String
+		toString() { return "[None]"; }
+	}
+	
+	private NoMap noMap = new NoMap();
+	
+	private class DefaultMap {
+		public String
+		toString() { return "[Default]"; }
+	}
+	
+	private DefaultMap defaultMap = new DefaultMap();
+	
+	ChannelOptions(final Channel channel) {
+		setAnimated(false);
+		setCollapsed(true);
+		setAnimated(preferences().getBoolProperty(ANIMATED));
+		
+		preferences().addPropertyChangeListener(ANIMATED, new PropertyChangeListener() {
+			public void
+			propertyChange(PropertyChangeEvent e) {
+				setAnimated(preferences().getBoolProperty(ANIMATED));
+			}
+		});
+		
+		PixmapPane bgp = new PixmapPane(Res.gfxChannelOptions);
+		bgp.setPixmapInsets(new Insets(1, 1, 1, 1));
+		
 		this.channel = channel;
 		
-		setName("ChannelOptions");
-		setVisible(false);
-		setBorder(BorderFactory.createEmptyBorder(5, 4, 5, 4));
-		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+		bgp.setBorder(BorderFactory.createEmptyBorder(5, 4, 5, 4));
+		bgp.setLayout(new BoxLayout(bgp, BoxLayout.X_AXIS));
 		
-		setPreferredSize(new Dimension(420, 44));
-		setMinimumSize(getPreferredSize());
-		setMaximumSize(getPreferredSize());
+		bgp.setPreferredSize(new Dimension(420, 44));
+		bgp.setMinimumSize(getPreferredSize());
+		bgp.setMaximumSize(getPreferredSize());
 		
 		JPanel p = new JPanel();
-		p.setOpaque(true);
 		p.setBorder(BorderFactory.createEmptyBorder(3, 4, 3, 4));
 		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
-		JLabel l = new JLabel(Res.iconMidiInputTitle);
+		JLabel l = new JLabel(Res.gfxMidiInputTitle);
 		l.setAlignmentX(LEFT_ALIGNMENT);
 		p.add(l);
 		
@@ -675,7 +895,7 @@ class ChannelOptions extends JPanel {
 		o = cbMidiPort.getRenderer();
 		if(o instanceof JLabel) ((JLabel )o).setHorizontalAlignment(SwingConstants.CENTER);
 		
-		cbMidiPort.setPreferredSize(new Dimension(67, 18));
+		cbMidiPort.setPreferredSize(new Dimension(62, 18));
 		cbMidiPort.setMinimumSize(cbMidiPort.getPreferredSize());
 		cbMidiPort.setMaximumSize(cbMidiPort.getPreferredSize());
 		p2.add(cbMidiPort);
@@ -693,58 +913,87 @@ class ChannelOptions extends JPanel {
 		
 		p2.add(cbMidiChannel);
 		p2.setAlignmentX(LEFT_ALIGNMENT);
+		p2.setOpaque(false);
 		p.add(p2);
+		p.setBackground(new java.awt.Color(0x818181));
 		
-		add(p);
+		bgp.add(p);
 		
-		add(Box.createRigidArea(new Dimension(4, 0)));
+		bgp.add(Box.createRigidArea(new Dimension(4, 0)));
 		
 		p = new JPanel();
 		p.setOpaque(true);
 		p.setBorder(BorderFactory.createEmptyBorder(3, 4, 3, 4));
 		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
-		l = new JLabel(Res.iconEngineTitle);
+		l = new JLabel(Res.gfxInstrumentMapTitle);
 		l.setAlignmentX(LEFT_ALIGNMENT);
 		l.setAlignmentX(LEFT_ALIGNMENT);
 		p.add(l);
 		
 		p.add(Box.createRigidArea(new Dimension(0, 3)));
 		
-		o = cbEngine.getRenderer();
-		if(o instanceof JLabel) ((JLabel )o).setHorizontalAlignment(SwingConstants.CENTER);
+		//o = cbInstrumentMap.getRenderer();
+		//if(o instanceof JLabel) ((JLabel )o).setHorizontalAlignment(SwingConstants.CENTER);
 		
-		for(SamplerEngine e : CC.getSamplerModel().getEngines()) cbEngine.addItem(e);
-		cbEngine.setPreferredSize(new Dimension(125, 18));
-		cbEngine.setMinimumSize(cbEngine.getPreferredSize());
-		cbEngine.setMaximumSize(cbEngine.getPreferredSize());
-		cbEngine.setAlignmentX(LEFT_ALIGNMENT);
-		p.add(cbEngine);
+		cbInstrumentMap.setPreferredSize(new Dimension(126, 18));
+		cbInstrumentMap.setMinimumSize(cbInstrumentMap.getPreferredSize());
+		cbInstrumentMap.setMaximumSize(cbInstrumentMap.getPreferredSize());
+		cbInstrumentMap.setAlignmentX(LEFT_ALIGNMENT);
+		p.add(cbInstrumentMap);
+		p.setBackground(new java.awt.Color(0x818181));
+		bgp.add(p);
 		
-		add(p);
-		
-		add(Box.createRigidArea(new Dimension(4, 0)));
+		bgp.add(Box.createRigidArea(new Dimension(4, 0)));
 		
 		p = new JPanel();
 		p.setOpaque(true);
 		p.setBorder(BorderFactory.createEmptyBorder(3, 4, 3, 4));
 		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
-		l = new JLabel(Res.iconAudioOutputTitle);
-		l.setAlignmentX(LEFT_ALIGNMENT);
+		l = new JLabel(Res.gfxAudioOutputTitle);
 		l.setAlignmentX(LEFT_ALIGNMENT);
 		p.add(l);
 		
-		p.add(Box.createRigidArea(new Dimension(0, 3)));
+		//p.add(Box.createRigidArea(new Dimension(0, 3)));
+		
+		p2 = new JPanel();
+		p2.setBorder(BorderFactory.createEmptyBorder(3, 0, 0, 0));
+		p2.setLayout(new BoxLayout(p2, BoxLayout.X_AXIS));
+		p2.setOpaque(false);
+		p2.setAlignmentX(LEFT_ALIGNMENT);
 		
 		o = cbAudioDevice.getRenderer();
 		if(o instanceof JLabel) ((JLabel )o).setHorizontalAlignment(SwingConstants.RIGHT);
 		
-		cbAudioDevice.setPreferredSize(new Dimension(61, 18));
+		cbAudioDevice.setPreferredSize(new Dimension(40, 18));
 		cbAudioDevice.setMinimumSize(cbAudioDevice.getPreferredSize());
 		cbAudioDevice.setMaximumSize(cbAudioDevice.getPreferredSize());
-		cbAudioDevice.setAlignmentX(LEFT_ALIGNMENT);
-		p.add(cbAudioDevice);
 		
-		add(p);
+		p2.add(cbAudioDevice);
+		p2.add(Box.createRigidArea(new Dimension(3, 0)));
+		btnChannelRouting = new PixmapButton(Res.gfxBtnCr, Res.gfxBtnCrRO);
+		btnChannelRouting.setPressedIcon(Res.gfxBtnCrRO);
+		btnChannelRouting.setEnabled(false);
+		btnChannelRouting.setToolTipText(i18n.getLabel("ChannelOptions.routing"));
+		
+		btnChannelRouting.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) {
+				SamplerChannel c = channel.getChannelInfo();
+				new JSChannelOutputRoutingDlg(CC.getMainFrame(), c).setVisible(true);
+			
+			}
+		});
+		
+		p2.add(btnChannelRouting);
+		
+		p.add(p2);
+		p.setBackground(new java.awt.Color(0x818181));
+		p2 = new JPanel();
+		p2.setLayout(new java.awt.BorderLayout());
+		p.add(p2);
+		bgp.add(p);
+		
+		setContentPane(bgp);
 		
 		cbMidiDevice.addActionListener(new ActionListener() {
 			public void
@@ -761,10 +1010,45 @@ class ChannelOptions extends JPanel {
 			actionPerformed(ActionEvent e) { setMidiChannel(); }
 		});
 		
-		cbEngine.addActionListener(new ActionListener() {
+		samplerListener = new SamplerAdapter() {
+			/** Invoked when the default MIDI instrument map is changed. */
 			public void
-			actionPerformed(ActionEvent e) { setEngineType(); }
+			defaultMapChanged(SamplerEvent e) {
+				updateCbInstrumentMapToolTipText();
+				
+			}
+		};
+		
+		CC.getSamplerModel().addSamplerListener(samplerListener);
+		
+		cbInstrumentMap.addItem(noMap);
+		cbInstrumentMap.addItem(defaultMap);
+		for(MidiInstrumentMap map : CC.getSamplerModel().getMidiInstrumentMaps()) {
+			cbInstrumentMap.addItem(map);
+		}
+		
+		int map = channel.getModel().getChannelInfo().getMidiInstrumentMapId();
+		cbInstrumentMap.setSelectedItem(CC.getSamplerModel().getMidiInstrumentMapById(map));
+		if(cbInstrumentMap.getSelectedItem() == null) {
+			if(map == -1) cbInstrumentMap.setSelectedItem(noMap);
+			else if(map == -2) {
+				cbInstrumentMap.setSelectedItem(defaultMap);
+			}
+		}
+		
+		updateCbInstrumentMapToolTipText();
+		
+		if(channel.getModel().getChannelInfo().getEngine() == null) {
+			cbInstrumentMap.setEnabled(false);
+		}
+		
+		cbInstrumentMap.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) { updateInstrumentMap(); }
 		});
+		
+		CC.getSamplerModel().addSamplerChannelListListener(getHandler());
+		CC.getSamplerModel().addMidiInstrumentMapListListener(mapListListener);
 		
 		cbAudioDevice.addActionListener(new ActionListener() {
 			public void
@@ -803,11 +1087,26 @@ class ChannelOptions extends JPanel {
 		try {
 			cbMidiDevice.setSelectedItem(mm == null ? null : mm.getDeviceInfo());
 			
-			cbEngine.setSelectedItem(sc.getEngine());
-			
 			cbAudioDevice.setSelectedItem(am == null ? null : am.getDeviceInfo());
+			btnChannelRouting.setEnabled(am != null);
 		} catch(Exception x) {
 			CC.getLogger().log(Level.WARNING, "Unkown error", x);
+		}
+		
+		if(sc.getEngine() != null) {
+			cbInstrumentMap.setEnabled(true);
+			int id = sc.getMidiInstrumentMapId();
+			Object o;
+			if(id == -2) o = defaultMap;
+			else if(id == -1) o = noMap;
+			else o = CC.getSamplerModel().getMidiInstrumentMapById(id);
+			
+			if(cbInstrumentMap.getSelectedItem() != o) {
+				cbInstrumentMap.setSelectedItem(o);
+			}
+		} else {
+			cbInstrumentMap.setSelectedItem(noMap);
+			cbInstrumentMap.setEnabled(false);
 		}
 		
 		setUpdate(false);
@@ -836,6 +1135,41 @@ class ChannelOptions extends JPanel {
 		}
 		 
 		setUpdate(false);
+	}
+	
+	
+	private void
+	updateInstrumentMap() {
+		updateCbInstrumentMapToolTipText();
+		
+		int id = channel.getModel().getChannelInfo().getMidiInstrumentMapId();
+		Object o = cbInstrumentMap.getSelectedItem();
+		if(o == null && id == -1) return;
+		
+		int cbId;
+		if(o == null || o == noMap) cbId = -1;
+		else if(o == defaultMap) cbId = -2;
+		else cbId = ((MidiInstrumentMap)o).getMapId();
+		
+		if(cbId == id) return;
+		
+		channel.getModel().setBackendMidiInstrumentMap(cbId);
+	}
+	
+	private void
+	updateCbInstrumentMapToolTipText() {
+		if(cbInstrumentMap.getSelectedItem() != defaultMap) {
+			cbInstrumentMap.setToolTipText(null);
+			return;
+		}
+		
+		MidiInstrumentMap m = CC.getSamplerModel().getDefaultMidiInstrumentMap();
+		if(m != null) {
+			String s = i18n.getLabel("Channel.ttDefault", m.getName());
+			cbInstrumentMap.setToolTipText(s);
+		} else {
+			cbInstrumentMap.setToolTipText(null);
+		}
 	}
 	
 	/**
@@ -875,14 +1209,20 @@ class ChannelOptions extends JPanel {
 			return;
 		}
 		
+		if(midiDevice != null) midiDevice.removeMidiDeviceListener(getHandler());
+		
 		cbMidiPort.removeAllItems();
 		
 		if(mid == null) {
+			midiDevice = null;
 			cbMidiPort.setEnabled(false);
 			
 			cbMidiChannel.setSelectedItem(null);
 			cbMidiChannel.setEnabled(false);
 		} else {
+			midiDevice = CC.getSamplerModel().getMidiDeviceById(mid.getDeviceId());
+			if(midiDevice != null) midiDevice.addMidiDeviceListener(getHandler());
+			
 			cbMidiPort.setEnabled(true);
 			
 			MidiPort[] ports = mid.getMidiPorts();
@@ -917,19 +1257,6 @@ class ChannelOptions extends JPanel {
 		channel.getModel().setBackendMidiInputChannel(c);
 	}
 	
-	/** Invoked when the user selects an engine. */
-	private void
-	setEngineType() {
-		Object oldEngine = channel.getModel().getChannelInfo().getEngine();
-		SamplerEngine newEngine = (SamplerEngine)cbEngine.getSelectedItem();
-		
-		if(oldEngine != null) { if(oldEngine.equals(newEngine)) return; }
-		else if(newEngine == null) return;
-		
-		channel.getModel().setBackendEngineType(newEngine.getName());
-		
-	}
-	
 	private void
 	setBackendAudioDevice() {
 		if(isUpdate()) return;
@@ -959,7 +1286,8 @@ class ChannelOptions extends JPanel {
 	private Handler
 	getHandler() { return handler; }
 	
-	private class Handler implements MidiDeviceListListener, ListListener<AudioDeviceModel> {
+	private class Handler implements MidiDeviceListListener, ListListener<AudioDeviceModel>,
+					SamplerChannelListListener, MidiDeviceListener {
 		/**
 		 * Invoked when a new MIDI device is created.
 		 * @param e A <code>MidiDeviceListEvent</code>
@@ -998,6 +1326,78 @@ class ChannelOptions extends JPanel {
 		public void
 		entryRemoved(ListEvent<AudioDeviceModel> e) {
 			cbAudioDevice.removeItem(e.getEntry().getDeviceInfo());
+		}
+		
+		/**
+		 * Invoked when a new sampler channel is created.
+		 * @param e A <code>SamplerChannelListEvent</code>
+		 * instance providing the event information.
+		 */
+		public void
+		channelAdded(SamplerChannelListEvent e) { }
+	
+		/**
+		 * Invoked when a sampler channel is removed.
+		 * @param e A <code>SamplerChannelListEvent</code>
+		 * instance providing the event information.
+		 */
+		public void
+		channelRemoved(SamplerChannelListEvent e) {
+			// Some cleanup when the channel is removed.
+			if(e.getChannelModel().getChannelId() == channel.getChannelId()) {
+				SamplerModel sm = CC.getSamplerModel();
+				
+				sm.removeMidiDeviceListListener(getHandler());
+				sm.removeAudioDeviceListListener(getHandler());
+				sm.removeMidiInstrumentMapListListener(mapListListener);
+				sm.removeSamplerListener(samplerListener);
+				sm.removeSamplerChannelListListener(getHandler());
+				
+				if(midiDevice != null) {
+					midiDevice.removeMidiDeviceListener(getHandler());
+				}
+			}
+		}
+		
+		public void
+		settingsChanged(MidiDeviceEvent e) {
+			if(isUpdate()) {
+				CC.getLogger().warning("Invalid update state");
+				return;
+			}
+			
+			setUpdate(true);
+			int idx = cbMidiPort.getSelectedIndex();
+			MidiInputDevice d = e.getMidiDeviceModel().getDeviceInfo();
+			
+			cbMidiPort.removeAllItems();
+			for(MidiPort port : d.getMidiPorts()) cbMidiPort.addItem(port);
+			
+			if(idx >= cbMidiPort.getModel().getSize()) idx = 0;
+			
+			setUpdate(false);
+			
+			if(cbMidiPort.getModel().getSize() > 0) cbMidiPort.setSelectedIndex(idx);
+		}
+	}
+	
+	private class MapListListener implements ListListener<MidiInstrumentMap> {
+		/** Invoked when a new MIDI instrument map is added to a list. */
+		public void
+		entryAdded(ListEvent<MidiInstrumentMap> e) {
+			cbInstrumentMap.insertItemAt(e.getEntry(), cbInstrumentMap.getItemCount());
+			boolean b = channel.getModel().getChannelInfo().getEngine() != null;
+			if(b && !cbInstrumentMap.isEnabled()) cbInstrumentMap.setEnabled(true);
+		}
+	
+		/** Invoked when a new MIDI instrument map is removed from a list. */
+		public void
+		entryRemoved(ListEvent<MidiInstrumentMap> e) {
+			cbInstrumentMap.removeItem(e.getEntry());
+			if(cbInstrumentMap.getItemCount() == 0) { // TODO: ?
+				cbInstrumentMap.setSelectedItem(noMap);
+				cbInstrumentMap.setEnabled(false);
+			}
 		}
 	}
 }

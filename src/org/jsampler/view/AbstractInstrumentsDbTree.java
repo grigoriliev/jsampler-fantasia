@@ -34,13 +34,15 @@ import javax.swing.event.TreeWillExpandListener;
 
 import javax.swing.tree.TreePath;
 
-import org.jsampler.view.DbDirectoryTreeNode;
+import org.jsampler.CC;
 
 /**
  *
  * @author Grigor Iliev
  */
 public abstract class AbstractInstrumentsDbTree extends JTree {
+	private InstrumentsDbTreeView view = null;
+	
 	/**
 	 * Creates a new instance of <code>AbstractInstrumentsDbTree</code>.
 	 */
@@ -64,6 +66,7 @@ public abstract class AbstractInstrumentsDbTree extends JTree {
 	 */
 	public
 	AbstractInstrumentsDbTree(InstrumentsDbTreeModel model) {
+		setView(CC.getViewConfig().getInstrumentsDbTreeView());
 		setModel(model);
 		addTreeWillExpandListener(getHandler());
 		addTreeSelectionListener(getHandler());
@@ -136,6 +139,16 @@ public abstract class AbstractInstrumentsDbTree extends JTree {
 	hasBeenExpanded(TreePath p) {
 		return super.hasBeenExpanded(p) || !getModel().isLeaf(p.getLastPathComponent());
 	}
+	
+	/** Sets the view to be used for retrieving UI information. */
+	public void
+	setView(InstrumentsDbTreeView view) {
+		this.view = view;
+	}
+	
+	/** Gets the view used to retrieve UI information. */
+	public InstrumentsDbTreeView
+	getView() { return view; }
 	
 	private final EventHandler eventHandler = new EventHandler();
 	

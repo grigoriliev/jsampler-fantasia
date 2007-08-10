@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -26,36 +26,63 @@ import java.awt.BorderLayout;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.Graphics;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.Point;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.StringReader;
+
+import java.util.Vector;
 import java.util.logging.Level;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JToggleButton;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.plaf.synth.SynthLookAndFeel;
 
 import net.sf.juife.TitleBar;
 
 import org.jsampler.CC;
 import org.jsampler.HF;
+import org.jsampler.LSConsoleModel;
 
 import org.jsampler.view.JSChannel;
 import org.jsampler.view.JSChannelsPane;
 import org.jsampler.view.JSMainFrame;
+import org.jsampler.view.LscpFileFilter;
 
+import org.jsampler.view.std.JSamplerHomeChooser;
+
+import static org.jsampler.view.fantasia.A4n.a4n;
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
+import static org.jsampler.view.fantasia.FantasiaPrefs.preferences;
+import static org.jsampler.view.std.StdPrefs.*;
 
 
 /**
@@ -63,130 +90,262 @@ import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
  * @author Grigor Iliev
  */
 public class MainFrame extends JSMainFrame {
-	private final static int TITLE_BAR_WIDTH = 420;
-	private final static int TITLE_BAR_HEIGHT = 29;
+	private final FantasiaMenuBar menuBar = new FantasiaMenuBar();
+	private final StandardBar standardBar = new StandardBar();
+	private final MainPane mainPane = new MainPane();
+	private final DevicesPane devicesPane = new DevicesPane();
 	
-	private final ChannelsPane channelsPane = new ChannelsPane("");
+	private final JMenu recentScriptsMenu =
+		new JMenu(i18n.getMenuLabel("actions.recentScripts"));
+	
+	private final JSplitPane hSplitPane;
+	
+	private final SidePane sidePane = new SidePane();
+	
+	private LSConsoleFrame lsConsoleFrame = null;
+	private final Vector<String> recentScripts = new Vector<String>();
+		
 	
 	/** Creates a new instance of <code>MainFrame</code> */
 	public
 	MainFrame() {
-		try {
-			SynthLookAndFeel synth = new SynthLookAndFeel();
-			synth.load(MainFrame.class.getResourceAsStream("gui.xml"), MainFrame.class);
-			UIManager.setLookAndFeel(synth);
-		} catch(Exception e) {
-			CC.getLogger().log(Level.INFO, HF.getErrorMessage(e), e);
-		}
-		
 		setTitle(i18n.getLabel("MainFrame.title"));
-		addChannelsPane(channelsPane);
-		add(channelsPane);
-		setUndecorated(true);
 		
-		JToggleButton btn = new PixmapToggleButton(Res.iconPowerOff, Res.iconPowerOn) {
-			public boolean
-			contains(int x, int y) {
-				return (x - 11)*(x - 11) + (y - 11)*(y - 11) < 71;
-			}
-		};
+		if(Res.iconAppIcon != null) setIconImage(Res.iconAppIcon.getImage());
 		
-		btn.setSelected(true);
-		btn.setAlignmentX(JPanel.LEFT_ALIGNMENT);
-		btn.addActionListener(new ActionListener() {
-			public void
-			actionPerformed(ActionEvent e) { onWindowClose(); }
-		});
+		getContentPane().add(standardBar, BorderLayout.NORTH);
 		
+		addMenu();
 		
-		FantasiaTitleBar tb = new FantasiaTitleBar();
-		tb.setName("FantasiaTitleBar");
-		tb.setLayout(new BoxLayout(tb, BoxLayout.X_AXIS));
-		tb.setOpaque(true);
-		tb.add(Box.createRigidArea(new Dimension(4, 0)));
-		tb.add(btn);
-		tb.add(Box.createRigidArea(new Dimension(3, 0)));
+		addChannelsPane(mainPane.getChannelsPane());
 		
+		JScrollPane sp = new JScrollPane(createRightPane());
+		sp.setBorder(BorderFactory.createEmptyBorder());
 		
+		hSplitPane = new JSplitPane (
+			JSplitPane.HORIZONTAL_SPLIT,
+			true,	// continuousLayout 
+			sidePane, sp
+		);
 		
-		tb.add(createVSeparator());
+		getContentPane().add(hSplitPane);
 		
-		tb.add(Box.createRigidArea(new Dimension(275, 0)));
+		int i = preferences().getIntProperty("MainFrame.hSplitDividerLocation", 220);
+		hSplitPane.setDividerLocation(i);
 		
-		tb.add(createVSeparator());
+		setSavedSize();
+	}
+	
+	private JPanel
+	createRightPane() {
+		JPanel p = new JPanel();
+		GridBagLayout gridbag = new GridBagLayout();
+		GridBagConstraints c = new GridBagConstraints();
 		
-		tb.add(Box.createRigidArea(new Dimension(29, 0)));
+		p.setLayout(gridbag);
 		
-		tb.add(createVSeparator());
+		c.fill = GridBagConstraints.BOTH;
 		
-		tb.add(Box.createRigidArea(new Dimension(40, 0)));
+		c.gridx = 1;
+		c.gridy = 0;
+		c.weightx = 1.0;
+		c.weighty = 1.0;
+		c.insets = new Insets(0, 3, 3, 0);
+		gridbag.setConstraints(devicesPane, c);
+		p.add(devicesPane);
 		
-		tb.add(createVSeparator());
+		c.gridx = 0;
+		c.gridy = 0;
+		c.weightx = 0.0;
+		c.weighty = 1.0;
+		c.insets = new Insets(0, 3, 3, 3);
+		c.fill = GridBagConstraints.VERTICAL;
+		gridbag.setConstraints(mainPane, c);
+		p.add(mainPane);
 		
-		tb.setPreferredSize(new Dimension(TITLE_BAR_WIDTH, TITLE_BAR_HEIGHT));
-		tb.setMinimumSize(tb.getPreferredSize());
-		tb.setMaximumSize(tb.getPreferredSize());
-		add(tb, BorderLayout.SOUTH);
-		
-		getContentPane().setBackground(new java.awt.Color(0x818181));
-		getRootPane().setOpaque(false);
-		getLayeredPane().setOpaque(false);
-		//getContentPane().setVisible(false);
-		
-		setAlwaysOnTop(FantasiaPrefs.isAlwaysOnTop());
+		return p;
+	}
+	
+	private void
+	setSavedSize() {
+		String s = preferences().getStringProperty("MainFrame.sizeAndLocation");
+		if(s == null) {
+			setDefaultSizeAndLocation();
+			return;
+		}
 		pack();
-		
-		String s = FantasiaPrefs.getWindowLocation();
-		
 		try {
-			if(s == null) {
-				setDefaultLocation();
-			} else {
-				int i = s.indexOf(',');
-				int x = Integer.parseInt(s.substring(0, i));
+			int i = s.indexOf(',');
+			int x = Integer.parseInt(s.substring(0, i));
 			
-				s = s.substring(i + 1);
-				int y = Integer.parseInt(s);
+			s = s.substring(i + 1);
+			i = s.indexOf(',');
+			int y = Integer.parseInt(s.substring(0, i));
 			
-				setLocation(x, y);
-			}
+			s = s.substring(i + 1);
+			i = s.indexOf(',');
+			int width = Integer.parseInt(s.substring(0, i));
+			
+			s = s.substring(i + 1);
+			int height = Integer.parseInt(s);
+			
+			setBounds(x, y, width, height);
 		} catch(Exception x) {
 			String msg = "Parsing of window size and location string failed";
 			CC.getLogger().log(Level.INFO, msg, x);
-			setDefaultLocation();
+			setDefaultSizeAndLocation();
+		}
+		
+		if(preferences().getBoolProperty("MainFrame.windowMaximized")) {
+			setExtendedState(getExtendedState() | MAXIMIZED_BOTH);
 		}
 	}
 	
 	private void
-	setDefaultLocation() {
-		Dimension d = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-		setLocation((d.width - TITLE_BAR_WIDTH) / 2, (d.height - TITLE_BAR_HEIGHT) / 2);
+	setDefaultSizeAndLocation() {
+		setPreferredSize(new Dimension(900, 600));
+		pack();
+		setLocationRelativeTo(null);
 	}
 	
 	
 	/** Invoked when this window is about to close. */
 	protected void
 	onWindowClose() {
-		FantasiaPrefs.setAlwaysOnTop(isAlwaysOnTop());
+		sidePane.savePreferences();
+		
+		int i = hSplitPane.getDividerLocation();
+		preferences().setIntProperty("MainFrame.hSplitDividerLocation", i);
+		
+		preferences().setBoolProperty (
+			"MainFrame.windowMaximized",
+			(getExtendedState() & MAXIMIZED_BOTH) == MAXIMIZED_BOTH
+		);
+		
+		if(preferences().getBoolProperty("MainFrame.windowMaximized")) {
+			super.onWindowClose();
+			return;
+		}
 		
 		java.awt.Point p = getLocation();
 		Dimension d = getSize();
 		StringBuffer sb = new StringBuffer();
-		sb.append(p.x).append(',').append(p.y + getSize().height - TITLE_BAR_HEIGHT);
-		FantasiaPrefs.setWindowLocation(sb.toString());
+		sb.append(p.x).append(',').append(p.y).append(',');
+		sb.append(d.width).append(',').append(d.height);
+		preferences().setStringProperty("MainFrame.sizeAndLocation", sb.toString());
+		
+		sb = new StringBuffer();
+		for(String s : recentScripts) sb.append(s).append("\n");
+		preferences().setStringProperty(RECENT_LSCP_SCRIPTS, sb.toString());
+		
+		if(preferences().getBoolProperty(SAVE_LS_CONSOLE_HISTORY)) {
+			if(lsConsoleFrame != null) getLSConsolePane().saveConsoleHistory();
+		}
 		
 		super.onWindowClose();
 	}
 	
-	private JPanel
-	createVSeparator() {
-		JPanel p = new JPanel();
-		p.setName("VSeparator");
-		p.setOpaque(false);
-		p.setPreferredSize(new Dimension(2, 29));
-		p.setMinimumSize(p.getPreferredSize());
-		p.setMaximumSize(p.getPreferredSize());
-		return p;
+	private void
+	addMenu() {
+		JMenu m;
+		JMenuItem mi;
+		
+		setJMenuBar(menuBar);
+		
+		// Actions
+		m = new FantasiaMenu(i18n.getMenuLabel("actions"));
+		
+		mi = new JMenuItem(a4n.connect);
+		mi.setIcon(null);
+		//mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_MASK));
+		m.add(mi);
+		
+		mi = new JMenuItem(a4n.samplerInfo);
+		mi.setIcon(null);
+		m.add(mi);
+		
+		m.addSeparator();
+		
+		JMenu exportMenu = new JMenu(i18n.getMenuLabel("actions.export"));
+		m.add(exportMenu);
+		
+		mi = new JMenuItem(a4n.exportSamplerConfig);
+		mi.setIcon(null);
+		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_MASK));
+		exportMenu.add(mi);
+		
+		mi = new JMenuItem(a4n.exportMidiInstrumentMaps);
+		mi.setIcon(null);
+		exportMenu.add(mi);
+		
+		m.addSeparator();
+		
+		mi = new JMenuItem(a4n.loadScript);
+		mi.setIcon(null);
+		m.add(mi);
+		
+		String s = preferences().getStringProperty(RECENT_LSCP_SCRIPTS);
+		BufferedReader br = new BufferedReader(new StringReader(s));
+		
+		try {
+			s = br.readLine();
+			while(s != null) {
+				recentScripts.add(s);
+				s = br.readLine();
+			}
+		} catch(Exception x) {
+			CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
+		}
+		
+		updateRecentScriptsMenu();
+		
+		m.add(recentScriptsMenu);
+		
+		m.addSeparator();
+		
+		mi = new JMenuItem(i18n.getMenuLabel("actions.exit"));
+		m.add(mi);
+		mi.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) { onWindowClose(); }
+		});
+		
+		menuBar.add(m);
+		
+		
+		// Edit
+		m = new FantasiaMenu(i18n.getMenuLabel("edit"));
+		menuBar.add(m);
+		
+		mi = new JMenuItem(a4n.editPreferences);
+		mi.setIcon(null);
+		mi.setAccelerator(KeyStroke.getKeyStroke (
+			KeyEvent.VK_P, KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK
+		));
+		m.add(mi);
+		
+		
+		// Window
+		m = new FantasiaMenu(i18n.getMenuLabel("window"));
+		menuBar.add(m);
+		
+		mi = new JMenuItem(a4n.windowLSConsole);
+		mi.setIcon(null);
+		m.add(mi);
+		
+		mi = new JMenuItem(a4n.windowInstrumentsDb);
+		mi.setIcon(null);
+		m.add(mi);
+		
+		
+		// Help
+		m = new FantasiaMenu(i18n.getMenuLabel("help"));
+		
+		mi = new JMenuItem(a4n.helpAbout);
+		mi.setIcon(null);
+		m.add(mi);
+		
+		menuBar.add(m);
 	}
 	
 	/**
@@ -195,8 +354,7 @@ public class MainFrame extends JSMainFrame {
 	 */
 	public void
 	insertChannelsPane(JSChannelsPane pane, int idx) {
-		getChannelsPaneList().removeAllElements();
-		addChannelsPane(pane);
+		
 	}
 	
 	/**
@@ -214,23 +372,14 @@ public class MainFrame extends JSMainFrame {
 	public void
 	setSelectedChannelsPane(JSChannelsPane pane) { }
 	
-	public static void
-	repack(JSMainFrame frame) {
-		int y = frame.getLocation().y;
-		int height = frame.getSize().height;
-		y += (height - frame.getPreferredSize().height);
-		
-		if((height - frame.getPreferredSize().height) > 0) {
-			frame.pack();
-			frame.setLocation(frame.getLocation().x, y);
-		} else {
-			frame.setLocation(frame.getLocation().x, y);
-			frame.pack();
-		}
-	}
-	
 	public void
-	installJSamplerHome() { }
+	installJSamplerHome() {
+		JSamplerHomeChooser chooser = new JSamplerHomeChooser(this);
+		chooser.setVisible(true);
+		if(chooser.isCancelled()) return;
+		
+		CC.changeJSamplerHome(chooser.getJSamplerHome());
+	}
 	
 	public void
 	showDetailedErrorMessage(Frame owner, String err, String details) {
@@ -241,56 +390,126 @@ public class MainFrame extends JSMainFrame {
 	showDetailedErrorMessage(Dialog owner, String err, String details) {
 		// TODO: 
 	}
-}
+	
+	protected LSConsoleModel
+	getLSConsoleModel() { return getLSConsolePane().getModel(); }
+	
+	protected LSConsolePane
+	getLSConsolePane() {
+		return getLSConsoleFrame().getLSConsolePane();
+	}
+	
+	protected LSConsoleFrame
+	getLSConsoleFrame() {
+		if(lsConsoleFrame == null) lsConsoleFrame = new LSConsoleFrame();
+		return lsConsoleFrame;
+	}
+	
+	protected void
+	runScript() {
+		String s = preferences().getStringProperty("lastScriptLocation");
+		JFileChooser fc = new JFileChooser(s);
+		fc.setFileFilter(new LscpFileFilter());
+		int result = fc.showOpenDialog(this);
+		if(result != JFileChooser.APPROVE_OPTION) return;
+		
+		String path = fc.getCurrentDirectory().getAbsolutePath();
+		preferences().setStringProperty("lastScriptLocation", path);
+					
+		runScript(fc.getSelectedFile());
+	}
+	
+	private void
+	runScript(String script) { runScript(new File(script)); }
+	
+	private void
+	runScript(File script) {
+		FileReader fr;
+		try { fr = new FileReader(script); }
+		catch(FileNotFoundException e) {
+			HF.showErrorMessage(i18n.getMessage("FileNotFound!"));
+			return;
+		}
+		
+		BufferedReader br = new BufferedReader(fr);
+		
+		try {
+			String s = br.readLine();
+			while(s != null) {
+				getLSConsoleModel().setCommandLineText(s);
+				getLSConsoleModel().execCommand();
+				s = br.readLine();
+			}
+		} catch(Exception e) {
+			HF.showErrorMessage(e);
+			return;
+		}
+		
+		String s = script.getAbsolutePath();
+		recentScripts.remove(s);
+		recentScripts.insertElementAt(s, 0);
+		
+		updateRecentScriptsMenu();
+	}
+	
+	protected void
+	clearRecentScripts() {
+		recentScripts.removeAllElements();
+		updateRecentScriptsMenu();
+	}
+	
+	protected void
+	updateRecentScriptsMenu() {
+		int size = preferences().getIntProperty(RECENT_LSCP_SCRIPTS_SIZE);
+		while(recentScripts.size() > size) {
+			recentScripts.removeElementAt(recentScripts.size() - 1);
+		}
+		
+		recentScriptsMenu.removeAll();
+		
+		for(String script : recentScripts) {
+			JMenuItem mi = new JMenuItem(script);
+			recentScriptsMenu.add(mi);
+			mi.addActionListener(new RecentScriptHandler(script));
+		}
+		
+		recentScriptsMenu.setEnabled(recentScripts.size() != 0);
+	}
+	
+	private class RecentScriptHandler implements ActionListener {
+		private String script;
+		
+		RecentScriptHandler(String script) { this.script = script; }
+		
+		public void
+		actionPerformed(ActionEvent e) {
+			runScript(script);
+			if(preferences().getBoolProperty(SHOW_LS_CONSOLE_WHEN_RUN_SCRIPT)) {
+				a4n.windowLSConsole.actionPerformed(null);
+			}
+		}
+	}
+	
+	private static class FantasiaMenu extends JMenu {
+		FantasiaMenu(String s) {
+			super(s);
+			setFont(getFont().deriveFont(java.awt.Font.BOLD));
+			setOpaque(false);
+		}
+	}
 
-class FantasiaTitleBar extends TitleBar {
-	FantasiaTitleBar() { this.addMouseListener(new ContextMenu()); }
-	
-	class ContextMenu extends MouseAdapter {
-		private final JPopupMenu cmenu = new JPopupMenu();
+	private static class FantasiaMenuBar extends JMenuBar {
+		private static Insets pixmapInsets = new Insets(6, 6, 0, 6);
 		
-		ContextMenu() {
-			JMenuItem mi;
-			
-			final JCheckBoxMenuItem cmi = new JCheckBoxMenuItem (
-				i18n.getMenuLabel("FantasiaTitleBar.AlwaysOnTop")
-			);
-			cmi.setIcon(null);
-			cmi.setSelected(FantasiaPrefs.isAlwaysOnTop());
-			
-			cmenu.add(cmi);
-			
-			cmi.addActionListener(new ActionListener() {
-				public void
-				actionPerformed(ActionEvent e) {
-					CC.getMainFrame().setAlwaysOnTop(cmi.isSelected());
-				}
-			});
-			
-			/*mi = new JMenuItem(A4n.moveChannelsUp);
-			mi.setIcon(null);
-			cmenu.add(mi);
-			
-			cmenu.addSeparator();
-			
-			mi = new JMenuItem(A4n.removeChannels);
-			mi.setIcon(null);
-			cmenu.add(mi);*/
+		FantasiaMenuBar() {
+			setOpaque(false);
 		}
 		
-		public void
-		mousePressed(MouseEvent e) {
-			if(e.isPopupTrigger()) show(e);
-		}
-	
-		public void
-		mouseReleased(MouseEvent e) {
-			if(e.isPopupTrigger()) show(e);
-		}
-	
-		void
-		show(MouseEvent e) {
-			cmenu.show(e.getComponent(), e.getX(), e.getY());
+		protected void
+		paintComponent(Graphics g) {
+			super.paintComponent(g);
+			
+			PixmapPane.paintComponent(this, g, Res.gfxMenuBarBg, pixmapInsets);
 		}
 	}
 }

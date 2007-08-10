@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -32,12 +32,9 @@ import java.awt.Insets;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-
-import javax.swing.border.EtchedBorder;
 
 import net.sf.juife.InformationDialog;
 
@@ -53,24 +50,16 @@ import static org.jsampler.view.classic.ClassicI18n.i18n;
  * @author Grigor Iliev
  */
 public class SamplerInfoDlg extends InformationDialog {
-	private final static ImageIcon iconLinuxSamplerLogo;
-	
-	static {
-		java.net.URL url;
-		url = ClassLoader.getSystemClassLoader().getResource (
-			"org/jsampler/view/classic/res/LinuxSampler-logo.png"
-		);
-		iconLinuxSamplerLogo = new ImageIcon(url);
-	}
-	
-	private final JLabel lLinuxSamplerLogo = new JLabel(iconLinuxSamplerLogo);
+	private final JLabel lLinuxSamplerLogo = new JLabel(Res.iconLinuxSamplerLogo);
 	private final JLabel lDescription = new JLabel();
 	private final JLabel lVersion = new JLabel(i18n.getLabel("SamplerInfoDlg.lVersion"));
 	private final JLabel lProtocolVersion =
 		new JLabel(i18n.getLabel("SamplerInfoDlg.lProtocolVersion"));
 	
+	private final JLabel lDbSupport = new JLabel(i18n.getLabel("SamplerInfoDlg.lDbSupport"));
 	private final JTextField tfVersion = new JTextField();
 	private final JTextField tfProtocolVersion = new JTextField();
+	private final JTextField tfDbSupport = new JTextField();
 	
 	
 	/** Creates a new instance of SamplerInfoDlg */
@@ -92,12 +81,23 @@ public class SamplerInfoDlg extends InformationDialog {
 		lDescription.setText(si.getDescription());
 		tfVersion.setText(si.getVersion());
 		tfProtocolVersion.setText(si.getProtocolVersion());
+		if(si.hasInstrumentsDbSupport()) {
+			tfDbSupport.setText(i18n.getButtonLabel("yes"));
+		} else {
+			tfDbSupport.setText(i18n.getButtonLabel("no"));
+		}
 		
 		tfVersion.setEditable(false);
+		tfVersion.setOpaque(false);
 		tfVersion.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 		
 		tfProtocolVersion.setEditable(false);
+		tfProtocolVersion.setOpaque(false);
 		tfProtocolVersion.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+		
+		tfDbSupport.setEditable(false);
+		tfDbSupport.setOpaque(false);
+		tfDbSupport.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 		
 		
 		JPanel infoPane = new JPanel();
@@ -105,22 +105,6 @@ public class SamplerInfoDlg extends InformationDialog {
 		GridBagLayout gridbag = new GridBagLayout();
 		GridBagConstraints c = new GridBagConstraints();
 		
-		/*lText.setFont(lText.getFont().deriveFont(java.awt.Font.PLAIN));
-		
-		ServerInfo si = CC.getSamplerModel().getServerInfo();
-		
-		if(si == null) lText.setText( JSI18n.getLabel("SamplerInfoDlg.unavailable"));
-		else lText.setText (
-			"<html>\n" +
-			"<h3>" + si.getDescription() + "</h3><br>" +
-			"<table border=0  align=left>" +
-			"<tr> <th align=right>Version:</th> <td align=left>" + si.getVersion() + "</td> </tr>" +
-			"<tr> <th align=right>Protocol Version:</th> <td align=left>" + si.getProtocolVersion()+ "</td> </tr>" +
-			"</table>"
-		);
-		
-		mainPane.add(lText);
-		*/
 		infoPane.setLayout(gridbag);
 		
 		c.gridx = 0;
@@ -135,8 +119,15 @@ public class SamplerInfoDlg extends InformationDialog {
 		gridbag.setConstraints(lProtocolVersion, c);
 		infoPane.add(lProtocolVersion);
 		
+		c.gridx = 0;
+		c.gridy = 2;
+		gridbag.setConstraints(lDbSupport, c);
+		infoPane.add(lDbSupport);
+		
 		c.gridx = 1;
 		c.gridy = 0;
+		c.weightx = 1.0;
+		c.fill = GridBagConstraints.HORIZONTAL;
 		c.anchor = GridBagConstraints.WEST;
 		gridbag.setConstraints(tfVersion, c);
 		infoPane.add(tfVersion);
@@ -145,6 +136,11 @@ public class SamplerInfoDlg extends InformationDialog {
 		c.gridy = 1;
 		gridbag.setConstraints(tfProtocolVersion, c);
 		infoPane.add(tfProtocolVersion);
+		
+		c.gridx = 1;
+		c.gridy = 2;
+		gridbag.setConstraints(tfDbSupport, c);
+		infoPane.add(tfDbSupport);
 		
 		//infoPane.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 		infoPane.setMaximumSize(infoPane.getPreferredSize());

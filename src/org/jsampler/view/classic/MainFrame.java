@@ -71,9 +71,13 @@ import org.jsampler.view.JSChannel;
 import org.jsampler.view.JSChannelsPane;
 import org.jsampler.view.LscpFileFilter;
 
-import static org.jsampler.view.classic.ClassicI18n.i18n;
-import static org.jsampler.view.classic.LeftPane.getLeftPane;
+import org.jsampler.view.std.JSamplerHomeChooser;
 
+import static org.jsampler.view.classic.A4n.a4n;
+import static org.jsampler.view.classic.ClassicI18n.i18n;
+import static org.jsampler.view.classic.ClassicPrefs.preferences;
+import static org.jsampler.view.classic.LeftPane.getLeftPane;
+import static org.jsampler.view.std.StdPrefs.*;
 
 /**
  *
@@ -241,9 +245,11 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		
 		StringBuffer sb = new StringBuffer();
 		for(String s : recentScripts) sb.append(s).append("\n");
-		ClassicPrefs.setRecentScripts(sb.toString());
+		preferences().setStringProperty(RECENT_LSCP_SCRIPTS, sb.toString());
 		
-		if(ClassicPrefs.getSaveConsoleHistory()) lsConsolePane.saveConsoleHistory();
+		if(preferences().getBoolProperty(SAVE_LS_CONSOLE_HISTORY)) {
+			lsConsolePane.saveConsoleHistory();
+		}
 		
 		ClassicPrefs.setShowLSConsole(isLSConsoleShown());
 		ClassicPrefs.setLSConsolePopOut(isLSConsolePopOut());
@@ -311,17 +317,17 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		m = new JMenu(i18n.getMenuLabel("actions"));
 		menuBar.add(m);
 		
-		mi = new JMenuItem(A4n.connect);
+		mi = new JMenuItem(a4n.connect);
 		mi.setIcon(null);
 		//mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_MASK));
 		m.add(mi);
 		
-		mi = new JMenuItem(A4n.refresh);
+		mi = new JMenuItem(a4n.refresh);
 		mi.setIcon(null);
 		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
 		m.add(mi);
 		
-		mi = new JMenuItem(A4n.resetSampler);
+		mi = new JMenuItem(a4n.resetSampler);
 		mi.setIcon(null);
 		m.add(mi);
 		
@@ -349,12 +355,12 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		JMenu exportMenu = new JMenu(i18n.getMenuLabel("actions.export"));
 		m.add(exportMenu);
 		
-		mi = new JMenuItem(A4n.exportSamplerConfig);
+		mi = new JMenuItem(a4n.exportSamplerConfig);
 		mi.setIcon(null);
 		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_MASK));
 		exportMenu.add(mi);
 		
-		mi = new JMenuItem(A4n.exportMidiInstrumentMaps);
+		mi = new JMenuItem(a4n.exportMidiInstrumentMaps);
 		mi.setIcon(null);
 		exportMenu.add(mi);
 		
@@ -364,7 +370,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		mi.setIcon(null);
 		m.add(mi);
 		
-		String s = ClassicPrefs.getRecentScripts();
+		String s = preferences().getStringProperty(RECENT_LSCP_SCRIPTS);
 		BufferedReader br = new BufferedReader(new StringReader(s));
 		
 		try {
@@ -387,7 +393,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		m.add(mi);
 		mi.addActionListener(new ActionListener() {
 			public void
-			actionPerformed(ActionEvent e) { CC.cleanExit(); }
+			actionPerformed(ActionEvent e) { onWindowClose(); }
 		});
 		
 		// Edit
@@ -1102,13 +1108,14 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 	
 	protected void
 	runScript() {
-		JFileChooser fc = new JFileChooser(ClassicPrefs.getLastScriptLocation());
+		String s = preferences().getStringProperty("lastScriptLocation");
+		JFileChooser fc = new JFileChooser(s);
 		fc.setFileFilter(new LscpFileFilter());
 		int result = fc.showOpenDialog(this);
 		if(result != JFileChooser.APPROVE_OPTION) return;
 		
 		String path = fc.getCurrentDirectory().getAbsolutePath();
-		ClassicPrefs.setLastScriptLocation(path);
+		preferences().setStringProperty("lastScriptLocation", path);
 					
 		runScript(fc.getSelectedFile());
 	}
@@ -1139,15 +1146,13 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 			return;
 		}
 		
-		if(!cbmiLSConsoleShown.isSelected()) cbmiLSConsoleShown.doClick(0);
+		if(preferences().getBoolProperty(SHOW_LS_CONSOLE_WHEN_RUN_SCRIPT)) {
+			if(!cbmiLSConsoleShown.isSelected()) cbmiLSConsoleShown.doClick(0);
+		}
 		
 		String s = script.getAbsolutePath();
 		recentScripts.remove(s);
 		recentScripts.insertElementAt(s, 0);
-		
-		while(recentScripts.size() > ClassicPrefs.getRecentScriptsSize()) {
-			recentScripts.removeElementAt(recentScripts.size() - 1);
-		}
 		
 		updateRecentScriptsMenu();
 	}
@@ -1160,7 +1165,8 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 	
 	protected void
 	updateRecentScriptsMenu() {
-		while(recentScripts.size() > ClassicPrefs.getRecentScriptsSize()) {
+		int size = preferences().getIntProperty(RECENT_LSCP_SCRIPTS_SIZE);
+		while(recentScripts.size() > size) {
 			recentScripts.removeElementAt(recentScripts.size() - 1);
 		}
 		
@@ -1183,9 +1189,6 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		
 		CC.changeJSamplerHome(chooser.getJSamplerHome());
 	}
-	
-	public boolean
-	getInstrumentsDbSupport() { return true; }
 	
 	public void
 	showDetailedErrorMessage(Frame owner, String err, String details) {

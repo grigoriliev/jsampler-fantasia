@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -28,12 +28,14 @@ import java.util.prefs.Preferences;
 
 import org.jsampler.CC;
 
+import org.jsampler.view.std.StdPrefs;
+
 
 /**
  * This class represents the preferences of the JS Classic package.
  * @author Grigor Iliev
  */
-public class ClassicPrefs {
+public class ClassicPrefs extends StdPrefs {
 	private final static String prefNode = "org.jsampler.view.classic";
 	
 	private final static String WINDOW_SIZE_AND_LOCATION = ".sizeAndLocation";
@@ -54,9 +56,6 @@ public class ClassicPrefs {
 	private final static String LEFT_PANE_PAGE_IDX = "LeftPane.pageIndex";
 	private final static int DEF_LEFT_PANE_PAGE_IDX = 0;
 	
-	private final static String SHOW_LS_CONSOLE_WHEN_RUN_SCRIPT = "showLSConsoleWhenRunScript";
-	private final static boolean DEF_SHOW_LS_CONSOLE_WHEN_RUN_SCRIPT = true;
-	
 	private final static String SHOW_CHANNELS_BAR = "ChannelsBar.visible";
 	private final static boolean DEF_SHOW_CHANNELS_BAR = true;
 	
@@ -69,38 +68,11 @@ public class ClassicPrefs {
 	private final static String SHOW_STANDARD_BAR = "StandardBar.visible";
 	private final static boolean DEF_SHOW_STANDARD_BAR = true;
 	
-	private final static String RECENT_SCRIPTS = "recentScripts";
-	private final static String DEF_RECENT_SCRIPTS = "";
-	
-	private final static String RECENT_SCRIPTS_SIZE = "recentScripts.maxNumber";
-	private final static int DEF_RECENT_SCRIPTS_SIZE = 7;
-	
 	private final static String SHOW_LS_CONSOLE = "LSConsole.visible";
 	private final static boolean DEF_SHOW_LS_CONSOLE = false;
 	
 	private final static String LS_CONSOLE_POPOUT = "LSConsole.popout";
 	private final static boolean DEF_LS_CONSOLE_POPOUT = false;
-	
-	private final static String LS_CONSOLE_HISTSIZE = "LSConsole.histsize";
-	private final static int DEF_LS_CONSOLE_HISTSIZE = 1000;
-	
-	private final static String LS_CONSOLE_TEXT_COLOR = "LSConsole.textColor";
-	private final static int DEF_LS_CONSOLE_TEXT_COLOR = 0x000000;
-	
-	private final static String LS_CONSOLE_BACKGROUND_COLOR = "LSConsole.backgroundColor";
-	private final static int DEF_LS_CONSOLE_BACKGROUND_COLOR = 0xffffff;
-	
-	private final static String LS_CONSOLE_NOTIFY_COLOR = "LSConsole.notifyColor";
-	private final static int DEF_LS_CONSOLE_NOTIFY_COLOR = 0xcccccc;
-	
-	private final static String LS_CONSOLE_WARNING_COLOR = "LSConsole.warningColor";
-	private final static int DEF_LS_CONSOLE_WARNING_COLOR = 0x6699ff;
-	
-	private final static String LS_CONSOLE_ERROR_COLOR = "LSConsole.errorColor";
-	private final static int DEF_LS_CONSOLE_ERROR_COLOR = 0xff0000;
-	
-	private final static String SAVE_LS_CONSOLE_HISTORY = "LSConsole.saveCommandHistory";
-	private final static boolean DEF_SAVE_LS_CONSOLE_HISTORY = true;
 	
 	private final static String CHANNEL_BORDER_COLOR = "Channel.borderColor";
 	private final static int DEF_CHANNEL_BORDER_COLOR = 0xb8cfe5;
@@ -132,16 +104,15 @@ public class ClassicPrefs {
 	private final static String CURRENT_ORCHESTRA_IDX = "OrchestrasPage.currentOrchestraIndex";
 	private final static int DEF_CURRENT_ORCHESTRA_IDX = 0;
 	
-	private final static String LAST_SCRIPT_LOCATION = "lastScriptLocation";
-	private final static String DEF_LAST_SCRIPT_LOCATION = null;
-	
-	private final static String NEW_MIDI_INSTR_WIZARD_SKIP1 = "NewMidiInstrumentWizard.skip1";
-	private final static boolean DEF_NEW_MIDI_INSTR_WIZARD_SKIP1 = false;
-	
-	private final static String INSTR_LOCATION_METHOD = "InstrLocationMethod";
-	private final static int DEF_INSTR_LOCATION_METHOD = 0;
-	
 	private static Preferences userPrefs = Preferences.userRoot().node(prefNode);
+	
+	private final static ClassicPrefs prefs = new ClassicPrefs();
+	
+	private
+	ClassicPrefs() { super(prefNode); }
+	
+	public static ClassicPrefs
+	preferences() { return prefs; }
 	
 	public static Preferences
 	user() { return userPrefs; }
@@ -276,29 +247,6 @@ public class ClassicPrefs {
 	}
 	
 	/**
-	 * Determines whether to show the LS Console when script is run.
-	 * @return <code>true</code> if the LS Console should be shown when script is run,
-	 * <code>false</code> otherwise.
-	 */
-	public static boolean
-	getShowLSConsoleWhenRunScript() {
-		return user().getBoolean (
-			SHOW_LS_CONSOLE_WHEN_RUN_SCRIPT, DEF_SHOW_LS_CONSOLE_WHEN_RUN_SCRIPT
-		);
-	}
-	
-	/**
-	 * Sets whether to show the LS Console when script is run.
-	 * @param b Specify <code>true</code> to show LS Console when script is run,
-	 * <code>false</code> otherwise.
-	 */
-	public static void
-	setShowLSConsoleWhenRunScript(boolean b) {
-		if(b == getShowLSConsoleWhenRunScript()) return;
-		user().putBoolean(SHOW_LS_CONSOLE_WHEN_RUN_SCRIPT, b);
-	}
-	
-	/**
 	 * Determines whether the <b>Channels</b> toolbar should be visible.
 	 * @return <code>true</code> if the <b>Channels</b> toolbar should be visible,
 	 * <code>false</code> otherwise.
@@ -334,48 +282,6 @@ public class ClassicPrefs {
 	setShowStatusbar(boolean b) {
 		if(b == shouldShowStatusbar()) return;
 		user().putBoolean(SHOW_STATUSBAR, b);
-	}
-	
-	/**
-	 * Gets the recent script list.
-	 * @return The recent script list.
-	 */
-	public static String
-	getRecentScripts() {
-		return user().get(RECENT_SCRIPTS, DEF_RECENT_SCRIPTS);
-	}
-	
-	/**
-	 * Sets the recent script list.
-	 * @param s The recent script list.
-	 */
-	public static void
-	setRecentScripts(String s) {
-		if(s == null) {
-			user().remove(RECENT_SCRIPTS);
-			return;
-		}
-		
-		user().put(RECENT_SCRIPTS, s);
-	}
-	
-	/**
-	 * Determines the maximum number of recent scripts to be kept.
-	 * @return The maximum number of recent scripts to be kept.
-	 */
-	public static int
-	getRecentScriptsSize() {
-		return user().getInt(RECENT_SCRIPTS_SIZE, DEF_RECENT_SCRIPTS_SIZE);
-	}
-	
-	/**
-	 * Sets the maximum number of recent scripts to be kept.
-	 * @param i Determines the maximum number of recent scripts to be kept.
-	 */
-	public static void
-	setRecentScriptstSize(int i) {
-		if(i == getRecentScriptsSize()) return;
-		user().putInt(RECENT_SCRIPTS_SIZE, i);
 	}
 	
 	/**
@@ -415,180 +321,6 @@ public class ClassicPrefs {
 	setLSConsolePopOut(boolean b) {
 		if(b == isLSConsolePopOut()) return;
 		user().putBoolean(LS_CONSOLE_POPOUT, b);
-	}
-	
-	/**
-	 * Gets the LS Console's command history size.
-	 * @return The maximum number of lines to be kept in the command history.
-	 */
-	public static int
-	getLSConsoleHistSize() {
-		return user().getInt(LS_CONSOLE_HISTSIZE, DEF_LS_CONSOLE_HISTSIZE);
-	}
-	
-	/**
-	 * Sets the LS Console's command history size.
-	 * @param i The maximum number of lines to be kept in the command history.
-	 */
-	public static void
-	setLSConsoleHistSize(int i) {
-		if(i == getLSConsoleHistSize()) return;
-		user().putInt(LS_CONSOLE_HISTSIZE, i);
-	}
-	
-	/**
-	 * Gets the text color of the LS Console.
-	 * @return The text color of the LS Console.
-	 */
-	public static Color
-	getLSConsoleTextColor() {
-		int c = user().getInt(LS_CONSOLE_TEXT_COLOR, DEF_LS_CONSOLE_TEXT_COLOR);
-		return new Color(c);
-	}
-	
-	/**
-	 * Sets the text color of the LS Console.
-	 * Use <code>null</code> to remove the current value.
-	 * @param color The text color of the LS Console.
-	 */
-	public static void
-	setLSConsoleTextColor(Color c) {
-		if(c == null) {
-			user().remove(LS_CONSOLE_TEXT_COLOR);
-			return;
-		}
-		
-		if(c.getRGB() == getLSConsoleTextColor().getRGB()) return;
-		
-		user().putInt(LS_CONSOLE_TEXT_COLOR, c.getRGB());
-	}
-	
-	/**
-	 * Gets the background color of the LS Console.
-	 * @return The background color of the LS Console.
-	 */
-	public static Color
-	getLSConsoleBackgroundColor() {
-		int c = user().getInt(LS_CONSOLE_BACKGROUND_COLOR, DEF_LS_CONSOLE_BACKGROUND_COLOR);
-		return new Color(c);
-	}
-	
-	/**
-	 * Sets the background color of the LS Console.
-	 * Use <code>null</code> to remove the current value.
-	 * @param color The background color of the LS Console.
-	 */
-	public static void
-	setLSConsoleBackgroundColor(Color c) {
-		if(c == null) {
-			user().remove(LS_CONSOLE_BACKGROUND_COLOR);
-			return;
-		}
-		
-		if(c.getRGB() == getLSConsoleBackgroundColor().getRGB()) return;
-		
-		user().putInt(LS_CONSOLE_BACKGROUND_COLOR, c.getRGB());
-	}
-	
-	/**
-	 * Gets the notification messages' color.
-	 * @return The notification messages' color.
-	 */
-	public static Color
-	getLSConsoleNotifyColor() {
-		int c = user().getInt(LS_CONSOLE_NOTIFY_COLOR, DEF_LS_CONSOLE_NOTIFY_COLOR);
-		return new Color(c);
-	}
-	
-	/**
-	 * Sets the notification messages' color.
-	 * Use <code>null</code> to remove the current value.
-	 * @param color The notification messages' color.
-	 */
-	public static void
-	setLSConsoleNotifyColor(Color c) {
-		if(c == null) {
-			user().remove(LS_CONSOLE_NOTIFY_COLOR);
-			return;
-		}
-		
-		if(c.getRGB() == getLSConsoleNotifyColor().getRGB()) return;
-		
-		user().putInt(LS_CONSOLE_NOTIFY_COLOR, c.getRGB());
-	}
-	
-	/**
-	 * Gets the warning messages' color.
-	 * @return The warning messages' color.
-	 */
-	public static Color
-	getLSConsoleWarningColor() {
-		int c = user().getInt(LS_CONSOLE_WARNING_COLOR, DEF_LS_CONSOLE_WARNING_COLOR);
-		return new Color(c);
-	}
-	
-	/**
-	 * Sets the warning messages' color.
-	 * Use <code>null</code> to remove the current value.
-	 * @param color The warning messages' color.
-	 */
-	public static void
-	setLSConsoleWarningColor(Color c) {
-		if(c == null) {
-			user().remove(LS_CONSOLE_WARNING_COLOR);
-			return;
-		}
-		
-		if(c.getRGB() == getLSConsoleWarningColor().getRGB()) return;
-		
-		user().putInt(LS_CONSOLE_WARNING_COLOR, c.getRGB());
-	}
-	
-	/**
-	 * Gets the error messages' color.
-	 * @return The error messages' color.
-	 */
-	public static Color
-	getLSConsoleErrorColor() {
-		int c = user().getInt(LS_CONSOLE_ERROR_COLOR, DEF_LS_CONSOLE_ERROR_COLOR);
-		return new Color(c);
-	}
-	
-	/**
-	 * Sets the error messages' color.
-	 * Use <code>null</code> to remove the current value.
-	 * @param color The error messages' color.
-	 */
-	public static void
-	setLSConsoleErrorColor(Color c) {
-		if(c == null) {
-			user().remove(LS_CONSOLE_ERROR_COLOR);
-			return;
-		}
-		
-		if(c.getRGB() == getLSConsoleErrorColor().getRGB()) return;
-		
-		user().putInt(LS_CONSOLE_ERROR_COLOR, c.getRGB());
-	}
-	
-	/**
-	 * Determines whether the command history should be saved on exit.
-	 * @return <code>true</code> if the command history should be saved on exit,
-	 * <code>false</code> otherwise.
-	 */
-	public static boolean
-	getSaveConsoleHistory() {
-		return user().getBoolean(SAVE_LS_CONSOLE_HISTORY, DEF_SAVE_LS_CONSOLE_HISTORY);
-	}
-	
-	/**
-	 * Sets whether the command history should be saved on exit.
-	 * @param b If <code>true</code> the command history will be saved on exit.
-	 */
-	public static void
-	setSaveConsoleHistory(boolean b) {
-		if(b == getSaveConsoleHistory()) return;
-		user().putBoolean(SAVE_LS_CONSOLE_HISTORY, b);
 	}
 	
 	/**
@@ -899,117 +631,14 @@ public class ClassicPrefs {
 		user().putInt(CURRENT_ORCHESTRA_IDX, i);
 	}
 	
-	/**
-	 * Gets the absolute path of the directory containing the last saved script.
-	 * @return The absolute path of the directory containing the last saved script or
-	 * <code>null</code>.
-	 */
-	public static String
-	getLastScriptLocation() {
-		return user().get(LAST_SCRIPT_LOCATION, DEF_LAST_SCRIPT_LOCATION);
-	}
-	
-	/**
-	 * Sets the absolute path of the directory containing the last saved script.
-	 * @param s The absolute path of the directory containing the last saved script.
-	 */
-	public static void
-	setLastScriptLocation(String s) {
-		if(s == null) {
-			user().remove(LAST_SCRIPT_LOCATION);
-			return;
-		}
+	public int
+	getDefaultIntValue(String name) {
+		if(name == LS_CONSOLE_BACKGROUND_COLOR) return 0xffffff;
+		if(name == LS_CONSOLE_TEXT_COLOR) return 0x000000;
+		if(name == LS_CONSOLE_NOTIFY_COLOR) return 0xcccccc;
+		if(name == LS_CONSOLE_WARNING_COLOR) return 0x6699ff;
+		if(name == LS_CONSOLE_ERROR_COLOR) return 0xff0000;
 		
-		user().put(LAST_SCRIPT_LOCATION, s);
-	}
-	
-	/**
-	 * Determines whether the first step in the
-	 * <b>New MIDI Instrument Wizard</b> should be skipped.
-	 * @return <code>true</code> if the first step should be skipped,
-	 * <code>false</code> otherwise.
-	 */
-	public static boolean
-	getNewMidiInstrWizardSkip1() {
-		return user().getBoolean (
-			NEW_MIDI_INSTR_WIZARD_SKIP1, DEF_NEW_MIDI_INSTR_WIZARD_SKIP1
-		);
-	}
-	
-	/**
-	 * Sets whether the first step in the
-	 * <b>New MIDI Instrument Wizard</b> should be skipped.
-	 * @param b If <code>true</code> the first step will be skipped.
-	 */
-	public static void
-	setNewMidiInstrWizardSkip1(boolean b) {
-		if(b == getNewMidiInstrWizardSkip1()) return;
-		user().putBoolean(NEW_MIDI_INSTR_WIZARD_SKIP1, b);
-	}
-	
-	/**
-	 * Gets the instrument location method (locating an instrument by
-	 * choosing from orchestra, etc).
-	 * @return The index of the instrument location method.
-	 */
-	public static int
-	getInstrLocationMethod() {
-		return user().getInt(INSTR_LOCATION_METHOD, DEF_INSTR_LOCATION_METHOD);
-	}
-	
-	/**
-	 * Sets the instrument location method.
-	 * @param i Determines the instrument location method.
-	 */
-	public static void
-	setInstrLocationMethod(int i) {
-		if(i == getInstrLocationMethod()) return;
-		user().putInt(INSTR_LOCATION_METHOD, i);
-	}
-	
-	
-	/**
-	 * Gets an integer property.
-	 * @param name The name of the property.
-	 * @return The value of the specified property.
-	 * If the property is not set, the return value is zero.
-	 */
-	public static int
-	getIntProperty(String name) {
-		return user().getInt(name, 0);
-	}
-	
-	/**
-	 * Sets an integer property.
-	 * @param name The name of the property.
-	 * @param i The new value for the specified property.
-	 */
-	public static void
-	setIntProperty(String name, int i) {
-		if(i == getIntProperty(name)) return;
-		user().putInt(name, i);
-	}
-	
-	
-	/**
-	 * Gets a boolean property.
-	 * @param name The name of the property.
-	 * @return The value of the specified property.
-	 * If the property is not set, the return value is <code>false</code>.
-	 */
-	public static boolean
-	getBoolProperty(String name) {
-		return user().getBoolean(name, false);
-	}
-	
-	/**
-	 * Sets a boolean property.
-	 * @param name The name of the property.
-	 * @param b The new value for the specified property.
-	 */
-	public static void
-	setBoolProperty(String name, boolean b) {
-		if(b == getBoolProperty(name)) return;
-		user().putBoolean(name, b);
+		return super.getDefaultIntValue(name);
 	}
 }

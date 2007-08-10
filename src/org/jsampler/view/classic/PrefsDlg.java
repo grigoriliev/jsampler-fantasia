@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -25,8 +25,6 @@ package org.jsampler.view.classic;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
-import java.awt.Cursor;
-import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.GraphicsEnvironment;
 import java.awt.Font;
@@ -39,13 +37,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-
-import java.io.File;
 
 import java.util.Locale;
-import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -53,25 +46,16 @@ import javax.swing.BoxLayout;
 import javax.swing.DefaultButtonModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
-import javax.swing.SpinnerNumberModel;
-
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import net.sf.juife.EnhancedDialog;
 import net.sf.juife.JuifeUtils;
 import net.sf.juife.LinkButton;
-import net.sf.juife.OkCancelDialog;
 
 import org.jsampler.CC;
 import org.jsampler.HF;
@@ -80,9 +64,14 @@ import org.jsampler.JSampler;
 import org.jsampler.LSConsoleModel;
 import org.jsampler.Prefs;
 
-import org.jsampler.task.SetServerAddress;
+import org.jsampler.view.std.JSColorButton;
+import org.jsampler.view.std.JSConnectionPropsPane;
+import org.jsampler.view.std.JSGeneralProps;
+import org.jsampler.view.std.JSLSConsolePropsPane;
 
 import static org.jsampler.view.classic.ClassicI18n.i18n;
+import static org.jsampler.view.classic.ClassicPrefs.preferences;
+import static org.jsampler.view.std.StdPrefs.*;
 
 
 /**
@@ -93,7 +82,7 @@ public class PrefsDlg extends EnhancedDialog {
 	private final GeneralPane genPane = new GeneralPane();
 	private final ViewPane viewPane = new ViewPane();
 	private final ConsolePane consolePane = new ConsolePane();
-	private final ConnectionPane conPane = new ConnectionPane();
+	private final JSConnectionPropsPane connectionPane = new JSConnectionPropsPane();
 	
 	private final JButton btnApply = new JButton(i18n.getButtonLabel("apply"));
 	private final JButton btnClose = new JButton(i18n.getButtonLabel("close"));
@@ -104,10 +93,12 @@ public class PrefsDlg extends EnhancedDialog {
 		super(frm, i18n.getLabel("PrefsDlg"), true);
 		
 		initPrefsDlg();
-		handleEvents();
-		initPrefs();
+		installListeners();
 		
 		setLocation(JuifeUtils.centerLocation(this, frm));
+		
+		connectionPane.setLSAddress(Prefs.getLSAddress());
+		connectionPane.setLSPort(String.valueOf(Prefs.getLSPort()));
 	}
 	
 	private void
@@ -116,7 +107,13 @@ public class PrefsDlg extends EnhancedDialog {
 		tp.addTab(i18n.getLabel("PrefsDlg.tabGeneral"), genPane);
 		tp.addTab(i18n.getLabel("PrefsDlg.tabView"), viewPane);
 		tp.addTab(i18n.getLabel("PrefsDlg.tabConsole"), consolePane);
-		tp.addTab(i18n.getLabel("PrefsDlg.tabConnection"), conPane);
+		
+		JPanel p = new JPanel();
+		p.setLayout(new BorderLayout());
+		p.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+		p.add(connectionPane, BorderLayout.NORTH);
+		tp.addTab(i18n.getLabel("PrefsDlg.tabConnection"), p);
+		
 		tp.setAlignmentX(RIGHT_ALIGNMENT);
 		
 		// Set preferred size for Apply & Exit buttons
@@ -145,7 +142,7 @@ public class PrefsDlg extends EnhancedDialog {
 	}
 	
 	private void
-	handleEvents() {
+	installListeners() {
 		btnApply.addActionListener(new ActionListener() {
 			public void
 			actionPerformed(ActionEvent e) { onApply(); }
@@ -162,188 +159,19 @@ public class PrefsDlg extends EnhancedDialog {
 	
 	protected void
 	onCancel() { onExit(); }
-		
-	private void
-	initPrefs() {
-		setLSAddress(Prefs.getLSAddress());
-		setLSPort(Prefs.getLSPort());
-	}
 	
 	private void
 	onApply() {
 		genPane.apply();
 		viewPane.apply();
 		consolePane.apply();
-		
-		// CONNECTION
-		Prefs.setLSAddress(getLSAddress());
-		
-		boolean b = true;
-		String s = getLSPort();
-		try {
-			if(s.length() > 0) {
-				int port = Integer.parseInt(s);
-				if(port > 0 && port < 0xffff)
-					Prefs.setLSPort(port);
-				else b = false;
-			} else Prefs.setLSPort(-1);	// -1 resets to default value
-		} catch(NumberFormatException x) {
-			b = false;
-		}
-		
-		if(!b) {
-			JOptionPane.showMessageDialog (
-				this, 
-				i18n.getError("PrefsDlg.invalidPort", s),
-				i18n.getError("error"),
-				JOptionPane.ERROR_MESSAGE
-			);
-			
-			return;
-		}
-		
-		CC.getTaskQueue().add (
-			new SetServerAddress(Prefs.getLSAddress(), Prefs.getLSPort())
-		);
+		connectionPane.apply();
 		
 		setVisible(false);
 	}
 	
 	private void
 	onExit() { setVisible(false); }
-	
-	private String
-	getLSAddress() { return conPane.getLSAddress().trim(); }
-	
-	private void
-	setLSAddress(String s) { conPane.setLSAddress(s); }
-	
-	private String
-	getLSPort() { return conPane.getLSPort().trim(); }
-	
-	private void
-	setLSPort(int port) { conPane.setLSPort(String.valueOf(port)); }
-	
-	protected static class ColorButton extends JPanel {
-		private Color color;
-		private final Vector<ActionListener> listeners = new Vector<ActionListener>();
-		
-		ColorButton() { this(Color.WHITE); }
-		
-		ColorButton(Color c) {
-			color = c;
-			
-			//setBorderPainted(false);
-			setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-			setPreferredSize(new Dimension(42, 16));
-			setMaximumSize(new Dimension(42, 16));
-			setBorder(BorderFactory.createLineBorder(Color.BLACK));
-			
-			addMouseListener(new MouseAdapter() {
-				public void
-				mouseClicked(MouseEvent e) {
-					if(!isEnabled()) return;
-					if(e.getButton() == e.BUTTON1) showColorChooser();
-				}
-			});
-		}
-		
-		/**
-		 * Registers the specified listener to be
-		 * notified when the current color is changed.
-		 * @param l The <code>ActionListener</code> to register.
-		 */
-		public void
-		addActionListener(ActionListener l) { listeners.add(l); }
-	
-		/**
-		 * Removes the specified listener.
-		 * @param l The <code>ActionListener</code> to remove.
-		 */
-		public void
-		removeActionListener(ActionListener l) { listeners.remove(l); }
-		
-		/** Notifies listeners that the current color is changed. */
-		private void
-		fireActionPerformed() {
-			ActionEvent e = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null);
-			for(ActionListener l : listeners) l.actionPerformed(e);
-		}
-	
-		public void
-		setEnabled(boolean b) {
-			setOpaque(b);
-			if(b) setBorder(BorderFactory.createLineBorder(Color.BLACK));
-			else setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-			//setBorderPainted(!b);
-			super.setEnabled(b);
-		}
-		
-		private void
-		showColorChooser() {
-			ColorDlg dlg = new ColorDlg (
-				(Dialog)JuifeUtils.getWindow(this), getColor()
-			);
-			
-			dlg.setVisible(true);
-			if(!dlg.isCancelled()) {
-				setColor(dlg.getColor());
-				fireActionPerformed();
-			}
-		}
-		
-		public Color
-		getColor() { return color; }
-		
-		public void
-		setColor(Color c) {
-			color = c;
-			setBackground(color);
-		}
-	}
-	
-	protected static class ColorDlg extends OkCancelDialog {
-		private final JColorChooser colorChooser = new JColorChooser();
-		
-		ColorDlg(Dialog owner) { this(owner, Color.WHITE); }
-		
-		ColorDlg(Dialog owner, Color c) {
-			super(owner);
-			
-			colorChooser.setPreviewPanel(new JPanel());
-			colorChooser.setColor(c);
-			
-			JPanel mainPane = new JPanel();
-			mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.Y_AXIS));
-			mainPane.add(colorChooser);
-			
-			mainPane.add(Box.createRigidArea(new Dimension(0, 6)));
-			
-			final JPanel p = new JPanel();
-			p.setBackground(c);
-			p.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-			mainPane.add(p);
-			
-			p.setPreferredSize(new Dimension(48, 8));
-			p.setMaximumSize(new Dimension(Short.MAX_VALUE, 8));
-			
-			setMainPane(mainPane);
-			
-			colorChooser.getSelectionModel().addChangeListener(new ChangeListener() {
-				public void
-				stateChanged(ChangeEvent e) { p.setBackground(getColor()); }
-			});
-		}
-		
-		protected void
-		onOk() { setVisible(false); }
-		
-		protected void
-		onCancel() { setVisible(false); }
-		
-		public Color
-		getColor() { return colorChooser.getColor(); }
-	}
 }
 
 class GeneralPane extends JPanel {
@@ -356,14 +184,10 @@ class GeneralPane extends JPanel {
 	private final JCheckBox checkShowLSConsoleWhenRunScript =
 		new JCheckBox(i18n.getLabel("GeneralPane.checkShowLSConsoleWhenRunScript"));
 	
-	private final JTextField tfJSamplerHome = new JTextField();
-	private final JButton btnChange = new JButton(i18n.getLabel("GeneralPane.btnChange"));
+	private final JSGeneralProps.JSamplerHomePane jSamplerHomePane =
+		new JSGeneralProps.JSamplerHomePane();
 	
-	private final JLabel lRecentScriptsSize =
-		new JLabel(i18n.getLabel("GeneralPane.lRecentScriptsSize"));
-	private final JSpinner spRecentScriptsSize;
-	private final JButton btnClearRecentScriptList =
-		new JButton(i18n.getButtonLabel("GeneralPane.btnClearRecentScriptList"));
+	private final RecentScriptsPane recentScriptsPane = new RecentScriptsPane();
 	
 	
 	public
@@ -389,95 +213,21 @@ class GeneralPane extends JPanel {
 		
 		checkShowLSConsoleWhenRunScript.setAlignmentX(JPanel.LEFT_ALIGNMENT);
 		
-		boolean b = ClassicPrefs.getShowLSConsoleWhenRunScript();
+		boolean b = preferences().getBoolProperty(SHOW_LS_CONSOLE_WHEN_RUN_SCRIPT);
 		checkShowLSConsoleWhenRunScript.setSelected(b);
 		
 		add(checkShowLSConsoleWhenRunScript);
 		
 		add(Box.createRigidArea(new Dimension(0, 6)));
 		
-		JPanel jhp = new JPanel();
-		jhp.setLayout(new BoxLayout(jhp, BoxLayout.Y_AXIS));
-		
-		JPanel p = new JPanel();
-		p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
-		if(CC.getJSamplerHome() != null) tfJSamplerHome.setText(CC.getJSamplerHome());
-		Dimension d;
-		d = new Dimension(Short.MAX_VALUE, tfJSamplerHome.getPreferredSize().height);
-		tfJSamplerHome.setMaximumSize(d);
-		p.add(tfJSamplerHome);
-		p.add(Box.createRigidArea(new Dimension(5, 0)));
-		p.add(btnChange);
-		p.setBorder(BorderFactory.createEmptyBorder(2, 6, 6, 6));
-		p.setAlignmentX(JPanel.CENTER_ALIGNMENT);
-		jhp.add(p);
-		
-		String s = i18n.getLabel("GeneralPane.jSamplerHome");
-		jhp.setBorder(BorderFactory.createTitledBorder(s));
-		jhp.setMaximumSize(new Dimension(Short.MAX_VALUE, jhp.getPreferredSize().height));
-		jhp.setAlignmentX(JPanel.LEFT_ALIGNMENT);
-		add(jhp);
+		add(jSamplerHomePane);
 		
 		add(Box.createRigidArea(new Dimension(0, 6)));
 		
-		JPanel rsp = new JPanel();
-		rsp.setLayout(new BoxLayout(rsp, BoxLayout.Y_AXIS));
-		
-		int i = ClassicPrefs.getRecentScriptsSize();
-		spRecentScriptsSize = new JSpinner(new SpinnerNumberModel(i, 0, 100, 1));
-		spRecentScriptsSize.setMaximumSize(spRecentScriptsSize.getPreferredSize());
-		
-		p = new JPanel();
-		p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
-		p.add(lRecentScriptsSize);
-		p.add(Box.createRigidArea(new Dimension(5, 0)));
-		p.add(spRecentScriptsSize);
-		
-		p.setAlignmentX(JPanel.CENTER_ALIGNMENT);
-		rsp.add(p);
-		
-		rsp.add(Box.createRigidArea(new Dimension(0, 6)));
-		
-		btnClearRecentScriptList.addActionListener(new ActionListener() {
-			public void
-			actionPerformed(ActionEvent e) {
-				ClassicPrefs.setRecentScripts(null);
-				((MainFrame)CC.getMainFrame()).clearRecentScripts();
-			}
-		});
-		
-		btnClearRecentScriptList.setAlignmentX(JPanel.CENTER_ALIGNMENT);
-		rsp.add(btnClearRecentScriptList);
-		rsp.add(Box.createRigidArea(new Dimension(0, 6)));
-		
-		rsp.setMaximumSize(new Dimension(Short.MAX_VALUE, rsp.getPreferredSize().height));
-		rsp.setAlignmentX(JPanel.LEFT_ALIGNMENT);
-		s = i18n.getLabel("GeneralPane.recentScripts");
-		rsp.setBorder(BorderFactory.createTitledBorder(s));
-		
-		add(rsp);
+		add(recentScriptsPane);
 		add(Box.createGlue());
 		
 		setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
-		
-		btnChange.addActionListener(new ActionListener() {
-			public void
-			actionPerformed(ActionEvent e) { onChange(); }
-		});
-	}
-	
-	private void
-	onChange() {
-		JFileChooser fc = new JFileChooser();
-		fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		int result = fc.showOpenDialog(this);
-		if(result != JFileChooser.APPROVE_OPTION) return;
-		
-		String s = CC.getJSamplerHome();
-		String suf = File.separator + ".jsampler";
-		if(s != null) suf = File.separator + new File(s).getName();
-		
-		tfJSamplerHome.setText(fc.getSelectedFile().getPath() + suf);
 	}
 	
 	protected void
@@ -486,15 +236,22 @@ class GeneralPane extends JPanel {
 		ClassicPrefs.setSaveLeftPaneState(checkLeftPaneState.isSelected());
 		
 		boolean b = checkShowLSConsoleWhenRunScript.isSelected();
-		ClassicPrefs.setShowLSConsoleWhenRunScript(b);
+		preferences().setBoolProperty(SHOW_LS_CONSOLE_WHEN_RUN_SCRIPT, b);
 		
-		int size = Integer.parseInt(spRecentScriptsSize.getValue().toString());
-		ClassicPrefs.setRecentScriptstSize(size);
+		int size = recentScriptsPane.getRecentScriptsSize();
+		preferences().setIntProperty(RECENT_LSCP_SCRIPTS_SIZE, size);
 		((MainFrame)CC.getMainFrame()).updateRecentScriptsMenu();
 		
-		String s = tfJSamplerHome.getText();
+		String s = jSamplerHomePane.getJSamplerHome();
 		if(s.length() > 0 && !s.equals(CC.getJSamplerHome())) {
 			CC.changeJSamplerHome(s);
+		}
+	}
+	
+	private class RecentScriptsPane extends JSGeneralProps.RecentScriptsPane {
+		protected void
+		clearRecentScripts() {
+			((MainFrame)CC.getMainFrame()).clearRecentScripts();
 		}
 	}
 }
@@ -510,23 +267,19 @@ class ViewPane extends JPanel {
 	
 	private final JCheckBox checkBorderColor =
 		new JCheckBox(i18n.getLabel("ViewPane.channelBorderColor"));
-	private final PrefsDlg.ColorButton btnBorderColor =
-		new PrefsDlg.ColorButton(Color.WHITE);
+	private final JSColorButton btnBorderColor = new JSColorButton(Color.WHITE);
 	
 	private final JCheckBox checkHlChnBorderColor =
 		new JCheckBox(i18n.getLabel("ViewPane.checkHlChnBorderColor"));
-	private final PrefsDlg.ColorButton btnHlChnBorderColor =
-		new PrefsDlg.ColorButton(Color.WHITE);
+	private final JSColorButton btnHlChnBorderColor = new JSColorButton(Color.WHITE);
 	
 	private final JCheckBox checkSelChnBgColor =
 		new JCheckBox(i18n.getLabel("ViewPane.checkSelChnBgColor"));
-	private final PrefsDlg.ColorButton btnSelChnBgColor =
-		new PrefsDlg.ColorButton(Color.WHITE);
+	private final JSColorButton btnSelChnBgColor = new JSColorButton(Color.WHITE);
 	
 	private final JCheckBox checkHlChnBgColor =
 		new JCheckBox(i18n.getLabel("ViewPane.checkHlChnBgColor"));
-	private final PrefsDlg.ColorButton btnHlChnBgColor =
-		new PrefsDlg.ColorButton(Color.WHITE);
+	private final JSColorButton btnHlChnBgColor = new JSColorButton(Color.WHITE);
 	
 	public
 	ViewPane() { initViewPane(); }
@@ -834,365 +587,35 @@ class ViewPane extends JPanel {
 	}
 }
 
-class ConsolePane extends JPanel {
-	private final JCheckBox checkSaveCmdHist =
-		new JCheckBox(i18n.getLabel("ConsolePane.checkSaveCmdHist"));
-	
-	private final JLabel lCmdHistorySize =
-		new JLabel(i18n.getLabel("ConsolePane.lCmdHistorySize"));
-	private JSpinner spCmdHistorySize;
-	private final JLabel lLines = new JLabel(i18n.getLabel("ConsolePane.lLines"));
-	private final JButton btnClearCmdHistory =
-		new JButton(i18n.getButtonLabel("ConsolePane.btnClearCmdHistory"));
-	
-	private final JLabel lTextColor = new JLabel(i18n.getLabel("ConsolePane.lTextColor"));
-	private final PrefsDlg.ColorButton btnTextColor = new PrefsDlg.ColorButton();
-	
-	private final JLabel lBGColor = new JLabel(i18n.getLabel("ConsolePane.lBGColor"));
-	private final PrefsDlg.ColorButton btnBGColor = new PrefsDlg.ColorButton();
-	
-	private final JLabel lNotifyColor = new JLabel(i18n.getLabel("ConsolePane.lNotifyColor"));
-	private final PrefsDlg.ColorButton btnNotifyColor = new PrefsDlg.ColorButton();
-	
-	private final JLabel lWarningColor = new JLabel(i18n.getLabel("ConsolePane.lWarningColor"));
-	private final PrefsDlg.ColorButton btnWarningColor = new PrefsDlg.ColorButton();
-	
-	private final JLabel lErrorColor = new JLabel(i18n.getLabel("ConsolePane.lErrorColor"));
-	private final PrefsDlg.ColorButton btnErrorColor = new PrefsDlg.ColorButton();
-	
-	
-	public
-	ConsolePane() {
-		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		
-		add(checkSaveCmdHist);
-		
-		add(createCommandHistoryPane());
-		add(Box.createRigidArea(new Dimension(0, 6)));
-		add(createConsoleColorsPane());
-		
-		setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
-	}
-	
-	private JPanel
-	createCommandHistoryPane() {
-		JPanel chp = new JPanel();
-		chp.setAlignmentX(CENTER_ALIGNMENT);
-		
-		GridBagLayout gridbag = new GridBagLayout();
-		GridBagConstraints c = new GridBagConstraints();
-	
-		chp.setLayout(gridbag);
-		
-		int i = ClassicPrefs.getLSConsoleHistSize();
-		spCmdHistorySize = new JSpinner(new SpinnerNumberModel(i, 0, 20000, 1));
-		spCmdHistorySize.setMaximumSize(spCmdHistorySize.getPreferredSize());
-		
-		btnClearCmdHistory.addActionListener(new ActionListener() {
-			public void
-			actionPerformed(ActionEvent e) {
-				LSConsolePane.clearConsoleHistory();
-				MainFrame mainFrame = (MainFrame)CC.getMainFrame();
-				mainFrame.getLSConsoleModel().clearCommandHistory();
-			}
-		});
-			
-		btnClearCmdHistory.setAlignmentX(JPanel.CENTER_ALIGNMENT);
-		add(btnClearCmdHistory);
-		
-		c.fill = GridBagConstraints.NONE;
-		
-		c.gridx = 0;
-		c.gridy = 0;
-		c.anchor = GridBagConstraints.EAST;
-		c.insets = new Insets(0, 6, 3, 0);
-		gridbag.setConstraints(lCmdHistorySize, c);
-		chp.add(lCmdHistorySize); 
-
-		c.gridx = 1;
-		c.gridy = 0;
-		gridbag.setConstraints(spCmdHistorySize, c);
-		chp.add(spCmdHistorySize); 
-
-		c.gridx = 2;
-		c.gridy = 0;
-		gridbag.setConstraints(lLines, c);
-		chp.add(lLines); 
-
-		c.gridx = 3;
-		c.gridy = 0;
-		c.insets = new Insets(0, 12, 3, 6);
-		gridbag.setConstraints(btnClearCmdHistory, c);
-		chp.add(btnClearCmdHistory); 
-
-		checkSaveCmdHist.setSelected(ClassicPrefs.getSaveConsoleHistory());
-		checkSaveCmdHist.setAlignmentX(JPanel.CENTER_ALIGNMENT);
-		
-		c.gridx = 0;
-		c.gridy = 1;
-		c.gridwidth = 4;
-		c.insets = new Insets(3, 6, 3, 6);
-		c.anchor = GridBagConstraints.CENTER;
-		gridbag.setConstraints(checkSaveCmdHist, c);
-		chp.add(checkSaveCmdHist); 
-
-		String s = i18n.getLabel("ConsolePane.commandHistory");
-		chp.setBorder(BorderFactory.createTitledBorder(s));
-		
-		chp.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
-		
-		return chp;
-	}
-	
-	private JPanel
-	createConsoleColorsPane() {
-		JPanel ccp = new JPanel();
-		ccp.setAlignmentX(CENTER_ALIGNMENT);
-		
-		GridBagLayout gridbag = new GridBagLayout();
-		GridBagConstraints c = new GridBagConstraints();
-	
-		ccp.setLayout(gridbag);
-		
-		c.fill = GridBagConstraints.NONE;
-	
-		c.gridx = 0;
-		c.gridy = 0;
-		c.anchor = GridBagConstraints.EAST;
-		c.insets = new Insets(3, 3, 3, 3);
-		gridbag.setConstraints(lTextColor, c);
-		ccp.add(lTextColor); 
-
-		c.gridx = 0;
-		c.gridy = 1;
-		gridbag.setConstraints(lBGColor, c);
-		ccp.add(lBGColor);
-	
-		c.gridx = 0;
-		c.gridy = 2;
-		gridbag.setConstraints(lNotifyColor, c);
-		ccp.add(lNotifyColor);
-	
-		c.gridx = 0;
-		c.gridy = 3;
-		gridbag.setConstraints(lWarningColor, c);
-		ccp.add(lWarningColor);
-	
-		c.gridx = 0;
-		c.gridy = 4;
-		gridbag.setConstraints(lErrorColor, c);
-		ccp.add(lErrorColor);
-	
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridx = 1;
-		c.gridy = 0;
-		//c.weightx = 1.0;
-		c.anchor = GridBagConstraints.WEST;
-		gridbag.setConstraints(btnTextColor, c);
-		ccp.add(btnTextColor);
-		
-		c.gridx = 1;
-		c.gridy = 1;
-		gridbag.setConstraints(btnBGColor, c);
-		ccp.add(btnBGColor);
-		
-		c.gridx = 1;
-		c.gridy = 2;
-		gridbag.setConstraints(btnNotifyColor, c);
-		ccp.add(btnNotifyColor);
-		
-		c.gridx = 1;
-		c.gridy = 3;
-		gridbag.setConstraints(btnWarningColor, c);
-		ccp.add(btnWarningColor);
-		
-		c.gridx = 1;
-		c.gridy = 4;
-		gridbag.setConstraints(btnErrorColor, c);
-		ccp.add(btnErrorColor);
-		
-		btnTextColor.setColor(ClassicPrefs.getLSConsoleTextColor());
-		btnBGColor.setColor(ClassicPrefs.getLSConsoleBackgroundColor());
-		btnNotifyColor.setColor(ClassicPrefs.getLSConsoleNotifyColor());
-		btnWarningColor.setColor(ClassicPrefs.getLSConsoleWarningColor());
-		btnErrorColor.setColor(ClassicPrefs.getLSConsoleErrorColor());
-		
-		JButton btnDefaults = new JButton("Reset to defaults");
-		
-		btnDefaults.addActionListener(new ActionListener() {
-			public void
-			actionPerformed(ActionEvent e) {
-				ClassicPrefs.setLSConsoleTextColor(null);
-				btnTextColor.setColor(ClassicPrefs.getLSConsoleTextColor());
-				
-				ClassicPrefs.setLSConsoleBackgroundColor(null);
-				btnBGColor.setColor(ClassicPrefs.getLSConsoleBackgroundColor());
-				
-				ClassicPrefs.setLSConsoleNotifyColor(null);
-				btnNotifyColor.setColor(ClassicPrefs.getLSConsoleNotifyColor());
-				
-				ClassicPrefs.setLSConsoleWarningColor(null);
-				btnWarningColor.setColor(ClassicPrefs.getLSConsoleWarningColor());
-				
-				ClassicPrefs.setLSConsoleErrorColor(null);
-				btnErrorColor.setColor(ClassicPrefs.getLSConsoleErrorColor());
-			}
-		});
-		
-		JPanel p = new JPanel();
-		p.setAlignmentX(LEFT_ALIGNMENT);
-		p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
-		p.setBorder(BorderFactory.createEmptyBorder(6, 0, 6, 6));
-		p.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
-		
-		p.add(Box.createGlue());
-		p.add(btnDefaults);
-		p.add(Box.createGlue());
-		
-		c.gridx = 0;
-		c.gridy = 5;
-		c.gridwidth = 2;
-		gridbag.setConstraints(p, c);
-		ccp.add(p);
-		
-		String s = i18n.getLabel("ConsolePane.consoleColors");
-		ccp.setBorder(BorderFactory.createTitledBorder(s));
-		
-		ccp.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
-		
-		return ccp;
+class ConsolePane extends JSLSConsolePropsPane {
+	protected void
+	clearConsoleHistory() {
+		MainFrame mainFrame = (MainFrame)CC.getMainFrame();
+		mainFrame.getLSConsoleModel().clearCommandHistory();
 	}
 	
 	protected void
 	apply() {
-		ClassicPrefs.setSaveConsoleHistory(checkSaveCmdHist.isSelected());
-		
-		int size = Integer.parseInt(spCmdHistorySize.getValue().toString());
-		ClassicPrefs.setLSConsoleHistSize(size);
-		LSConsoleModel model = ((MainFrame)CC.getMainFrame()).getLSConsoleModel();
-		model.setCommandHistorySize(size);
-		
-		///***///
+		super.apply();
 		
 		MainFrame mainFrame = (MainFrame)CC.getMainFrame();
 		
-		ClassicPrefs.setLSConsoleTextColor(btnTextColor.getColor());
-		mainFrame.setLSConsoleTextColor(btnTextColor.getColor());
+		LSConsoleModel model = mainFrame.getLSConsoleModel();
+		model.setCommandHistorySize(preferences().getIntProperty(LS_CONSOLE_HISTSIZE));
 		
-		ClassicPrefs.setLSConsoleBackgroundColor(btnBGColor.getColor());
-		mainFrame.setLSConsoleBackgroundColor(btnBGColor.getColor());
+		int c = preferences().getIntProperty(LS_CONSOLE_TEXT_COLOR);
+		mainFrame.setLSConsoleTextColor(new Color(c));
 		
-		ClassicPrefs.setLSConsoleNotifyColor(btnNotifyColor.getColor());
-		mainFrame.setLSConsoleNotifyColor(btnNotifyColor.getColor());
+		c = preferences().getIntProperty(LS_CONSOLE_BACKGROUND_COLOR);
+		mainFrame.setLSConsoleBackgroundColor(new Color(c));
 		
-		ClassicPrefs.setLSConsoleWarningColor(btnWarningColor.getColor());
-		mainFrame.setLSConsoleWarningColor(btnWarningColor.getColor());
+		c = preferences().getIntProperty(LS_CONSOLE_NOTIFY_COLOR);
+		mainFrame.setLSConsoleNotifyColor(new Color(c));
 		
-		ClassicPrefs.setLSConsoleErrorColor(btnErrorColor.getColor());
-		mainFrame.setLSConsoleErrorColor(btnErrorColor.getColor());
+		c = preferences().getIntProperty(LS_CONSOLE_WARNING_COLOR);
+		mainFrame.setLSConsoleWarningColor(new Color(c));
+		
+		c = preferences().getIntProperty(LS_CONSOLE_ERROR_COLOR);
+		mainFrame.setLSConsoleErrorColor(new Color(c));
 	}
-	
-	
-}
-
-class ConnectionPane extends JPanel {
-	final LSPrefsPane lsPrefsPane = new LSPrefsPane(); 
-	
-	public
-	ConnectionPane() { initConnectionPane(); }
-	
-	private void
-	initConnectionPane() {
-		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		
-		add(lsPrefsPane);
-		add(Box.createGlue());
-		setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
-	}
-	
-	public String
-	getLSAddress() { return lsPrefsPane.getLSAddress(); }
-	
-	public void
-	setLSAddress(String address) { lsPrefsPane.setLSAddress(address); }
-	
-	public String
-	getLSPort() { return lsPrefsPane.getLSPort(); }
-	
-	public void
-	setLSPort(String port) { lsPrefsPane.setLSPort(port); }
-}
-
-class LSPrefsPane extends JPanel {
-	private final JLabel lAddress = new JLabel(i18n.getLabel("LSPrefsPane.Address"));
-	private final JLabel lPort = new JLabel(i18n.getLabel("LSPrefsPane.Port"));
-	private final JTextField tfAddress = new JTextField();
-	private final JTextField tfPort = new JTextField();
-
-
-	public
-	LSPrefsPane() { initLSPrefsPane(); }
-
-	private void
-	initLSPrefsPane() {
-		GridBagLayout gridbag = new GridBagLayout();
-		GridBagConstraints c = new GridBagConstraints();
-	
-		setLayout(gridbag);
-		
-		// Set preferred size for username & password fields
-		int w1 = (int) tfAddress.getMinimumSize().getWidth();
-		int h1 = (int) tfAddress.getMinimumSize().getHeight();
-		Dimension d = new Dimension(w1 > 150 ? w1 : 150, h1);
-		tfAddress.setMinimumSize(d);
-		tfAddress.setPreferredSize(d);
-	
-		w1 = (int) tfPort.getMinimumSize().getWidth();
-		h1 = (int) tfPort.getMinimumSize().getHeight();
-		d = new Dimension(w1 > 150 ? w1 : 150, h1);
-		tfPort.setMinimumSize(d);
-		tfPort.setPreferredSize(d);
-	
-		c.fill = GridBagConstraints.NONE;
-	
-		c.gridx = 0;
-		c.gridy = 0;
-		c.anchor = GridBagConstraints.EAST;
-		c.insets = new Insets(3, 3, 3, 3);
-		gridbag.setConstraints(lAddress, c);
-		add(lAddress); 
-
-		c.gridx = 0;
-		c.gridy = 1;
-		gridbag.setConstraints(lPort, c);
-		add(lPort);
-	
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridx = 1;
-		c.gridy = 0;
-		c.weightx = 1.0;
-		c.anchor = GridBagConstraints.WEST;
-		gridbag.setConstraints(tfAddress, c);
-		add(tfAddress);
-		
-		c.gridx = 1;
-		c.gridy = 1;
-		gridbag.setConstraints(tfPort, c);
-		add(tfPort);
-		
-		setBorder(BorderFactory.createTitledBorder(i18n.getLabel("LSPrefsPane")));
-		setMaximumSize(new Dimension(Short.MAX_VALUE, getPreferredSize().height));
-	}
-	
-	public String
-	getLSAddress() { return tfAddress.getText(); }
-	
-	public void
-	setLSAddress(String address) { tfAddress.setText(address); }
-	
-	public String
-	getLSPort() { return tfPort.getText(); }
-	
-	public void
-	setLSPort(String port) { tfPort.setText(port); }
 }

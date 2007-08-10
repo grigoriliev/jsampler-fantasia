@@ -71,6 +71,9 @@ import org.jsampler.task.Channel.SetMidiInputChannel;
 import org.jsampler.task.Channel.SetMidiInputDevice;
 import org.jsampler.task.Channel.SetMidiInputPort;
 
+import org.jsampler.view.std.JSNewMidiDeviceDlg;
+import org.jsampler.view.std.JSNewAudioDeviceDlg;
+
 import org.linuxsampler.lscp.AudioOutputDevice;
 import org.linuxsampler.lscp.MidiInputDevice;
 import org.linuxsampler.lscp.MidiPort;
@@ -269,7 +272,7 @@ class MidiDeviceWizardPage extends UserInputPage {
 		btnNewDevice.addActionListener(new ActionListener() {
 			public void
 			actionPerformed(ActionEvent e) {
-				new NewMidiDeviceDlg(getWizardDialog()).setVisible(true);
+				new JSNewMidiDeviceDlg(getWizardDialog()).setVisible(true);
 			}
 		});
 	}
@@ -453,7 +456,7 @@ class AudioDeviceWizardPage extends UserInputPage {
 		btnNewDevice.addActionListener(new ActionListener() {
 			public void
 			actionPerformed(ActionEvent e) {
-				new NewAudioDeviceDlg(getWizardDialog()).setVisible(true);
+				new JSNewAudioDeviceDlg(getWizardDialog()).setVisible(true);
 			}
 		});
 	}

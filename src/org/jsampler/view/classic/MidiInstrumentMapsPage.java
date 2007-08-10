@@ -22,6 +22,7 @@
 
 package org.jsampler.view.classic;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 
 import java.awt.event.ActionEvent;
@@ -37,8 +38,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultTreeCellRenderer;
 
 import net.sf.juife.LinkButton;
 import net.sf.juife.NavigationPage;
@@ -51,9 +51,15 @@ import org.jsampler.event.ListEvent;
 import org.jsampler.event.ListListener;
 import org.jsampler.event.MidiInstrumentMapEvent;
 import org.jsampler.event.MidiInstrumentMapListener;
+import org.jsampler.view.std.JSEditMidiInstrumentDlg;
+
+import org.jsampler.view.std.JSAddMidiInstrumentMapDlg;
+import org.jsampler.view.std.JSMidiInstrumentTree;
+import org.jsampler.view.std.JSMidiInstrumentsPane;
 
 import org.linuxsampler.lscp.MidiInstrumentInfo;
 
+import static org.jsampler.view.classic.A4n.a4n;
 import static org.jsampler.view.classic.ClassicI18n.i18n;
 
 
@@ -63,28 +69,20 @@ import static org.jsampler.view.classic.ClassicI18n.i18n;
  */
 public class MidiInstrumentMapsPage extends NavigationPage {
 	private final JToolBar tbMaps = new JToolBar();
-	private final JToolBar tbInstruments = new JToolBar();
 	
 	private final EditMap actionEditMap = new EditMap();
 	private final RemoveMap actionRemoveMap = new RemoveMap();
-	private final EditInstrument actionEditInstrument = new EditInstrument();
-	private final RemoveInstrument removeInstrument = new RemoveInstrument();
 	
 	private final ToolbarButton btnAddMap = new ToolbarButton(A4n.addMidiInstrumentMap);
 	private final ToolbarButton btnEditMap = new ToolbarButton(actionEditMap);
 	private final ToolbarButton btnRemoveMap = new ToolbarButton(actionRemoveMap);
-	private final ToolbarButton btnExportMaps = new ToolbarButton(A4n.exportMidiInstrumentMaps);
+	private final ToolbarButton btnExportMaps = new ToolbarButton(a4n.exportMidiInstrumentMaps);
 	//private final ToolbarButton btnCloseMapBar = new ToolbarButton();
 	
-	private final ToolbarButton btnAddInstrument =
-		new ToolbarButton(A4n.addMidiInstrumentWizard);
-	
-	private final ToolbarButton btnEditInstrument = new ToolbarButton(actionEditInstrument);
-	private final ToolbarButton btnRemoveInstrument = new ToolbarButton(removeInstrument);
 	//private final ToolbarButton btnCloseInstrumentBar = new ToolbarButton();
 	
 	private final JComboBox cbMaps = new JComboBox();
-	private final MidiInstrumentTree midiInstrumentTree = new MidiInstrumentTree();
+	private final MidiInstrumentsPane midiInstrumentsPane = new MidiInstrumentsPane();
 	
 	/** Creates a new instance of MidiInstrumentMapsPage */
 	public
@@ -158,50 +156,77 @@ public class MidiInstrumentMapsPage extends NavigationPage {
 		p.add(Box.createRigidArea(new Dimension(0, 12)));
 		add(p);
 		
-		tbInstruments.add(btnAddInstrument);
-		tbInstruments.add(btnEditInstrument);
-		tbInstruments.add(btnRemoveInstrument);
-		
 		/*tbInstruments.add(Box.createHorizontalGlue());
 		tbInstruments.add(btnCloseInstrumentBar); */
 				
-		d = new Dimension(Short.MAX_VALUE, tbInstruments.getPreferredSize().height);
-		tbInstruments.setMaximumSize(d);
-		tbInstruments.setFloatable(false);
-		tbInstruments.setAlignmentX(LEFT_ALIGNMENT);
-		
-		add(tbInstruments);
-		
-		p = new JPanel();
-		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
-		p.setAlignmentX(LEFT_ALIGNMENT);
-		p.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
-				
-		p.add(new JScrollPane(midiInstrumentTree));
-		
-		add(p);
+		add(midiInstrumentsPane);
 		
 		boolean b = cbMaps.getItemCount() != 0;
 		actionEditMap.setEnabled(b);
 		actionRemoveMap.setEnabled(b);
 		A4n.removeMidiInstrumentMap.setEnabled(b);
-		
-		midiInstrumentTree.addTreeSelectionListener(getHandler());
-		removeInstrument.setEnabled(midiInstrumentTree.getSelectionCount() > 0);
-		actionEditInstrument.setEnabled(midiInstrumentTree.getSelectedInstrument() != null);
+		A4n.addMidiInstrumentWizard.setEnabled(b);
 	}
 	
 	private void
 	mapChanged() {
 		MidiInstrumentMap map = (MidiInstrumentMap)cbMaps.getSelectedItem();
-		midiInstrumentTree.setMidiInstrumentMap(map);
+		midiInstrumentsPane.setMidiInstrumentMap(map);
 		
 		boolean b = cbMaps.getItemCount() != 0;
 		actionEditMap.setEnabled(b);
 		actionRemoveMap.setEnabled(b);
 		A4n.removeMidiInstrumentMap.setEnabled(b);
+		A4n.addMidiInstrumentWizard.setEnabled(b);
 	}
 	
+	class MidiInstrumentsPane extends JSMidiInstrumentsPane {
+		private final JToolBar tbInstruments = new JToolBar();
+		
+		private final ToolbarButton btnAddInstrument =
+			new ToolbarButton(A4n.addMidiInstrumentWizard);
+		
+		private final ToolbarButton btnEditInstrument
+			= new ToolbarButton(actionEditInstrument);
+		
+		private final ToolbarButton btnRemoveInstrument = new ToolbarButton(actionRemove);
+		
+		MidiInstrumentsPane() {
+			actionEditInstrument.putValue(Action.SMALL_ICON, Res.iconEdit16);
+			actionRemove.putValue(Action.SMALL_ICON, Res.iconDelete16);
+			
+			removeAll();
+			
+			tbInstruments.add(btnAddInstrument);
+			tbInstruments.add(btnEditInstrument);
+			tbInstruments.add(btnRemoveInstrument);
+			
+			Dimension d;
+			d = new Dimension(Short.MAX_VALUE, tbInstruments.getPreferredSize().height);
+			tbInstruments.setMaximumSize(d);
+			tbInstruments.setFloatable(false);
+			
+			add(tbInstruments, BorderLayout.NORTH);
+			JScrollPane sp = new JScrollPane(midiInstrumentTree);
+			
+			DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
+			renderer.setClosedIcon(Res.iconFolder16);
+			renderer.setOpenIcon(Res.iconFolderOpen16);
+			renderer.setLeafIcon(Res.iconInstrument16);
+		
+			midiInstrumentTree.setCellRenderer(renderer);
+			
+			JPanel p = new JPanel();
+			p.setLayout(new BorderLayout());
+			p.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
+			
+			p.add(sp);
+			
+			add(p);
+			
+			setAlignmentX(LEFT_ALIGNMENT);
+		}
+	}
 	
 	private class EditMap extends AbstractAction {
 		EditMap() {
@@ -216,7 +241,7 @@ public class MidiInstrumentMapsPage extends NavigationPage {
 		actionPerformed(ActionEvent e) {
 			MidiInstrumentMap map = (MidiInstrumentMap)cbMaps.getSelectedItem();
 			int id = map.getMapId();
-			AddMidiInstrumentMapDlg dlg = new AddMidiInstrumentMapDlg();
+			JSAddMidiInstrumentMapDlg dlg = new JSAddMidiInstrumentMapDlg();
 			dlg.setTitle(i18n.getLabel("MidiInstrumentMapsPage.editMap"));
 			dlg.setMapName(map.getName());
 			dlg.setVisible(true);
@@ -247,50 +272,13 @@ public class MidiInstrumentMapsPage extends NavigationPage {
 		}
 	}
 	
-	private class EditInstrument extends AbstractAction {
-		EditInstrument() {
-			super(i18n.getLabel("MidiInstrumentMapsPage.EditInstrument"));
-			
-			String s = i18n.getLabel("MidiInstrumentMapsPage.EditInstrument.tt");
-			putValue(SHORT_DESCRIPTION, s);
-			putValue(Action.SMALL_ICON, Res.iconEdit16);
-		}
-		
-		public void
-		actionPerformed(ActionEvent e) {
-			MidiInstrument i = midiInstrumentTree.getSelectedInstrument();
-			EditMidiInstrumentDlg dlg = new EditMidiInstrumentDlg(i.getInfo());
-			dlg.setVisible(true);
-			
-			if(dlg.isCancelled()) return;
-			
-			MidiInstrumentInfo info = dlg.getInstrument();
-			CC.getSamplerModel().mapBackendMidiInstrument (
-				info.getMapId(), info.getMidiBank(), info.getMidiProgram(), info
-			);
-		}
-	}
-	
-	private class RemoveInstrument extends AbstractAction {
-		RemoveInstrument() {
-			String s = i18n.getLabel("MidiInstrumentMapsPage.RemoveInstrument.tt");
-			putValue(SHORT_DESCRIPTION, s);
-			putValue(Action.SMALL_ICON, Res.iconDelete16);
-		}
-		
-		public void
-		actionPerformed(ActionEvent e) {
-			midiInstrumentTree.removeSelectedInstrumentOrBank();
-		}
-	}
-	
 	private final Handler handler = new Handler();
 	
 	private Handler
 	getHandler() { return handler; }
 	
 	private class Handler implements ListListener<MidiInstrumentMap>,
-				MidiInstrumentMapListener, TreeSelectionListener {
+							MidiInstrumentMapListener {
 		
 		/** Invoked when a new map is added. */
 		public void
@@ -321,12 +309,5 @@ public class MidiInstrumentMapsPage extends NavigationPage {
 		
 		/** Invoked when an instrument is removed from a MIDI instrument map. */
 		public void instrumentRemoved(MidiInstrumentMapEvent e) { }
-		
-		public void
-		valueChanged(TreeSelectionEvent e) {
-			removeInstrument.setEnabled(midiInstrumentTree.getSelectionCount() > 0);
-			boolean b = midiInstrumentTree.getSelectedInstrument() != null;
-			actionEditInstrument.setEnabled(b);
-		}
 	}
 }

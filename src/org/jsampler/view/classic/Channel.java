@@ -63,6 +63,7 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JSlider;
 import javax.swing.JToggleButton;
+import javax.swing.JToolBar;
 import javax.swing.TransferHandler;
 
 import javax.swing.border.Border;
@@ -86,8 +87,10 @@ import org.jsampler.SamplerModel;
 
 import org.jsampler.event.ListEvent;
 import org.jsampler.event.ListListener;
+import org.jsampler.event.MidiDeviceEvent;
 import org.jsampler.event.MidiDeviceListEvent;
 import org.jsampler.event.MidiDeviceListListener;
+import org.jsampler.event.MidiDeviceListener;
 import org.jsampler.event.SamplerAdapter;
 import org.jsampler.event.SamplerChannelAdapter;
 import org.jsampler.event.SamplerChannelEvent;
@@ -95,6 +98,11 @@ import org.jsampler.event.SamplerChannelListEvent;
 import org.jsampler.event.SamplerChannelListListener;
 import org.jsampler.event.SamplerChannelListener;
 import org.jsampler.event.SamplerEvent;
+import org.jsampler.event.SamplerListener;
+
+import org.jsampler.view.std.JSChannelOutputRoutingDlg;
+import org.jsampler.view.std.JSFxSendsPane;
+import org.jsampler.view.std.JSInstrumentChooser;
 
 import org.linuxsampler.lscp.AudioOutputDevice;
 import org.linuxsampler.lscp.MidiInputDevice;
@@ -812,7 +820,7 @@ public class Channel extends org.jsampler.view.JSChannel {
 	
 	private void
 	loadInstrument() {
-		InstrumentChooser dlg = new InstrumentChooser(CC.getMainFrame());
+		JSInstrumentChooser dlg = new JSInstrumentChooser(CC.getMainFrame());
 		dlg.setVisible(true);
 		
 		if(dlg.isCancelled()) return;
@@ -856,8 +864,12 @@ class ChannelProperties extends JPanel {
 	private InformationDialog fxSendsDlg = null;
 	
 	private SamplerChannelModel channelModel = null;
+	private MidiDeviceModel midiDevice = null;
 	
 	private boolean update = false;
+	
+	private final SamplerListener samplerListener;
+	private final MapListListener mapListListener = new MapListListener();
 	
 	private class NoMap {
 		public String
@@ -947,14 +959,15 @@ class ChannelProperties extends JPanel {
 			channelChanged(SamplerChannelEvent e) { updateChannelProperties(); }
 		});
 		
-		CC.getSamplerModel().addSamplerListener(new SamplerAdapter() {
+		samplerListener = new SamplerAdapter() {
 			/** Invoked when the default MIDI instrument map is changed. */
 			public void
 			defaultMapChanged(SamplerEvent e) {
 				updateCbInstrumentMapToolTipText();
-				
 			}
-		});
+		};
+		
+		CC.getSamplerModel().addSamplerListener(samplerListener);
 		
 		cbInstrumentMap.addItem(noMap);
 		cbInstrumentMap.addItem(defaultMap);
@@ -985,15 +998,15 @@ class ChannelProperties extends JPanel {
 		CC.getSamplerModel().addMidiDeviceListListener(getHandler());
 		CC.getSamplerModel().addAudioDeviceListListener(getHandler());
 		CC.getSamplerModel().addSamplerChannelListListener(getHandler());
-		
-		CC.getSamplerModel().addMidiInstrumentMapListListener(new MapListListener());
+		CC.getSamplerModel().addMidiInstrumentMapListListener(mapListListener);
 		
 		btnAudioProps.setToolTipText(i18n.getLabel("ChannelProperties.routing"));
+		btnAudioProps.setEnabled(false);
 		btnAudioProps.addActionListener(new ActionListener() {
 			public void
 			actionPerformed(ActionEvent e) {
 				SamplerChannel c = getModel().getChannelInfo();
-				new ChannelOutputRoutingDlg(CC.getMainFrame(), c).setVisible(true);
+				new JSChannelOutputRoutingDlg(CC.getMainFrame(), c).setVisible(true);
 			
 			}
 		});
@@ -1010,7 +1023,7 @@ class ChannelProperties extends JPanel {
 				FxSendsPane p = new FxSendsPane(getModel());
 				int id = getModel().getChannelId();
 				fxSendsDlg = new InformationDialog(CC.getMainFrame(), p);
-				fxSendsDlg.setTitle(i18n.getLabel("FxSendsPane.title", id));
+				fxSendsDlg.setTitle(i18n.getLabel("FxSendsDlg.title", id));
 				fxSendsDlg.setModal(false);
 				fxSendsDlg.showCloseButton(false);
 				fxSendsDlg.setVisible(true);
@@ -1020,6 +1033,29 @@ class ChannelProperties extends JPanel {
 		updateMidiDevices();
 		updateAudioDevices();
 		updateChannelProperties();
+	}
+	
+	class FxSendsPane extends JSFxSendsPane {
+		FxSendsPane(SamplerChannelModel model) {
+			super(model);
+			
+			actionAddFxSend.putValue(Action.SMALL_ICON, Res.iconNew16);
+			actionRemoveFxSend.putValue(Action.SMALL_ICON, Res.iconDelete16);
+		}
+		
+		protected JToolBar
+		createToolBar() {
+			JToolBar tb = new JToolBar();
+			Dimension d = new Dimension(Short.MAX_VALUE, tb.getPreferredSize().height);
+			tb.setMaximumSize(d);
+			tb.setFloatable(false);
+			tb.setAlignmentX(JPanel.RIGHT_ALIGNMENT);
+			
+			tb.add(new ToolbarButton(actionAddFxSend));
+			tb.add(new ToolbarButton(actionRemoveFxSend));
+		
+			return tb;
+		}
 	}
 	
 	private JPanel
@@ -1221,12 +1257,22 @@ class ChannelProperties extends JPanel {
 			cbEngines.setSelectedItem(sc.getEngine());
 			
 			cbAudioDevice.setSelectedItem(am == null ? null : am.getDeviceInfo());
+			btnAudioProps.setEnabled(am != null);
 		} catch(Exception x) {
 			CC.getLogger().log(Level.WARNING, "Unkown error", x);
 		}
 		
 		if(sc.getEngine() != null) {
-			if(cbInstrumentMap.getItemCount() > 0) cbInstrumentMap.setEnabled(true);
+			cbInstrumentMap.setEnabled(true);
+			int id = sc.getMidiInstrumentMapId();
+			Object o;
+			if(id == -2) o = defaultMap;
+			else if(id == -1) o = noMap;
+			else o = CC.getSamplerModel().getMidiInstrumentMapById(id);
+			
+			if(cbInstrumentMap.getSelectedItem() != o) {
+				cbInstrumentMap.setSelectedItem(o);
+			}
 		} else {
 			cbInstrumentMap.setSelectedItem(noMap);
 			cbInstrumentMap.setEnabled(false);
@@ -1294,14 +1340,20 @@ class ChannelProperties extends JPanel {
 			return;
 		}
 		
+		if(midiDevice != null) midiDevice.removeMidiDeviceListener(getHandler());
+		
 		cbMidiPort.removeAllItems();
 		
 		if(mid == null) {
+			midiDevice = null;
 			cbMidiPort.setEnabled(false);
 			
 			cbMidiChannel.setSelectedItem(null);
 			cbMidiChannel.setEnabled(false);
 		} else {
+			midiDevice = CC.getSamplerModel().getMidiDeviceById(mid.getDeviceId());
+			if(midiDevice != null) midiDevice.addMidiDeviceListener(getHandler());
+			
 			cbMidiPort.setEnabled(true);
 			
 			MidiPort[] ports = mid.getMidiPorts();
@@ -1379,8 +1431,8 @@ class ChannelProperties extends JPanel {
 	private Handler
 	getHandler() { return handler; }
 	
-	private class Handler implements MidiDeviceListListener,
-				ListListener<AudioDeviceModel>, SamplerChannelListListener {
+	private class Handler implements MidiDeviceListListener, ListListener<AudioDeviceModel>,
+					SamplerChannelListListener, MidiDeviceListener {
 		
 		/**
 		 * Invoked when a new MIDI device is created.
@@ -1439,9 +1491,39 @@ class ChannelProperties extends JPanel {
 		channelRemoved(SamplerChannelListEvent e) {
 			// Some cleanup when the channel is removed.
 			if(e.getChannelModel().getChannelId() == channelModel.getChannelId()) {
-				CC.getSamplerModel().removeMidiDeviceListListener(getHandler());
-				CC.getSamplerModel().removeAudioDeviceListListener(getHandler());
+				SamplerModel sm = CC.getSamplerModel();
+				
+				sm.removeMidiDeviceListListener(getHandler());
+				sm.removeAudioDeviceListListener(getHandler());
+				sm.removeMidiInstrumentMapListListener(mapListListener);
+				sm.removeSamplerListener(samplerListener);
+				sm.removeSamplerChannelListListener(getHandler());
+				
+				if(midiDevice != null) {
+					midiDevice.removeMidiDeviceListener(getHandler());
+				}
 			}
+		}
+		
+		public void
+		settingsChanged(MidiDeviceEvent e) {
+			if(isUpdate()) {
+				CC.getLogger().warning("Invalid update state");
+				return;
+			}
+			
+			setUpdate(true);
+			int idx = cbMidiPort.getSelectedIndex();
+			MidiInputDevice d = e.getMidiDeviceModel().getDeviceInfo();
+			
+			cbMidiPort.removeAllItems();
+			for(MidiPort port : d.getMidiPorts()) cbMidiPort.addItem(port);
+			
+			if(idx >= cbMidiPort.getModel().getSize()) idx = 0;
+			
+			setUpdate(false);
+			
+			if(cbMidiPort.getModel().getSize() > 0) cbMidiPort.setSelectedIndex(idx);
 		}
 	}
 	
@@ -1449,7 +1531,6 @@ class ChannelProperties extends JPanel {
 		/** Invoked when a new MIDI instrument map is added to a list. */
 		public void
 		entryAdded(ListEvent<MidiInstrumentMap> e) {
-			//cbInstrumentMap.addItem(e.getEntry());
 			cbInstrumentMap.insertItemAt(e.getEntry(), cbInstrumentMap.getItemCount());
 			boolean b = getModel().getChannelInfo().getEngine() != null;
 			if(b && !cbInstrumentMap.isEnabled()) cbInstrumentMap.setEnabled(true);

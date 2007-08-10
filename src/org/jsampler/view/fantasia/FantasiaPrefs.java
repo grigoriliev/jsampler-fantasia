@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -24,29 +24,29 @@ package org.jsampler.view.fantasia;
 
 import java.util.prefs.Preferences;
 
+import org.jsampler.view.std.StdPrefs;
+
 
 /**
  *
  * @author Grigor Iliev
  */
-public class FantasiaPrefs {
-	private final static String prefNode = "org.jsampler.view.fantasia";
-	private final static Preferences userPrefs = Preferences.userRoot().node(prefNode);
+public class FantasiaPrefs extends StdPrefs {
+	/** Property which specifies whether to use animation effects. */
+	public final static String ANIMATED = "animated";
 	
 	private final static String WINDOW_LOCATION = "Mainframe.sizeAndLocation";
 	private final static String DEF_WINDOW_LOCATION = null;
 	
-	private final static String ALWAYS_ON_TOP = "AlwaysOnTop";
-	private final static boolean DEF_ALWAYS_ON_TOP = false;
+	private final static FantasiaPrefs prefs = new FantasiaPrefs();
 	
-	
-	
+		
 	/** Forbits instantiation of <code>FantasiaPrefs</code>. */
-	private FantasiaPrefs() {
-	}
+	private
+	FantasiaPrefs() { super("org.jsampler.view.fantasia"); }
 	
-	public static Preferences
-	user() { return userPrefs; }
+	public static FantasiaPrefs
+	preferences() { return prefs; }
 	
 	/**
 	 * Gets a string representation of the main window's location.
@@ -55,46 +55,37 @@ public class FantasiaPrefs {
 	 * @return A string representation of the main window's location,
 	 * or <code>null</code> if the value is not set.
 	 */
-	public static String
+	public String
 	getWindowLocation() {
-		return user().get(WINDOW_LOCATION, DEF_WINDOW_LOCATION);
+		return getStringProperty(WINDOW_LOCATION, DEF_WINDOW_LOCATION);
 	}
 	
 	/**
-	 * Sets the main window's ocation.
+	 * Sets the main window's location.
 	 * Use <code>null</code> to remove the current value.
 	 * @param s A string representation of the main window'socation.
 	 * @see #getWindowLocation
 	 */
-	public static void
+	public void
 	setWindowLocation(String s) {
-		if(s == null) {
-			user().remove(WINDOW_LOCATION);
-			return;
-		}
+		setStringProperty(WINDOW_LOCATION, s);
+	}
+	
+	public int
+	getDefaultIntValue(String name) {
+		if(name == LS_CONSOLE_BACKGROUND_COLOR) return 0x626262;
+		if(name == LS_CONSOLE_TEXT_COLOR) return 0xb4b4b4;
+		if(name == LS_CONSOLE_NOTIFY_COLOR) return 0x848484;
+		if(name == LS_CONSOLE_WARNING_COLOR) return 0xf19e0e;
+		if(name == LS_CONSOLE_ERROR_COLOR) return 0xfa4a1f;
 		
-		user().put(WINDOW_LOCATION, s);
+		return super.getDefaultIntValue(name);
 	}
 	
-	/**
-	 * Determines whether the main window should be always-on-top window.
-	 * @return <code>true</code> if the main window should be always-on-top window,
-	 * <code>false</code> otherwise.
-	 */
-	public static boolean
-	isAlwaysOnTop() {
-		return user().getBoolean(ALWAYS_ON_TOP, DEF_ALWAYS_ON_TOP);
+	public boolean
+	getDefaultBoolValue(String name) {
+		if(name == ANIMATED) return true;
+		
+		return super.getDefaultBoolValue(name);
 	}
-	
-	/**
-	 * Sets whether the main window should be always-on-top window.
-	 * @param b If <code>true</code> the main window should be always-on-top window.
-	 */
-	public static void
-	setAlwaysOnTop(boolean b) {
-		if(b == isAlwaysOnTop()) return;
-		user().putBoolean(ALWAYS_ON_TOP, b);
-	}
-	
-	
 }

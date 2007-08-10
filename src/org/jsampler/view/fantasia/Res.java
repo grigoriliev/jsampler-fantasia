@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -22,7 +22,11 @@
 
 package org.jsampler.view.fantasia;
 
+import java.awt.Font;
 import javax.swing.ImageIcon;
+
+import org.jsampler.CC;
+import org.jsampler.HF;
 
 
 /**
@@ -34,64 +38,246 @@ public class Res {
 	/** Forbits the instantiation of this class. */
 	private Res() { }
 	
-	protected final static ImageIcon iconPowerOn
-		= new ImageIcon(Res.class.getResource("res/power_on.png"));
+	protected final static ImageIcon gfxFantasiaLogo
+		= new ImageIcon(Res.class.getResource("res/gfx/fantasia_logo.png"));
 	
-	protected final static ImageIcon iconPowerOff
-		= new ImageIcon(Res.class.getResource("res/power_off.png"));
+	protected final static ImageIcon gfxPowerOn
+		= new ImageIcon(Res.class.getResource("res/gfx/power_on.png"));
+	
+	protected final static ImageIcon gfxPowerOff
+		= new ImageIcon(Res.class.getResource("res/gfx/power_off.png"));
 
-	protected final static ImageIcon iconMuteOn
-		= new ImageIcon(Res.class.getResource("res/btn_mute_on.png"));
+	protected final static ImageIcon gfxMuteOn
+		= new ImageIcon(Res.class.getResource("res/gfx/btn_mute_on.png"));
 	
-	protected final static ImageIcon iconMuteOff
-		= new ImageIcon(Res.class.getResource("res/btn_mute_off.png"));
+	protected final static ImageIcon gfxMuteOff
+		= new ImageIcon(Res.class.getResource("res/gfx/btn_mute_off.png"));
 	
-	protected final static ImageIcon iconMuteSoloDisabled
-		= new ImageIcon(Res.class.getResource("res/btn_mute_solo_disabled.png"));
+	protected final static ImageIcon gfxMuteSoloDisabled
+		= new ImageIcon(Res.class.getResource("res/gfx/btn_mute_solo_disabled.png"));
 	
-	protected final static ImageIcon iconMutedBySolo
-		= new ImageIcon(Res.class.getResource("res/btn_mute_off.png"));
+	protected final static ImageIcon gfxMutedBySolo
+		= new ImageIcon(Res.class.getResource("res/gfx/btn_mute_off.png"));
 	
-	protected final static ImageIcon iconSoloOn
-		= new ImageIcon(Res.class.getResource("res/btn_solo_on.png"));
+	protected final static ImageIcon gfxSoloOn
+		= new ImageIcon(Res.class.getResource("res/gfx/btn_solo_on.png"));
 	
-	protected final static ImageIcon iconSoloOff
-		= new ImageIcon(Res.class.getResource("res/btn_mute_off.png"));
+	protected final static ImageIcon gfxSoloOff
+		= new ImageIcon(Res.class.getResource("res/gfx/btn_mute_off.png"));
 	
-	protected final static ImageIcon iconMuteTitle
-		= new ImageIcon(Res.class.getResource("res/title_mute.png"));
+	protected final static ImageIcon gfxMuteTitle
+		= new ImageIcon(Res.class.getResource("res/gfx/title_mute.png"));
 	
-	protected final static ImageIcon iconSoloTitle
-		= new ImageIcon(Res.class.getResource("res/title_solo.png"));
+	protected final static ImageIcon gfxSoloTitle
+		= new ImageIcon(Res.class.getResource("res/gfx/title_solo.png"));
 	
-	protected final static ImageIcon iconVolumeTitle
-		= new ImageIcon(Res.class.getResource("res/title_volume.png"));
+	protected final static ImageIcon gfxVolumeTitle
+		= new ImageIcon(Res.class.getResource("res/gfx/title_volume.png"));
 	
-	protected final static ImageIcon iconVolumeDial
-		= new ImageIcon(Res.class.getResource("res/knob_volume.png"));
+	protected final static ImageIcon gfxVolumeDial
+		= new ImageIcon(Res.class.getResource("res/gfx/knob_volume.png"));
 	
-	protected final static ImageIcon iconOptionsTitle
-		= new ImageIcon(Res.class.getResource("res/title_options.png"));
+	protected final static ImageIcon gfxOptionsTitle
+		= new ImageIcon(Res.class.getResource("res/gfx/title_options.png"));
 	
-	protected final static ImageIcon iconOptionsOn
-		= new ImageIcon(Res.class.getResource("res/btn_hide_channel_options.png"));
+	protected final static ImageIcon gfxOptionsOn
+		= new ImageIcon(Res.class.getResource("res/gfx/btn_hide_channel_options.png"));
 	
-	protected final static ImageIcon iconOptionsOnRO
-		= new ImageIcon(Res.class.getResource("res/btn_hide_channel_options_ro.png"));
+	protected final static ImageIcon gfxOptionsOnRO
+		= new ImageIcon(Res.class.getResource("res/gfx/btn_hide_channel_options_ro.png"));
 	
-	protected final static ImageIcon iconOptionsOff
-		= new ImageIcon(Res.class.getResource("res/btn_show_channel_options.png"));
+	protected final static ImageIcon gfxOptionsOff
+		= new ImageIcon(Res.class.getResource("res/gfx/btn_show_channel_options.png"));
 	
-	protected final static ImageIcon iconOptionsOffRO
-		= new ImageIcon(Res.class.getResource("res/btn_show_channel_options_ro.png"));
+	protected final static ImageIcon gfxOptionsOffRO
+		= new ImageIcon(Res.class.getResource("res/gfx/btn_show_channel_options_ro.png"));
 	
-	protected final static ImageIcon iconMidiInputTitle
-		= new ImageIcon(Res.class.getResource("res/title_midi_input.png"));
+	protected final static ImageIcon gfxMidiInputTitle
+		= new ImageIcon(Res.class.getResource("res/gfx/title_midi_input.png"));
 	
-	protected final static ImageIcon iconEngineTitle
-		= new ImageIcon(Res.class.getResource("res/title_engine.png"));
+	protected final static ImageIcon gfxEngineTitle
+		= new ImageIcon(Res.class.getResource("res/gfx/title_engine.png"));
 	
-	protected final static ImageIcon iconAudioOutputTitle
-		= new ImageIcon(Res.class.getResource("res/title_audio_output.png"));
+	protected final static ImageIcon gfxAudioOutputTitle
+		= new ImageIcon(Res.class.getResource("res/gfx/title_audio_output.png"));
 	
+	protected final static ImageIcon gfxInstrumentMapTitle
+		= new ImageIcon(Res.class.getResource("res/gfx/title_midi_instrument_map.png"));
+	
+	protected final static ImageIcon gfxChannel
+		= new ImageIcon(Res.class.getResource("res/gfx/channel.png"));
+	
+	protected final static ImageIcon gfxChannelScreen
+		= new ImageIcon(Res.class.getResource("res/gfx/channel.screen.png"));
+	
+	protected final static ImageIcon gfxHLine
+		= new ImageIcon(Res.class.getResource("res/gfx/line_hor.png"));
+	
+	protected final static ImageIcon gfxVLine
+		= new ImageIcon(Res.class.getResource("res/gfx/line_vert.png"));
+	
+	protected final static ImageIcon gfxChannelOptions
+		= new ImageIcon(Res.class.getResource("res/gfx/channel.options.png"));
+	
+	protected final static ImageIcon gfxCreateChannel
+		= new ImageIcon(Res.class.getResource("res/gfx/create_channel.png"));
+	
+	protected final static ImageIcon gfxTextField
+		= new ImageIcon(Res.class.getResource("res/gfx/tf_bg.png"));
+	
+	protected final static ImageIcon gfxCbLabelBg
+		= new ImageIcon(Res.class.getResource("res/gfx/cb_label_bg.png"));
+	
+	protected final static ImageIcon gfxCbArrow
+		= new ImageIcon(Res.class.getResource("res/gfx/cb_arrow.png"));
+	
+	protected final static ImageIcon gfxCbArrowDisabled
+		= new ImageIcon(Res.class.getResource("res/gfx/cb_arrow_disabled.png"));
+	
+	protected final static ImageIcon gfxCbArrowRO
+		= new ImageIcon(Res.class.getResource("res/gfx/cb_arrow_ro.png"));
+	
+	protected final static ImageIcon gfxPowerOn18
+		= new ImageIcon(Res.class.getResource("res/gfx/power_on18.png"));
+	
+	protected final static ImageIcon gfxPowerOff18
+		= new ImageIcon(Res.class.getResource("res/gfx/power_off18.png"));
+	
+	protected final static ImageIcon gfxDeviceBg
+		= new ImageIcon(Res.class.getResource("res/gfx/device_bg.png"));
+	
+	protected final static ImageIcon gfxRoundBg14
+		= new ImageIcon(Res.class.getResource("res/gfx/round_bg14.png"));
+	protected final static ImageIcon gfxRoundBg7
+		= new ImageIcon(Res.class.getResource("res/gfx/round_bg7.png"));
+	protected final static ImageIcon gfxMenuBarBg
+		= new ImageIcon(Res.class.getResource("res/gfx/menubar_bg.png"));
+	
+	protected final static ImageIcon gfxToolBarBg
+		= new ImageIcon(Res.class.getResource("res/gfx/toolbar_bg.png"));
+	
+	
+	protected final static ImageIcon gfxChannelsBg
+		= new ImageIcon(Res.class.getResource("res/gfx/channels_bg.png"));
+	
+	protected final static ImageIcon gfxToolbar
+		= new ImageIcon(Res.class.getResource("res/gfx/toolbar.png"));
+	
+	protected final static ImageIcon gfxBorder
+		= new ImageIcon(Res.class.getResource("res/gfx/border.png"));
+	
+	protected final static ImageIcon gfxBtnCr
+		= new ImageIcon(Res.class.getResource("res/gfx/btn_cr.png"));
+	
+	protected final static ImageIcon gfxBtnCrRO
+		= new ImageIcon(Res.class.getResource("res/gfx/btn_cr_ro.png"));
+	
+	
+	protected final static ImageIcon iconAppIcon
+		= new ImageIcon(Res.class.getResource("res/icons/app_icon.png"));
+	
+	protected final static ImageIcon iconEngine12
+		= new ImageIcon(Res.class.getResource("res/icons/engine12.png"));
+	
+	protected final static ImageIcon iconVolume14
+		= new ImageIcon(Res.class.getResource("res/icons/volume14.png"));
+	
+	protected final static ImageIcon iconNew16
+		= new ImageIcon(Res.class.getResource("res/icons/new16.png"));
+	
+	protected final static ImageIcon iconEdit16
+		= new ImageIcon(Res.class.getResource("res/icons/edit16.png"));
+	
+	protected final static ImageIcon iconDelete16
+		= new ImageIcon(Res.class.getResource("res/icons/delete16.png"));
+	
+	protected final static ImageIcon iconBack16
+		= new ImageIcon(Res.class.getResource("res/icons/back16.png"));
+	
+	protected final static ImageIcon iconNext16
+		= new ImageIcon(Res.class.getResource("res/icons/next16.png"));
+	
+	protected final static ImageIcon iconBrowse16
+		= new ImageIcon(Res.class.getResource("res/icons/folder_open16.png"));
+	
+	protected final static ImageIcon iconDb16
+		= new ImageIcon(Res.class.getResource("res/icons/collection16.png"));
+	
+	protected final static ImageIcon iconFolder16
+		= new ImageIcon(Res.class.getResource("res/icons/folder16.png"));
+	
+	protected final static ImageIcon iconFolderOpen16
+		= new ImageIcon(Res.class.getResource("res/icons/folder_open16.png"));
+	
+	protected final static ImageIcon iconInstrument16
+		= new ImageIcon(Res.class.getResource("res/icons/instr16.png"));
+	
+	protected final static ImageIcon iconVolume22
+		= new ImageIcon(Res.class.getResource("res/icons/volume22.png"));
+	
+	protected final static ImageIcon iconFind22
+		= new ImageIcon(Res.class.getResource("res/icons/Find22.png"));
+	
+	protected final static ImageIcon iconGoUp22
+		= new ImageIcon(Res.class.getResource("res/icons/GoUp22.png"));
+	
+	protected final static ImageIcon iconGoBack22
+		= new ImageIcon(Res.class.getResource("res/icons/GoBack22.png"));
+	
+	protected final static ImageIcon iconGoForward22
+		= new ImageIcon(Res.class.getResource("res/icons/GoForward22.png"));
+	
+	protected final static ImageIcon iconFolderOpen22
+		= new ImageIcon(Res.class.getResource("res/icons/folder_open22.png"));
+	
+	protected final static ImageIcon iconPreferences22
+		= new ImageIcon(Res.class.getResource("res/icons/Preferences22.png"));
+	
+	protected final static ImageIcon iconReload22
+		= new ImageIcon(Res.class.getResource("res/icons/reload22.png"));
+	
+	protected final static ImageIcon iconSamplerInfo32
+		= new ImageIcon(Res.class.getResource("res/icons/sampler_info32.png"));
+	
+	protected final static ImageIcon iconOpen32
+		= new ImageIcon(Res.class.getResource("res/icons/open32.png"));
+	
+	protected final static ImageIcon iconSave32
+		= new ImageIcon(Res.class.getResource("res/icons/save32.png"));
+	
+	protected final static ImageIcon iconReload32
+		= new ImageIcon(Res.class.getResource("res/icons/reload32.png"));
+	
+	protected final static ImageIcon iconReset32
+		= new ImageIcon(Res.class.getResource("res/icons/purge32.png"));
+	
+	protected final static ImageIcon iconPreferences32
+		= new ImageIcon(Res.class.getResource("res/icons/preferences32.png"));
+	
+	protected final static ImageIcon iconLSConsole32
+		= new ImageIcon(Res.class.getResource("res/icons/ls_console32.png"));
+	
+	protected final static ImageIcon iconLSConsole
+		= new ImageIcon(Res.class.getResource("res/icons/ls_console.png"));
+	
+	protected final static ImageIcon iconDb32
+		= new ImageIcon(Res.class.getResource("res/icons/db32.png"));
+	
+	protected final static ImageIcon iconLinuxSamplerLogo
+		= new ImageIcon(Res.class.getResource("res/icons/LinuxSampler-logo.png"));
+	
+	protected static Font fontScreen = null;
+		
+	
+	static {
+		try {
+			fontScreen = Font.createFont (
+				Font.TRUETYPE_FONT,
+				Res.class.getResourceAsStream("res/fonts/LiberationSans-Bold.ttf")
+			);
+			fontScreen = fontScreen.deriveFont(10.0f);
+		} catch(Exception e) {
+			CC.getLogger().warning(HF.getErrorMessage(e));
+		}
+	}
 }

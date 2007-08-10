@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -23,11 +23,18 @@
 package org.jsampler.view.fantasia;
 
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Insets;
 
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+
+import org.jvnet.lafwidget.animation.FadeConfigurationManager;
+import org.jvnet.lafwidget.animation.FadeKind;
+
+import org.jvnet.substance.SubstanceLookAndFeel;
 
 
 /**
@@ -35,6 +42,8 @@ import javax.swing.JButton;
  * @author Grigor Iliev
  */
 public class PixmapButton extends JButton {
+	private Dimension size;
+	
 	/** Creates a new instance of PixmapButton */
 	PixmapButton(ImageIcon icon) {
 		this(icon, null);
@@ -42,10 +51,26 @@ public class PixmapButton extends JButton {
 	
 	/** Creates a new instance of PixmapButton */
 	PixmapButton(ImageIcon icon, ImageIcon rolloverIcon) {
-		setBorder(BorderFactory.createEmptyBorder());
+		initPixmapButton(icon, rolloverIcon);
+	}
+	
+	/** Creates a new instance of PixmapButton */
+	PixmapButton(Action a, ImageIcon icon) {
+		super(a);
+		initPixmapButton(icon, null);
+	}
+	
+	private void
+	initPixmapButton(ImageIcon icon, ImageIcon rolloverIcon) {
+		setText("");
 		setContentAreaFilled(false);
 		setFocusPainted(false);
+		setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 		setMargin(new Insets(0, 0, 0, 0));
+		putClientProperty(SubstanceLookAndFeel.BUTTON_PAINT_NEVER_PROPERTY, Boolean.TRUE);
+		putClientProperty(SubstanceLookAndFeel.BUTTON_NO_MIN_SIZE_PROPERTY, Boolean.TRUE);
+		//putClientProperty(SubstanceLookAndFeel.FLAT_PROPERTY, Boolean.TRUE);
+		FadeConfigurationManager.getInstance().disallowFades(FadeKind.ROLLOVER, this);
 	
 		setIcon(icon);
 		
@@ -56,8 +81,9 @@ public class PixmapButton extends JButton {
 			setRolloverEnabled(false);
 		}
 		
-		setPreferredSize(getMinimumSize());
-		setMaximumSize(getMinimumSize());
+		size = new Dimension(icon.getIconWidth(), icon.getIconHeight());
+		setPreferredSize(size);
+		setMaximumSize(size);
 		
 		setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 	}

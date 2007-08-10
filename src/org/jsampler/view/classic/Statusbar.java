@@ -131,6 +131,9 @@ public class Statusbar extends JPanel {
 		totalVoiceCountChanged(SamplerEvent e) {
 			int voices = CC.getSamplerModel().getTotalVoiceCount();
 			int voicesMax = CC.getSamplerModel().getTotalVoiceCountMax();
+			
+			// workaround for bug #223 in substance
+			if(voicesMax == 0) voicesMax = 1;
 			pbTotalVoices.setMaximum(voicesMax);
 			pbTotalVoices.setValue(voices);
 			pbTotalVoices.setString(i18n.getLabel("Statusbar.pbTotalVoices", voices));

@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -25,6 +25,7 @@ package org.jsampler.view.fantasia;
 import java.awt.BorderLayout;
 import java.awt.Component;
 
+import javax.swing.BoxLayout;
 import javax.swing.ListSelectionModel;
 
 import javax.swing.event.ListSelectionEvent;
@@ -46,7 +47,7 @@ import org.jsampler.view.JSChannelsPane;
  * @author Grigor Iliev
  */
 public class ChannelsPane extends JSChannelsPane {
-	private final ComponentList chnList = new ComponentList();
+	private final ChannelListPane chnList = new ChannelListPane();
 	private final DefaultComponentListModel listModel = new DefaultComponentListModel();
 		
 	
@@ -59,15 +60,17 @@ public class ChannelsPane extends JSChannelsPane {
 	ChannelsPane(String title) {
 		super(title);
 		
-		setLayout(new BorderLayout());
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
-		chnList.setOpaque(false);
 		chnList.setModel(listModel);
 		chnList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
 		add(chnList);
-		
-		setOpaque(true);
+	}
+	
+	class ChannelListPane extends ComponentList {
+		public java.awt.Dimension
+		getMaximumSize() { return getPreferredSize(); }
 	}
 	
 	/**
@@ -78,10 +81,8 @@ public class ChannelsPane extends JSChannelsPane {
 	addChannel(SamplerChannelModel channelModel) {
 		Channel channel = new Channel(channelModel);
 		listModel.add(channel);
-		if(channel.getChannelInfo().getEngine() == null) channel.expandChannel();
+		if(channel.getChannelInfo().getEngine() == null) channel.expandChannel(false);
 		chnList.setSelectedComponent(channel, true);
-		
-		MainFrame.repack(CC.getMainFrame());
 	}
 	
 	/**
@@ -95,8 +96,6 @@ public class ChannelsPane extends JSChannelsPane {
 		for(JSChannel c : chns) listModel.add(c);
 		
 		chnList.setSelectedIndex(listModel.getSize() - 1);
-		
-		MainFrame.repack(CC.getMainFrame());
 	}
 	
 	/**
@@ -107,8 +106,6 @@ public class ChannelsPane extends JSChannelsPane {
 	public void
 	removeChannel(JSChannel chn) {
 		listModel.remove(chn);
-		
-		MainFrame.repack(CC.getMainFrame());
 	}
 	
 	/**
@@ -199,9 +196,6 @@ public class ChannelsPane extends JSChannelsPane {
 			if(i == -1) break;
 			model.remove(i);
 		}
-		
-		
-		MainFrame.repack(CC.getMainFrame());
 		
 		return l.length;
 	}

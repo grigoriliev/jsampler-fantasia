@@ -59,6 +59,7 @@ import org.jsampler.task.*;
 
 import org.jsampler.view.JSMainFrame;
 import org.jsampler.view.JSProgress;
+import org.jsampler.view.JSViewConfig;
 import org.jsampler.view.InstrumentsDbTreeModel;
 
 import org.linuxsampler.lscp.AudioOutputChannel;
@@ -87,6 +88,7 @@ public class CC {
 	private static Handler handler;
 	private static FileOutputStream fos;
 	
+	private static JSViewConfig viewConfig = null;
 	private static JSMainFrame mainFrame = null;
 	private static JSProgress progress = null;
 	
@@ -136,6 +138,18 @@ public class CC {
 		
 		getTaskQueue().add(t);
 	}
+	
+	/**
+	 * Gets the configuration of the current view.
+	 */
+	public static JSViewConfig
+	getViewConfig() { return viewConfig; }
+	
+	/**
+	 * Sets the configuration of the current view.
+	 */
+	public static void
+	setViewConfig(JSViewConfig viewConfig) { CC.viewConfig = viewConfig; }
 	
 	/**
 	 * Returns the main window of this application.
@@ -293,7 +307,9 @@ public class CC {
 	checkJSamplerHome() {
 		if(getJSamplerHome() != null) {
 			File f = new File(getJSamplerHome());
-			if(f.isDirectory()) return;
+			if(f.exists() && f.isDirectory()) {
+				return;
+			}
 		}
 		
 		CC.getMainFrame().installJSamplerHome();
@@ -309,12 +325,12 @@ public class CC {
 	public static void
 	changeJSamplerHome(String path) {
 		File fNew = new File(path);
-		if(fNew.isFile()) {
+		if(fNew.exists() && fNew.isFile()) {
 			HF.showErrorMessage(i18n.getError("CC.JSamplerHomeIsNotDir!"));
 			return;
 		}
 		
-		if(!fNew.isDirectory()) {
+		if(!fNew.exists()) {
 			if(!fNew.mkdir()) {
 				String s = fNew.getAbsolutePath();
 				HF.showErrorMessage(i18n.getError("CC.mkdirFailed", s));
@@ -322,13 +338,13 @@ public class CC {
 			}
 		}
 		
-		if(getJSamplerHome() == null) {
+		if(getJSamplerHome() == null || path.equals(getJSamplerHome())) {
 			setJSamplerHome(fNew.getAbsolutePath());
 			return;
 		}
 		
 		File fOld = new File(getJSamplerHome());
-		if(!fOld.isDirectory()) {
+		if(!fOld.exists() || !fOld.isDirectory()) {
 			setJSamplerHome(fNew.getAbsolutePath());
 			return;
 		}
@@ -549,7 +565,7 @@ public class CC {
 				
 				model.setServerInfo(gsi.getResult());
 				
-				if(CC.getMainFrame().getInstrumentsDbSupport()) {
+				if(CC.getViewConfig().getInstrumentsDbSupport()) {
 					getInstrumentsDbTreeModel();
 				}
 			}
@@ -1012,15 +1028,7 @@ public class CC {
 			case TASK_DONE:
 				EnhancedTask t = (EnhancedTask)e.getSource();
 				if(t.doneWithErrors() && !t.isStopped()) {
-					if(t.getErrorDetails() == null) {
-						HF.showErrorMessage(t.getErrorMessage());
-					} else {
-						getMainFrame().showDetailedErrorMessage (
-							getMainFrame(),
-							t.getErrorMessage(),
-							t.getErrorDetails()
-						);
-					}
+					showError(t);
 				}
 				break;
 			case NOT_IDLE:
@@ -1031,6 +1039,24 @@ public class CC {
 				getProgressIndicator().stop();
 				break;
 			}
+		}
+		
+		private void
+		showError(final Task t) {
+			javax.swing.SwingUtilities.invokeLater(new Runnable() {
+				public void
+				run() {
+					if(t.getErrorDetails() == null) {
+						HF.showErrorMessage(t.getErrorMessage());
+					} else {
+						getMainFrame().showDetailedErrorMessage (
+							getMainFrame(),
+							t.getErrorMessage(),
+							t.getErrorDetails()
+						);
+					}
+				}
+			});
 		}
 		
 		/** Invoked when the name of orchestra is changed. */

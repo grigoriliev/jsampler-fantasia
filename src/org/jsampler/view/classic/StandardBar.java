@@ -24,6 +24,7 @@ package org.jsampler.view.classic;
 
 import javax.swing.JToolBar;
 
+import static org.jsampler.view.classic.A4n.a4n;
 import static org.jsampler.view.classic.ClassicI18n.i18n;
 
 
@@ -33,10 +34,10 @@ import static org.jsampler.view.classic.ClassicI18n.i18n;
  */
 public class StandardBar extends JToolBar {
 	private final ToolbarButton btnLoadScript = new ToolbarButton(A4n.loadScript);
-	private final ToolbarButton btnExportSession = new ToolbarButton(A4n.exportSamplerConfig);
+	private final ToolbarButton btnExportSession = new ToolbarButton(a4n.exportSamplerConfig);
 	private final ToolbarButton btnSamplerInfo = new ToolbarButton(A4n.samplerInfo);
-	private final ToolbarButton btnRefresh = new ToolbarButton(A4n.refresh);
-	private final ToolbarButton btnResetSampler = new ToolbarButton(A4n.resetSampler);
+	private final ToolbarButton btnRefresh = new ToolbarButton(a4n.refresh);
+	private final ToolbarButton btnResetSampler = new ToolbarButton(a4n.resetSampler);
 	private final ToolbarButton btnInstrumentsDb = new ToolbarButton(A4n.windowInstrumentsDb);
 	private final ToolbarButton btnPreferences = new ToolbarButton(A4n.preferences);
 	

@@ -62,6 +62,7 @@ import net.sf.juife.event.TaskListener;
 
 import org.jsampler.CC;
 import org.jsampler.Instrument;
+import org.jsampler.JSPrefs;
 import org.jsampler.OrchestraModel;
 
 import org.jsampler.task.InstrumentsDb;
@@ -176,6 +177,13 @@ public class JSInstrumentChooser extends OkCancelDialog {
 		} else {
 			btnBrowseDb.requestFocusInWindow();
 		}
+		
+		int i = preferences().getIntProperty("lastUsedOrchestraIndex", 0);
+		if(CC.getOrchestras().getOrchestraCount() > i) {
+			cbOrchestras.setSelectedIndex(i);
+			i = preferences().getIntProperty("lastUsedOrchestraInstrumentIndex", 0);
+			if(cbInstruments.getItemCount() > i) cbInstruments.setSelectedIndex(i);
+		}
 	}
 	
 	private JPanel
@@ -235,6 +243,9 @@ public class JSInstrumentChooser extends OkCancelDialog {
 		return p;
 	}
 	
+	protected JSPrefs
+	preferences() { return CC.getViewConfig().preferences(); }
+	
 	private void
 	orchestraChanged() {
 		OrchestraModel om = (OrchestraModel)cbOrchestras.getSelectedItem();
@@ -279,18 +290,7 @@ public class JSInstrumentChooser extends OkCancelDialog {
 		
 		btnBrowseDb.addActionListener(new ActionListener() {
 			public void
-			actionPerformed(ActionEvent e) {
-				if(!rbSelectFromDb.isSelected()) rbSelectFromDb.doClick(0);
-				JSDbInstrumentChooser dlg;
-				dlg = new JSDbInstrumentChooser(JSInstrumentChooser.this);
-				String s = tfDbInstrument.getText();
-				if(s.length() > 0) dlg.setSelectedInstrument(s);
-				else dlg.setSelectedDirectory("/");
-				dlg.setVisible(true);
-				if(dlg.isCancelled()) return;
-				tfDbInstrument.setText(dlg.getSelectedInstrument());
-				tfDbInstrument.requestFocus();
-			}
+			actionPerformed(ActionEvent e) { onBrowseDb(); }
 		});
 		
 		p.setAlignmentX(LEFT_ALIGNMENT);
@@ -357,12 +357,22 @@ public class JSInstrumentChooser extends OkCancelDialog {
 	protected void
 	onOk() {
 		if(!btnOk.isEnabled()) return;
+		
 		if(rbSelectFromOrchestra.isSelected()) {
 			Instrument instr = (Instrument)cbInstruments.getSelectedItem();
 			instrumentFile = instr.getPath();
 			instrumentIndex = instr.getInstrumentIndex();
 			engine = instr.getEngine();
 			setVisible(false);
+			
+			int i = cbOrchestras.getSelectedIndex();
+			if(i >= 0) preferences().setIntProperty("lastUsedOrchestraIndex", i);
+			
+			i = cbInstruments.getSelectedIndex();
+			if(i >= 0) {
+				preferences().setIntProperty("lastUsedOrchestraInstrumentIndex", i);
+			}
+			
 			return;
 		}
 		
@@ -376,6 +386,7 @@ public class JSInstrumentChooser extends OkCancelDialog {
 		if(!rbSelectFromDb.isSelected()) return;
 		
 		String instr = tfDbInstrument.getText();
+		preferences().setStringProperty("lastUsedDbInstrument", instr);
 		final InstrumentsDb.GetInstrument t = new InstrumentsDb.GetInstrument(instr);
 		
 		t.addTaskListener(new TaskListener() {
@@ -401,12 +412,34 @@ public class JSInstrumentChooser extends OkCancelDialog {
 	private void
 	onBrowse() {
 		if(!rbSelectFromFile.isSelected()) rbSelectFromFile.doClick(0);
-		JFileChooser fc = new JFileChooser();
+		String s = preferences().getStringProperty("lastInstrumentLocation");
+		JFileChooser fc = new JFileChooser(s);
 		int result = fc.showOpenDialog(this);
 		if(result == JFileChooser.APPROVE_OPTION) {
 			tfFilename.setText(fc.getSelectedFile().getPath());
 			btnOk.requestFocusInWindow();
+			
+			String path = fc.getCurrentDirectory().getAbsolutePath();
+			preferences().setStringProperty("lastInstrumentLocation", path);
 		}
+	}
+	
+	private void
+	onBrowseDb() {
+		if(!rbSelectFromDb.isSelected()) rbSelectFromDb.doClick(0);
+		JSDbInstrumentChooser dlg;
+		dlg = new JSDbInstrumentChooser(JSInstrumentChooser.this);
+		String s = tfDbInstrument.getText();
+		if(s.length() > 0) dlg.setSelectedInstrument(s);
+		else {
+			s = preferences().getStringProperty("lastUsedDbInstrument", "");
+			if(s.length() > 0) dlg.setSelectedInstrument(s);
+			else dlg.setSelectedDirectory("/");
+		}
+		dlg.setVisible(true);
+		if(dlg.isCancelled()) return;
+		tfDbInstrument.setText(dlg.getSelectedInstrument());
+		tfDbInstrument.requestFocus();
 	}
 	
 	/**

@@ -45,6 +45,7 @@ import net.sf.juife.OkCancelDialog;
 
 import org.jsampler.CC;
 import org.jsampler.Instrument;
+import org.jsampler.JSPrefs;
 
 import static org.jsampler.view.std.StdI18n.i18n;
 
@@ -164,6 +165,9 @@ public class JSAddOrEditInstrumentDlg extends OkCancelDialog {
 		updateState();
 	}
 	
+	protected JSPrefs
+	preferences() { return CC.getViewConfig().preferences(); }
+	
 	private void
 	updateInfo() {
 		tfName.setText(getInstrument().getName());
@@ -227,11 +231,14 @@ public class JSAddOrEditInstrumentDlg extends OkCancelDialog {
 		// ActionListener
 		public void
 		actionPerformed(ActionEvent e) {
-			JFileChooser fc = new JFileChooser();
+			String path = preferences().getStringProperty("lastInstrumentLocation");
+			JFileChooser fc = new JFileChooser(path);
 			int result = fc.showOpenDialog(JSAddOrEditInstrumentDlg.this);
 			if(result != JFileChooser.APPROVE_OPTION) return;
 		
 			tfPath.setText(fc.getSelectedFile().getAbsolutePath());
+			path = fc.getCurrentDirectory().getAbsolutePath();
+			preferences().setStringProperty("lastInstrumentLocation", path);
 		}
 	}
 }

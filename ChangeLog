@@ -1,6 +1,7 @@
 CVS HEAD
-  * The location of the last loaded instrument is now
-    saved for the next session
+  * The locations of the last loaded instrument, last scanned
+    instrument/directory, last added instrument to orchestra are
+    now saved for the next session
 
 JSampler v0.6a: 2007-08-10
   * The Fantasia distribution is now capable of

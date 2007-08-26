@@ -54,6 +54,7 @@ import net.sf.juife.event.TaskEvent;
 import net.sf.juife.event.TaskListener;
 
 import org.jsampler.CC;
+import org.jsampler.JSPrefs;
 import org.jsampler.task.InstrumentsDb;
 
 import static org.jsampler.view.std.StdI18n.i18n;
@@ -197,14 +198,20 @@ public class JSAddDbInstrumentsFromDirDlg extends OkCancelDialog {
 		});
 	}
 	
+	protected JSPrefs
+	preferences() { return CC.getViewConfig().preferences(); }
+	
 	private void
 	onBrowse() {
-		JFileChooser fc = new JFileChooser();
+		String path = preferences().getStringProperty("lastInstrumentLocation");
+		JFileChooser fc = new JFileChooser(path);
 		fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		int result = fc.showOpenDialog(this);
 		if(result != JFileChooser.APPROVE_OPTION) return;
 		
 		tfSource.setText(fc.getSelectedFile().getPath());
+		path = fc.getCurrentDirectory().getAbsolutePath();
+		preferences().setStringProperty("lastInstrumentLocation", path);
 	}
 	
 	private void

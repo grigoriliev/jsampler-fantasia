@@ -42,7 +42,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.StringReader;
 
 import java.util.Vector;
 import java.util.logging.Level;
@@ -234,9 +233,8 @@ public class MainFrame extends JSMainFrame {
 		sb.append(d.width).append(',').append(d.height);
 		preferences().setStringProperty("MainFrame.sizeAndLocation", sb.toString());
 		
-		sb = new StringBuffer();
-		for(String s : recentScripts) sb.append(s).append("\n");
-		preferences().setStringProperty(RECENT_LSCP_SCRIPTS, sb.toString());
+		String[] list = recentScripts.toArray(new String[recentScripts.size()]);
+		preferences().setStringListProperty(RECENT_LSCP_SCRIPTS, list);
 		
 		if(preferences().getBoolProperty(SAVE_LS_CONSOLE_HISTORY)) {
 			if(lsConsoleFrame != null) getLSConsolePane().saveConsoleHistory();
@@ -284,18 +282,8 @@ public class MainFrame extends JSMainFrame {
 		mi.setIcon(null);
 		m.add(mi);
 		
-		String s = preferences().getStringProperty(RECENT_LSCP_SCRIPTS);
-		BufferedReader br = new BufferedReader(new StringReader(s));
-		
-		try {
-			s = br.readLine();
-			while(s != null) {
-				recentScripts.add(s);
-				s = br.readLine();
-			}
-		} catch(Exception x) {
-			CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
-		}
+		String[] list = preferences().getStringListProperty(RECENT_LSCP_SCRIPTS);
+		for(String s : list) recentScripts.add(s);
 		
 		updateRecentScriptsMenu();
 		

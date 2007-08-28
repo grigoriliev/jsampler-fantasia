@@ -31,6 +31,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -65,7 +66,7 @@ public class JSAddOrEditInstrumentDlg extends OkCancelDialog {
 	
 	private final JTextField tfName = new JTextField();
 	private final JTextField tfDesc = new JTextField();
-	private final JTextField tfPath = new JTextField();
+	private final JComboBox cbPath = new JComboBox();
 	private final JSpinner spinnerIndex = new JSpinner(new SpinnerNumberModel(0, 0, 500, 1));
 	
 	private Instrument instrument;
@@ -85,6 +86,15 @@ public class JSAddOrEditInstrumentDlg extends OkCancelDialog {
 		super(CC.getMainFrame(), i18n.getLabel("JSAddOrEditInstrumentDlg.title"));
 		
 		instrument = instr;
+		
+		cbPath.setEditable(true);
+		String[] files = preferences().getStringListProperty("recentInstrumentFiles");
+		for(String s : files) cbPath.addItem(s);
+		cbPath.setSelectedItem(null);
+		
+		cbPath.setPreferredSize (
+			new Dimension(200, cbPath.getPreferredSize().height)
+		);
 		
 		JPanel p = new JPanel();
 		
@@ -139,8 +149,8 @@ public class JSAddOrEditInstrumentDlg extends OkCancelDialog {
 		c.gridx = 1;
 		c.gridy = 2;
 		c.gridwidth = 1;
-		gridbag.setConstraints(tfPath, c);
-		p.add(tfPath);
+		gridbag.setConstraints(cbPath, c);
+		p.add(cbPath);
 		
 		c.gridx = 1;
 		c.gridy = 3;
@@ -158,8 +168,11 @@ public class JSAddOrEditInstrumentDlg extends OkCancelDialog {
 		setLocationRelativeTo(getOwner());
 		
 		tfName.getDocument().addDocumentListener(getHandler());
-		tfPath.getDocument().addDocumentListener(getHandler());
 		btnBrowse.addActionListener(getHandler());
+		cbPath.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) { updateState(); }
+		});
 		
 		updateInfo();
 		updateState();
@@ -172,7 +185,7 @@ public class JSAddOrEditInstrumentDlg extends OkCancelDialog {
 	updateInfo() {
 		tfName.setText(getInstrument().getName());
 		tfDesc.setText(getInstrument().getDescription());
-		tfPath.setText(getInstrument().getPath());
+		cbPath.setSelectedItem(getInstrument().getPath());
 		spinnerIndex.setValue(getInstrument().getInstrumentIndex());
 	}
 	
@@ -180,7 +193,8 @@ public class JSAddOrEditInstrumentDlg extends OkCancelDialog {
 	updateState() {
 		boolean b = true;
 		if(tfName.getText().length() == 0) b = false;
-		if(tfPath.getText().length() == 0) b = false;
+		Object o = cbPath.getSelectedItem();
+		if(o == null || o.toString().length() == 0) b = false;
 		
 		btnOk.setEnabled(b);
 	}
@@ -191,9 +205,11 @@ public class JSAddOrEditInstrumentDlg extends OkCancelDialog {
 		
 		instrument.setName(tfName.getText());
 		instrument.setDescription(tfDesc.getText());
-		instrument.setPath(tfPath.getText());
+		instrument.setPath(cbPath.getSelectedItem().toString());
 		int idx = Integer.parseInt(spinnerIndex.getValue().toString());
 		instrument.setInstrumentIndex(idx);
+		
+		StdUtils.updateRecentElements("recentInstrumentFiles", instrument.getPath());
 		
 		setVisible(false);
 		setCancelled(false);
@@ -236,7 +252,7 @@ public class JSAddOrEditInstrumentDlg extends OkCancelDialog {
 			int result = fc.showOpenDialog(JSAddOrEditInstrumentDlg.this);
 			if(result != JFileChooser.APPROVE_OPTION) return;
 		
-			tfPath.setText(fc.getSelectedFile().getAbsolutePath());
+			cbPath.setSelectedItem(fc.getSelectedFile().getAbsolutePath());
 			path = fc.getCurrentDirectory().getAbsolutePath();
 			preferences().setStringProperty("lastInstrumentLocation", path);
 		}

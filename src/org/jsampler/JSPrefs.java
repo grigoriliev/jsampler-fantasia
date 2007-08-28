@@ -23,6 +23,11 @@
 package org.jsampler;
 
 import java.beans.PropertyChangeSupport;
+
+import java.io.BufferedReader;
+import java.io.StringReader;
+
+import java.util.Vector;
 import java.util.prefs.Preferences;
 
 /**
@@ -72,9 +77,9 @@ public class JSPrefs extends PropertyChangeSupport {
 	}
 	
 	/**
-	 * Sets an integer property.
+	 * Sets a string property.
 	 * @param name The name of the property.
-	 * @param i The new value for the specified property.
+	 * @param s The new value for the specified property.
 	 */
 	public void
 	setStringProperty(String name, String s) {
@@ -96,6 +101,77 @@ public class JSPrefs extends PropertyChangeSupport {
 	 */
 	public String
 	getDefaultStringValue(String name) { return null; }
+	
+	/**
+	 * Gets a string list property.
+	 * @param name The name of the property.
+	 * @return The value of the specified property.
+	 * If the property is not set, the return value is an empty array.
+	 * @see #getDefaultStringListValue
+	 */
+	public String[]
+	getStringListProperty(String name) {
+		return getStringListProperty(name, getDefaultStringListValue(name));
+	}
+	
+	/**
+	 * Gets a string list property.
+	 * @param name The name of the property.
+	 * @param defaultValue The value to return if the property is not set.
+	 * @return The value of the specified property.
+	 */
+	public String[]
+	getStringListProperty(String name, String[] defaultValue) {
+		String s = user().get(name, null);
+		if(s == null) return defaultValue;
+		if(s.length() == 0) return new String[0];
+		
+		BufferedReader br = new BufferedReader(new StringReader(s));
+		Vector<String> v = new Vector();
+		
+		try {
+			s = br.readLine();
+			while(s != null) {
+				v.add(s);
+				s = br.readLine();
+			}
+		} catch(Exception x) {
+			x.printStackTrace();
+		}
+		
+		return v.toArray(new String[v.size()]);
+	}
+	
+	/**
+	 * Sets a string list property.
+	 * Note that the string elements may not contain new lines.
+	 * @param name The name of the property.
+	 * @param list The new value for the specified property.
+	 */
+	public void
+	setStringListProperty(String name, String[] list) {
+		String[] oldValue = getStringListProperty(name);
+		
+		if(list == null) user().remove(name);
+		else {
+			StringBuffer sb = new StringBuffer();
+			for(String s : list) sb.append(s).append("\n");
+			user().put(name, sb.toString());
+		}
+		
+		firePropertyChange(name, oldValue, list);
+	}
+	
+	/**
+	 * Gets the default value for the specified property.
+	 * The default value is used when the property is not set.
+	 * Override this method to provide custom default values for specific properties.
+	 * @name The name of the property whose default value should be obtained.
+	 * @return An empty array.
+	 * @see #getStringListProperty(String name)
+	 */
+	public String[]
+	getDefaultStringListValue(String name) { return new String[0]; }
 	
 	/**
 	 * Gets an integer property.

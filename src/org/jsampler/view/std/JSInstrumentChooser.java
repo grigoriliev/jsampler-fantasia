@@ -47,7 +47,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
-import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 
 import javax.swing.event.ChangeEvent;
@@ -92,13 +91,13 @@ public class JSInstrumentChooser extends OkCancelDialog {
 	private final JComboBox cbInstruments = new JComboBox();
 	
 	
-	private final JTextField tfDbInstrument = new JTextField();
+	private final JComboBox cbDbInstrument = new JComboBox();
 	private final JButton btnBrowseDb;
 	
 	private final JLabel lFilename = new JLabel(i18n.getLabel("JSInstrumentChooser.lFilename"));
 	private final JLabel lIndex = new JLabel(i18n.getLabel("JSInstrumentChooser.lIndex"));
 	
-	private final JTextField tfFilename = new JTextField();
+	private final JComboBox cbFilename = new JComboBox();
 	private final JSpinner spinnerIndex = new JSpinner(new SpinnerNumberModel(0, 0, 500, 1));
 	
 	private final JButton btnBrowse;
@@ -131,11 +130,33 @@ public class JSInstrumentChooser extends OkCancelDialog {
 		cbOrchestras.addFocusListener(getHandler());
 		cbInstruments.addFocusListener(getHandler());
 		
-		tfDbInstrument.addFocusListener(getHandler());
-		tfDbInstrument.getDocument().addDocumentListener(getHandler());
+		cbDbInstrument.addFocusListener(getHandler());
+		cbDbInstrument.addActionListener(getHandler());
+		cbDbInstrument.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) {
+				if(!rbSelectFromDb.isSelected()) rbSelectFromDb.doClick(0);
+			}
+		});
+		cbDbInstrument.setEditable(true);
 		
-		tfFilename.addFocusListener(getHandler());
-		tfFilename.getDocument().addDocumentListener(getHandler());
+		String[] instrs = preferences().getStringListProperty("recentDbInstruments");
+		for(String s : instrs) cbDbInstrument.addItem(s);
+		cbDbInstrument.setSelectedItem(null);
+		
+		cbFilename.addFocusListener(getHandler());
+		cbFilename.addActionListener(getHandler());
+		cbFilename.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) {
+				if(!rbSelectFromFile.isSelected()) rbSelectFromFile.doClick(0);
+			}
+		});
+		cbFilename.setEditable(true);
+		
+		String[] files = preferences().getStringListProperty("recentInstrumentFiles");
+		for(String s : files) cbFilename.addItem(s);
+		cbFilename.setSelectedItem(null);
 		
 		spinnerIndex.addChangeListener(new ChangeListener() {
 			public void
@@ -172,7 +193,7 @@ public class JSInstrumentChooser extends OkCancelDialog {
 		
 		if(!CC.getSamplerModel().getServerInfo().hasInstrumentsDbSupport()) {
 			rbSelectFromDb.setEnabled(false);
-			tfDbInstrument.setEnabled(false);
+			cbDbInstrument.setEnabled(false);
 			btnBrowseDb.setEnabled(false);
 		} else {
 			btnBrowseDb.requestFocusInWindow();
@@ -282,11 +303,16 @@ public class JSInstrumentChooser extends OkCancelDialog {
 	createDbPane() {
 		JPanel p = new JPanel();
 		p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
-		p.add(tfDbInstrument);
+		p.add(cbDbInstrument);
 		p.add(Box.createRigidArea(new Dimension(6, 0)));
 		btnBrowseDb.setMargin(new Insets(0, 0, 0, 0));
 		p.add(btnBrowseDb);
-		//p.setMaximumSize(new Dimension(Short.MAX_VALUE, p.getPreferredSize().height));
+		
+		
+		
+		cbDbInstrument.setPreferredSize (
+			new Dimension(200, cbDbInstrument.getPreferredSize().height)
+		);
 		
 		btnBrowseDb.addActionListener(new ActionListener() {
 			public void
@@ -333,16 +359,16 @@ public class JSInstrumentChooser extends OkCancelDialog {
 		c.gridy = 0;
 		c.weightx = 1.0;
 		c.anchor = GridBagConstraints.WEST;
-		gridbag.setConstraints(tfFilename, c);
-		filePane.add(tfFilename);
+		gridbag.setConstraints(cbFilename, c);
+		filePane.add(cbFilename);
 			
 		c.gridx = 1;
 		c.gridy = 1;
 		gridbag.setConstraints(spinnerIndex, c);
 		filePane.add(spinnerIndex);
 		
-		tfFilename.setPreferredSize (
-			new Dimension(200, tfFilename.getPreferredSize().height)
+		cbFilename.setPreferredSize (
+			new Dimension(200, cbFilename.getPreferredSize().height)
 		);
 		
 		btnBrowse.addActionListener(new ActionListener() {
@@ -377,17 +403,22 @@ public class JSInstrumentChooser extends OkCancelDialog {
 		}
 		
 		if(rbSelectFromFile.isSelected()) {
-			instrumentFile = tfFilename.getText();
+			instrumentFile = cbFilename.getSelectedItem().toString();
 			instrumentIndex = Integer.parseInt(spinnerIndex.getValue().toString());
+			
+			StdUtils.updateRecentElements("recentInstrumentFiles", instrumentFile);
+			
 			setVisible(false);
 			return;
 		}
 		
 		if(!rbSelectFromDb.isSelected()) return;
 		
-		String instr = tfDbInstrument.getText();
+		String instr = cbDbInstrument.getSelectedItem().toString();
 		preferences().setStringProperty("lastUsedDbInstrument", instr);
 		final InstrumentsDb.GetInstrument t = new InstrumentsDb.GetInstrument(instr);
+		
+		StdUtils.updateRecentElements("recentDbInstruments", instr);
 		
 		t.addTaskListener(new TaskListener() {
 			public void
@@ -416,7 +447,7 @@ public class JSInstrumentChooser extends OkCancelDialog {
 		JFileChooser fc = new JFileChooser(s);
 		int result = fc.showOpenDialog(this);
 		if(result == JFileChooser.APPROVE_OPTION) {
-			tfFilename.setText(fc.getSelectedFile().getPath());
+			cbFilename.setSelectedItem(fc.getSelectedFile().getPath());
 			btnOk.requestFocusInWindow();
 			
 			String path = fc.getCurrentDirectory().getAbsolutePath();
@@ -429,17 +460,17 @@ public class JSInstrumentChooser extends OkCancelDialog {
 		if(!rbSelectFromDb.isSelected()) rbSelectFromDb.doClick(0);
 		JSDbInstrumentChooser dlg;
 		dlg = new JSDbInstrumentChooser(JSInstrumentChooser.this);
-		String s = tfDbInstrument.getText();
-		if(s.length() > 0) dlg.setSelectedInstrument(s);
+		Object o = cbDbInstrument.getSelectedItem();
+		if(o != null && o.toString().length() > 0) dlg.setSelectedInstrument(o.toString());
 		else {
-			s = preferences().getStringProperty("lastUsedDbInstrument", "");
+			String s = preferences().getStringProperty("lastUsedDbInstrument", "");
 			if(s.length() > 0) dlg.setSelectedInstrument(s);
 			else dlg.setSelectedDirectory("/");
 		}
 		dlg.setVisible(true);
 		if(dlg.isCancelled()) return;
-		tfDbInstrument.setText(dlg.getSelectedInstrument());
-		tfDbInstrument.requestFocus();
+		cbDbInstrument.setSelectedItem(dlg.getSelectedInstrument());
+		cbDbInstrument.requestFocus();
 	}
 	
 	/**
@@ -465,9 +496,12 @@ public class JSInstrumentChooser extends OkCancelDialog {
 		if(rbSelectFromOrchestra.isSelected()) {
 			b = cbInstruments.getSelectedItem() != null;
 		} else if(rbSelectFromDb.isSelected()) {
-			b = tfDbInstrument.getText().length() > 0;
+			Object o = cbDbInstrument.getSelectedItem();
+			b = o != null && o.toString().length() > 0;
 		} else if(rbSelectFromFile.isSelected()) {
-			b = tfFilename.getText().length() > 0;
+			Object o = cbFilename.getSelectedItem();
+			if(o == null) b = false;
+			else b = o.toString().length() > 0;
 		}
 		
 		btnOk.setEnabled(b);
@@ -504,9 +538,9 @@ public class JSInstrumentChooser extends OkCancelDialog {
 				if(!rbSelectFromOrchestra.isSelected()) {
 					rbSelectFromOrchestra.doClick(0);
 				}
-			} else if(src == tfDbInstrument) {
+			} else if(src == cbDbInstrument) {
 				if(!rbSelectFromDb.isSelected()) rbSelectFromDb.doClick(0);
-			} else if(src == tfFilename) {
+			} else if(src == cbFilename) {
 				if(!rbSelectFromFile.isSelected()) rbSelectFromFile.doClick(0);
 			}
 		}

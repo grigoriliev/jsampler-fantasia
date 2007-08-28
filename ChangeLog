@@ -1,4 +1,8 @@
 CVS HEAD
+  * A lists of recently used instrument files, directories,
+    database instruments, database directories are now available
+    for quick access, where appropriate.
+
   * The locations of the last loaded instrument, last scanned
     instrument/directory, last added instrument to orchestra are
     now saved for the next session

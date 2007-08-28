@@ -36,11 +36,11 @@ import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
-import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 
@@ -69,10 +69,10 @@ public class JSAddDbInstrumentsFromFileDlg extends OkCancelDialog {
 	private final JRadioButton rbIndex =
 		new JRadioButton(i18n.getLabel("JSAddDbInstrumentsFromFileDlg.rbIndex"));
 	
-	private final JTextField tfSource = new JTextField();
+	private final JComboBox cbSource = new JComboBox();
 	private final JSpinner spinnerIndex = new JSpinner(new SpinnerNumberModel(0, 0, 500, 1));
 	private JButton btnBrowse;
-	private final JTextField tfDest = new JTextField();
+	private final JComboBox cbDest = new JComboBox();
 	private JButton btnBrowseDb;
 	
 	/**
@@ -105,7 +105,7 @@ public class JSAddDbInstrumentsFromFileDlg extends OkCancelDialog {
 		
 		JPanel p2 = new JPanel();
 		p2.setLayout(new BoxLayout(p2, BoxLayout.X_AXIS));
-		p2.add(tfSource);
+		p2.add(cbSource);
 		p2.add(Box.createRigidArea(new Dimension(6, 0)));
 		String s = i18n.getButtonLabel("browse");
 		btnBrowse.setMargin(new Insets(0, 0, 0, 0));
@@ -149,7 +149,7 @@ public class JSAddDbInstrumentsFromFileDlg extends OkCancelDialog {
 		
 		p2 = new JPanel();
 		p2.setLayout(new BoxLayout(p2, BoxLayout.X_AXIS));
-		p2.add(tfDest);
+		p2.add(cbDest);
 		p2.add(Box.createRigidArea(new Dimension(6, 0)));
 		s = i18n.getButtonLabel("browse");
 		btnBrowseDb.setMargin(new Insets(0, 0, 0, 0));
@@ -173,8 +173,6 @@ public class JSAddDbInstrumentsFromFileDlg extends OkCancelDialog {
 		setMinimumSize(this.getPreferredSize());
 		setResizable(true);
 		
-		if(dbDir != null) tfDest.setText(dbDir);
-		
 		ButtonGroup group = new ButtonGroup();
 		group.add(rbAllInstruments);
 		group.add(rbIndex);
@@ -183,8 +181,29 @@ public class JSAddDbInstrumentsFromFileDlg extends OkCancelDialog {
 		btnOk.setEnabled(false);
 		spinnerIndex.setEnabled(false);
 		
-		tfSource.getDocument().addDocumentListener(getHandler());
-		tfDest.getDocument().addDocumentListener(getHandler());
+		cbSource.setEditable(true);
+		String[] dirs = preferences().getStringListProperty("recentInstrumentFiles");
+		for(String dir : dirs) cbSource.addItem(dir);
+		cbSource.setSelectedItem(null);
+		
+		cbSource.setPreferredSize (
+			new Dimension(200, cbSource.getPreferredSize().height)
+		);
+		
+		cbSource.addActionListener(getHandler());
+		
+		cbDest.setEditable(true);
+		dirs = preferences().getStringListProperty("recentDbDirectories");
+		for(String dir : dirs) cbDest.addItem(dir);
+		cbDest.setSelectedItem(dbDir);
+		
+		
+		cbDest.setPreferredSize (
+			new Dimension(200, cbDest.getPreferredSize().height)
+		);
+		
+		cbDest.addActionListener(getHandler());
+		
 		
 		btnBrowse.addActionListener(new ActionListener() {
 			public void
@@ -207,15 +226,7 @@ public class JSAddDbInstrumentsFromFileDlg extends OkCancelDialog {
 		
 		btnBrowseDb.addActionListener(new ActionListener() {
 			public void
-			actionPerformed(ActionEvent e) {
-				JSDbDirectoryChooser dlg;
-				dlg = new JSDbDirectoryChooser(JSAddDbInstrumentsFromFileDlg.this);
-				String s = tfDest.getText();
-				if(s.length() > 0) dlg.setSelectedDirectory(s);
-				dlg.setVisible(true);
-				if(dlg.isCancelled()) return;
-				tfDest.setText(dlg.getSelectedDirectory());
-			}
+			actionPerformed(ActionEvent e) { onBrowseDb(); }
 		});
 	}
 	
@@ -230,14 +241,28 @@ public class JSAddDbInstrumentsFromFileDlg extends OkCancelDialog {
 		int result = fc.showOpenDialog(this);
 		if(result != JFileChooser.APPROVE_OPTION) return;
 		
-		tfSource.setText(fc.getSelectedFile().getPath());
+		cbSource.setSelectedItem(fc.getSelectedFile().getPath());
 		path = fc.getCurrentDirectory().getAbsolutePath();
 		preferences().setStringProperty("lastInstrumentLocation", path);
 	}
 	
 	private void
+	onBrowseDb() {
+		JSDbDirectoryChooser dlg;
+		dlg = new JSDbDirectoryChooser(JSAddDbInstrumentsFromFileDlg.this);
+		Object o = cbDest.getSelectedItem();
+		if(o != null && o.toString().length() > 0) dlg.setSelectedDirectory(o.toString());
+		dlg.setVisible(true);
+		if(dlg.isCancelled()) return;
+		cbDest.setSelectedItem(dlg.getSelectedDirectory());
+	}
+	
+	private void
 	updateState() {
-		boolean b = tfSource.getText().length() != 0 && tfDest.getText().length() != 0;
+		Object o = cbSource.getSelectedItem();
+		Object o2 = cbDest.getSelectedItem();
+		boolean b = o != null && o.toString().length() > 0;
+		b = b && o2 != null && o2.toString().length() > 0;
 		btnOk.setEnabled(b);
 	}
 	
@@ -246,8 +271,8 @@ public class JSAddDbInstrumentsFromFileDlg extends OkCancelDialog {
 		if(!btnOk.isEnabled()) return;
 		
 		btnOk.setEnabled(false);
-		String dbDir = tfDest.getText();
-		String filePath = tfSource.getText();
+		String dbDir = cbDest.getSelectedItem().toString();
+		String filePath = cbSource.getSelectedItem().toString();
 		int idx = -1;
 		if(rbIndex.isSelected()) idx = Integer.parseInt(spinnerIndex.getValue().toString());
 		
@@ -262,6 +287,9 @@ public class JSAddDbInstrumentsFromFileDlg extends OkCancelDialog {
 		});
 		
 		CC.getTaskQueue().add(t);
+		
+		StdUtils.updateRecentElements("recentInstrumentFiles", filePath);
+		StdUtils.updateRecentElements("recentDbDirectories", dbDir);
 	}
 	
 	private void
@@ -282,7 +310,7 @@ public class JSAddDbInstrumentsFromFileDlg extends OkCancelDialog {
 	private Handler
 	getHandler() { return eventHandler; }
 	
-	private class Handler implements DocumentListener {
+	private class Handler implements DocumentListener, ActionListener {
 		// DocumentListener
 		public void
 		insertUpdate(DocumentEvent e) { updateState(); }
@@ -292,5 +320,9 @@ public class JSAddDbInstrumentsFromFileDlg extends OkCancelDialog {
 		
 		public void
 		changedUpdate(DocumentEvent e) { updateState(); }
+		///////
+		
+		public void
+		actionPerformed(ActionEvent e) { updateState(); }
 	}
 }

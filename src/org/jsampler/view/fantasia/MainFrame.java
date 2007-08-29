@@ -101,7 +101,7 @@ public class MainFrame extends JSMainFrame {
 	
 	private final SidePane sidePane = new SidePane();
 	
-	private LSConsoleFrame lsConsoleFrame = null;
+	private final LSConsoleFrame lsConsoleFrame = new LSConsoleFrame();
 	private final Vector<String> recentScripts = new Vector<String>();
 		
 	
@@ -388,10 +388,7 @@ public class MainFrame extends JSMainFrame {
 	}
 	
 	protected LSConsoleFrame
-	getLSConsoleFrame() {
-		if(lsConsoleFrame == null) lsConsoleFrame = new LSConsoleFrame();
-		return lsConsoleFrame;
-	}
+	getLSConsoleFrame() { return lsConsoleFrame; }
 	
 	protected void
 	runScript() {

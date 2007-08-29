@@ -44,6 +44,10 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import net.sf.juife.Task;
+import net.sf.juife.event.TaskEvent;
+import net.sf.juife.event.TaskListener;
+
 import org.jsampler.AudioDeviceModel;
 import org.jsampler.CC;
 
@@ -52,6 +56,7 @@ import org.jsampler.event.AudioDeviceListener;
 import org.jsampler.event.ParameterEvent;
 import org.jsampler.event.ParameterListener;
 
+import org.jsampler.task.Audio;
 import org.jsampler.view.ParameterTable;
 
 import org.linuxsampler.lscp.AudioOutputChannel;
@@ -85,7 +90,15 @@ public class AudioDevicePane extends DevicePane {
 	
 	protected void
 	destroyDevice() {
-		CC.getSamplerModel().removeBackendAudioDevice(getDeviceId());
+		final Task t = new Audio.DestroyDevice(getDeviceId());
+		t.addTaskListener(new TaskListener() {
+			public void
+			taskPerformed(TaskEvent e) {
+				if(t.doneWithErrors()) restoreDevice();
+			}
+		});
+		
+		CC.getTaskQueue().add(t);
 	}
 	
 	public int

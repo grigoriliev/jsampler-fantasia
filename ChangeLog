@@ -1,4 +1,7 @@
 CVS HEAD
+  * Added option for default actions when channel is created
+    (choose Edit/Preferences, then click the `Defaults' tab)
+
   * A lists of recently used instrument files, directories,
     database instruments, database directories are now available
     for quick access, where appropriate.

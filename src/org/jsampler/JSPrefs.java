@@ -35,6 +35,34 @@ import java.util.prefs.Preferences;
  * @author Grigor Iliev
  */
 public class JSPrefs extends PropertyChangeSupport {
+	/**
+	 * Property which specifies whether to apply default
+	 * actions to newly created sampler channels.
+	 */
+	public final static String USE_CHANNEL_DEFAULTS = "samplerChannel.useDefaultActions";
+	
+	/**
+	 * Property representing the default engine to be used when
+	 * new sampler channel is created. The action is taken only if
+	 * <code>USE_CHANNEL_DEFAULTS</code> is <code>true</code>.
+	 */
+	public final static String DEFAULT_ENGINE = "defaultEngine";
+	
+	/**
+	 * Property representing the default MIDI input to be used when
+	 * new sampler channel is created. The action is taken only if
+	 * <code>USE_CHANNEL_DEFAULTS</code> is <code>true</code>.
+	 */
+	public final static String DEFAULT_MIDI_INPUT = "defaultMidiInput";
+	
+	/**
+	 * Property representing the default audio output to be used when
+	 * new sampler channel is created. The action is taken only if
+	 * <code>USE_CHANNEL_DEFAULTS</code> is <code>true</code>.
+	 */
+	public final static String DEFAULT_AUDIO_OUTPUT = "defaultAudioOutput";
+	
+	
 	private final String pathName;
 	private final Preferences userPrefs;
 	

@@ -66,6 +66,7 @@ import org.jsampler.Prefs;
 
 import org.jsampler.view.std.JSColorButton;
 import org.jsampler.view.std.JSConnectionPropsPane;
+import org.jsampler.view.std.JSDefaultsPropsPane;
 import org.jsampler.view.std.JSGeneralProps;
 import org.jsampler.view.std.JSLSConsolePropsPane;
 
@@ -83,6 +84,7 @@ public class PrefsDlg extends EnhancedDialog {
 	private final ViewPane viewPane = new ViewPane();
 	private final ConsolePane consolePane = new ConsolePane();
 	private final JSConnectionPropsPane connectionPane = new JSConnectionPropsPane();
+	private final JSDefaultsPropsPane defaultsPane;
 	
 	private final JButton btnApply = new JButton(i18n.getButtonLabel("apply"));
 	private final JButton btnClose = new JButton(i18n.getButtonLabel("close"));
@@ -91,6 +93,8 @@ public class PrefsDlg extends EnhancedDialog {
 	public
 	PrefsDlg(Frame frm) {
 		super(frm, i18n.getLabel("PrefsDlg"), true);
+		
+		defaultsPane = new JSDefaultsPropsPane(this, Res.iconEdit16);
 		
 		initPrefsDlg();
 		installListeners();
@@ -113,6 +117,7 @@ public class PrefsDlg extends EnhancedDialog {
 		p.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
 		p.add(connectionPane, BorderLayout.NORTH);
 		tp.addTab(i18n.getLabel("PrefsDlg.tabConnection"), p);
+		tp.addTab(i18n.getLabel("PrefsDlg.tabDefaults"), defaultsPane);
 		
 		tp.setAlignmentX(RIGHT_ALIGNMENT);
 		
@@ -166,6 +171,7 @@ public class PrefsDlg extends EnhancedDialog {
 		viewPane.apply();
 		consolePane.apply();
 		connectionPane.apply();
+		defaultsPane.apply();
 		
 		setVisible(false);
 	}

@@ -28,12 +28,14 @@ import net.sf.juife.Task;
 
 import org.jsampler.CC;
 import org.jsampler.HF;
+import org.jsampler.JSPrefs;
 import org.jsampler.SamplerChannelModel;
 import org.jsampler.SamplerModel;
 
 import org.linuxsampler.lscp.FxSend;
 
 import static org.jsampler.JSI18n.i18n;
+import static org.jsampler.JSPrefs.*;
 
 
 /**
@@ -60,11 +62,95 @@ public class Channel {
 		/** The entry point of the task. */
 		public void
 		run() {
-			try { setResult(CC.getClient().addSamplerChannel()); }
-			catch(Exception x) {
+			try {
+				setResult(CC.getClient().addSamplerChannel());
+				
+				JSPrefs p = CC.getViewConfig().preferences();
+				if(!p.getBoolProperty(USE_CHANNEL_DEFAULTS)) return;
+				
+				String s = p.getStringProperty(DEFAULT_ENGINE);
+				if(s != null && s.length() > 0) {
+					CC.getClient().loadSamplerEngine(s, getResult());
+				}
+				
+				s = p.getStringProperty(DEFAULT_MIDI_INPUT);
+				if(s != null && s.equals("firstDevice")) {
+					assignFirstMidiDevice();
+				} else if(s != null && s.equals("firstDeviceNextChannel")) {
+					assignFirstMidiDeviceNextChannel();
+				}
+				
+				s = p.getStringProperty(DEFAULT_AUDIO_OUTPUT);
+				if(s != null && s.equals("firstDevice")) {
+					assignFirstAudioDevice();
+				}
+			} catch(Exception x) {
 				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
 				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
 			}
+		}
+		
+		private void
+		assignFirstMidiDevice() throws Exception {
+			if(CC.getSamplerModel().getMidiDeviceCount() < 1) return;
+			int id = CC.getSamplerModel().getMidiDevices()[0].getDeviceId();
+			CC.getClient().setChannelMidiInputDevice(getResult(), id);
+		}
+		
+		private void
+		assignFirstMidiDeviceNextChannel() throws Exception {
+			int channelId = getResult();
+			if(CC.getSamplerModel().getMidiDeviceCount() < 1) return;
+			int id = CC.getSamplerModel().getMidiDevices()[0].getDeviceId();
+			CC.getClient().setChannelMidiInputDevice(channelId, id);
+			
+			boolean[] usedChannels = new boolean[16];
+			for(int i = 0; i < usedChannels.length; i++) usedChannels[i] = false;
+			
+			for(SamplerChannelModel m : CC.getSamplerModel().getChannels()) {
+				if(m.getChannelId() == channelId) continue;
+				if(m.getChannelInfo().getMidiInputDevice() != id) continue;
+				if(m.getChannelInfo().getMidiInputPort() != 0) continue;
+				int chn = m.getChannelInfo().getMidiInputChannel();
+				if(chn >= 0 && chn < 16) usedChannels[chn] = true;
+			}
+			
+			int lastUsed = -1;
+			for(int i = 0; i < usedChannels.length; i++) {
+				if(usedChannels[i]) lastUsed = i;
+			}
+			
+			if(lastUsed == -1) {
+				CC.getClient().setChannelMidiInputChannel(channelId, 0);
+				return;
+			}
+			
+			if(lastUsed < 15) {
+				CC.getClient().setChannelMidiInputChannel(channelId, lastUsed + 1);
+				return;
+			}
+			
+			int firstUnused = -1;
+			for(int i = 0; i < usedChannels.length; i++) {
+				if(!usedChannels[i]) {
+					firstUnused = i;
+					break;
+				}
+			}
+			
+			if(firstUnused == -1) {
+				CC.getClient().setChannelMidiInputChannel(channelId, 0);
+				return;
+			}
+			
+			CC.getClient().setChannelMidiInputChannel(channelId, firstUnused);
+		}
+		
+		private void
+		assignFirstAudioDevice() throws Exception {
+			if(CC.getSamplerModel().getAudioDeviceCount() < 1) return;
+			int id = CC.getSamplerModel().getAudioDevices()[0].getDeviceId();
+			CC.getClient().setChannelAudioOutputDevice(getResult(), id);
 		}
 	}
 

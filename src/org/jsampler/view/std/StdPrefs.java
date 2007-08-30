@@ -72,6 +72,9 @@ public class StdPrefs extends JSPrefs {
 	public String
 	getDefaultStringValue(String name) {
 		if(name == RECENT_LSCP_SCRIPTS) return "";
+		if(name == DEFAULT_ENGINE) return "GIG";
+		if(name == DEFAULT_MIDI_INPUT) return "firstDeviceNextChannel";
+		if(name == DEFAULT_AUDIO_OUTPUT) return "firstDevice";
 		
 		return super.getDefaultStringValue(name);
 	}
@@ -88,6 +91,7 @@ public class StdPrefs extends JSPrefs {
 	getDefaultBoolValue(String name) {
 		if(name == SAVE_LS_CONSOLE_HISTORY) return true;
 		if(name == SHOW_LS_CONSOLE_WHEN_RUN_SCRIPT) return true;
+		if(name == USE_CHANNEL_DEFAULTS) return true;
 		
 		return super.getDefaultBoolValue(name);
 	}

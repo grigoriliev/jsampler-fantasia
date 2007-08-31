@@ -1,5 +1,6 @@
 CVS HEAD
-  * Added option for default actions when channel is created
+  * Added options for choosing default actions when channel is
+    created and assignment of default MIDI/audio drivers to be used
     (choose Edit/Preferences, then click the `Defaults' tab)
 
   * A lists of recently used instrument files, directories,

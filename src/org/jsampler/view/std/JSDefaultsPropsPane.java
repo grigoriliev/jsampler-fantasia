@@ -36,11 +36,15 @@ import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 
 import org.jsampler.CC;
 import org.jsampler.JSPrefs;
+
+import org.linuxsampler.lscp.AudioOutputDriver;
+import org.linuxsampler.lscp.MidiInputDriver;
 
 import static org.jsampler.view.std.StdI18n.i18n;
 import static org.jsampler.view.std.StdPrefs.*;
@@ -51,6 +55,8 @@ import static org.jsampler.view.std.StdPrefs.*;
  */
 public class JSDefaultsPropsPane extends JPanel {
 	private final ChannelDefaultsPane channelDefaultsPane;
+	private final DefaultMidiDriverPane defaultMidiDriverPane = new DefaultMidiDriverPane();
+	private final DefaultAudioDriverPane defaultAudioDriverPane = new DefaultAudioDriverPane();
 	
 	
 	/** Creates a new instance of <code>JSDefaultsPropsPane</code> */
@@ -60,6 +66,10 @@ public class JSDefaultsPropsPane extends JPanel {
 		
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		add(channelDefaultsPane);
+		add(Box.createRigidArea(new Dimension(0, 6)));
+		add(defaultMidiDriverPane);
+		add(Box.createRigidArea(new Dimension(0, 6)));
+		add(defaultAudioDriverPane);
 	}
 	
 	private static JSPrefs
@@ -68,6 +78,8 @@ public class JSDefaultsPropsPane extends JPanel {
 	public void
 	apply() {
 		channelDefaultsPane.apply();
+		defaultMidiDriverPane.apply();
+		defaultAudioDriverPane.apply();
 	}
 	
 	public static class ChannelDefaultsPane extends JPanel {
@@ -132,6 +144,106 @@ public class JSDefaultsPropsPane extends JPanel {
 		editChannelDefaults() {
 			JDialog dlg = new JSChannelsDefaultSettingsPane().createDialog(owner);
 			dlg.setVisible(true);
+		}
+	}
+	
+	public static class DefaultMidiDriverPane extends JPanel {
+		private final JComboBox cbDriver = new JComboBox();
+		
+		public
+		DefaultMidiDriverPane() {
+			setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+			
+			JPanel p = new JPanel();
+			p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
+			
+			cbDriver.setAlignmentX(LEFT_ALIGNMENT);
+			int h = cbDriver.getPreferredSize().height;
+			cbDriver.setMaximumSize(new Dimension(Short.MAX_VALUE, h));
+			
+			p.add(cbDriver);
+			p.setAlignmentX(LEFT_ALIGNMENT);
+			p.setBorder(BorderFactory.createEmptyBorder(3, 5, 3, 5));
+			
+			add(p);
+			
+			String s = i18n.getLabel("JSDefaultsPropsPane.titleMidiDriver");
+			setBorder(BorderFactory.createTitledBorder(s));
+			setAlignmentX(LEFT_ALIGNMENT);
+			
+			for(Object o : CC.getSamplerModel().getMidiInputDrivers()) {
+				cbDriver.addItem(o);
+			}
+			
+			String drv = preferences().getStringProperty(DEFAULT_MIDI_DRIVER);
+			for(MidiInputDriver d : CC.getSamplerModel().getMidiInputDrivers()) {
+				if(d.getName().equals(drv)){
+					cbDriver.setSelectedItem(d);
+					break;
+				}
+			}
+		}
+		
+		public void
+		apply() {
+			Object o = cbDriver.getSelectedItem();
+			if(o == null) {
+				preferences().setStringProperty(DEFAULT_MIDI_DRIVER, null);
+				return;
+			}
+			
+			String drv = ((MidiInputDriver) o).getName();
+			preferences().setStringProperty(DEFAULT_MIDI_DRIVER, drv);
+		}
+	}
+	
+	public static class DefaultAudioDriverPane extends JPanel {
+		private final JComboBox cbDriver = new JComboBox();
+		
+		public
+		DefaultAudioDriverPane() {
+			setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+			
+			JPanel p = new JPanel();
+			p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
+			
+			cbDriver.setAlignmentX(LEFT_ALIGNMENT);
+			int h = cbDriver.getPreferredSize().height;
+			cbDriver.setMaximumSize(new Dimension(Short.MAX_VALUE, h));
+			
+			p.add(cbDriver);
+			p.setAlignmentX(LEFT_ALIGNMENT);
+			p.setBorder(BorderFactory.createEmptyBorder(3, 5, 3, 5));
+			
+			add(p);
+			
+			String s = i18n.getLabel("JSDefaultsPropsPane.titleAudioDriver");
+			setBorder(BorderFactory.createTitledBorder(s));
+			setAlignmentX(LEFT_ALIGNMENT);
+			
+			for(Object o : CC.getSamplerModel().getAudioOutputDrivers()) {
+				cbDriver.addItem(o);
+			}
+			
+			String drv = preferences().getStringProperty(DEFAULT_AUDIO_DRIVER);
+			for(AudioOutputDriver d : CC.getSamplerModel().getAudioOutputDrivers()) {
+				if(d.getName().equals(drv)){
+					cbDriver.setSelectedItem(d);
+					break;
+				}
+			}
+		}
+		
+		public void
+		apply() {
+			Object o = cbDriver.getSelectedItem();
+			if(o == null) {
+				preferences().setStringProperty(DEFAULT_AUDIO_DRIVER, null);
+				return;
+			}
+			
+			String drv = ((AudioOutputDriver) o).getName();
+			preferences().setStringProperty(DEFAULT_AUDIO_DRIVER, drv);
 		}
 	}
 }

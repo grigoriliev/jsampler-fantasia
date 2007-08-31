@@ -75,6 +75,8 @@ public class StdPrefs extends JSPrefs {
 		if(name == DEFAULT_ENGINE) return "GIG";
 		if(name == DEFAULT_MIDI_INPUT) return "firstDeviceNextChannel";
 		if(name == DEFAULT_AUDIO_OUTPUT) return "firstDevice";
+		if(name == DEFAULT_MIDI_DRIVER) return "ALSA";
+		if(name == DEFAULT_AUDIO_DRIVER) return "ALSA";
 		
 		return super.getDefaultStringValue(name);
 	}

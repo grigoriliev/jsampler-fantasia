@@ -49,12 +49,15 @@ import net.sf.juife.event.TaskEvent;
 import net.sf.juife.event.TaskListener;
 
 import org.jsampler.CC;
+import org.jsampler.JSPrefs;
+
 import org.jsampler.task.Audio;
+import org.jsampler.view.ParameterTable;
 
 import org.linuxsampler.lscp.AudioOutputDriver;
 
 import static org.jsampler.view.std.StdI18n.i18n;
-import org.jsampler.view.ParameterTable;
+import static org.jsampler.view.std.StdPrefs.*;
 
 
 /**
@@ -108,6 +111,14 @@ public class JSNewAudioDeviceDlg extends EnhancedDialog {
 		
 		for(AudioOutputDriver d : CC.getSamplerModel().getAudioOutputDrivers()) {
 			cbDrivers.addItem(d);
+		}
+		
+		String s = preferences().getStringProperty(DEFAULT_AUDIO_DRIVER);
+		for(AudioOutputDriver d : CC.getSamplerModel().getAudioOutputDrivers()) {
+			if(d.getName().equals(s)) {
+				cbDrivers.setSelectedItem(d);
+				break;
+			}
 		}
 		
 		cbDrivers.setMaximumSize(cbDrivers.getPreferredSize());
@@ -193,4 +204,7 @@ public class JSNewAudioDeviceDlg extends EnhancedDialog {
 	
 	protected void
 	onCancel() { setVisible(false); }
+	
+	private static JSPrefs
+	preferences() { return CC.getViewConfig().preferences(); }
 }

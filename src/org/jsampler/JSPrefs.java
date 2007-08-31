@@ -62,6 +62,18 @@ public class JSPrefs extends PropertyChangeSupport {
 	 */
 	public final static String DEFAULT_AUDIO_OUTPUT = "defaultAudioOutput";
 	
+	/**
+	 * Property representing the default MIDI input driver to be used
+	 * when creating new MIDI input device.
+	 */
+	public final static String DEFAULT_MIDI_DRIVER = "defaultMidiDriver";
+	
+	/**
+	 * Property representing the default audio output driver to be used
+	 * when creating new audio output device.
+	 */
+	public final static String DEFAULT_AUDIO_DRIVER = "defaultAudioDriver";
+	
 	
 	private final String pathName;
 	private final Preferences userPrefs;

@@ -50,12 +50,15 @@ import net.sf.juife.event.TaskEvent;
 import net.sf.juife.event.TaskListener;
 
 import org.jsampler.CC;
+import org.jsampler.JSPrefs;
+
 import org.jsampler.task.Midi;
 import org.jsampler.view.ParameterTable;
 
 import org.linuxsampler.lscp.MidiInputDriver;
 
 import static org.jsampler.view.std.StdI18n.i18n;
+import static org.jsampler.view.std.StdPrefs.*;
 
 
 /**
@@ -114,6 +117,14 @@ public class JSNewMidiDeviceDlg extends EnhancedDialog {
 		MidiInputDriver[] drivers = CC.getSamplerModel().getMidiInputDrivers();
 		if(drivers != null) {
 			for(MidiInputDriver d : drivers) cbDrivers.addItem(d);
+			
+			String s = preferences().getStringProperty(DEFAULT_MIDI_DRIVER);
+			for(MidiInputDriver d : drivers) {
+				if(d.getName().equals(s)) {
+					cbDrivers.setSelectedItem(d);
+					break;
+				}
+			}
 		}
 		
 		cbDrivers.setMaximumSize(cbDrivers.getPreferredSize());
@@ -199,4 +210,7 @@ public class JSNewMidiDeviceDlg extends EnhancedDialog {
 	
 	protected void
 	onCancel() { setVisible(false); }
+	
+	private static JSPrefs
+	preferences() { return CC.getViewConfig().preferences(); }
 }

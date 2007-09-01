@@ -25,6 +25,9 @@ package org.jsampler.view.fantasia;
 import java.awt.BorderLayout;
 import java.awt.Component;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.BoxLayout;
 import javax.swing.ListSelectionModel;
 
@@ -49,7 +52,8 @@ import org.jsampler.view.JSChannelsPane;
 public class ChannelsPane extends JSChannelsPane {
 	private final ChannelListPane chnList = new ChannelListPane();
 	private final DefaultComponentListModel listModel = new DefaultComponentListModel();
-		
+	
+	private ActionListener listener;
 	
 	/**
 	 * Creates a new instance of <code>ChannelsPane</code> with
@@ -58,7 +62,21 @@ public class ChannelsPane extends JSChannelsPane {
 	 */
 	public
 	ChannelsPane(String title) {
+		this(title, null);
+	}
+	
+	/**
+	 * Creates a new instance of <code>ChannelsPane</code> with
+	 * the specified <code>title</code>.
+	 * @param title The title of this <code>ChannelsPane</code>
+	 * @param l A listener which is notified when a newly created
+	 * channel is fully expanded on the screen.
+	 */
+	public
+	ChannelsPane(String title, ActionListener l) {
 		super(title);
+		
+		listener = l;
 		
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
@@ -79,7 +97,7 @@ public class ChannelsPane extends JSChannelsPane {
 	 */
 	public void
 	addChannel(SamplerChannelModel channelModel) {
-		Channel channel = new Channel(channelModel);
+		Channel channel = new Channel(channelModel, listener);
 		listModel.add(channel);
 		if(channel.getChannelInfo().getEngine() == null) channel.expandChannel(false);
 		chnList.setSelectedComponent(channel, true);

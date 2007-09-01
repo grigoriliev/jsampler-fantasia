@@ -11,6 +11,12 @@ CVS HEAD
     instrument/directory, last added instrument to orchestra are
     now saved for the next session
 
+  * Implemented automatic scrolling when new channel is created to
+    ensure that it is visible on the screen
+
+  * Fantasia:
+    - Added scrollbar to the channels pane
+
   * Bug fixes:
     - fixed bug #49
     - the first loaded script was not always been executed

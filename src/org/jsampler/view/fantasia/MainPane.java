@@ -28,19 +28,26 @@ import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Rectangle;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import org.jsampler.CC;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
+import static org.jvnet.substance.SubstanceLookAndFeel.SCROLL_PANE_BUTTONS_POLICY;
+import static org.jvnet.substance.utils.SubstanceConstants.ScrollPaneButtonPolicyKind;
 
 
 /**
@@ -49,24 +56,62 @@ import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
  */
 public class MainPane extends JPanel {
 	private final ChannelsBar channelsBar = new ChannelsBar();
-	private final ChannelsPane channelsPane = new ChannelsPane("");
+	private final ChannelsPane channelsPane;
+	
+	final JScrollPane scrollPane;
 	
 	/** Creates a new instance of <code>MainPane</code> */
 	public MainPane() {
+		channelsPane = new ChannelsPane("", new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) { scrollToBottom(); }
+		});
+		
 		GridBagLayout gridbag = new GridBagLayout();
 		GridBagConstraints c = new GridBagConstraints();
 		
 		setLayout(gridbag);
 		
+		JPanel p = new JPanel();
+		p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
+		p.add(channelsBar);
+		p.add(Box.createGlue());
+		
 		c.gridx = 0;
 		c.gridy = 0;
 		c.weightx = 1.0;
-		c.insets = new Insets(0, 0, 7, 0);
+		c.insets = new Insets(0, 0, 0, 0);
 		c.fill = GridBagConstraints.HORIZONTAL;
-		gridbag.setConstraints(channelsBar, c);
-		add(channelsBar);
+		gridbag.setConstraints(p, c);
+		add(p);
 		
-		JPanel p = createChannelsPane();
+		p = createChannelsPane();
+		p.setAlignmentX(LEFT_ALIGNMENT);
+		
+		scrollPane = new JScrollPane(p);
+		JScrollPane sp = scrollPane;
+		sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		//sp.putClientProperty(SCROLL_PANE_BUTTONS_POLICY, ScrollPaneButtonPolicyKind.NONE);
+		sp.setBorder(BorderFactory.createEmptyBorder());
+		sp.setOpaque(false);
+		javax.swing.JViewport wp = sp.getViewport();
+		wp.setMinimumSize(new Dimension(420, wp.getMinimumSize().height));
+		wp.setOpaque(false);
+		sp.setMaximumSize(new Dimension(sp.getMaximumSize().width, Short.MAX_VALUE));
+		sp.getVerticalScrollBar().setBorder(BorderFactory.createEmptyBorder(7, 4, 0, 1));
+		//sp.getVerticalScrollBar().setUnitIncrement(12);
+		sp.setPreferredSize(new Dimension(420, sp.getPreferredSize().height));
+		
+		sp.getVerticalScrollBar().addHierarchyListener(new HierarchyListener() {
+			public void
+			hierarchyChanged(HierarchyEvent e) {
+				if((e.getChangeFlags() & e.SHOWING_CHANGED) != e.SHOWING_CHANGED) {
+					return;
+				}
+				
+				onScrollBarVisibilityChanged();
+			}
+		});
 		
 		c.gridx = 0;
 		c.gridy = 2;
@@ -74,30 +119,46 @@ public class MainPane extends JPanel {
 		c.weighty = 1.0;
 		c.insets = new Insets(0, 0, 0, 0);
 		c.fill = GridBagConstraints.BOTH;
-		gridbag.setConstraints(p, c);
-		add(p);
+		gridbag.setConstraints(sp, c);
+		add(sp);
 		
-		p = new JPanel();
-		p.setOpaque(false);
-		
-		c.gridx = 0;
-		c.gridy = 3;
-		gridbag.setConstraints(p, c);
-		add(p);
-		
-		setMaximumSize(new Dimension(420, Short.MAX_VALUE));
+		//setMaximumSize(new Dimension(420, Short.MAX_VALUE));
 	}
 	
 	private JPanel
 	createChannelsPane() {
 		JPanel p = new JPanel();
 		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+		channelsPane.setAlignmentX(LEFT_ALIGNMENT);
 		p.add(channelsPane);
-		p.add(new NewChannelPane());
+		JPanel p2 = new NewChannelPane();
+		p2.setAlignmentX(LEFT_ALIGNMENT);
+		p.add(p2);
 		p.add(Box.createGlue());
 		p.setOpaque(false);
-		
+		p.setBorder(BorderFactory.createEmptyBorder(7, 0, 0, 0));
+		p.setMinimumSize(new Dimension(420, p.getMinimumSize().height));
 		return p;
+	}
+	
+	private void
+	onScrollBarVisibilityChanged() {
+		int h = scrollPane.getPreferredSize().height;
+		int scrollbarWidth = scrollPane.getVerticalScrollBar().getPreferredSize().width;
+		
+		if(scrollPane.getVerticalScrollBar().isVisible()) {
+			scrollPane.setPreferredSize(new Dimension(420 + scrollbarWidth, h));
+		} else {
+			scrollPane.setPreferredSize(new Dimension(420, h));
+		}
+		
+		revalidate();
+	}
+	
+	public void
+	scrollToBottom() {
+		int h = scrollPane.getViewport().getView().getHeight();
+		scrollPane.getViewport().scrollRectToVisible(new Rectangle(0, h - 2, 1, 1));
 	}
 	
 	public ChannelsPane

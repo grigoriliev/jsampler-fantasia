@@ -24,6 +24,7 @@ package org.jsampler.view.classic;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Rectangle;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -66,6 +67,8 @@ import static org.jsampler.view.classic.ClassicI18n.i18n;
 public class ChannelsPane extends JSChannelsPane implements ListSelectionListener {
 	private final ComponentList chnList = new ComponentList();
 	private final DefaultComponentListModel listModel = new DefaultComponentListModel();
+	
+	private final JScrollPane scrollPane;
 		
 	/**
 	 * Creates a new instance of <code>ChannelsPane</code> with
@@ -86,9 +89,9 @@ public class ChannelsPane extends JSChannelsPane implements ListSelectionListene
 		chnList.addMouseListener(new ContextMenu());
 		//chnList.setDragEnabled(true);
 		
-		JScrollPane sp = new JScrollPane(chnList);
-		sp.setBorder(BorderFactory.createEmptyBorder());
-		add(sp);
+		scrollPane = new JScrollPane(chnList);
+		scrollPane.setBorder(BorderFactory.createEmptyBorder());
+		add(scrollPane);
 		
 		setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
 		
@@ -104,6 +107,7 @@ public class ChannelsPane extends JSChannelsPane implements ListSelectionListene
 		listModel.add(channel);
 		if(channel.getChannelInfo().getEngine() == null) channel.expandChannel();
 		chnList.setSelectedComponent(channel, true);
+		scrollToBottom();
 	}
 	
 	/**
@@ -347,6 +351,12 @@ public class ChannelsPane extends JSChannelsPane implements ListSelectionListene
 			listModel.getSize() - chns.length, listModel.getSize() - 1
 		);
 		chnList.ensureIndexIsVisible(listModel.getSize() - 1);
+	}
+	
+	private void
+	scrollToBottom() {
+		int h = scrollPane.getViewport().getView().getHeight();
+		scrollPane.getViewport().scrollRectToVisible(new Rectangle(0, h - 2, 1, 1));
 	}
 	
 	class ContextMenu extends MouseAdapter {

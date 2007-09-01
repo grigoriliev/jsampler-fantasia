@@ -118,13 +118,12 @@ public class MainFrame extends JSMainFrame {
 		
 		addChannelsPane(mainPane.getChannelsPane());
 		
-		JScrollPane sp = new JScrollPane(createRightPane());
-		sp.setBorder(BorderFactory.createEmptyBorder());
+		JPanel rp = createRightPane();
 		
 		hSplitPane = new JSplitPane (
 			JSplitPane.HORIZONTAL_SPLIT,
 			true,	// continuousLayout 
-			sidePane, sp
+			sidePane, rp
 		);
 		
 		getContentPane().add(hSplitPane);
@@ -145,13 +144,16 @@ public class MainFrame extends JSMainFrame {
 		
 		c.fill = GridBagConstraints.BOTH;
 		
+		JScrollPane sp = new JScrollPane(devicesPane);
+		sp.setBorder(BorderFactory.createEmptyBorder());
+		
 		c.gridx = 1;
 		c.gridy = 0;
 		c.weightx = 1.0;
 		c.weighty = 1.0;
 		c.insets = new Insets(0, 3, 3, 0);
-		gridbag.setConstraints(devicesPane, c);
-		p.add(devicesPane);
+		gridbag.setConstraints(sp, c);
+		p.add(sp);
 		
 		c.gridx = 0;
 		c.gridy = 0;

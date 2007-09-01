@@ -130,6 +130,19 @@ public class Channel extends org.jsampler.view.JSChannel {
 	 */
 	public
 	Channel(SamplerChannelModel model) {
+		this(model, null);
+	}
+	
+	/**
+	 * Creates a new instance of <code>Channel</code> using the specified
+	 * non-<code>null</code> channel model.
+	 * @param model The model to be used by this channel.
+	 * @param listener A listener which is notified when the newly created
+	 * channel is fully expanded on the screen.
+	 * @throws IllegalArgumentException If the model is <code>null</code>.
+	 */
+	public
+	Channel(SamplerChannelModel model, final ActionListener listener) {
 		super(model);
 		
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -238,6 +251,19 @@ public class Channel extends org.jsampler.view.JSChannel {
 		
 		add(mainPane);
 		
+		if(listener != null) {
+			final String s = JXCollapsiblePane.ANIMATION_STATE_KEY;
+			mainPane.addPropertyChangeListener(s, new PropertyChangeListener() {
+				public void
+				propertyChange(PropertyChangeEvent e) {
+					if(e.getNewValue() == "expanded") {
+						mainPane.removePropertyChangeListener(s, this);
+						listener.actionPerformed(null);
+					}
+				}
+			});
+		}
+		
 		mainPane.setAnimated(false);
 		mainPane.setCollapsed(true);
 		mainPane.setAnimated(preferences().getBoolProperty(ANIMATED));
@@ -249,6 +275,13 @@ public class Channel extends org.jsampler.view.JSChannel {
 				mainPane.setAnimated(preferences().getBoolProperty(ANIMATED));
 			}
 		});
+		
+		if(listener != null) {
+			javax.swing.SwingUtilities.invokeLater(new Runnable() {
+				public void
+				run() { listener.actionPerformed(null); }
+			});
+		}
 	}
 	
 	private JPanel

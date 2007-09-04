@@ -44,6 +44,7 @@ import static org.jsampler.view.fantasia.A4n.a4n;
  */
 public class StandardBar extends PixmapPane {
 	private final JToolBar toolbar = new JToolBar();
+	private final PixmapPane mainPane;
 	
 	private final ToolbarButton btnSamplerInfo = new ToolbarButton(a4n.samplerInfo);
 	private final ToolbarButton btnLoadSession = new ToolbarButton(a4n.loadScript);
@@ -56,11 +57,13 @@ public class StandardBar extends PixmapPane {
 	
 	private final ToolbarButton btnPreferences = new ToolbarButton(a4n.editPreferences);
 	
+	private final JLabel lLogo = new JLabel(Res.gfxFantasiaLogo);
+	
 	/** Creates a new instance of <code>StandardBar</code> */
 	public
 	StandardBar() {
 		super(Res.gfxToolBarBg);
-		setPixmapInsets(new Insets(0, 6, 12, 6));
+		setPixmapInsets(new Insets(0, 6, 6, 6));
 		
 		setLayout(new BorderLayout());
 		setOpaque(false);
@@ -70,12 +73,12 @@ public class StandardBar extends PixmapPane {
 		setPreferredSize(d);
 		d = new Dimension(Short.MAX_VALUE, 60);
 		setMaximumSize(d);
-		setBorder(BorderFactory.createEmptyBorder(0, 5, 11, 5));
+		setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 5));
 		
 		
-		PixmapPane p = new PixmapPane(Res.gfxToolbar);
-		p.setPixmapInsets(new Insets(1, 1, 1, 1));
-		p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
+		mainPane = new PixmapPane(Res.gfxToolbar);
+		mainPane.setPixmapInsets(new Insets(1, 1, 1, 1));
+		mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.X_AXIS));
 		
 		toolbar.setOpaque(false);
 		toolbar.setFloatable(false);
@@ -92,14 +95,16 @@ public class StandardBar extends PixmapPane {
 		toolbar.addSeparator();
 		toolbar.add(btnPreferences);
 		
-		p.add(toolbar);
-		p.add(Box.createGlue());
+		mainPane.add(toolbar);
+		mainPane.add(Box.createGlue());
 		
-		JLabel l = new JLabel(Res.gfxFantasiaLogo);
-		p.add(l);
-		p.add(Box.createRigidArea(new Dimension(17, 0)));
-		add(p);
+		mainPane.add(lLogo);
+		mainPane.add(Box.createRigidArea(new Dimension(17, 0)));
+		add(mainPane);
 	}
+	
+	public void
+	showFantasiaLogo(boolean b) { lLogo.setVisible(b); }
 	
 	private static class FantasiaToolBar extends JToolBar {
 		private static Insets pixmapInsets = new Insets(1, 1, 1, 1);

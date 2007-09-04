@@ -16,6 +16,9 @@ CVS HEAD
 
   * Fantasia:
     - Added scrollbar to the channels pane
+    - Added new menu items: Edit/Add Channel, Edit/Create MIDI Device,
+      Edit/Create Audio Device, View/Toolbar, View/Side Pane,
+      View/Devices Pane
 
   * Bug fixes:
     - fixed bug #49

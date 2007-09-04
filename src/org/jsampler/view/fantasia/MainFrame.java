@@ -50,6 +50,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -89,10 +90,12 @@ import static org.jsampler.view.std.StdPrefs.*;
  * @author Grigor Iliev
  */
 public class MainFrame extends JSMainFrame {
-	private final FantasiaMenuBar menuBar = new FantasiaMenuBar();
 	private final StandardBar standardBar = new StandardBar();
+	private final FantasiaMenuBar menuBar = new FantasiaMenuBar();
+	private final JPanel rootPane = new JPanel();
 	private final MainPane mainPane = new MainPane();
 	private final DevicesPane devicesPane = new DevicesPane();
+	private final JScrollPane spDevicesPane = new JScrollPane();
 	
 	private final JMenu recentScriptsMenu =
 		new JMenu(i18n.getMenuLabel("actions.recentScripts"));
@@ -100,10 +103,20 @@ public class MainFrame extends JSMainFrame {
 	private final JSplitPane hSplitPane;
 	
 	private final SidePane sidePane = new SidePane();
+	private final JPanel rightPane;
 	
 	private final LSConsoleFrame lsConsoleFrame = new LSConsoleFrame();
 	private final Vector<String> recentScripts = new Vector<String>();
 		
+	
+	private final JCheckBoxMenuItem cbmiToolBarVisible =
+			new JCheckBoxMenuItem(i18n.getMenuLabel("view.toolBar"));
+	
+	private final JCheckBoxMenuItem cbmiSidePaneVisible =
+			new JCheckBoxMenuItem(i18n.getMenuLabel("view.sidePane"));
+	
+	private final JCheckBoxMenuItem cbmiDevicesPaneVisible =
+			new JCheckBoxMenuItem(i18n.getMenuLabel("view.devicesPane"));
 	
 	/** Creates a new instance of <code>MainFrame</code> */
 	public
@@ -114,19 +127,25 @@ public class MainFrame extends JSMainFrame {
 		
 		getContentPane().add(standardBar, BorderLayout.NORTH);
 		
-		addMenu();
-		
-		addChannelsPane(mainPane.getChannelsPane());
-		
-		JPanel rp = createRightPane();
+		rightPane = createRightPane();
 		
 		hSplitPane = new JSplitPane (
 			JSplitPane.HORIZONTAL_SPLIT,
 			true,	// continuousLayout 
-			sidePane, rp
+			sidePane, rightPane
 		);
+		hSplitPane.setResizeWeight(0.5);
 		
-		getContentPane().add(hSplitPane);
+		rootPane.setLayout(new BorderLayout());
+		rootPane.setBorder(BorderFactory.createEmptyBorder(6, 0, 0, 0));
+		rootPane.setOpaque(false);
+		rootPane.add(hSplitPane);
+		
+		addMenu();
+		
+		addChannelsPane(mainPane.getChannelsPane());
+		
+		getContentPane().add(rootPane);
 		
 		int i = preferences().getIntProperty("MainFrame.hSplitDividerLocation", 220);
 		hSplitPane.setDividerLocation(i);
@@ -144,16 +163,18 @@ public class MainFrame extends JSMainFrame {
 		
 		c.fill = GridBagConstraints.BOTH;
 		
-		JScrollPane sp = new JScrollPane(devicesPane);
-		sp.setBorder(BorderFactory.createEmptyBorder());
+		spDevicesPane.setViewportView(devicesPane);
+		spDevicesPane.setBorder(BorderFactory.createEmptyBorder());
+		int h = spDevicesPane.getMinimumSize().height;
+		spDevicesPane.setMinimumSize(new Dimension(200, h));
 		
 		c.gridx = 1;
 		c.gridy = 0;
 		c.weightx = 1.0;
 		c.weighty = 1.0;
 		c.insets = new Insets(0, 3, 3, 0);
-		gridbag.setConstraints(sp, c);
-		p.add(sp);
+		gridbag.setConstraints(spDevicesPane, c);
+		p.add(spDevicesPane);
 		
 		c.gridx = 0;
 		c.gridy = 0;
@@ -307,12 +328,82 @@ public class MainFrame extends JSMainFrame {
 		m = new FantasiaMenu(i18n.getMenuLabel("edit"));
 		menuBar.add(m);
 		
+		mi = new JMenuItem(i18n.getMenuLabel("edit.addChannel"));
+		m.add(mi);
+		mi.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) {
+				CC.getSamplerModel().addBackendChannel();
+			}
+		});
+		
+		m.addSeparator();
+		
+		mi = new JMenuItem(a4n.createMidiDevice);
+		mi.setIcon(null);
+		m.add(mi);
+		
+		mi = new JMenuItem(a4n.createAudioDevice);
+		mi.setIcon(null);
+		m.add(mi);
+		
+		m.addSeparator();
+		
 		mi = new JMenuItem(a4n.editPreferences);
 		mi.setIcon(null);
 		mi.setAccelerator(KeyStroke.getKeyStroke (
 			KeyEvent.VK_P, KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK
 		));
 		m.add(mi);
+		
+		// View
+		m = new FantasiaMenu(i18n.getMenuLabel("view"));
+		menuBar.add(m);
+		
+		m.add(cbmiToolBarVisible);
+		
+		cbmiToolBarVisible.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) {
+				showToolBar(cbmiToolBarVisible.getState());
+			}
+		});
+		
+		boolean b = preferences().getBoolProperty("toolBar.visible");
+		cbmiToolBarVisible.setSelected(b);
+		showToolBar(b);
+		
+		cbmiSidePaneVisible.setAccelerator(KeyStroke.getKeyStroke (
+			KeyEvent.VK_L, KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK
+		));
+		m.add(cbmiSidePaneVisible);
+		
+		cbmiSidePaneVisible.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) {
+				showSidePane(cbmiSidePaneVisible.getState());
+			}
+		});
+		
+		b = preferences().getBoolProperty("sidePane.visible");
+		cbmiSidePaneVisible.setSelected(b);
+		showSidePane(b);
+		
+		cbmiDevicesPaneVisible.setAccelerator(KeyStroke.getKeyStroke (
+			KeyEvent.VK_R, KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK
+		));
+		m.add(cbmiDevicesPaneVisible);
+		
+		cbmiDevicesPaneVisible.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) {
+				showDevicesPane(cbmiDevicesPaneVisible.getState());
+			}
+		});
+		
+		b = preferences().getBoolProperty("devicesPane.visible");
+		cbmiDevicesPaneVisible.setSelected(b);
+		showDevicesPane(b);
 		
 		
 		// Window
@@ -463,6 +554,102 @@ public class MainFrame extends JSMainFrame {
 		recentScriptsMenu.setEnabled(recentScripts.size() != 0);
 	}
 	
+	private void
+	showToolBar(boolean b) {
+		preferences().setBoolProperty("toolBar.visible", b);
+		standardBar.setVisible(b);
+	}
+	
+	private void
+	showSidePane(boolean b) {
+		preferences().setBoolProperty("sidePane.visible", b);
+		rootPane.remove(rightPane);
+		rootPane.remove(hSplitPane);
+		
+		if(b) {
+			hSplitPane.setRightComponent(rightPane);
+			rootPane.add(hSplitPane);
+			int i = preferences().getIntProperty("MainFrame.hSplitDividerLocation", 220);
+			System.out.println("side pane: " + i);
+			
+			hSplitPane.setDividerLocation(i);
+			hSplitPane.validate();
+		} else {
+			rootPane.add(rightPane);
+			
+		}
+		
+		int w = getPreferredSize().width;
+		int h = getSize().height;
+		setSize(new Dimension(w, h));
+		
+		rootPane.revalidate();
+		rootPane.validate();
+		rootPane.repaint();
+		
+		SwingUtilities.invokeLater(new Runnable() {
+			public void
+			run() { sidePanesVisibilityChanged(); }
+		});
+	}
+	
+	private void
+	showDevicesPane(boolean b) {
+		preferences().setBoolProperty("devicesPane.visible", b);
+		
+		int width = sidePane.getWidth();
+		int height = sidePane.getPreferredSize().height;
+		if(width != 0) sidePane.setPreferredSize(new Dimension(width, height));
+		
+		if(b) {
+			int w = preferences().getIntProperty("devicesPane.width", 200);
+			
+			int h = spDevicesPane.getPreferredSize().height;
+			spDevicesPane.setPreferredSize(new Dimension(w, h));
+		} else {
+			int w = spDevicesPane.getWidth();
+			if(w > 0 && w < 200) w = 200;
+			if(w != 0) preferences().setIntProperty("devicesPane.width", w);
+		}
+		
+		hSplitPane.setResizeWeight(0.0);
+		spDevicesPane.setVisible(b);
+		hSplitPane.resetToPreferredSizes();
+		
+		int w = getPreferredSize().width;
+		int h = getSize().height;
+		setSize(new Dimension(w, h));
+		
+		rootPane.validate();
+		rootPane.repaint();
+		//hSplitPane.validate();
+		
+		SwingUtilities.invokeLater(new Runnable() {
+			public void
+			run() { sidePanesVisibilityChanged(); }
+		});
+	}
+	
+	private void
+	sidePanesVisibilityChanged() {
+		boolean sidePaneVisible = cbmiSidePaneVisible.isSelected();
+		boolean devicesPaneVisible = cbmiDevicesPaneVisible.isSelected();
+		
+		if(sidePaneVisible && devicesPaneVisible) {
+			hSplitPane.setResizeWeight(0.5);
+		} else if(sidePaneVisible && !devicesPaneVisible) {
+			hSplitPane.setResizeWeight(1.0);
+		}
+		
+		if(!sidePaneVisible && !devicesPaneVisible) {
+			standardBar.showFantasiaLogo(false);
+			if(isResizable()) setResizable(false);
+		} else {
+			standardBar.showFantasiaLogo(true);
+			if(!isResizable()) setResizable(true);
+		}
+	}
+	
 	private class RecentScriptHandler implements ActionListener {
 		private String script;
 		
@@ -485,8 +672,9 @@ public class MainFrame extends JSMainFrame {
 		}
 	}
 
-	private static class FantasiaMenuBar extends JMenuBar {
-		private static Insets pixmapInsets = new Insets(6, 6, 0, 6);
+	private class FantasiaMenuBar extends JMenuBar {
+		private Insets pixmapInsets = new Insets(6, 6, 0, 6);
+		private Insets pixmapInsets2 = new Insets(6, 6, 6, 6);
 		
 		FantasiaMenuBar() {
 			setOpaque(false);
@@ -495,8 +683,11 @@ public class MainFrame extends JSMainFrame {
 		protected void
 		paintComponent(Graphics g) {
 			super.paintComponent(g);
-			
-			PixmapPane.paintComponent(this, g, Res.gfxMenuBarBg, pixmapInsets);
+			if(standardBar.isVisible()) {
+				PixmapPane.paintComponent(this, g, Res.gfxMenuBarBg, pixmapInsets);
+			} else {
+				PixmapPane.paintComponent(this, g, Res.gfxRoundBg14, pixmapInsets2);
+			}
 		}
 	}
 }

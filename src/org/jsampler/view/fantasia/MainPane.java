@@ -95,7 +95,7 @@ public class MainPane extends JPanel {
 		sp.setBorder(BorderFactory.createEmptyBorder());
 		sp.setOpaque(false);
 		javax.swing.JViewport wp = sp.getViewport();
-		wp.setMinimumSize(new Dimension(420, wp.getMinimumSize().height));
+		wp.setMinimumSize(new Dimension(400, wp.getMinimumSize().height));
 		wp.setOpaque(false);
 		sp.setMaximumSize(new Dimension(sp.getMaximumSize().width, Short.MAX_VALUE));
 		sp.getVerticalScrollBar().setBorder(BorderFactory.createEmptyBorder(7, 4, 0, 1));
@@ -122,7 +122,7 @@ public class MainPane extends JPanel {
 		gridbag.setConstraints(sp, c);
 		add(sp);
 		
-		//setMaximumSize(new Dimension(420, Short.MAX_VALUE));
+		setMaximumSize(new Dimension(420, Short.MAX_VALUE));
 	}
 	
 	private JPanel
@@ -143,13 +143,22 @@ public class MainPane extends JPanel {
 	
 	private void
 	onScrollBarVisibilityChanged() {
+		int w = 420;
 		int h = scrollPane.getPreferredSize().height;
 		int scrollbarWidth = scrollPane.getVerticalScrollBar().getPreferredSize().width;
 		
-		if(scrollPane.getVerticalScrollBar().isVisible()) {
-			scrollPane.setPreferredSize(new Dimension(420 + scrollbarWidth, h));
-		} else {
-			scrollPane.setPreferredSize(new Dimension(420, h));
+		if(scrollPane.getVerticalScrollBar().isVisible()) w += scrollbarWidth;
+		
+		scrollPane.setMinimumSize(new Dimension(w, scrollPane.getPreferredSize().height));
+		scrollPane.setPreferredSize(new Dimension(w, h));
+		scrollPane.setMaximumSize(new Dimension(w, Short.MAX_VALUE));
+		setMaximumSize(new Dimension(w, Short.MAX_VALUE));
+		
+		if(CC.getMainFrame() != null && !CC.getMainFrame().isResizable()) {
+			// this means that there are no visible side panes
+			
+			w = CC.getMainFrame().getPreferredSize().width;
+			CC.getMainFrame().setSize(w, CC.getMainFrame().getHeight());
 		}
 		
 		revalidate();

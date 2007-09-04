@@ -107,9 +107,9 @@ public class A4n extends StdA4n {
 	
 	private class CreateMidiDevice extends AbstractAction {
 		CreateMidiDevice() {
-			super(i18n.getMenuLabel("devices.createMidiDevice"));
+			super(i18n.getMenuLabel("edit.createMidiDevice"));
 			
-			String s = i18n.getMenuLabel("devices.createMidiDevice.tt");
+			String s = i18n.getMenuLabel("edit.createMidiDevice.tt");
 			putValue(SHORT_DESCRIPTION, s);
 			//putValue(Action.SMALL_ICON, Res.iconNew16);
 		}
@@ -125,9 +125,9 @@ public class A4n extends StdA4n {
 	
 	private class CreateAudioDevice extends AbstractAction {
 		CreateAudioDevice() {
-			super("");
+			super(i18n.getMenuLabel("edit.createAudioDevice"));
 			
-			String s = i18n.getMenuLabel("devices.createAudioDevice.tt");
+			String s = i18n.getMenuLabel("edit.createAudioDevice.tt");
 			putValue(SHORT_DESCRIPTION, s);
 			//putValue(Action.SMALL_ICON, Res.iconNew16);
 		}

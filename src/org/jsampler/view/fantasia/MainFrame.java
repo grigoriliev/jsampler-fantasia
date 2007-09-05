@@ -570,7 +570,6 @@ public class MainFrame extends JSMainFrame {
 			hSplitPane.setRightComponent(rightPane);
 			rootPane.add(hSplitPane);
 			int i = preferences().getIntProperty("MainFrame.hSplitDividerLocation", 220);
-			System.out.println("side pane: " + i);
 			
 			hSplitPane.setDividerLocation(i);
 			hSplitPane.validate();

@@ -23,25 +23,44 @@
 package org.jsampler.view.std;
 
 import java.awt.BorderLayout;
+import java.awt.Dialog;
+import java.awt.Frame;
+import java.awt.Window;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import net.sf.juife.JuifeUtils;
+
+import org.jsampler.CC;
 import org.jsampler.DefaultOrchestraModel;
 import org.jsampler.Instrument;
+import org.jsampler.MidiInstrumentMap;
 import org.jsampler.OrchestraModel;
+import org.jsampler.SamplerChannelModel;
+
+import org.jsampler.event.ListEvent;
+import org.jsampler.event.ListListener;
+import org.jsampler.event.SamplerChannelListEvent;
+import org.jsampler.event.SamplerChannelListListener;
 
 import org.jsampler.view.InstrumentTable;
 import org.jsampler.view.InstrumentTableModel;
+
+import org.linuxsampler.lscp.MidiInstrumentInfo;
 
 import static org.jsampler.view.std.StdI18n.i18n;
 
@@ -86,6 +105,17 @@ public class JSOrchestraPane extends JPanel {
 		
 		instrumentTable.addMouseListener(new MouseAdapter() {
 			public void
+			mousePressed(MouseEvent e) {
+				if(e.getButton() != e.BUTTON3) return;
+				
+				int i = instrumentTable.rowAtPoint(e.getPoint());
+				if(i == -1) return;
+				
+				instrumentTable.getSelectionModel().setSelectionInterval(i, i);
+				
+			}
+			
+			public void
 			mouseClicked(MouseEvent e) {
 				if(e.getClickCount() < 2) return;
 				
@@ -93,6 +123,9 @@ public class JSOrchestraPane extends JPanel {
 				editInstrument(instrumentTable.getSelectedInstrument());
 			}
 		});
+		
+		ContextMenu contextMenu = new ContextMenu();
+		instrumentTable.addMouseListener(contextMenu);
 	}
 	
 	public void
@@ -235,6 +268,193 @@ public class JSOrchestraPane extends JPanel {
 			Instrument instr = instrumentTable.getSelectedInstrument();
 			instrumentTable.getModel().getOrchestraModel().moveInstrumentDown(instr);
 			instrumentTable.setSelectedInstrument(instr);
+		}
+	}
+	
+	
+	
+	private class LoadInstrumentAction extends AbstractAction {
+		private final SamplerChannelModel channelModel;
+		
+		LoadInstrumentAction(SamplerChannelModel model) {
+			String s = "instrumentsdb.actions.loadInstrument.onChannel";
+			putValue(Action.NAME, i18n.getMenuLabel(s, model.getChannelId()));
+			channelModel = model;
+		}
+		
+		public void
+		actionPerformed(ActionEvent e) {
+			Instrument instr = instrumentTable.getSelectedInstrument();
+			if(instr == null) return;
+			
+			int idx = instr.getInstrumentIndex();
+			channelModel.setBackendEngineType(instr.getEngine());
+			channelModel.loadBackendInstrument(instr.getPath(), idx);
+		}
+	}
+	
+	class AddToMidiMapAction extends AbstractAction {
+		private final MidiInstrumentMap midiMap;
+		
+		AddToMidiMapAction(MidiInstrumentMap map) {
+			super(map.getName());
+			midiMap = map;
+		}
+		
+		public void
+		actionPerformed(ActionEvent e) {
+			Instrument instr = instrumentTable.getSelectedInstrument();
+			if(instr == null) return;
+			
+			JSAddMidiInstrumentDlg dlg;
+			Window w = JuifeUtils.getWindow(JSOrchestraPane.this);
+			if(w instanceof Dialog) {
+				dlg = new JSAddMidiInstrumentDlg((Dialog)w);
+			} else if(w instanceof Frame) {
+				dlg = new JSAddMidiInstrumentDlg((Frame)w);
+			} else {
+				dlg = new JSAddMidiInstrumentDlg((Frame)null);
+			}
+			
+			dlg.setInstrumentName(instr.getName());
+			dlg.setVisible(true);
+			if(dlg.isCancelled()) return;
+			
+			MidiInstrumentInfo instrInfo = new MidiInstrumentInfo();
+			instrInfo.setName(dlg.getInstrumentName());
+			instrInfo.setFilePath(instr.getPath());
+			instrInfo.setInstrumentIndex(instr.getInstrumentIndex());
+			instrInfo.setEngine(instr.getEngine());
+			instrInfo.setVolume(dlg.getVolume());
+			instrInfo.setLoadMode(dlg.getLoadMode());
+			
+			int id = midiMap.getMapId();
+			int b = dlg.getMidiBank();
+			int p = dlg.getMidiProgram();
+			CC.getSamplerModel().mapBackendMidiInstrument(id, b, p, instrInfo);
+		}
+	}
+	
+	
+	class ContextMenu extends MouseAdapter
+			  implements SamplerChannelListListener, ListSelectionListener {
+		
+		private final JPopupMenu cmenu = new JPopupMenu();
+		JMenuItem miEdit = new JMenuItem(i18n.getMenuLabel("ContextMenu.edit"));
+		
+		JMenu mLoadInstrument =
+			new JMenu(i18n.getMenuLabel("JSOrchestraPane.loadInstrument"));
+		
+		JMenu mMapInstrument =
+			new JMenu(i18n.getMenuLabel("JSOrchestraPane.mapInstrument"));
+		
+		ContextMenu() {
+			cmenu.add(miEdit);
+			miEdit.addActionListener(new ActionListener() {
+				public void
+				actionPerformed(ActionEvent e) {
+					actionEditInstrument.actionPerformed(null);
+				}
+			});
+			
+			JMenuItem mi = new JMenuItem(i18n.getMenuLabel("ContextMenu.delete"));
+			cmenu.add(mi);
+			mi.addActionListener(new ActionListener() {
+				public void
+				actionPerformed(ActionEvent e) {
+					actionDeleteInstrument.actionPerformed(null);
+				}
+			});
+			
+			cmenu.addSeparator();
+			
+			cmenu.add(mLoadInstrument);
+			cmenu.add(mMapInstrument);
+			
+			CC.getSamplerModel().addSamplerChannelListListener(this);
+			instrumentTable.getSelectionModel().addListSelectionListener(this);
+			
+			ListListener<MidiInstrumentMap> l = new ListListener<MidiInstrumentMap>() {
+				public void
+				entryAdded(ListEvent<MidiInstrumentMap> e) {
+					updateAddToMidiMapMenu(mMapInstrument);
+				}
+				
+				public void
+				entryRemoved(ListEvent<MidiInstrumentMap> e) {
+					updateAddToMidiMapMenu(mMapInstrument);
+				}
+			};
+			
+			CC.getSamplerModel().addMidiInstrumentMapListListener(l);	
+		}
+		
+		private void
+		updateLoadInstrumentMenu(JMenu menu) {
+			menu.removeAll();
+			for(SamplerChannelModel m : CC.getSamplerModel().getChannels()) {
+				menu.add(new JMenuItem(new LoadInstrumentAction(m)));
+			}
+			
+			updateLoadInstrumentMenuState(menu);
+		}
+		
+		private void
+		updateLoadInstrumentMenuState(JMenu menu) {
+			Instrument instr = instrumentTable.getSelectedInstrument();
+			boolean b = instr == null;
+			b = b || CC.getSamplerModel().getChannelCount() == 0;
+			menu.setEnabled(!b);
+		}
+		
+		private void
+		updateAddToMidiMapMenu(JMenu menu) {
+			menu.removeAll();
+			for(int i = 0; i < CC.getSamplerModel().getMidiInstrumentMapCount(); i++) {
+				MidiInstrumentMap m = CC.getSamplerModel().getMidiInstrumentMap(i);
+				menu.add(new JMenuItem(new AddToMidiMapAction(m)));
+			}
+			
+			updateAddToMidiMapMenuState(menu);
+		}
+		
+		private void
+		updateAddToMidiMapMenuState(JMenu menu) {
+			Instrument instr = instrumentTable.getSelectedInstrument();
+			boolean b = instr == null;
+			b = b || CC.getSamplerModel().getMidiInstrumentMapCount() == 0;
+			menu.setEnabled(!b);
+		}
+		
+		public void
+		valueChanged(ListSelectionEvent e) {
+			updateLoadInstrumentMenuState(mLoadInstrument);
+			updateAddToMidiMapMenuState(mMapInstrument);
+		}
+		
+		public void
+		channelAdded(SamplerChannelListEvent e) {
+			updateLoadInstrumentMenu(mLoadInstrument);
+		}
+		
+		public void
+		channelRemoved(SamplerChannelListEvent e) {
+			updateLoadInstrumentMenu(mLoadInstrument);
+		}
+		
+		public void
+		mousePressed(MouseEvent e) {
+			if(e.isPopupTrigger()) show(e);
+		}
+	
+		public void
+		mouseReleased(MouseEvent e) {
+			if(e.isPopupTrigger()) show(e);
+		}
+	
+		void
+		show(MouseEvent e) {
+			cmenu.show(e.getComponent(), e.getX(), e.getY());
 		}
 	}
 }

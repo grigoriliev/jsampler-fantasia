@@ -14,6 +14,11 @@ CVS HEAD
   * Implemented automatic scrolling when new channel is created to
     ensure that it is visible on the screen
 
+  * Added context menu to the orchestra's instrument table with
+    commands for editing an instrument, deleting an instrument,
+    loading an instrument to a sampler channel and adding an
+    instrument to MIDI instrument map
+
   * Fantasia:
     - Added scrollbar to the channels pane
     - Added new menu items: Edit/Add Channel, Edit/Create MIDI Device,

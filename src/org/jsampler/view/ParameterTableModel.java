@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -219,6 +219,10 @@ public class ParameterTableModel extends AbstractTableModel {
 		return null;
 	}
 	
+	/** Gets the parameters that are shown in the table. */
+	public Parameter[]
+	getParameters() { return parameters; }
+	
 	/**
 	 * Sets the parameters to be shown in the table.
 	 * @param parameters The parameters to be shown in the table.
@@ -373,7 +377,7 @@ public class ParameterTableModel extends AbstractTableModel {
 		}
 	}
 	
-	/*class StringListCellEditor extends AbstractCellEditor implements TableCellEditor {
+	class StringListCellEditor extends AbstractCellEditor implements TableCellEditor {
 		private final JButton editor = new JButton();
 		private final JPopupMenu menu = new JPopupMenu();
 		private final Vector<JCheckBoxMenuItem> menuItems = new Vector<JCheckBoxMenuItem>();
@@ -382,6 +386,7 @@ public class ParameterTableModel extends AbstractTableModel {
 			editor.setBorderPainted(false);
 			editor.setContentAreaFilled(false);
 			editor.setFocusPainted(false);
+			editor.setMargin(new java.awt.Insets(0, 0, 0, 0));
 			editor.setFont(editor.getFont().deriveFont(java.awt.Font.PLAIN));
 			
 			editor.addActionListener(new ActionListener() {
@@ -449,7 +454,9 @@ public class ParameterTableModel extends AbstractTableModel {
 				JCheckBoxMenuItem item = new JCheckBoxMenuItem(s);
 				setListener(item);
 				
-				for(String s2 : vals) if(s2.equals(s)) item.setSelected(true);
+				for(String s2 : vals) {
+					if(s2.equals(s)) item.setSelected(true);
+				}
 				
 				menu.add(item);
 				menuItems.add(item);
@@ -467,9 +474,9 @@ public class ParameterTableModel extends AbstractTableModel {
 				}
 			});
 		}
-	}*/
+	}
 	
-	private static JComboBox comboBox = new JComboBox();
+	/*private static JComboBox comboBox = new JComboBox();
 	class StringListCellEditor extends DefaultCellEditor {
 		StringListCellEditor() {
 			super(comboBox);
@@ -497,7 +504,7 @@ public class ParameterTableModel extends AbstractTableModel {
 			for(String s : slp.getPossibilities()[0]) comboBox.addItem(s);
 			return comboBox;
 		}
-	}
+	}*/
 	
 	class StringListCellRenderer extends DefaultTableCellRenderer {
 		private final StringBuffer sb = new StringBuffer();

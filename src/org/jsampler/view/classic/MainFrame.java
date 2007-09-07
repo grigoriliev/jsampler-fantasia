@@ -243,9 +243,8 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 				ClassicPrefs.setCurrentOrchestraIndex(idx);
 		}
 		
-		StringBuffer sb = new StringBuffer();
-		for(String s : recentScripts) sb.append(s).append("\n");
-		preferences().setStringProperty(RECENT_LSCP_SCRIPTS, sb.toString());
+		String[] list = recentScripts.toArray(new String[recentScripts.size()]);
+		preferences().setStringListProperty(RECENT_LSCP_SCRIPTS, list);
 		
 		if(preferences().getBoolProperty(SAVE_LS_CONSOLE_HISTORY)) {
 			lsConsolePane.saveConsoleHistory();
@@ -370,18 +369,8 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		mi.setIcon(null);
 		m.add(mi);
 		
-		String s = preferences().getStringProperty(RECENT_LSCP_SCRIPTS);
-		BufferedReader br = new BufferedReader(new StringReader(s));
-		
-		try {
-			s = br.readLine();
-			while(s != null) {
-				recentScripts.add(s);
-				s = br.readLine();
-			}
-		} catch(Exception x) {
-			CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
-		}
+		String[] list = preferences().getStringListProperty(RECENT_LSCP_SCRIPTS);
+		for(String s : list) recentScripts.add(s);
 		
 		updateRecentScriptsMenu();
 		

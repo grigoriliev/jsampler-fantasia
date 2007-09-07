@@ -135,7 +135,7 @@ public class JSPrefs extends PropertyChangeSupport {
 	 * Gets the default value for the specified property.
 	 * The default value is used when the property is not set.
 	 * Override this method to provide custom default values for specific properties.
-	 * @name The name of the property whose default value should be obtained.
+	 * @param name The name of the property whose default value should be obtained.
 	 * @return <code>null</code>
 	 * @see #getStringProperty(String name)
 	 */
@@ -206,7 +206,7 @@ public class JSPrefs extends PropertyChangeSupport {
 	 * Gets the default value for the specified property.
 	 * The default value is used when the property is not set.
 	 * Override this method to provide custom default values for specific properties.
-	 * @name The name of the property whose default value should be obtained.
+	 * @param name The name of the property whose default value should be obtained.
 	 * @return An empty array.
 	 * @see #getStringListProperty(String name)
 	 */
@@ -239,7 +239,7 @@ public class JSPrefs extends PropertyChangeSupport {
 	 * Gets the default value for the specified property.
 	 * The default value is used when the property is not set.
 	 * Override this method to provide custom default values for specific properties.
-	 * @name The name of the property whose default value should be obtained.
+	 * @param name The name of the property whose default value should be obtained.
 	 * @return <code>0</code>
 	 * @see #getIntProperty(String name)
 	 */
@@ -296,7 +296,7 @@ public class JSPrefs extends PropertyChangeSupport {
 	 * Gets the default value for the specified property.
 	 * The default value is used when the property is not set.
 	 * Override this method to provide custom default values for specific properties.
-	 * @name The name of the property whose default value should be obtained.
+	 * @param name The name of the property whose default value should be obtained.
 	 * @return <code>false</code>
 	 * @see #getBoolProperty(String name)
 	 */

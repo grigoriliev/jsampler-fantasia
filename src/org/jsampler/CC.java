@@ -376,7 +376,7 @@ public class CC {
 	 * database support the tree model is initialized on first use.
 	 * @return The tree model of the instruments database or
 	 * <code>null</code> if the backend doesn't have instruments database support.
-	 * @see org.jsampler.view.JSMainFrame#getInstrumentsDbSupport
+	 * @see org.jsampler.view.JSViewConfig#getInstrumentsDbSupport
 	 */
 	public static InstrumentsDbTreeModel
 	getInstrumentsDbTreeModel() {

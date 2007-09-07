@@ -66,6 +66,42 @@ public class Audio {
 			}
 		}
 	}
+	
+	/**
+	 * This task retrieves detailed information about all parameters
+	 * of the specified audio output driver.
+	 */
+	public static class GetDriverParametersInfo extends EnhancedTask<Parameter[]> {
+		private String driver;
+		Parameter[] depList;
+		
+		/**
+		 * Creates a new instance of <code>GetDriverParametersInfo</code>.
+		 * @param depList - A dependences list.
+		 */
+		public
+		GetDriverParametersInfo(String driver, Parameter... depList) {
+			setTitle("Audio.GetDriverParametersInfo_task");
+			setDescription(i18n.getMessage("Audio.GetDriverParametersInfo.desc"));
+			
+			this.driver = driver;
+			this.depList = depList;
+		}
+	
+		/** The entry point of the task. */
+		public void
+		run() {
+			try {
+				AudioOutputDriver d;
+				d = CC.getClient().getAudioOutputDriverInfo(driver, depList);
+				setResult(d.getParameters());
+			}
+			catch(Exception x) {
+				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
+				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
+			}
+		}
+	}
 
 	/**
 	 * This task creates a new audio output device.

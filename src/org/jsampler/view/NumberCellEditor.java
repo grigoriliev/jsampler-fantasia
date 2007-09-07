@@ -75,7 +75,7 @@ public class NumberCellEditor extends AbstractCellEditor implements TableCellEdi
 		int row,
 		int column
 	) {
-		editor.setValue(value);
+		editor.setValue(value != null ? value : getModel().getMinimum());
 		return editor;
 	}
 	

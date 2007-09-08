@@ -445,6 +445,7 @@ public class JSMidiInstrumentTree extends JTree {
 	
 		void
 		show(MouseEvent e) {
+			if(getSelectionCount() == 0) return;
 			cmenu.show(e.getComponent(), e.getX(), e.getY());
 		}
 		

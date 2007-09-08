@@ -53,9 +53,6 @@ public class Prefs {
 	private final static String LS_PORT = "LinuxSampler.port";
 	private final static int DEF_LS_PORT = 8888;
 	
-	private final static String ORCHESTRAS = "Orchestras";
-	private final static String DEF_ORCHESTRAS = null;
-	
 		
 	private static Preferences userPrefs = Preferences.userRoot().node(prefNode);
 	
@@ -220,27 +217,5 @@ public class Prefs {
 	setLSPort(int port) {
 		if(port == -1) user().remove(LS_PORT);
 		else if(port != getLSPort()) user().putInt(LS_PORT, port);
-	}
-	
-	/**
-	 * Gets the orchestras' content (in XML format).
-	 * @return The orchestras' content (in XML format).
-	 */
-	public static String
-	getOrchestras() { return user().get(ORCHESTRAS, DEF_ORCHESTRAS); }
-	
-	/**
-	 * Sets the orchestras' content (in XML format).
-	 * @param s The orchestras' content (in XML format).
-	 */
-	public static void
-	setOrchestras(String s) {
-		if(s == null) {
-			user().remove(ORCHESTRAS);
-			return;
-		}
-		if(s.equals(getOrchestras())) return;
-		
-		user().put(ORCHESTRAS, s);
 	}
 }

@@ -157,7 +157,7 @@ public class A4n extends StdA4n {
 		actionPerformed(ActionEvent e) {
 			ClassicPrefs prefs = ClassicPrefs.preferences();
 			JSNewMidiInstrumentWizard wizard =
-				new JSNewMidiInstrumentWizard(prefs, Res.iconFolderOpen16);
+				new JSNewMidiInstrumentWizard(Res.iconFolderOpen16);
 			
 			wizard.getWizardDialog().setResizable(false);
 			

@@ -60,6 +60,7 @@ import org.jsampler.event.SamplerChannelListListener;
 import org.jsampler.view.InstrumentTable;
 import org.jsampler.view.InstrumentTableModel;
 
+import org.linuxsampler.lscp.MidiInstrumentEntry;
 import org.linuxsampler.lscp.MidiInstrumentInfo;
 
 import static org.jsampler.view.std.StdI18n.i18n;
@@ -317,6 +318,11 @@ public class JSOrchestraPane extends JPanel {
 			}
 			
 			dlg.setInstrumentName(instr.getName());
+			MidiInstrumentEntry entry = midiMap.getAvailableEntry();
+			if(entry != null) {
+				dlg.setMidiBank(entry.getMidiBank());
+				dlg.setMidiProgram(entry.getMidiProgram());
+			}
 			dlg.setVisible(true);
 			if(dlg.isCancelled()) return;
 			

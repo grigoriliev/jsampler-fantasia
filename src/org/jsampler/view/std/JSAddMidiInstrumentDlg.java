@@ -29,6 +29,9 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -41,6 +44,9 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import net.sf.juife.OkCancelDialog;
+
+import org.jsampler.CC;
+import org.jsampler.JSPrefs;
 
 import org.linuxsampler.lscp.MidiInstrumentInfo;
 
@@ -163,18 +169,47 @@ public class JSAddMidiInstrumentDlg extends OkCancelDialog {
 		cbLoadMode.addItem(MidiInstrumentInfo.LoadMode.ON_DEMAND_HOLD);
 		cbLoadMode.addItem(MidiInstrumentInfo.LoadMode.PERSISTENT);
 		
+		int i = preferences().getIntProperty("std.midiInstrument.loadMode", 0);
+		if(cbLoadMode.getItemCount() > i) cbLoadMode.setSelectedIndex(i);
+		
+		cbLoadMode.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) {
+				int j = cbLoadMode.getSelectedIndex();
+				if(j < 0) return;
+				preferences().setIntProperty("std.midiInstrument.loadMode", j);
+			}
+		});
+		
 		tfName.getDocument().addDocumentListener(getHandler());
-	}/**
+	}
+	
+	protected JSPrefs
+	preferences() { return CC.getViewConfig().preferences(); }
+	
+	/**
 	 * Gets the selected MIDI bank.
 	 */
 	public int
 	getMidiBank() { return Integer.parseInt(spinnerBank.getValue().toString()); }
 	
 	/**
+	 * Sets the selected MIDI bank.
+	 */
+	public void
+	setMidiBank(int bank) { spinnerBank.setValue(bank); }
+	
+	/**
 	 * Gets the selected MIDI program.
 	 */
 	public int
 	getMidiProgram() { return cbProgram.getSelectedIndex(); }
+	
+	/**
+	 * Sets the selected MIDI program.
+	 */
+	public void
+	setMidiProgram(int program) { cbProgram.setSelectedIndex(program); }
 	
 	/**
 	 * Gets the chosen name for the new MIDI instrument.
@@ -208,6 +243,7 @@ public class JSAddMidiInstrumentDlg extends OkCancelDialog {
 	protected void
 	onOk() {
 		if(!btnOk.isEnabled()) return;
+		preferences().setIntProperty("lastUsedMidiBank", getMidiBank());
 		setCancelled(false);
 		setVisible(false);
 	}

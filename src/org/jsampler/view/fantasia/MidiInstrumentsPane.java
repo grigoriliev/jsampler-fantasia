@@ -238,8 +238,10 @@ public class MidiInstrumentsPane extends JPanel {
 		
 		public void
 		addInstrument() {
+			MidiInstrumentMap map = (MidiInstrumentMap)cbMaps.getSelectedItem();
+			
 			JSNewMidiInstrumentWizard wizard =
-				new JSNewMidiInstrumentWizard(preferences(), Res.iconBrowse16);
+				new JSNewMidiInstrumentWizard(Res.iconBrowse16, map);
 			wizard.getWizardDialog().setResizable(false);
 			wizard.putClientProperty(Wizard.BACK_BUTTON_ICON, Res.iconBack16);
 			wizard.putClientProperty(Wizard.NEXT_BUTTON_ICON, Res.iconNext16);

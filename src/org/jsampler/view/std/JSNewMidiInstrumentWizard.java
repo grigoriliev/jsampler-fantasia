@@ -62,6 +62,7 @@ import org.jsampler.JSPrefs;
 import org.jsampler.MidiInstrumentMap;
 import org.jsampler.OrchestraModel;
 
+import org.linuxsampler.lscp.MidiInstrumentEntry;
 import org.linuxsampler.lscp.MidiInstrumentInfo;
 import org.linuxsampler.lscp.SamplerEngine;
 
@@ -73,14 +74,21 @@ import static org.jsampler.view.std.StdI18n.i18n;
  * @author Grigor Iliev
  */
 public class JSNewMidiInstrumentWizard extends Wizard {
+	/**
+	 * Creates a new instance of <code>JSNewMidiInstrumentWizard</code>.
+	 */
+	public
+	JSNewMidiInstrumentWizard(ImageIcon iconBrowse) {
+		this(iconBrowse, null);
+	}
 	
 	/**
 	 * Creates a new instance of <code>JSNewMidiInstrumentWizard</code>.
 	 */
 	public
-	JSNewMidiInstrumentWizard(JSPrefs prefs, ImageIcon iconBrowse) {
+	JSNewMidiInstrumentWizard(ImageIcon iconBrowse, MidiInstrumentMap defaultMap) {
 		super(CC.getMainFrame(), i18n.getLabel("JSNewMidiInstrumentWizard.title"));
-		setModel(new NewMidiInstrumentWizardModel(prefs, iconBrowse));
+		setModel(new NewMidiInstrumentWizardModel(iconBrowse, defaultMap));
 	}
 	
 }
@@ -91,11 +99,14 @@ class NewMidiInstrumentWizardModel extends DefaultWizardModel {
 	private final ManualSelectWizardPage manualSelectWizardPage;
 	private final InstrumentMappingWizardPage instrumentMappingWizardPage;
 	
-	NewMidiInstrumentWizardModel(JSPrefs prefs, ImageIcon iconBrowse) {
-		instrLocationMethodWizardPage = new InstrLocationMethodWizardPage(prefs);
+	private MidiInstrumentMap defaultMap;
+	
+	NewMidiInstrumentWizardModel(ImageIcon iconBrowse, MidiInstrumentMap defaultMap) {
+		this.defaultMap = defaultMap;
+		instrLocationMethodWizardPage = new InstrLocationMethodWizardPage();
 		orchestraSelectWizardPage = new OrchestraSelectWizardPage();
 		manualSelectWizardPage = new ManualSelectWizardPage(iconBrowse);
-		instrumentMappingWizardPage = new InstrumentMappingWizardPage();
+		instrumentMappingWizardPage = new InstrumentMappingWizardPage(this);
 		
 		addPage(instrLocationMethodWizardPage);
 		addStep(i18n.getLabel("JSNewMidiInstrumentWizard.step1"));
@@ -108,7 +119,15 @@ class NewMidiInstrumentWizardModel extends DefaultWizardModel {
 		addStep(i18n.getLabel("JSNewMidiInstrumentWizard.step3"));
 	}
 	
-		/**
+	public String
+	getInstrumentName() {
+		if(!instrLocationMethodWizardPage.isOrchestraMethodSelected()) return null;
+		Instrument instr = orchestraSelectWizardPage.getInstrument();
+		if(instr == null) return null;
+		return instr.getName();
+	}
+	
+	/**
 	 * Moves to the next page in the wizard.
 	 * @return The next page in the wizard.
 	 */
@@ -170,6 +189,12 @@ class NewMidiInstrumentWizardModel extends DefaultWizardModel {
 		
 		CC.getSamplerModel().mapBackendMidiInstrument(map, bank, prog, instr);
 	}
+	
+	public MidiInstrumentMap
+	getDefaultMap() { return defaultMap; }
+	
+	public void
+	setDefaultMap(MidiInstrumentMap map) { defaultMap = map; }
 }
 
 class InstrLocationMethodWizardPage extends UserInputPage {
@@ -185,7 +210,7 @@ class InstrLocationMethodWizardPage extends UserInputPage {
 	private final JCheckBox checkSkip =
 		new JCheckBox(i18n.getLabel("InstrLocationMethodWizardPage.checkSkip"));
 	
-	InstrLocationMethodWizardPage(final JSPrefs prefs) {
+	InstrLocationMethodWizardPage() {
 		super(i18n.getLabel("InstrLocationMethodWizardPage.subtitle"));
 		
 		String s = i18n.getLabel("InstrLocationMethodWizardPage.mainInstructions");
@@ -208,7 +233,7 @@ class InstrLocationMethodWizardPage extends UserInputPage {
 		p2.add(checkSkip, BorderLayout.SOUTH);
 		setMainPane(p2);
 		
-		switch(prefs.getIntProperty(INSTR_LOCATION_METHOD)) {
+		switch(preferences().getIntProperty(INSTR_LOCATION_METHOD)) {
 		case 0:
 			rbManual.setSelected(true);
 			break;
@@ -216,13 +241,13 @@ class InstrLocationMethodWizardPage extends UserInputPage {
 			rbOrchestra.setSelected(true);
 		}
 		
-		checkSkip.setSelected(prefs.getBoolProperty(NEW_MIDI_INSTR_WIZARD_SKIP1));
+		checkSkip.setSelected(preferences().getBoolProperty(NEW_MIDI_INSTR_WIZARD_SKIP1));
 		
 		rbManual.addActionListener(new ActionListener() {
 			public void
 			actionPerformed(ActionEvent e) {
 				if(rbManual.isSelected()) {
-					prefs.setIntProperty(INSTR_LOCATION_METHOD, 0);
+					preferences().setIntProperty(INSTR_LOCATION_METHOD, 0);
 				}
 			}
 		});
@@ -231,7 +256,7 @@ class InstrLocationMethodWizardPage extends UserInputPage {
 			public void
 			actionPerformed(ActionEvent e) {
 				if(rbOrchestra.isSelected()) {
-					prefs.setIntProperty(INSTR_LOCATION_METHOD, 1);
+					preferences().setIntProperty(INSTR_LOCATION_METHOD, 1);
 				}
 			}
 		});
@@ -240,10 +265,13 @@ class InstrLocationMethodWizardPage extends UserInputPage {
 			public void
 			actionPerformed(ActionEvent e) {
 				boolean b = checkSkip.isSelected();
-				prefs.setBoolProperty(NEW_MIDI_INSTR_WIZARD_SKIP1, b);
+				preferences().setBoolProperty(NEW_MIDI_INSTR_WIZARD_SKIP1, b);
 			}
 		});
 	}
+	
+	protected JSPrefs
+	preferences() { return CC.getViewConfig().preferences(); }
 	
 	/**
 	 * Determines whether the user selected an orchestra location method.
@@ -329,6 +357,9 @@ class OrchestraSelectWizardPage extends UserInputPage {
 		
 		setMainPane(p);
 		
+		int orchIdx =
+			preferences().getIntProperty("OrchestraSelectWizardPage.OrchestraIndex", 0);
+		
 		cbOrchestras.addActionListener(new ActionListener() {
 			public void
 			actionPerformed(ActionEvent e) { orchestraChanged(); }
@@ -336,6 +367,10 @@ class OrchestraSelectWizardPage extends UserInputPage {
 		
 		for(int i = 0; i < CC.getOrchestras().getOrchestraCount(); i++) {
 			cbOrchestras.addItem(CC.getOrchestras().getOrchestra(i));
+		}
+		
+		if(CC.getOrchestras().getOrchestraCount() > orchIdx) {
+			cbOrchestras.setSelectedIndex(orchIdx);
 		}
 		
 		cbInstruments.addActionListener(new ActionListener() {
@@ -347,7 +382,22 @@ class OrchestraSelectWizardPage extends UserInputPage {
 		cbLoadMode.addItem(MidiInstrumentInfo.LoadMode.ON_DEMAND);
 		cbLoadMode.addItem(MidiInstrumentInfo.LoadMode.ON_DEMAND_HOLD);
 		cbLoadMode.addItem(MidiInstrumentInfo.LoadMode.PERSISTENT);
+		
+		int i = preferences().getIntProperty("std.midiInstrument.loadMode", 0);
+		if(cbLoadMode.getItemCount() > i) cbLoadMode.setSelectedIndex(i);
+		
+		cbLoadMode.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) {
+				int j = cbLoadMode.getSelectedIndex();
+				if(j < 0) return;
+				preferences().setIntProperty("std.midiInstrument.loadMode", j);
+			}
+		});
 	}
+	
+	protected JSPrefs
+	preferences() { return CC.getViewConfig().preferences(); }
 	
 	private void
 	orchestraChanged() {
@@ -355,6 +405,10 @@ class OrchestraSelectWizardPage extends UserInputPage {
 		String s = om == null ? null : om.getDescription();
 		if(s != null && s.length() == 0) s = null;
 		cbOrchestras.setToolTipText(s);
+		
+		s = "OrchestraSelectWizardPage.OrchestraIndex";
+		int orchIdx = cbOrchestras.getSelectedIndex();
+		if(orchIdx >= 0) preferences().setIntProperty(s, orchIdx);
 		
 		cbInstruments.removeAllItems();
 		if(om == null || om.getInstrumentCount() == 0) {
@@ -408,7 +462,7 @@ class ManualSelectWizardPage extends UserInputPage {
 	private final JLabel lLoadMode =
 		new JLabel(i18n.getLabel("ManualSelectWizardPage.lLoadMode"));
 	
-	private final JTextField tfFilename = new JTextField();
+	private final JComboBox cbFilename = new JComboBox();
 	private final JSpinner spinnerIndex = new JSpinner(new SpinnerNumberModel(0, 0, 500, 1));
 	
 	private final JButton btnBrowse;
@@ -466,8 +520,8 @@ class ManualSelectWizardPage extends UserInputPage {
 		c.gridy = 0;
 		c.weightx = 1.0;
 		c.anchor = GridBagConstraints.WEST;
-		gridbag.setConstraints(tfFilename, c);
-		mainPane.add(tfFilename);
+		gridbag.setConstraints(cbFilename, c);
+		mainPane.add(cbFilename);
 			
 		c.gridx = 1;
 		c.gridy = 1;
@@ -498,7 +552,15 @@ class ManualSelectWizardPage extends UserInputPage {
 		
 		setMainPane(mainPane);
 		
-		tfFilename.getDocument().addDocumentListener(getHandler());
+		cbFilename.setEditable(true);
+		String[] files = preferences().getStringListProperty("recentInstrumentFiles");
+		for(String s : files) cbFilename.addItem(s);
+		cbFilename.setSelectedItem(null);
+		
+		cbFilename.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) {  updateState(); }
+		});
 		
 		btnBrowse.addActionListener(new ActionListener() {
 			public void
@@ -511,19 +573,43 @@ class ManualSelectWizardPage extends UserInputPage {
 		cbLoadMode.addItem(MidiInstrumentInfo.LoadMode.ON_DEMAND);
 		cbLoadMode.addItem(MidiInstrumentInfo.LoadMode.ON_DEMAND_HOLD);
 		cbLoadMode.addItem(MidiInstrumentInfo.LoadMode.PERSISTENT);
+		
+		int i = preferences().getIntProperty("std.midiInstrument.loadMode", 0);
+		if(cbLoadMode.getItemCount() > i) cbLoadMode.setSelectedIndex(i);
+		
+		cbLoadMode.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) {
+				int j = cbLoadMode.getSelectedIndex();
+				if(j < 0) return;
+				preferences().setIntProperty("std.midiInstrument.loadMode", j);
+			}
+		});
 	}
+	
+	protected JSPrefs
+	preferences() { return CC.getViewConfig().preferences(); }
 	
 	private void
 	onBrowse() {
-		JFileChooser fc = new JFileChooser();
+		String s = preferences().getStringProperty("lastInstrumentLocation");
+		JFileChooser fc = new JFileChooser(s);
 		int result = fc.showOpenDialog(this);
-		if(result == JFileChooser.APPROVE_OPTION) {
-			tfFilename.setText(fc.getSelectedFile().getPath());
-		}
+		if(result != JFileChooser.APPROVE_OPTION) return;
+		
+		cbFilename.setSelectedItem(fc.getSelectedFile().getPath());
+		String path = fc.getCurrentDirectory().getAbsolutePath();
+		preferences().setStringProperty("lastInstrumentLocation", path);
 	}
 	
 	private void
-	updateState() { getWizard().enableNextButton(tfFilename.getText().length() != 0); }
+	updateState() {
+		boolean b = false;
+		Object o = cbFilename.getSelectedItem();
+		if(o == null) b = false;
+		else b = o.toString().length() > 0;
+		getWizard().enableNextButton(b);
+	}
 	
 	public void
 	postinitPage() {
@@ -535,7 +621,7 @@ class ManualSelectWizardPage extends UserInputPage {
 	 * @return The name of the instrument file.
 	 */
 	public String
-	getSelectedFile() { return tfFilename.getText(); }
+	getSelectedFile() { return cbFilename.getSelectedItem().toString(); }
 	
 	/**
 	 * Gets the index of the instrument in the instrument file.
@@ -590,8 +676,12 @@ class InstrumentMappingWizardPage extends WizardPage  {
 	private final JComboBox cbProgram = new JComboBox();
 	private final JSlider slVolume = new JSlider(0, 100, 100);
 	
-	InstrumentMappingWizardPage() {
+	private final NewMidiInstrumentWizardModel wizardModel;
+	
+	InstrumentMappingWizardPage(NewMidiInstrumentWizardModel wizardModel) {
 		super(i18n.getLabel("InstrumentMappingWizardPage.subtitle"));
+		this.wizardModel = wizardModel;
+		
 		setPageType(Type.CONFIRMATION_PAGE);
 		
 		GridBagLayout gridbag = new GridBagLayout();
@@ -687,7 +777,17 @@ class InstrumentMappingWizardPage extends WizardPage  {
 		
 		
 		for(int i = 0; i < 128; i++) cbProgram.addItem(new Integer(i));
+		
+		cbMap.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) { updateMapping(); }
+		});
+		
+		updateMapping();
 	}
+	
+	protected JSPrefs
+	preferences() { return CC.getViewConfig().preferences(); }
 	
 	private void
 	updateState() {
@@ -701,8 +801,23 @@ class InstrumentMappingWizardPage extends WizardPage  {
 		if(getWizard() != null) getWizard().enableFinishButton(b);
 	}
 	
+	private void
+	updateMapping() {
+		if(cbMap.getSelectedItem() == null) return;
+		MidiInstrumentMap map = (MidiInstrumentMap)cbMap.getSelectedItem();
+		MidiInstrumentEntry entry = map.getAvailableEntry();
+		if(entry == null) return;
+		spinnerBank.setValue(entry.getMidiBank());
+		cbProgram.setSelectedIndex(entry.getMidiProgram());
+	}
+	
 	public void
 	postinitPage() {
+		String s = wizardModel.getInstrumentName();
+		if(s != null) tfName.setText(s);
+		if(wizardModel.getDefaultMap() != null) {
+			cbMap.setSelectedItem(wizardModel.getDefaultMap());
+		}
 		updateState();
 	}
 	
@@ -714,6 +829,7 @@ class InstrumentMappingWizardPage extends WizardPage  {
 	public boolean
 	mayFinish() {
 		((NewMidiInstrumentWizardModel)getWizardModel()).mapInstrument();
+		preferences().setIntProperty("lastUsedMidiBank", getMidiBank());
 		return true;
 	}
 	

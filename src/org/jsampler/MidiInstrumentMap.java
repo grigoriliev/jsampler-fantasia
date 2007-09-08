@@ -208,6 +208,59 @@ public class MidiInstrumentMap {
 	}
 	
 	/**
+	 * Gets a free entry.
+	 */
+	public MidiInstrumentEntry
+	getAvailableEntry() {
+		int i = CC.getViewConfig().preferences().getIntProperty("lastUsedMidiBank", 0);
+		int firstFreePgm = -1, bank = -1, tmpBank = -1, tmpPgm = -1;
+		
+		for(MidiInstrument instr : instrMap.values()) {
+			int p = instr.getInfo().getMidiProgram();
+			int b = instr.getInfo().getMidiBank();
+			if(b < i) continue;
+			
+			if(firstFreePgm != -1) {
+				if(b > bank) {
+					if(tmpPgm < 127) {
+						return new MidiInstrumentEntry(bank, tmpPgm + 1);
+					} else {
+						return new MidiInstrumentEntry(bank, firstFreePgm);
+					}
+				}
+				
+				tmpPgm = p;
+			} else {
+				if(tmpBank != b) {
+					if(tmpBank != -1 && tmpPgm < 127) {
+						return new MidiInstrumentEntry(tmpBank, tmpPgm + 1);
+					}
+					tmpPgm = -1;
+					tmpBank = b;
+				}
+				
+				if(p - tmpPgm > 1) {
+					firstFreePgm = tmpPgm + 1;
+					bank = b;
+				}
+				tmpPgm = p;
+			}
+		}
+		
+		if(tmpBank == -1) return new MidiInstrumentEntry(i, 0);
+		
+		if(firstFreePgm != -1) {
+			if(tmpPgm < 127) return new MidiInstrumentEntry(bank, tmpPgm + 1);
+			else return new MidiInstrumentEntry(bank, firstFreePgm);
+		}
+		
+		if(tmpBank == 16129 && tmpPgm == 127) return null;
+		
+		if(tmpPgm < 127) return new MidiInstrumentEntry(tmpBank, tmpPgm + 1);
+		else return new MidiInstrumentEntry(tmpBank + 1, 0);
+	}
+	
+	/**
 	 * Returns the name of this map.
 	 * @return The name of this map.
 	 */

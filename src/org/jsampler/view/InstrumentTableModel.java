@@ -145,7 +145,7 @@ public class InstrumentTableModel extends AbstractTableModel {
 	private class Handler implements OrchestraListener {
 		/** Invoked when the name of orchestra is changed. */
 		public void
-		nameChanged(OrchestraEvent e) { fireTableDataChanged(); }
+		nameChanged(OrchestraEvent e) { fireTableStructureChanged(); }
 	
 		/** Invoked when the description of orchestra is changed. */
 		public void

@@ -21,6 +21,9 @@ CVS HEAD
 
   * Implemented more proper retrieval of the MIDI/audio driver settings
 
+  * Implemented some UI enhancements for speeding up the
+    MIDI instrument mapping process
+
   * Implemented new table cell editor for editing string list
     parameters with possibilities
 
@@ -34,6 +37,7 @@ CVS HEAD
     - fixed bug #49
     - the first loaded script was not always been executed
     - some javadoc documentation fixes
+    - some minor bugfixes
 
 JSampler v0.6a: 2007-08-10
   * The Fantasia distribution is now capable of

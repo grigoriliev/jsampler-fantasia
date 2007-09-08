@@ -75,6 +75,12 @@ public class OrchestrasPane extends JPanel {
 	private final JComboBox cbOrchestras = new JComboBox();
 	private final OrchestraPane orchestraPane = new OrchestraPane();
 	
+	/**
+	 * Because the orchestras are added after the view is created,
+	 * we need to remember the orchestra used in the previous session.
+	 */
+	private int orchIdx;
+	
 	/** Creates a new instance of <code>OrchestrasPane</code> */
 	public
 	OrchestrasPane() {
@@ -104,6 +110,8 @@ public class OrchestrasPane extends JPanel {
 		add(taskPaneContainer, BorderLayout.NORTH);
 		add(new InstrumentsPane());
 		
+		orchIdx = preferences().getIntProperty("OrchestrasPane.OrchestraIndex", 0);
+		
 		cbOrchestras.addActionListener(new ActionListener() {
 			public void
 			actionPerformed(ActionEvent e) { orchestraChanged(); }
@@ -115,6 +123,12 @@ public class OrchestrasPane extends JPanel {
 		
 		CC.getOrchestras().addOrchestraListListener(getHandler());
 		cbOrchestras.setEnabled(cbOrchestras.getItemCount() != 0);
+		
+		
+		if(CC.getOrchestras().getOrchestraCount() > orchIdx) {
+			cbOrchestras.setSelectedIndex(orchIdx);
+			orchIdx = -1;
+		}
 	}
 	
 	public void
@@ -133,6 +147,9 @@ public class OrchestrasPane extends JPanel {
 			if(s != null && s.length() == 0) s = null;
 			cbOrchestras.setToolTipText(s);
 		}
+		
+		int i = cbOrchestras.getSelectedIndex();
+		if(i >= 0) preferences().setIntProperty("OrchestrasPane.OrchestraIndex", i);
 	}
 	
 	class InstrumentsPane extends JPanel {
@@ -264,6 +281,12 @@ public class OrchestrasPane extends JPanel {
 		entryAdded(ListEvent<OrchestraModel> e) {
 			if(cbOrchestras.getItemCount() == 0) cbOrchestras.setEnabled(true);
 			cbOrchestras.addItem(e.getEntry());
+			
+			// we do this because the orchestras are added after creation of the view.
+			if(orchIdx != -1 && cbOrchestras.getItemCount() > orchIdx) {
+				cbOrchestras.setSelectedIndex(orchIdx);
+				orchIdx = -1;
+			}
 		}
 	
 		/** Invoked when an orchestra is removed from the orchestra list. */
@@ -271,6 +294,8 @@ public class OrchestrasPane extends JPanel {
 		entryRemoved(ListEvent<OrchestraModel> e) {
 			cbOrchestras.removeItem(e.getEntry());
 			if(cbOrchestras.getItemCount() == 0) cbOrchestras.setEnabled(false);
+			
+			if(orchIdx != -1) orchIdx = -1;
 		}
 		
 		/** Invoked when the name of orchestra is changed. */

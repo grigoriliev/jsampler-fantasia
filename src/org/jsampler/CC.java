@@ -400,15 +400,6 @@ public class CC {
 	loadOrchestras() {
 		if(getJSamplerHome() == null) return;
 		
-		//TODO: This should be removed in the next release (including loadOrchestras0())
-		File f2 = new File(getJSamplerHome() + File.separator + "orchestras.xml");
-		if(!f2.isFile()) {
-			loadOrchestras0();
-			saveOrchestras();
-			return;
-		}
-		///////
-		
 		try {
 			String s = getJSamplerHome();
 			if(s == null) return;
@@ -441,18 +432,6 @@ public class CC {
 			getOrchestras().getOrchestra(i).addOrchestraListener(getHandler());
 		}
 		getOrchestras().addOrchestraListListener(getHandler());
-	}
-	
-	private static void
-	loadOrchestras0() {
-		String s = Prefs.getOrchestras();
-		if(s == null) return;
-		
-		ByteArrayInputStream bais = new ByteArrayInputStream(s.getBytes());
-		Document doc = DOMUtils.readObject(bais);
-		
-		try { getOrchestras().readObject(doc.getDocumentElement()); }
-		catch(Exception x) { HF.showErrorMessage(x, "Loading orchestras: "); }
 	}
 	
 	private static void

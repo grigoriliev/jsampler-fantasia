@@ -77,12 +77,14 @@ public class StdPrefs extends JSPrefs {
 		if(name == DEFAULT_AUDIO_OUTPUT) return "firstDevice";
 		if(name == DEFAULT_MIDI_DRIVER) return "ALSA";
 		if(name == DEFAULT_AUDIO_DRIVER) return "ALSA";
+		if(name == DEFAULT_MIDI_INSTRUMENT_MAP) return "midiInstrumentMap.none";
 		
 		return super.getDefaultStringValue(name);
 	}
 	
 	public int
 	getDefaultIntValue(String name) {
+		if(name == DEFAULT_CHANNEL_VOLUME) return 100;
 		if(name == LS_CONSOLE_HISTSIZE) return 1000;
 		if(name == RECENT_LSCP_SCRIPTS_SIZE) return 7;
 		

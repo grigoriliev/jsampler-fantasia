@@ -23,6 +23,7 @@
 package org.jsampler.view.std;
 
 import java.awt.Dialog;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -31,12 +32,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JSlider;
 import javax.swing.JPanel;
 
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import net.sf.juife.InformationDialog;
+import net.sf.juife.JuifeUtils;
 
 import org.linuxsampler.lscp.SamplerEngine;
 
@@ -61,15 +69,39 @@ public class JSChannelsDefaultSettingsPane extends JPanel {
 	private final JLabel lAudioOutput =
 		new JLabel(i18n.getLabel("JSChannelsDefaultSettingsPane.lAudioOutput"));
 	
+	private final JLabel lChannelVolume =
+		new JLabel(i18n.getLabel("JSChannelsDefaultSettingsPane.lChannelVolume"));
+	
+	private final JLabel lMidiMap =
+		new JLabel(i18n.getLabel("JSChannelsDefaultSettingsPane.lMidiMap"));
+	
 	private final JComboBox cbDefaultEngine = new JComboBox();
 	private final JComboBox cbMidiInput = new JComboBox();
 	private final JComboBox cbAudioOutput = new JComboBox();
+	private final JSlider slChannelVolume = new JSlider(0, 100);
+	private final JComboBox cbMidiMap = new JComboBox();
+	
+	private final JLabel lVolume = new JLabel();
 	
 	private final static String strFirstDevice =
 		i18n.getLabel("JSChannelsDefaultSettingsPane.strFirstDevice");
 	
 	private final static String strFirstDeviceNextChannel =
 		i18n.getLabel("JSChannelsDefaultSettingsPane.strFirstDeviceNextChannel");
+	
+	private class NoMap {
+		public String
+		toString() { return "[None]"; }
+	}
+	
+	private NoMap noMap = new NoMap();
+	
+	private class DefaultMap {
+		public String
+		toString() { return "[Default]"; }
+	}
+	
+	private DefaultMap defaultMap = new DefaultMap();
 	
 	/** Creates a new instance of <code>JSChannelsDefaultSettingsPane</code> */
 	public
@@ -97,6 +129,16 @@ public class JSChannelsDefaultSettingsPane extends JPanel {
 		c.gridy = 2;
 		gridbag.setConstraints(lAudioOutput, c);
 		add(lAudioOutput);
+
+		c.gridx = 0;
+		c.gridy = 3;
+		gridbag.setConstraints(lMidiMap, c);
+		add(lMidiMap); 
+
+		c.gridx = 0;
+		c.gridy = 4;
+		gridbag.setConstraints(lChannelVolume, c);
+		add(lChannelVolume);
 		
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridx = 1;
@@ -115,6 +157,43 @@ public class JSChannelsDefaultSettingsPane extends JPanel {
 		c.gridy = 2;
 		gridbag.setConstraints(cbAudioOutput, c);
 		add(cbAudioOutput);
+		
+		c.gridx = 1;
+		c.gridy = 3;
+		gridbag.setConstraints(cbMidiMap, c);
+		add(cbMidiMap);
+		
+		JPanel volumePane = new JPanel();
+		volumePane.setOpaque(false);
+		volumePane.setLayout(new BoxLayout(volumePane, BoxLayout.X_AXIS));
+		
+		Dimension d = slChannelVolume.getPreferredSize();
+		slChannelVolume.setMaximumSize(new Dimension(d.width > 300 ? d.width : 300, d.height));
+		slChannelVolume.setOpaque(false);
+		volumePane.add(slChannelVolume);
+		
+		volumePane.add(Box.createRigidArea(new Dimension(6, 0)));
+		
+		lVolume.setHorizontalAlignment(lVolume.RIGHT);
+		
+		// We use this to set the size of the lVolume that will be used in setVolume()
+		// to prevent the frequent resizing of lVolume
+		lVolume.setText("100%");
+		
+		volumePane.add(lVolume);
+		
+		slChannelVolume.addChangeListener(new ChangeListener() {
+			public void
+			stateChanged(ChangeEvent e) { updateVolume(); }
+		});
+		
+		int v = preferences().getIntProperty(DEFAULT_CHANNEL_VOLUME);
+		slChannelVolume.setValue(v);
+		
+		c.gridx = 1;
+		c.gridy = 4;
+		gridbag.setConstraints(volumePane, c);
+		add(volumePane);
 		
 		for(SamplerEngine e : CC.getSamplerModel().getEngines()) {
 			cbDefaultEngine.addItem(e);
@@ -151,6 +230,21 @@ public class JSChannelsDefaultSettingsPane extends JPanel {
 		cbAudioOutput.addActionListener(new ActionListener() {
 			public void
 			actionPerformed(ActionEvent e) { changeDefaultAudioOutput(); }
+		});
+		
+		cbMidiMap.addItem(noMap);
+		cbMidiMap.addItem(defaultMap);
+		
+		String midiMap = preferences().getStringProperty(DEFAULT_MIDI_INSTRUMENT_MAP);
+		if(midiMap.equals("midiInstrumentMap.none")) {
+			cbMidiMap.setSelectedItem(noMap);
+		} else if(midiMap.equals("midiInstrumentMap.default")) {
+			cbMidiMap.setSelectedItem(defaultMap);
+		}
+		
+		cbMidiMap.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) { changeDefaultMidiMap(); }
 		});
 	}
 	
@@ -189,6 +283,32 @@ public class JSChannelsDefaultSettingsPane extends JPanel {
 		if(o == strFirstDevice) {
 			preferences().setStringProperty(DEFAULT_AUDIO_OUTPUT, "firstDevice");
 		}
+	}
+	
+	private void
+	changeDefaultMidiMap() {
+		Object o = cbMidiMap.getSelectedItem();
+		if(o == null) return;
+		String s = DEFAULT_MIDI_INSTRUMENT_MAP;
+		if(o == noMap) {
+			preferences().setStringProperty(s, "midiInstrumentMap.none");
+		} else if(o == defaultMap) {
+			preferences().setStringProperty(s, "midiInstrumentMap.default");
+		}
+	}
+	
+	private void
+	updateVolume() {
+		int volume = slChannelVolume.getValue();
+		Dimension d = lVolume.getPreferredSize();
+		lVolume.setText(String.valueOf(volume) + '%');
+		d = JuifeUtils.getUnionSize(d, lVolume.getPreferredSize());
+		lVolume.setMinimumSize(d);
+		lVolume.setPreferredSize(d);
+		lVolume.setMaximumSize(d);
+		
+		if(slChannelVolume.getValueIsAdjusting()) return;
+		preferences().setIntProperty(DEFAULT_CHANNEL_VOLUME, slChannelVolume.getValue());
 	}
 	
 	private static JSPrefs

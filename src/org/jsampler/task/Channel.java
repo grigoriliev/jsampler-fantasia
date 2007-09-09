@@ -64,13 +64,14 @@ public class Channel {
 		run() {
 			try {
 				setResult(CC.getClient().addSamplerChannel());
+				int chnId = getResult();
 				
 				JSPrefs p = CC.getViewConfig().preferences();
 				if(!p.getBoolProperty(USE_CHANNEL_DEFAULTS)) return;
 				
 				String s = p.getStringProperty(DEFAULT_ENGINE);
 				if(s != null && s.length() > 0) {
-					CC.getClient().loadSamplerEngine(s, getResult());
+					CC.getClient().loadSamplerEngine(s, chnId);
 				}
 				
 				s = p.getStringProperty(DEFAULT_MIDI_INPUT);
@@ -84,6 +85,17 @@ public class Channel {
 				if(s != null && s.equals("firstDevice")) {
 					assignFirstAudioDevice();
 				}
+				
+				s = p.getStringProperty(DEFAULT_MIDI_INSTRUMENT_MAP);
+				if(s != null && s.equals("midiInstrumentMap.none")) {
+					CC.getClient().setChannelMidiInstrumentMap(chnId, -1);
+				} else if(s != null && s.equals("midiInstrumentMap.default")) {
+					CC.getClient().setChannelMidiInstrumentMap(chnId, -2);
+				}
+				
+				float volume = p.getIntProperty(DEFAULT_CHANNEL_VOLUME);
+				volume /= 100;
+				CC.getClient().setChannelVolume(chnId, volume);
 			} catch(Exception x) {
 				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
 				CC.getLogger().log(Level.FINE, getErrorMessage(), x);

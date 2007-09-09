@@ -63,6 +63,20 @@ public class JSPrefs extends PropertyChangeSupport {
 	public final static String DEFAULT_AUDIO_OUTPUT = "defaultAudioOutput";
 	
 	/**
+	 * Property representing the default MIDI instrument map to be used when
+	 * new sampler channel is created. The action is taken only if
+	 * <code>USE_CHANNEL_DEFAULTS</code> is <code>true</code>.
+	 */
+	public final static String DEFAULT_MIDI_INSTRUMENT_MAP = "defaultMidiInstrumentMap";
+	
+	/**
+	 * Property representing the default channel volume when
+	 * new sampler channel is created. The action is taken only if
+	 * <code>USE_CHANNEL_DEFAULTS</code> is <code>true</code>.
+	 */
+	public final static String DEFAULT_CHANNEL_VOLUME = "defaultChannelVolume";
+	
+	/**
 	 * Property representing the default MIDI input driver to be used
 	 * when creating new MIDI input device.
 	 */

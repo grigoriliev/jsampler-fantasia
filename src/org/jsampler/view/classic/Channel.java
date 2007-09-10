@@ -336,6 +336,7 @@ public class Channel extends org.jsampler.view.JSChannel {
 		
 		mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.Y_AXIS));
 		addMouseListener(getHandler());
+		addHierarchyListener(getHandler());
 		
 		JPanel p = new JPanel();
 		p.setOpaque(false);

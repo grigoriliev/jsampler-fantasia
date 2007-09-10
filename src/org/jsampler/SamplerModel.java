@@ -374,6 +374,13 @@ public interface SamplerModel {
 	public void updateChannel(SamplerChannel channel);
 	
 	/**
+	 * Schedules a new task for starting an instrument editor for editing
+	 * the loaded instrument on the specified sampler channel.
+	 * @param channelId The sampler channel number.
+	 */
+	public void editBackendInstrument(int channelId);
+	
+	/**
 	 * Determines whether there is at least one solo channel in the current list
 	 * of sampler channels.
 	 * @return <code>true</code> if there is at least one solo channel in the current list of 

@@ -32,6 +32,8 @@ CVS HEAD
     - Added new menu items: Edit/Add Channel, Edit/Create MIDI Device,
       Edit/Create Audio Device, View/Toolbar, View/Side Pane,
       View/Devices Pane
+    - Added button to the channel screen for starting an instrument editor
+      (point the mouse cursor over the channel screen and click 'Edit')
 
   * Bug fixes:
     - fixed bug #49

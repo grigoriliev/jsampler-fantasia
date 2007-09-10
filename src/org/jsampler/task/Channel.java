@@ -1058,4 +1058,35 @@ public class Channel {
 		}
 	}
 
+	/**
+	 * This task starts an instrument editor for editing the loaded instrument
+	 * on the specified sampler channel.
+	 */
+	public static class EditInstrument extends EnhancedTask {
+		private int chn;
+		
+		/**
+		 * Creates new instance of <code>EditInstrument</code>.
+		 * @param channel The sampler channel number.
+		 */
+		public
+		EditInstrument(int channel) {
+			setTitle("Channel.EditInstrument_task");
+			String s = i18n.getMessage("Channel.EditInstrument.desc");
+			setDescription(s);
+			
+			this.chn = channel;
+		}
+	
+		/** The entry point of the task. */
+		public void
+		run() {
+			try { CC.getClient().editInstrument(chn); }
+			catch(Exception x) {
+				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
+				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
+			}
+		}
+	}
+
 }

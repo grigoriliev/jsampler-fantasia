@@ -29,6 +29,8 @@ import java.awt.Insets;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -51,6 +53,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
+import javax.swing.Timer;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -282,6 +285,8 @@ public class Channel extends org.jsampler.view.JSChannel {
 				run() { listener.actionPerformed(null); }
 			});
 		}
+		
+		CC.getSamplerModel().addSamplerChannelListListener(getHandler());
 	}
 	
 	private JPanel
@@ -413,12 +418,20 @@ public class Channel extends org.jsampler.view.JSChannel {
 		}
 	}
 	
+	protected void
+	onDestroy() {
+		CC.getSamplerModel().removeSamplerChannelListListener(getHandler());
+		
+		screen.onDestroy();
+		optionsPane.onDestroy();
+	}
+	
 	private final EventHandler eventHandler = new EventHandler();
 	
 	private EventHandler
 	getHandler() { return eventHandler; }
 	
-	private class EventHandler implements SamplerChannelListener {
+	private class EventHandler implements SamplerChannelListener, SamplerChannelListListener {
 		/**
 		 * Invoked when changes are made to a sampler channel.
 		 * @param e A <code>SamplerChannelEvent</code> instance
@@ -445,6 +458,27 @@ public class Channel extends org.jsampler.view.JSChannel {
 		public void
 		voiceCountChanged(SamplerChannelEvent e) {
 			screen.updateVoiceCount(getModel().getVoiceCount());
+		}
+		
+		/**
+		 * Invoked when a new sampler channel is created.
+		 * @param e A <code>SamplerChannelListEvent</code>
+		 * instance providing the event information.
+		 */
+		public void
+		channelAdded(SamplerChannelListEvent e) { }
+	
+		/**
+		 * Invoked when a sampler channel is removed.
+		 * @param e A <code>SamplerChannelListEvent</code>
+		 * instance providing the event information.
+		 */
+		public void
+		channelRemoved(SamplerChannelListEvent e) {
+			// Some cleanup when the channel is removed.
+			if(e.getChannelModel().getChannelId() == getChannelId()) {
+				onDestroy();
+			}
 		}
 	}
 	
@@ -589,7 +623,13 @@ class ChannelPane extends PixmapPane {
 
 class ChannelScreen extends PixmapPane {
 	private final Channel channel;
+	
+	private final InstrumentPane instrumentPane;
 	private JButton btnInstr = new ScreenButton(i18n.getButtonLabel("ChannelScreen.btnInstr"));
+	
+	private final JButton btnEditInstr =
+		new ScreenButton(i18n.getButtonLabel("ChannelScreen.btnEditInstr"));
+	private final ScreenButtonBg sbbEditInstr = new ScreenButtonBg(btnEditInstr);
 	
 	private final JButton btnFxSends =
 		new ScreenButton(i18n.getButtonLabel("ChannelScreen.btnFxSends"));
@@ -606,6 +646,8 @@ class ChannelScreen extends PixmapPane {
 	private InformationDialog fxSendsDlg = null;
 	
 	private Dimension dimVolume;
+	
+	private Timer timer;
 	
 	class Label extends JLabel {
 		Label() { this(""); }
@@ -632,7 +674,8 @@ class ChannelScreen extends PixmapPane {
 		btnInstr.setRolloverEnabled(false);
 		btnInstr.setBorder(BorderFactory.createEmptyBorder(3, 0, 0, 0));
 		
-		add(btnInstr);
+		instrumentPane = new InstrumentPane();
+		add(instrumentPane);
 		
 		JPanel p = new JPanel();
 		p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
@@ -699,6 +742,9 @@ class ChannelScreen extends PixmapPane {
 		installListeners();
 	}
 	
+	protected void
+	onDestroy() { timer.stop(); }
+	
 	private void
 	createEngineMenu() {
 		for(final SamplerEngine engine : CC.getSamplerModel().getEngines()) {
@@ -722,6 +768,13 @@ class ChannelScreen extends PixmapPane {
 			actionPerformed(ActionEvent e) { loadInstrument(); }
 		});
 		
+		btnEditInstr.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) {
+				CC.getSamplerModel().editBackendInstrument(channel.getChannelId());
+			}
+		});
+		
 		btnEngine.addActionListener(new ActionListener() {
 			public void
 			actionPerformed(ActionEvent e) {
@@ -729,6 +782,22 @@ class ChannelScreen extends PixmapPane {
 				menuEngines.show(btnEngine, 0, y);
 			}
 		});
+		
+		addMouseListener(getHandler());
+		addHierarchyListener(getHandler());
+		
+		ActionListener l = new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) {
+				if(getMousePosition(true) != null) {
+					getHandler().mouseEntered(null);
+				} else {
+					getHandler().mouseExited(null);
+				}
+			}
+		};
+		timer = new Timer(1000, l);
+		timer.start();
 	}
 	
 	private void
@@ -755,6 +824,8 @@ class ChannelScreen extends PixmapPane {
 			if(sc.getInstrumentName() != null) btnInstr.setText(sc.getInstrumentName());
 			else btnInstr.setText(i18n.getButtonLabel("ChannelScreen.btnInstr"));
 		}
+		
+		instrumentPane.update();
 	
 		if(sc.getEngine() != null) {
 			String s = sc.getEngine().getDescription();
@@ -797,6 +868,58 @@ class ChannelScreen extends PixmapPane {
 		lVoices.setMinimumSize(d);
 		lVoices.setPreferredSize(d);
 		lVoices.setMaximumSize(d);
+	}
+	
+	class InstrumentPane extends JPanel {
+		private final JPanel leftPane = new JPanel();
+		private final JPanel rightPane = new JPanel();
+		
+		InstrumentPane() {
+			setOpaque(false);
+			setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+			add(leftPane);
+			add(btnInstr);
+			add(rightPane);
+			add(sbbEditInstr);
+			sbbEditInstr.setVisible(false);
+			setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 6));
+			
+			update();
+		}
+		
+		public void
+		update() {
+			int a = btnInstr.getMinimumSize().width;
+			int b = 0;
+			if(sbbEditInstr.isVisible()) b = sbbEditInstr.getPreferredSize().width;
+			
+			int max = 254 - b;
+			if(a > max) a = max;
+			
+			int h = btnInstr.getPreferredSize().height;
+			btnInstr.setPreferredSize(new Dimension(a, h));
+			h = btnInstr.getMaximumSize().height;
+			btnInstr.setMaximumSize(new Dimension(a, h));
+			
+			
+			int i = (254 - btnInstr.getPreferredSize().width) / 2;
+			
+			int j = i;
+			if(sbbEditInstr.isVisible()) j -= sbbEditInstr.getPreferredSize().width;
+			if(i < 0 || j < 0) i = j = 0;
+			
+			Dimension d = new Dimension(i, 1);
+			leftPane.setMinimumSize(d);
+			leftPane.setPreferredSize(d);
+			leftPane.setMaximumSize(d);
+			
+			d = new Dimension(j, 1);
+			rightPane.setMinimumSize(d);
+			rightPane.setPreferredSize(d);
+			rightPane.setMaximumSize(d);
+			
+			validate();
+		}
 	}
 	
 	class FxSendsPane extends JSFxSendsPane {
@@ -845,6 +968,55 @@ class ChannelScreen extends PixmapPane {
 			setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			setFont(Res.fontScreen);
 			setForeground(new java.awt.Color(0xFFA300));
+		}
+	}
+	
+	static class ScreenButtonBg extends PixmapPane {
+		ScreenButtonBg(JButton btn) {
+			super(Res.gfxScreenBtnBg);
+			setPixmapInsets(new Insets(4, 4, 4, 4));
+			setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+			setBorder(BorderFactory.createEmptyBorder(0, 7, 0, 7));
+			add(btn);
+			setPreferredSize(new Dimension(getPreferredSize().width, 13));
+		}
+		
+		public Dimension
+		getPreferredSize() {
+			return new Dimension(super.getPreferredSize().width, 13);
+		}
+	}
+	
+	private final EventHandler eventHandler = new EventHandler();
+	
+	private EventHandler
+	getHandler() { return eventHandler; }
+	
+	private class EventHandler extends MouseAdapter implements HierarchyListener {
+		public void
+		mouseEntered(MouseEvent e)  {
+			if(!sbbEditInstr.isVisible()) {
+				sbbEditInstr.setVisible(true);
+				instrumentPane.update();
+			}
+		}
+		
+		public void
+		mouseExited(MouseEvent e)  {
+			if(getMousePosition(true) != null) return;
+			if(sbbEditInstr.isVisible()) {
+				sbbEditInstr.setVisible(false);
+				instrumentPane.update();
+			}
+		}
+		
+		/** Called when the hierarchy has been changed. */
+		public void
+		hierarchyChanged(HierarchyEvent e) {
+			if((e.getChangeFlags() & e.SHOWING_CHANGED) == e.SHOWING_CHANGED) {
+				if(getMousePosition() == null) mouseExited(null);
+				else mouseEntered(null);
+			}
 		}
 	}
 }
@@ -1080,7 +1252,6 @@ class ChannelOptions extends JXCollapsiblePane {
 			actionPerformed(ActionEvent e) { updateInstrumentMap(); }
 		});
 		
-		CC.getSamplerModel().addSamplerChannelListListener(getHandler());
 		CC.getSamplerModel().addMidiInstrumentMapListListener(mapListListener);
 		
 		cbAudioDevice.addActionListener(new ActionListener() {
@@ -1314,13 +1485,27 @@ class ChannelOptions extends JXCollapsiblePane {
 	private void
 	setUpdate(boolean b) { update = b; }
 	
+	protected void
+	onDestroy() {
+		SamplerModel sm = CC.getSamplerModel();
+		
+		sm.removeMidiDeviceListListener(getHandler());
+		sm.removeAudioDeviceListListener(getHandler());
+		sm.removeMidiInstrumentMapListListener(mapListListener);
+		sm.removeSamplerListener(samplerListener);
+		
+		if(midiDevice != null) {
+			midiDevice.removeMidiDeviceListener(getHandler());
+		}
+	}
+	
 	private final Handler handler = new Handler();
 	
 	private Handler
 	getHandler() { return handler; }
 	
 	private class Handler implements MidiDeviceListListener, ListListener<AudioDeviceModel>,
-					SamplerChannelListListener, MidiDeviceListener {
+					MidiDeviceListener {
 		/**
 		 * Invoked when a new MIDI device is created.
 		 * @param e A <code>MidiDeviceListEvent</code>
@@ -1359,37 +1544,6 @@ class ChannelOptions extends JXCollapsiblePane {
 		public void
 		entryRemoved(ListEvent<AudioDeviceModel> e) {
 			cbAudioDevice.removeItem(e.getEntry().getDeviceInfo());
-		}
-		
-		/**
-		 * Invoked when a new sampler channel is created.
-		 * @param e A <code>SamplerChannelListEvent</code>
-		 * instance providing the event information.
-		 */
-		public void
-		channelAdded(SamplerChannelListEvent e) { }
-	
-		/**
-		 * Invoked when a sampler channel is removed.
-		 * @param e A <code>SamplerChannelListEvent</code>
-		 * instance providing the event information.
-		 */
-		public void
-		channelRemoved(SamplerChannelListEvent e) {
-			// Some cleanup when the channel is removed.
-			if(e.getChannelModel().getChannelId() == channel.getChannelId()) {
-				SamplerModel sm = CC.getSamplerModel();
-				
-				sm.removeMidiDeviceListListener(getHandler());
-				sm.removeAudioDeviceListListener(getHandler());
-				sm.removeMidiInstrumentMapListListener(mapListListener);
-				sm.removeSamplerListener(samplerListener);
-				sm.removeSamplerChannelListListener(getHandler());
-				
-				if(midiDevice != null) {
-					midiDevice.removeMidiDeviceListener(getHandler());
-				}
-			}
 		}
 		
 		public void

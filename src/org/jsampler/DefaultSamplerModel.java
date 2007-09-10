@@ -700,7 +700,17 @@ public class DefaultSamplerModel implements SamplerModel {
 	 */
 	public void
 	removeBackendChannel(int channelId) {
-		CC.getTaskQueue().add(new org.jsampler.task.Channel.Remove(channelId));
+		CC.getTaskQueue().add(new Channel.Remove(channelId));
+	}
+	
+	/**
+	 * Schedules a new task for starting an instrument editor for editing
+	 * the loaded instrument on the specified sampler channel.
+	 * @param channelId The sampler channel number.
+	 */
+	public void
+	editBackendInstrument(int channelId) {
+		CC.getTaskQueue().add(new Channel.EditInstrument(channelId));
 	}
 	
 	/**

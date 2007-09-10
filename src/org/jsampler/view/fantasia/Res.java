@@ -156,6 +156,9 @@ public class Res {
 	protected final static ImageIcon gfxToolBarBg
 		= new ImageIcon(Res.class.getResource("res/gfx/toolbar_bg.png"));
 	
+	protected final static ImageIcon gfxScreenBtnBg
+		= new ImageIcon(Res.class.getResource("res/gfx/screen_btn_bg.png"));
+	
 	
 	protected final static ImageIcon gfxChannelsBg
 		= new ImageIcon(Res.class.getResource("res/gfx/channels_bg.png"));
@@ -171,6 +174,9 @@ public class Res {
 	
 	protected final static ImageIcon gfxBtnCrRO
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_cr_ro.png"));
+	
+	protected final static ImageIcon gfxStatusBar
+		= new ImageIcon(Res.class.getResource("res/gfx/statusbar.png"));
 	
 	
 	protected final static ImageIcon iconAppIcon

@@ -51,21 +51,21 @@ import static org.jsampler.view.std.StdI18n.i18n;
  * @author Grigor Iliev
  */
 public class JSDbDirectoryPropsPane extends JPanel {
-	private final JLabel lName = new JLabel(i18n.getLabel("JSDbDirectoryPropsPane.lName"));
-	private final JLabel lType = new JLabel(i18n.getLabel("JSDbDirectoryPropsPane.lType"));
-	private final JLabel lLocation = new JLabel(i18n.getLabel("JSDbDirectoryPropsPane.lLocation"));
-	private final JLabel lContains = new JLabel(i18n.getLabel("JSDbDirectoryPropsPane.lContains"));
-	private final JLabel lCreated = new JLabel(i18n.getLabel("JSDbDirectoryPropsPane.lCreated"));
-	private final JLabel lModified = new JLabel(i18n.getLabel("JSDbDirectoryPropsPane.lModified"));
-	private final JLabel lDesc = new JLabel(i18n.getLabel("JSDbDirectoryPropsPane.lDesc"));
+	private final JLabel lName = createLabel(i18n.getLabel("JSDbDirectoryPropsPane.lName"));
+	private final JLabel lType = createLabel(i18n.getLabel("JSDbDirectoryPropsPane.lType"));
+	private final JLabel lLocation = createLabel(i18n.getLabel("JSDbDirectoryPropsPane.lLocation"));
+	private final JLabel lContains = createLabel(i18n.getLabel("JSDbDirectoryPropsPane.lContains"));
+	private final JLabel lCreated = createLabel(i18n.getLabel("JSDbDirectoryPropsPane.lCreated"));
+	private final JLabel lModified = createLabel(i18n.getLabel("JSDbDirectoryPropsPane.lModified"));
+	private final JLabel lDesc = createLabel(i18n.getLabel("JSDbDirectoryPropsPane.lDesc"));
 	
-	private final TextArea taName = new TextArea();
-	private final TextArea taType = new TextArea();
-	private final TextArea taLocation = new TextArea();
-	private final TextArea taContains = new TextArea();
-	private final TextArea taCreated = new TextArea();
-	private final TextArea taModified = new TextArea();
-	private final TextArea taDesc = new TextArea();
+	private final JTextArea taName = createTextArea();
+	private final JTextArea taType = createTextArea();
+	private final JTextArea taLocation = createTextArea();
+	private final JTextArea taContains = createTextArea();
+	private final JTextArea taCreated = createTextArea();
+	private final JTextArea taModified = createTextArea();
+	private final JTextArea taDesc = createTextArea();
 	
 	private DbDirectoryInfo directoryInfo;
 	
@@ -251,12 +251,23 @@ public class JSDbDirectoryPropsPane extends JPanel {
 		CC.getTaskQueue().add(t1);
 	}
 	
+	protected JLabel
+	createLabel(String text) {
+		JLabel l = new JLabel(text);
+		l.setFont(l.getFont().deriveFont(java.awt.Font.BOLD));
+		return l;
+	}
+	
+	protected JTextArea
+	createTextArea() { return new TextArea(); }
+	
 	private class
 	TextArea extends JTextArea {
 		TextArea() {
 			setLineWrap(true);
 			setEditable(false);
 			setOpaque(false);
+			putClientProperty("substancelaf.noExtraElements", Boolean.TRUE);
 			setBorder(BorderFactory.createEmptyBorder());
 		}
 	}

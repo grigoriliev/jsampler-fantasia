@@ -11,6 +11,9 @@ CVS HEAD
     instrument/directory, last added instrument to orchestra are
     now saved for the next session
 
+  * The last used instrument selection method is now saved
+    for the next session
+
   * Implemented automatic scrolling when new channel is created to
     ensure that it is visible on the screen
 
@@ -27,6 +30,9 @@ CVS HEAD
   * Implemented new table cell editor for editing string list
     parameters with possibilities
 
+  * JS Classic:
+    - Added new button to sampler channels for starting an instrument editor
+
   * Fantasia:
     - Added scrollbar to the channels pane
     - Added new menu items: Edit/Add Channel, Edit/Create MIDI Device,
@@ -34,6 +40,8 @@ CVS HEAD
       View/Devices Pane
     - Added button to the channel screen for starting an instrument editor
       (point the mouse cursor over the channel screen and click 'Edit')
+    - Removed the lock border from non-editable text fields in
+      properties panes and LS Console
 
   * Bug fixes:
     - fixed bug #49

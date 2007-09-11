@@ -205,6 +205,21 @@ public class JSInstrumentChooser extends OkCancelDialog {
 			i = preferences().getIntProperty("lastUsedOrchestraInstrumentIndex", 0);
 			if(cbInstruments.getItemCount() > i) cbInstruments.setSelectedIndex(i);
 		}
+		
+		String s = preferences().getStringProperty("lastUsedInstrumentSelectionMethod");
+		if("fromOrchestra".equals(s)) {
+			if(!rbSelectFromOrchestra.isSelected()) rbSelectFromOrchestra.doClick(0);
+			cbInstruments.requestFocusInWindow();
+		} else if("fromDb".equals(s)) {
+			if(!rbSelectFromDb.isSelected()) rbSelectFromDb.doClick(0);
+		} else if("fromFile".equals(s)) {
+			if(!rbSelectFromFile.isSelected()) rbSelectFromFile.doClick(0);
+			btnBrowse.requestFocusInWindow();
+		} else {
+			if(!rbSelectFromOrchestra.isSelected()) rbSelectFromOrchestra.doClick(0);
+		}
+		
+		updateState();
 	}
 	
 	private JPanel
@@ -384,6 +399,8 @@ public class JSInstrumentChooser extends OkCancelDialog {
 	onOk() {
 		if(!btnOk.isEnabled()) return;
 		
+		String s = "lastUsedInstrumentSelectionMethod";
+		
 		if(rbSelectFromOrchestra.isSelected()) {
 			Instrument instr = (Instrument)cbInstruments.getSelectedItem();
 			instrumentFile = instr.getPath();
@@ -399,6 +416,8 @@ public class JSInstrumentChooser extends OkCancelDialog {
 				preferences().setIntProperty("lastUsedOrchestraInstrumentIndex", i);
 			}
 			
+			preferences().setStringProperty(s, "fromOrchestra");
+			
 			return;
 		}
 		
@@ -407,12 +426,14 @@ public class JSInstrumentChooser extends OkCancelDialog {
 			instrumentIndex = Integer.parseInt(spinnerIndex.getValue().toString());
 			
 			StdUtils.updateRecentElements("recentInstrumentFiles", instrumentFile);
-			
+			preferences().setStringProperty(s, "fromFile");
 			setVisible(false);
 			return;
 		}
 		
 		if(!rbSelectFromDb.isSelected()) return;
+		
+		preferences().setStringProperty(s, "fromDb");
 		
 		String instr = cbDbInstrument.getSelectedItem().toString();
 		preferences().setStringProperty("lastUsedDbInstrument", instr);

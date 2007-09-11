@@ -118,6 +118,8 @@ import static org.jsampler.view.classic.ClassicI18n.i18n;
  * @author Grigor Iliev
  */
 public class Channel extends org.jsampler.view.JSChannel {
+	private final static ImageIcon iconEdit;
+	
 	private final static ImageIcon iconMuteOn;
 	private final static ImageIcon iconMuteOff;
 	private final static ImageIcon iconMutedBySolo;
@@ -142,6 +144,8 @@ public class Channel extends org.jsampler.view.JSChannel {
 		= new Vector<PropertyChangeListener>();
 	
 	static {
+		iconEdit = new ImageIcon(Channel.class.getResource("res/icons/edit.png"));
+		
 		String path = "org/jsampler/view/classic/res/icons/";
 		URL url = ClassLoader.getSystemClassLoader().getResource(path + "mute_on.png");
 		iconMuteOn = new ImageIcon(url);
@@ -307,6 +311,7 @@ public class Channel extends org.jsampler.view.JSChannel {
 	private final ChannelProperties propertiesPane;
 	private final JButton btnInstr = new InstrumentButton(i18n.getLabel("Channel.btnInstr"));
 	private final Action actInstr;
+	private final JButton btnEdit = new JButton(iconEdit);
 	private final JButton btnMute = new JButton();
 	private final JButton btnSolo = new JButton();
 	private final JSlider slVolume = new JSlider(0, 100);
@@ -348,6 +353,11 @@ public class Channel extends org.jsampler.view.JSChannel {
 		Dimension d = btnInstr.getPreferredSize();
 		btnInstr.setMaximumSize(new Dimension(Short.MAX_VALUE, d.height));
 		p.add(btnInstr);
+		p.add(Box.createRigidArea(new Dimension(6, 0)));
+		
+		btnEdit.setToolTipText(i18n.getLabel("Channel.btnEdit.tt"));
+		btnEdit.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+		p.add(btnEdit);
 		p.add(Box.createRigidArea(new Dimension(6, 0)));
 		
 		lStreams.setHorizontalAlignment(JLabel.CENTER);
@@ -428,6 +438,13 @@ public class Channel extends org.jsampler.view.JSChannel {
 		};
 		
 		btnInstr.addActionListener(actInstr);
+		
+		btnEdit.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) {
+				CC.getSamplerModel().editBackendInstrument(getChannelId());
+			}
+		});
 		
 		btnMute.addActionListener(new ActionListener() {
 			public void

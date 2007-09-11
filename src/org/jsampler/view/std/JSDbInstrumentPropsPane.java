@@ -43,40 +43,40 @@ import static org.jsampler.view.std.StdI18n.i18n;
  * @author Grigor Iliev
  */
 public class JSDbInstrumentPropsPane extends JPanel {
-	private final JLabel lName = new JLabel(i18n.getLabel("JSDbInstrumentPropsPane.lName"));
+	private final JLabel lName = createLabel(i18n.getLabel("JSDbInstrumentPropsPane.lName"));
 	private final JLabel lLocation =
-		new JLabel(i18n.getLabel("JSDbInstrumentPropsPane.lLocation"));
+		createLabel(i18n.getLabel("JSDbInstrumentPropsPane.lLocation"));
 	
-	private final JLabel lSize = new JLabel(i18n.getLabel("JSDbInstrumentPropsPane.lSize"));
+	private final JLabel lSize = createLabel(i18n.getLabel("JSDbInstrumentPropsPane.lSize"));
 	
-	private final JLabel lFormat = new JLabel(i18n.getLabel("JSDbInstrumentPropsPane.lFormat"));
-	private final JLabel lType = new JLabel(i18n.getLabel("JSDbInstrumentPropsPane.lType"));
-	private final JLabel lDesc = new JLabel(i18n.getLabel("JSDbInstrumentPropsPane.lDesc"));
+	private final JLabel lFormat = createLabel(i18n.getLabel("JSDbInstrumentPropsPane.lFormat"));
+	private final JLabel lType = createLabel(i18n.getLabel("JSDbInstrumentPropsPane.lType"));
+	private final JLabel lDesc = createLabel(i18n.getLabel("JSDbInstrumentPropsPane.lDesc"));
 	private final JLabel lCreated =
-		new JLabel(i18n.getLabel("JSDbInstrumentPropsPane.lCreated"));
+		createLabel(i18n.getLabel("JSDbInstrumentPropsPane.lCreated"));
 	private final JLabel lModified =
-		new JLabel(i18n.getLabel("JSDbInstrumentPropsPane.lModified"));
+		createLabel(i18n.getLabel("JSDbInstrumentPropsPane.lModified"));
 	
-	private final JLabel lFile = new JLabel(i18n.getLabel("JSDbInstrumentPropsPane.lFile"));
-	private final JLabel lIndex = new JLabel(i18n.getLabel("JSDbInstrumentPropsPane.lIndex"));
-	private final JLabel lProduct = new JLabel(i18n.getLabel("JSDbInstrumentPropsPane.lProduct"));
-	private final JLabel lArtists = new JLabel(i18n.getLabel("JSDbInstrumentPropsPane.lArtists"));
+	private final JLabel lFile = createLabel(i18n.getLabel("JSDbInstrumentPropsPane.lFile"));
+	private final JLabel lIndex = createLabel(i18n.getLabel("JSDbInstrumentPropsPane.lIndex"));
+	private final JLabel lProduct = createLabel(i18n.getLabel("JSDbInstrumentPropsPane.lProduct"));
+	private final JLabel lArtists = createLabel(i18n.getLabel("JSDbInstrumentPropsPane.lArtists"));
 	private final JLabel lKeywords =
-		new JLabel(i18n.getLabel("JSDbInstrumentPropsPane.lKeywords"));
+		createLabel(i18n.getLabel("JSDbInstrumentPropsPane.lKeywords"));
 	
-	private final TextArea taName = new TextArea();
-	private final TextArea taLocation = new TextArea();
-	private final TextArea taSize = new TextArea();
-	private final TextArea taFormat = new TextArea();
-	private final TextArea taType = new TextArea();
-	private final TextArea taDesc = new TextArea();
-	private final TextArea taCreated = new TextArea();
-	private final TextArea taModified = new TextArea();
-	private final TextArea taFile = new TextArea();
-	private final TextArea taIndex = new TextArea();
-	private final TextArea taProduct = new TextArea();
-	private final TextArea taArtists = new TextArea();
-	private final TextArea taKeywords = new TextArea();
+	private final JTextArea taName = createTextArea();
+	private final JTextArea taLocation = createTextArea();
+	private final JTextArea taSize = createTextArea();
+	private final JTextArea taFormat = createTextArea();
+	private final JTextArea taType = createTextArea();
+	private final JTextArea taDesc = createTextArea();
+	private final JTextArea taCreated = createTextArea();
+	private final JTextArea taModified = createTextArea();
+	private final JTextArea taFile = createTextArea();
+	private final JTextArea taIndex = createTextArea();
+	private final JTextArea taProduct = createTextArea();
+	private final JTextArea taArtists = createTextArea();
+	private final JTextArea taKeywords = createTextArea();
 	
 	/**
 	 * Creates a new instance of <code>JSDbInstrumentPropsPane</code>
@@ -295,12 +295,23 @@ public class JSDbInstrumentPropsPane extends JPanel {
 		taKeywords.setText(instrInfo.getKeywords());
 	}
 	
+	protected JLabel
+	createLabel(String text) {
+		JLabel l = new JLabel(text);
+		l.setFont(l.getFont().deriveFont(java.awt.Font.BOLD));
+		return l;
+	}
+	
+	protected JTextArea
+	createTextArea() { return new TextArea(); }
+	
 	private class
 	TextArea extends JTextArea {
 		TextArea() {
 			setLineWrap(true);
 			setEditable(false);
 			setOpaque(false);
+			putClientProperty("substancelaf.noExtraElements", Boolean.TRUE);
 			setBorder(BorderFactory.createEmptyBorder());
 		}
 	}

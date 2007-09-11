@@ -133,7 +133,7 @@ public class JSChannelsDefaultSettingsPane extends JPanel {
 		c.gridx = 0;
 		c.gridy = 3;
 		gridbag.setConstraints(lMidiMap, c);
-		add(lMidiMap); 
+		add(lMidiMap);
 
 		c.gridx = 0;
 		c.gridy = 4;

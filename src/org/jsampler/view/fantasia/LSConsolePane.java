@@ -43,6 +43,7 @@ public class LSConsolePane extends JSLSConsolePane {
 	public
 	LSConsolePane(Window owner) {
 		super(owner);
+		getLSConsoleTextPane().putClientProperty("substancelaf.noExtraElements", Boolean.TRUE);
 	}
 	
 	protected void

@@ -881,6 +881,7 @@ class ChannelScreen extends PixmapPane {
 			add(btnInstr);
 			add(rightPane);
 			add(sbbEditInstr);
+			btnEditInstr.setToolTipText(i18n.getLabel("ChannelScreen.btnEditInstr.tt"));
 			sbbEditInstr.setVisible(false);
 			setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 6));
 			

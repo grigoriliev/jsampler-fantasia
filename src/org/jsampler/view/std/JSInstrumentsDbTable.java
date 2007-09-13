@@ -90,6 +90,8 @@ import org.linuxsampler.lscp.MidiInstrumentInfo;
 import static org.jsampler.view.InstrumentsDbTableModel.ColumnType;
 import static org.jsampler.view.std.StdI18n.i18n;
 
+import static org.linuxsampler.lscp.Parser.*;
+
 /**
  *
  * @author Grigor Iliev
@@ -446,7 +448,7 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 			
 			String path = instrumentsDbTree.getSelectedDirectoryPath();
 			if(path.length() > 1) path += "/";
-			path += getDirectoryName();
+			path += toEscapedFileName(getDirectoryName());
 			
 			final InstrumentsDb.CreateDirectory t =
 				new InstrumentsDb.CreateDirectory(path);

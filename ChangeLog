@@ -30,6 +30,8 @@ CVS HEAD
   * Implemented new table cell editor for editing string list
     parameters with possibilities
 
+  * Added support for escape sequences
+
   * JS Classic:
     - Added new button to sampler channels for starting an instrument editor
 

@@ -48,6 +48,7 @@ import org.jsampler.view.DbDirectoryTreeNode;
 import org.jsampler.view.InstrumentsDbTreeModel;
 
 import org.linuxsampler.lscp.DbInstrumentInfo;
+import org.linuxsampler.lscp.Parser;
 
 import static org.jsampler.view.std.StdI18n.i18n;
 
@@ -155,7 +156,7 @@ public class JSDbInstrumentChooser extends OkCancelDialog implements ListSelecti
 	
 	public void
 	setSelectedInstrument(String instr) {
-		String parentDir = InstrumentsDbTreeModel.getParentDirectory(instr);
+		String parentDir = Parser.getParentDirectory(instr);
 		if(parentDir == null) return;
 		instrumentsDbTree.setSelectedDirectory(parentDir);
 		if(instrumentsDbTable.getParentDirectoryNode() == null) return;

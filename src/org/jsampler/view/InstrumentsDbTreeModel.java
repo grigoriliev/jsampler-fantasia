@@ -48,6 +48,9 @@ import org.linuxsampler.lscp.DbInstrumentInfo;
 import org.linuxsampler.lscp.event.InstrumentsDbEvent;
 import org.linuxsampler.lscp.event.InstrumentsDbListener;
 
+import static org.linuxsampler.lscp.Parser.*;
+
+
 /**
  *
  * @author Grigor Iliev
@@ -98,7 +101,7 @@ public class InstrumentsDbTreeModel implements TreeModel {
 				for(int i = 0; i < root.getChildCount(); i++) {
 					DbDirectoryTreeNode node = root.getChildAt(i);
 					node.setConnected(true);
-					updateDirectoryContent(node, "/" + node.toString());
+					updateDirectoryContent(node, "/" + toEscapedFileName(node));
 				}
 				
 				if(l != null) l.actionPerformed(null);
@@ -131,7 +134,7 @@ public class InstrumentsDbTreeModel implements TreeModel {
 			child.setConnected(true);
 			String pathName = getPathName(path.getPath());
 			if(pathName.length() > 1) pathName += "/";
-			updateDirectoryContent(child, pathName + child.toString());
+			updateDirectoryContent(child, pathName + toEscapedFileName(child));
 		}
 	}
 	
@@ -350,7 +353,7 @@ public class InstrumentsDbTreeModel implements TreeModel {
 		
 		StringBuffer sb = new StringBuffer();
 		for(int i = 1; i < objs.length; i++) {
-			sb.append('/').append(objs[i].toString());
+			sb.append('/').append(toEscapedFileName(objs[i]));
 		}
 		
 		return sb.toString();
@@ -401,7 +404,7 @@ public class InstrumentsDbTreeModel implements TreeModel {
 	
 	public DbDirectoryTreeNode
 	getNodeByPath(String path) {
-		String[] dirs = getDirectoryPath(path);
+		String[] dirs = getDirectoryList(path);
 		if(dirs == null) return null;
 		if(dirs.length == 1) return root;
 		
@@ -409,7 +412,8 @@ public class InstrumentsDbTreeModel implements TreeModel {
 		boolean found = false;
 		for(int i = 1; i < dirs.length; i++) {
 			for(int k = 0; k < node.getChildCount(); k++) {
-				if(dirs[i].equals(node.getChildAt(k).toString())) {
+				String s = toNonEscapedFileName(dirs[i]);
+				if(s.equals(node.getChildAt(k).toString())) {
 					node = node.getChildAt(k);
 					found = true;
 					break;
@@ -429,51 +433,13 @@ public class InstrumentsDbTreeModel implements TreeModel {
 		return getPathName(getPathToRoot(node));
 	}
 	
-	private String[]
-	getDirectoryPath(String path) {
-		if(path == null || path.length() == 0) return null;
-		if(path.charAt(0) != '/') return null;
-		Vector<String> v = new Vector<String>();
-		v.add("/");
-		if(path.length() == 1) return v.toArray(new String[v.size()]);
-		
-		if(path.charAt(path.length() - 1) != '/') path += "/";
-		int i = 1;
-		int j = path.indexOf('/', i);
-		
-		while(j != -1) {
-			v.add(path.substring(i, j));
-			
-			i = j + 1;
-			if(i >= path.length()) return v.toArray(new String[v.size()]);
-			j = path.indexOf('/', i);
-		}
-		
-		return null;
-	}
-	
-	public static String
-	getParentDirectory(String path) {
-		if(path == null || path.length() == 0) return null;
-		if(path.charAt(0) != '/') return null;
-		if(path.length() == 1) return null;
-		
-		if(path.charAt(path.length() - 1) == '/') {
-			path = path.substring(0, path.length() - 1);
-		}
-		
-		int i = path.lastIndexOf('/');
-		if(i == 0) return "/";
-		return path.substring(0, i);
-	}
-	
 	/**
 	 * @param l A listener which will be notified when the operation is completed.
 	 */
 	public void
 	loadPath(String path, final ActionListener l) {
 		// TODO: This method is lazily implemented. Should be optimized.
-		final String[] dirs = getDirectoryPath(path);
+		final String[] dirs = getDirectoryList(path);
 		if(dirs == null) {
 			l.actionPerformed(null);
 			return;
@@ -586,8 +552,8 @@ public class InstrumentsDbTreeModel implements TreeModel {
 				// If the directory is renamed by this frontend the
 				// directory should already be with the new name
 				String s = getParentDirectory(e.getPathName());
-				if(s.length() == 1) s += e.getNewName();
-				else s += "/" + e.getNewName();
+				if(s.length() == 1) s += toEscapedFileName(e.getNewName());
+				else s += "/" + toEscapedFileName(e.getNewName());
 				node = getNodeByPath(s);
 			}
 			if(node == null || node.getParent() == null) {
@@ -677,10 +643,8 @@ public class InstrumentsDbTreeModel implements TreeModel {
 			DbDirectoryTreeNode node = getNodeByPath(dir);
 			if(node == null) return;
 			
-			String instr = e.getPathName();
-			int i = instr.lastIndexOf('/');
-			if(i != -1 && i < instr.length() - 1) instr = instr.substring(i + 1);
-			else return;
+			String instr = getFileName(e.getPathName());
+			if(instr == null) return;
 			
 			DbInstrumentInfo info = node.getInstrument(instr);
 			

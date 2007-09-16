@@ -67,6 +67,7 @@ import org.linuxsampler.lscp.MidiInstrumentInfo;
 import org.linuxsampler.lscp.SamplerEngine;
 
 import static org.jsampler.view.std.StdI18n.i18n;
+import static org.linuxsampler.lscp.Parser.*;
 
 
 /**
@@ -597,7 +598,7 @@ class ManualSelectWizardPage extends UserInputPage {
 		int result = fc.showOpenDialog(this);
 		if(result != JFileChooser.APPROVE_OPTION) return;
 		
-		cbFilename.setSelectedItem(fc.getSelectedFile().getPath());
+		cbFilename.setSelectedItem(toEscapedString(fc.getSelectedFile().getPath()));
 		String path = fc.getCurrentDirectory().getAbsolutePath();
 		preferences().setStringProperty("lastInstrumentLocation", path);
 	}

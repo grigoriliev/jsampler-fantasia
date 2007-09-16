@@ -49,6 +49,7 @@ import org.jsampler.Instrument;
 import org.jsampler.JSPrefs;
 
 import static org.jsampler.view.std.StdI18n.i18n;
+import static org.linuxsampler.lscp.Parser.*;
 
 
 /**
@@ -251,8 +252,9 @@ public class JSAddOrEditInstrumentDlg extends OkCancelDialog {
 			JFileChooser fc = new JFileChooser(path);
 			int result = fc.showOpenDialog(JSAddOrEditInstrumentDlg.this);
 			if(result != JFileChooser.APPROVE_OPTION) return;
-		
-			cbPath.setSelectedItem(fc.getSelectedFile().getAbsolutePath());
+			
+			String s = toEscapedString(fc.getSelectedFile().getAbsolutePath());
+			cbPath.setSelectedItem(s);
 			path = fc.getCurrentDirectory().getAbsolutePath();
 			preferences().setStringProperty("lastInstrumentLocation", path);
 		}

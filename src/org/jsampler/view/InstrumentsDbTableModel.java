@@ -44,6 +44,7 @@ import org.linuxsampler.lscp.event.InstrumentsDbEvent;
 import org.linuxsampler.lscp.event.InstrumentsDbListener;
 
 import static org.jsampler.JSI18n.i18n;
+import static org.linuxsampler.lscp.Parser.*;
 
 /**
  *
@@ -684,7 +685,7 @@ public class InstrumentsDbTableModel extends AbstractTableModel {
 			d = d.substring(dir.getDirectoryPath().length(), d.length());
 			if(d.length() == 0) return;
 			if(d.charAt(0) == '/') d = d.substring(1, d.length());
-			int row = getDirectoryRowIndex(d);
+			int row = getDirectoryRowIndex(toNonEscapedFileName(d));
 			if(row == -1) return;
 			fireTableRowsUpdated(row, row);
 		}

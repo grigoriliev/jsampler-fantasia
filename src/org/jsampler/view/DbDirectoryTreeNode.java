@@ -78,6 +78,34 @@ public class DbDirectoryTreeNode implements TreeNode {
 	public void
 	setInfo(DbDirectoryInfo info) { this.info = info; }
 	
+	/**
+	 * Renames this node.
+	 * Also updates the paths of all children.
+	 */
+	protected void
+	setName(String newName) {
+		getInfo().setName(newName);
+		for(DbInstrumentInfo i : instrs) {
+			i.setDirectoryPath(getInfo().getDirectoryPath());
+		}
+		
+		for(DbDirectoryTreeNode n : dirs) n.updateDirectoryPaths();
+	}
+	
+	/**
+	 * Invoked when the name of a parent node is changed.
+	 */
+	protected void
+	updateDirectoryPaths() {
+		getInfo().setParentDirectoryPath(parent.getInfo().getDirectoryPath());
+		
+		for(DbInstrumentInfo i : instrs) {
+			i.setDirectoryPath(getInfo().getDirectoryPath());
+		}
+		
+		for(DbDirectoryTreeNode n : dirs) n.updateDirectoryPaths();
+	}
+	
 	// Tree node model methods
 	public DbDirectoryTreeNode
 	getChildAt(int index) { return dirs.get(index); }

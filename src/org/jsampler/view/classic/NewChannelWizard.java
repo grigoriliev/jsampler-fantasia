@@ -80,6 +80,7 @@ import org.linuxsampler.lscp.MidiPort;
 import org.linuxsampler.lscp.SamplerEngine;
 
 import static org.jsampler.view.classic.ClassicI18n.i18n;
+import static org.linuxsampler.lscp.Parser.*;
 
 
 /**
@@ -624,7 +625,7 @@ class InstrumentWizardPage extends UserInputPage {
 		JFileChooser fc = new JFileChooser();
 		int result = fc.showOpenDialog(this);
 		if(result == JFileChooser.APPROVE_OPTION) {
-			tfFilename.setText(fc.getSelectedFile().getPath());
+			tfFilename.setText(toEscapedString(fc.getSelectedFile().getPath()));
 		}
 	}
 }

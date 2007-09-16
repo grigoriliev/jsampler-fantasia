@@ -58,6 +58,7 @@ import org.jsampler.JSPrefs;
 import org.jsampler.task.InstrumentsDb;
 
 import static org.jsampler.view.std.StdI18n.i18n;
+import static org.linuxsampler.lscp.Parser.*;
 
 /**
  *
@@ -241,7 +242,8 @@ public class JSAddDbInstrumentsFromFileDlg extends OkCancelDialog {
 		int result = fc.showOpenDialog(this);
 		if(result != JFileChooser.APPROVE_OPTION) return;
 		
-		cbSource.setSelectedItem(fc.getSelectedFile().getPath());
+		String s = toEscapedString(fc.getSelectedFile().getPath());
+		cbSource.setSelectedItem(s);
 		path = fc.getCurrentDirectory().getAbsolutePath();
 		preferences().setStringProperty("lastInstrumentLocation", path);
 	}

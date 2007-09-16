@@ -67,6 +67,7 @@ import org.jsampler.OrchestraModel;
 import org.jsampler.task.InstrumentsDb;
 
 import static org.jsampler.view.std.StdI18n.i18n;
+import static org.linuxsampler.lscp.Parser.*;
 
 /**
  *
@@ -468,7 +469,7 @@ public class JSInstrumentChooser extends OkCancelDialog {
 		JFileChooser fc = new JFileChooser(s);
 		int result = fc.showOpenDialog(this);
 		if(result == JFileChooser.APPROVE_OPTION) {
-			cbFilename.setSelectedItem(fc.getSelectedFile().getPath());
+			cbFilename.setSelectedItem(toEscapedString(fc.getSelectedFile().getPath()));
 			btnOk.requestFocusInWindow();
 			
 			String path = fc.getCurrentDirectory().getAbsolutePath();

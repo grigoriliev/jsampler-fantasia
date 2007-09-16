@@ -561,7 +561,7 @@ public class InstrumentsDbTreeModel implements TreeModel {
 				return;
 			}
 			
-			node.getInfo().setName(e.getNewName());
+			node.setName(e.getNewName());
 			DbDirectoryTreeNode parent = node.getParent();
 			
 			int i = parent.getIndex(node);
@@ -646,7 +646,7 @@ public class InstrumentsDbTreeModel implements TreeModel {
 			String instr = getFileName(e.getPathName());
 			if(instr == null) return;
 			
-			DbInstrumentInfo info = node.getInstrument(instr);
+			DbInstrumentInfo info = node.getInstrument(toNonEscapedFileName(instr));
 			
 			if(info == null) {
 				// If the instrument is renamed by this frontend the

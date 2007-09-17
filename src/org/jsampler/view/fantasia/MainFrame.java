@@ -77,6 +77,7 @@ import org.jsampler.view.JSChannelsPane;
 import org.jsampler.view.JSMainFrame;
 import org.jsampler.view.LscpFileFilter;
 
+import org.jsampler.view.std.JSDetailedErrorDlg;
 import org.jsampler.view.std.JSamplerHomeChooser;
 
 import static org.jsampler.view.fantasia.A4n.a4n;
@@ -464,12 +465,18 @@ public class MainFrame extends JSMainFrame {
 	
 	public void
 	showDetailedErrorMessage(Frame owner, String err, String details) {
-		// TODO: 
+		JSDetailedErrorDlg dlg = new JSDetailedErrorDlg (
+			owner, Res.iconWarning32, i18n.getError("error"), err, details
+		);
+		dlg.setVisible(true);
 	}
 	
 	public void
 	showDetailedErrorMessage(Dialog owner, String err, String details) {
-		// TODO: 
+		JSDetailedErrorDlg dlg = new JSDetailedErrorDlg (
+			owner, Res.iconWarning32, i18n.getError("error"), err, details
+		);
+		dlg.setVisible(true);
 	}
 	
 	protected LSConsoleModel

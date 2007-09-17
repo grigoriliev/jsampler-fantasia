@@ -175,7 +175,7 @@ public class Res {
 	protected final static ImageIcon gfxBtnCrRO
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_cr_ro.png"));
 	
-		
+	
 	protected final static ImageIcon iconAppIcon
 		= new ImageIcon(Res.class.getResource("res/icons/app_icon.png"));
 	
@@ -265,6 +265,9 @@ public class Res {
 	
 	protected final static ImageIcon iconDb32
 		= new ImageIcon(Res.class.getResource("res/icons/db32.png"));
+	
+	protected final static ImageIcon iconWarning32
+		= new ImageIcon(Res.class.getResource("res/icons/warning32.png"));
 	
 	protected final static ImageIcon iconLinuxSamplerLogo
 		= new ImageIcon(Res.class.getResource("res/icons/LinuxSampler-logo.png"));

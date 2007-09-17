@@ -191,6 +191,19 @@ public class InstrumentsDbFrame extends JFrame {
 		
 		m.addSeparator();
 		
+		mi = new JMenuItem(i18n.getMenuLabel("instrumentsdb.actions.format"));
+		m.add(mi);
+		mi.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) {
+				String s = i18n.getMessage("InstrumentsDbFrame.formatDatabase?");
+				if(!HF.showYesNoDialog(InstrumentsDbFrame.this, s)) return;
+				CC.getTaskQueue().add(new InstrumentsDb.Format());
+			}
+		});
+		
+		m.addSeparator();
+		
 		loadInstrumentMenu =
 			new JMenu(i18n.getMenuLabel("instrumentsdb.actions.loadInstrument"));
 		m.add(loadInstrumentMenu);

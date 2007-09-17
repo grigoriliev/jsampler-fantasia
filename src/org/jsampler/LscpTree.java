@@ -37,6 +37,7 @@ public class LscpTree {
 		LscpNode destroy = new LscpNode("DESTROY");
 		LscpNode edit = new LscpNode("EDIT", new LscpNode("INSTRUMENT", true, true));
 		LscpNode find = new LscpNode("FIND");
+		LscpNode format = new LscpNode("FORMAT", new LscpNode("INSTRUMENTS_DB", true, false));
 		LscpNode get = new LscpNode("GET");
 		LscpNode list = new LscpNode("LIST");
 		LscpNode load = new LscpNode("LOAD");
@@ -51,8 +52,8 @@ public class LscpTree {
 		LscpNode unsubscribe = new LscpNode("UNSUBSCRIBE");
 		
 		LscpNode[] cmds = {
-			add, clear, copy, create, destroy, edit, find, get, list, load, map, move,
-			quit, remove, reset, set, subscribe, unmap, unsubscribe
+			add, clear, copy, create, destroy, edit, find, format, get, list, load,
+			map, move, quit, remove, reset, set, subscribe, unmap, unsubscribe
 		};
 		
 		rootNode = new LscpNode("", cmds);

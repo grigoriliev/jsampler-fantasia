@@ -28,7 +28,8 @@ import java.awt.Frame;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 import net.sf.juife.OkCancelDialog;
 
@@ -40,7 +41,7 @@ import static org.jsampler.view.std.StdI18n.i18n;
  * @author Grigor Iliev
  */
 public class JSDbDescriptionDlg extends OkCancelDialog {
-	private final JTextField tfDesc = new JTextField();
+	private final JTextArea taDesc = new JTextArea();
 	
 	/**
 	 * Creates a new instance of <code>JSDbDescriptionDlg</code>
@@ -62,7 +63,11 @@ public class JSDbDescriptionDlg extends OkCancelDialog {
 	
 	private void
 	initDbDescriptionDlg() {
-		setMainPane(tfDesc);
+		taDesc.setLineWrap(true);
+		taDesc.setWrapStyleWord(true);
+		JScrollPane sp = new JScrollPane(taDesc);
+		sp.setPreferredSize(new java.awt.Dimension(300, 60));
+		setMainPane(sp);
 		setMinimumSize(getPreferredSize());
 		setResizable(true);
 	}
@@ -78,8 +83,8 @@ public class JSDbDescriptionDlg extends OkCancelDialog {
 	onCancel() { setVisible(false); }
 	
 	public String
-	getDescription() { return tfDesc.getText(); }
+	getDescription() { return taDesc.getText(); }
 	
 	public void
-	setDescription(String s) { tfDesc.setText(s); }
+	setDescription(String s) { taDesc.setText(s); }
 }

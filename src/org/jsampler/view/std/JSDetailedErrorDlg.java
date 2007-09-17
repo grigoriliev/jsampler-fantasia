@@ -20,7 +20,7 @@
  *   MA  02111-1307  USA
  */
 
-package org.jsampler.view.classic;
+package org.jsampler.view.std;
 
 import java.awt.BorderLayout;
 import java.awt.Dialog;
@@ -34,6 +34,7 @@ import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JToggleButton;
@@ -49,19 +50,19 @@ import org.linuxsampler.lscp.LSException;
 import net.sf.juife.EnhancedDialog;
 import net.sf.juife.JuifeUtils;
 
-import static org.jsampler.view.classic.ClassicI18n.i18n;
+import static org.jsampler.view.std.StdI18n.i18n;
 
 
 /**
  *
  * @author Grigor Iliev
  */
-public class DetailedErrorDlg extends EnhancedDialog {
+public class JSDetailedErrorDlg extends EnhancedDialog {
 	private final JLabel lError = new JLabel();
 	private final JTextArea taDetails = new JTextArea();
 	
 	private final JButton btnDetails =
-		new JButton(i18n.getButtonLabel("DetailedErrorDlg.showDetails"));
+		new JButton(i18n.getButtonLabel("JSDetailedErrorDlg.showDetails"));
 	
 	private JComponent mainPane;
 	private JComponent detailsPane;
@@ -70,22 +71,26 @@ public class DetailedErrorDlg extends EnhancedDialog {
 	int showHeight;
 	boolean show = false;
 	
-	/** Creates a new instance of <code>DetailedErrorDlg</code> */
-	public DetailedErrorDlg(Frame owner, String title, String err, String details) {
+	/**
+	 * Creates a new instance of <code>JSDetailedErrorDlg</code>
+	 */
+	public JSDetailedErrorDlg(Frame owner, Icon iconWarning, String title, String err, String details) {
 		super(owner, title);
-		initDetailedErrorDlg(err, details);
+		initDetailedErrorDlg(err, details, iconWarning);
 	}
 	
-	/** Creates a new instance of <code>DetailedErrorDlg</code> */
-	public DetailedErrorDlg(Dialog owner, String title, String err, String details) {
+	/**
+	 * Creates a new instance of <code>JSDetailedErrorDlg</code>
+	 */
+	public JSDetailedErrorDlg(Dialog owner, Icon iconWarning, String title, String err, String details) {
 		super(owner, title);
-		initDetailedErrorDlg(err, details);
+		initDetailedErrorDlg(err, details, iconWarning);
 	}
 	
 	private void
-	initDetailedErrorDlg(String err, String details) {
+	initDetailedErrorDlg(String err, String details, Icon iconWarning) {
 		lError.setText(err);
-		lError.setIcon(Res.iconWarning32);
+		lError.setIcon(iconWarning);
 		lError.setAlignmentX(LEFT_ALIGNMENT);
 		lError.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
 		taDetails.setText(details);
@@ -143,8 +148,8 @@ public class DetailedErrorDlg extends EnhancedDialog {
 	
 	public void
 	showDetails(final boolean b) {
-		if(b) btnDetails.setText(i18n.getButtonLabel("DetailedErrorDlg.hideDetails"));
-		else btnDetails.setText(i18n.getButtonLabel("DetailedErrorDlg.showDetails"));
+		if(b) btnDetails.setText(i18n.getButtonLabel("JSDetailedErrorDlg.hideDetails"));
+		else btnDetails.setText(i18n.getButtonLabel("JSDetailedErrorDlg.showDetails"));
 		
 		if(b) {
 			mainPane.add(detailsPane);

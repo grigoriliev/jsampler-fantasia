@@ -71,6 +71,7 @@ import org.jsampler.view.JSChannel;
 import org.jsampler.view.JSChannelsPane;
 import org.jsampler.view.LscpFileFilter;
 
+import org.jsampler.view.std.JSDetailedErrorDlg;
 import org.jsampler.view.std.JSamplerHomeChooser;
 
 import static org.jsampler.view.classic.A4n.a4n;
@@ -1181,11 +1182,17 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 	
 	public void
 	showDetailedErrorMessage(Frame owner, String err, String details) {
-		new DetailedErrorDlg(owner, i18n.getError("error"), err, details).setVisible(true);
+		JSDetailedErrorDlg dlg = new JSDetailedErrorDlg (
+			owner, Res.iconWarning32, i18n.getError("error"), err, details
+		);
+		dlg.setVisible(true);
 	}
 	
 	public void
 	showDetailedErrorMessage(Dialog owner, String err, String details) {
-		new DetailedErrorDlg(owner, i18n.getError("error"), err, details).setVisible(true);
+		JSDetailedErrorDlg dlg = new JSDetailedErrorDlg (
+			owner, Res.iconWarning32, i18n.getError("error"), err, details
+		);
+		dlg.setVisible(true);
 	}
 }

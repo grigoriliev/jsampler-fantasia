@@ -917,4 +917,29 @@ public class InstrumentsDb {
 			return true;
 		}
 	}
+	
+	/**
+	 * This task formats the instruments database.
+	 */
+	public static class Format extends EnhancedTask {
+		/**
+		 * Formats the instruments database..
+		 */
+		public
+		Format() {
+			setTitle("InstrumentsDb.Format_task");
+			String s = i18n.getMessage("InstrumentsDb.Format.desc");
+			setDescription(s);
+		}
+	
+		/** The entry point of the task. */
+		public void
+		run() {
+			try { CC.getClient().formatInstrumentsDb(); }
+			catch(Exception x) {
+				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
+				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
+			}
+		}
+	}
 }

@@ -72,6 +72,15 @@ public class InstrumentsDbTreeModel implements TreeModel {
 	 */
 	public
 	InstrumentsDbTreeModel(final ActionListener l) {
+		// TODO: This shouldn't be done in the event-dispatcing thread
+		CC.getClient().addInstrumentsDbListener(getHandler());
+		///////
+				
+		initDb(l);
+	}
+	
+	private void
+	initDb(final ActionListener l) {
 		final InstrumentsDb.GetDrectory gdi = new InstrumentsDb.GetDrectory("/");
 		final InstrumentsDb.GetDrectories gd = new InstrumentsDb.GetDrectories("/");
 		final InstrumentsDb.GetInstruments gi = new InstrumentsDb.GetInstruments("/");
@@ -83,9 +92,6 @@ public class InstrumentsDbTreeModel implements TreeModel {
 				root = new DbDirectoryTreeNode(gdi.getResult());
 				fireNodeStructureChanged(root);
 				
-				// TODO: This shouldn't be done in the event-dispatcing thread
-				CC.getClient().addInstrumentsDbListener(getHandler());
-				///////
 				CC.getTaskQueue().add(gd);
 				CC.getTaskQueue().add(gi);
 			}
@@ -407,7 +413,7 @@ public class InstrumentsDbTreeModel implements TreeModel {
 		String[] dirs = getDirectoryList(path);
 		if(dirs == null) return null;
 		if(dirs.length == 1) return root;
-		
+		if(root == null) return null;
 		DbDirectoryTreeNode node = root;
 		boolean found = false;
 		for(int i = 1; i < dirs.length; i++) {
@@ -487,18 +493,25 @@ public class InstrumentsDbTreeModel implements TreeModel {
 		directoryCountChanged(final InstrumentsDbEvent e) {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void
-				run() {
-					DbDirectoryTreeNode node = getNodeByPath(e.getPathName());
-					if(node == null) {
-						return;
-					}
-					if(!node.isConnected()) {
-						return;
-					}
-					
-					updateDirectoryContent(node, e.getPathName());
-				}
+				run() { updateDirectoryCount(e); }
 			});
+		}
+		
+		private void
+		updateDirectoryCount(InstrumentsDbEvent e) {
+			if(e.getPathName().equals("/") && root == null) {
+				/*
+				 * If the directory tree failed to load due to a database
+				 * corruption it may work now if the db has been formatted
+				 */
+				initDb(null);
+			}
+			
+			DbDirectoryTreeNode node = getNodeByPath(e.getPathName());
+			if(node == null) return;
+			if(!node.isConnected()) return;
+			
+			updateDirectoryContent(node, e.getPathName());
 		}
 		
 		/**

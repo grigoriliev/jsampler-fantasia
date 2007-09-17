@@ -32,6 +32,11 @@ CVS HEAD
 
   * Added support for escape sequences
 
+  * Now database instruments and directories can have multiline descriptions
+
+  * Added support for formatting the instruments database
+    (Choose from the instruments database window Actions/Format Database)
+
   * JS Classic:
     - Added new button to sampler channels for starting an instrument editor
 
@@ -44,6 +49,7 @@ CVS HEAD
       (point the mouse cursor over the channel screen and click 'Edit')
     - Removed the lock border from non-editable text fields in
       properties panes and LS Console
+    - Added detailed error dialog
 
   * Bug fixes:
     - fixed bug #49

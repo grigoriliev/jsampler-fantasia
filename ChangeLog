@@ -37,6 +37,9 @@ CVS HEAD
   * Added support for formatting the instruments database
     (Choose from the instruments database window Actions/Format Database)
 
+  * Added options for setting the maximum master and channel volume
+    (choose Edit/Preferences)
+
   * JS Classic:
     - Added new button to sampler channels for starting an instrument editor
 
@@ -50,6 +53,9 @@ CVS HEAD
     - Removed the lock border from non-editable text fields in
       properties panes and LS Console
     - Added detailed error dialog
+    - Master volume is now fully implemented
+    - Added options for showing additional device parameters in audio/MIDI
+      device panes (choose Edit/Preferences, then click the `View' tab)
 
   * Bug fixes:
     - fixed bug #49

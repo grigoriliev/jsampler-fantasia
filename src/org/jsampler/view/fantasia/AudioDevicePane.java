@@ -30,6 +30,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -64,6 +67,7 @@ import org.linuxsampler.lscp.AudioOutputDevice;
 import org.linuxsampler.lscp.Parameter;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
+import static org.jsampler.view.fantasia.FantasiaPrefs.preferences;
 
 /**
  *
@@ -121,6 +125,9 @@ public class AudioDevicePane extends DevicePane {
 		
 		private final JComboBox cbChannel = new JComboBox();
 		
+		private final ParameterTable additionalParamsTable = new ParameterTable();
+		private final JPanel additionalParamsPane = new JPanel();
+		
 		OptionsPane() {
 			super(Res.gfxChannelOptions);
 			
@@ -152,6 +159,21 @@ public class AudioDevicePane extends DevicePane {
 			mainPane.add(p);
 			mainPane.add(Box.createRigidArea(new Dimension(0, 5)));
 			
+			JPanel p2 = additionalParamsPane;
+			p2.setLayout(new BoxLayout(p2, BoxLayout.Y_AXIS));
+			p2.setOpaque(false);
+			
+			p2.add(createHSeparator());
+			p2.add(Box.createRigidArea(new Dimension(0, 5)));
+			
+			JScrollPane sp = new JScrollPane(additionalParamsTable);
+			
+			sp.setPreferredSize(new Dimension(77, 90));
+			p2.add(sp);
+			mainPane.add(p2);
+			
+			mainPane.add(Box.createRigidArea(new Dimension(0, 5)));
+			
 			mainPane.add(createHSeparator());
 			mainPane.add(Box.createRigidArea(new Dimension(0, 5)));
 			
@@ -159,7 +181,7 @@ public class AudioDevicePane extends DevicePane {
 			p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
 			p.setOpaque(false);
 			
-			JPanel p2 = new JPanel();
+			p2 = new JPanel();
 			p2.setLayout(new BoxLayout(p2, BoxLayout.X_AXIS));
 			p2.add(lChannel);
 			p2.add(Box.createRigidArea(new Dimension(5, 0)));
@@ -169,7 +191,7 @@ public class AudioDevicePane extends DevicePane {
 			
 			p.add(Box.createRigidArea(new Dimension(0, 5)));
 			
-			JScrollPane sp = new JScrollPane(channelParamTable);
+			sp = new JScrollPane(channelParamTable);
 			sp.setPreferredSize(new Dimension(77, 90));
 			p.add(sp);
 			
@@ -189,6 +211,31 @@ public class AudioDevicePane extends DevicePane {
 			for(AudioOutputChannel chn : m.getDeviceInfo().getAudioChannels()) {
 				cbChannel.addItem(chn);
 			}
+			
+			Parameter[] pS = audioDeviceModel.getDeviceInfo().getAdditionalParameters();
+			additionalParamsTable.getModel().setParameters(pS);
+			additionalParamsTable.getModel().addParameterListener(new ParameterListener() {
+				public void
+				parameterChanged(ParameterEvent e) {
+					audioDeviceModel.setBackendDeviceParameter(e.getParameter());
+				}
+			});
+			
+			updateAdditionalParamsViewState();
+			String s = "AudioDevice.showAdditionalParameters";
+			preferences().addPropertyChangeListener(s, new PropertyChangeListener() {
+				public void
+				propertyChange(PropertyChangeEvent e) {
+					updateAdditionalParamsViewState();
+				}
+			});
+		}
+		
+		private void
+		updateAdditionalParamsViewState() {
+			String s = "AudioDevice.showAdditionalParameters";
+			additionalParamsPane.setVisible(preferences().getBoolProperty(s));
+			validate();
 		}
 		
 		public void
@@ -229,6 +276,9 @@ public class AudioDevicePane extends DevicePane {
 			if(a != na) checkActive.setSelected(na);
 			
 			AudioOutputDevice d = e.getAudioDeviceModel().getDeviceInfo();
+			
+			Parameter[] params = d.getAdditionalParameters();
+			additionalParamsTable.getModel().setParameters(params);
 			
 			int idx = cbChannel.getSelectedIndex();
 			cbChannel.removeAllItems();

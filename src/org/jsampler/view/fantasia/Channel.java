@@ -248,6 +248,17 @@ public class Channel extends org.jsampler.view.JSChannel {
 		
 		setOpaque(false);
 		
+		int i = preferences().getIntProperty(MAXIMUM_CHANNEL_VOLUME);
+		dialVolume.setMaximum(i);
+		String mcv = MAXIMUM_CHANNEL_VOLUME;
+		preferences().addPropertyChangeListener(mcv, new PropertyChangeListener() {
+			public void
+			propertyChange(PropertyChangeEvent e) {
+				int j = preferences().getIntProperty(MAXIMUM_CHANNEL_VOLUME);
+				dialVolume.setMaximum(j);
+			}
+		});
+		
 		getModel().addSamplerChannelListener(getHandler());
 		
 		updateChannelInfo();
@@ -802,7 +813,7 @@ class ChannelScreen extends PixmapPane {
 	
 	private void
 	loadInstrument() {
-		JSInstrumentChooser dlg = new JSInstrumentChooser(CC.getMainFrame());
+		JSInstrumentChooser dlg = FantasiaUtils.createInstrumentChooser(CC.getMainFrame());
 		dlg.setVisible(true);
 		
 		if(!dlg.isCancelled()) {
@@ -996,6 +1007,8 @@ class ChannelScreen extends PixmapPane {
 	private class EventHandler extends MouseAdapter implements HierarchyListener {
 		public void
 		mouseEntered(MouseEvent e)  {
+			if(channel.getChannelInfo().getInstrumentStatus() != 100) return;
+			
 			if(!sbbEditInstr.isVisible()) {
 				sbbEditInstr.setVisible(true);
 				instrumentPane.update();

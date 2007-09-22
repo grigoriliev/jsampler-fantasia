@@ -23,6 +23,9 @@
 package org.jsampler.view.std;
 
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -53,12 +56,83 @@ import static org.jsampler.view.std.StdPrefs.*;
  */
 public class JSGeneralProps {
 	
-	/** Creates a new instance of <code>JSGeneralProps</code> */
+	/** Forbids the instantiation of this class. */
 	private JSGeneralProps() { }
 	
 	private static JSPrefs
 	preferences() { return CC.getViewConfig().preferences(); }
 	
+	
+	public static class MaxVolumePane extends JPanel {
+		private final JLabel lMaxMasterVol =
+			new JLabel(i18n.getLabel("JSGeneralProps.lMaxMasterVol"));
+		
+		private final JLabel lMaxChannelVol =
+			new JLabel(i18n.getLabel("JSGeneralProps.lMaxChannelVol"));
+		
+		private final JSpinner spMaxMasterVol;
+		private final JSpinner spMaxChannelVol;
+		
+		public
+		MaxVolumePane() {
+			int i = preferences().getIntProperty(MAXIMUM_MASTER_VOLUME);
+			spMaxMasterVol = new JSpinner(new SpinnerNumberModel(i, 10, 1000, 10));
+			i = preferences().getIntProperty(MAXIMUM_CHANNEL_VOLUME);
+			spMaxChannelVol = new JSpinner(new SpinnerNumberModel(i, 10, 1000, 10));
+			
+			GridBagLayout gridbag = new GridBagLayout();
+			GridBagConstraints c = new GridBagConstraints();
+			
+			setLayout(gridbag);
+			
+			c.fill = GridBagConstraints.NONE;
+			
+			c.gridx = 0;
+			c.gridy = 0;
+			c.anchor = GridBagConstraints.EAST;
+			c.insets = new Insets(3, 3, 3, 3);
+			gridbag.setConstraints(lMaxMasterVol, c);
+			add(lMaxMasterVol); 
+			
+			c.gridx = 0;
+			c.gridy = 1;
+			gridbag.setConstraints(lMaxChannelVol, c);
+			add(lMaxChannelVol);
+			
+			c.gridx = 1;
+			c.gridy = 0;
+			c.fill = GridBagConstraints.HORIZONTAL;
+			c.anchor = GridBagConstraints.WEST;
+			gridbag.setConstraints(spMaxMasterVol, c);
+			add(spMaxMasterVol);
+			
+			c.gridx = 1;
+			c.gridy = 1;
+			gridbag.setConstraints(spMaxChannelVol, c);
+			add(spMaxChannelVol);
+			
+			c.gridx = 2;
+			c.gridy = 0;
+			c.gridheight = 2;
+			c.weightx = 1.0;
+			JPanel p = new JPanel();
+			p.setOpaque(false);
+			gridbag.setConstraints(p, c);
+			add(p);
+			
+			setAlignmentX(JPanel.LEFT_ALIGNMENT);
+			setOpaque(false);
+		}
+		
+		public void
+		apply() {
+			int i = Integer.parseInt(spMaxMasterVol.getValue().toString());
+			preferences().setIntProperty(MAXIMUM_MASTER_VOLUME, i);
+			
+			i = Integer.parseInt(spMaxChannelVol.getValue().toString());
+			preferences().setIntProperty(MAXIMUM_CHANNEL_VOLUME, i);
+		}
+	}
 	
 	public static class JSamplerHomePane extends JPanel {
 		private final JTextField tfJSamplerHome = new JTextField();

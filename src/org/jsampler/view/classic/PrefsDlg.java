@@ -190,6 +190,8 @@ class GeneralPane extends JPanel {
 	private final JCheckBox checkShowLSConsoleWhenRunScript =
 		new JCheckBox(i18n.getLabel("GeneralPane.checkShowLSConsoleWhenRunScript"));
 	
+	private final JSGeneralProps.MaxVolumePane maxVolPane = new JSGeneralProps.MaxVolumePane();
+	
 	private final JSGeneralProps.JSamplerHomePane jSamplerHomePane =
 		new JSGeneralProps.JSamplerHomePane();
 	
@@ -226,6 +228,10 @@ class GeneralPane extends JPanel {
 		
 		add(Box.createRigidArea(new Dimension(0, 6)));
 		
+		add(maxVolPane);
+		
+		add(Box.createRigidArea(new Dimension(0, 6)));
+		
 		add(jSamplerHomePane);
 		
 		add(Box.createRigidArea(new Dimension(0, 6)));
@@ -238,6 +244,8 @@ class GeneralPane extends JPanel {
 	
 	protected void
 	apply() {
+		maxVolPane.apply();
+		
 		ClassicPrefs.setSaveWindowProperties(checkWindowSizeAndLocation.isSelected());
 		ClassicPrefs.setSaveLeftPaneState(checkLeftPaneState.isSelected());
 		

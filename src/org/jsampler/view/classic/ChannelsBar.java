@@ -23,6 +23,13 @@
 package org.jsampler.view.classic;
 
 import java.awt.Dimension;
+import java.awt.Point;
+
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -31,6 +38,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JToolBar;
+import javax.swing.JToolTip;
+import javax.swing.Popup;
+import javax.swing.PopupFactory;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -41,6 +51,8 @@ import org.jsampler.event.SamplerAdapter;
 import org.jsampler.event.SamplerEvent;
 
 import static org.jsampler.view.classic.ClassicI18n.i18n;
+import static org.jsampler.view.classic.ClassicPrefs.preferences;
+import static org.jsampler.view.std.StdPrefs.*;
 
 
 /**
@@ -61,6 +73,8 @@ public class ChannelsBar extends JToolBar {
 	
 	private final JLabel lVolume = new JLabel(Res.iconVolume22);
 	private final JSlider slVolume = new JSlider(0, 100);
+	private Popup popup = null;
+	private final JToolTip tip = new JToolTip();
 	
 	
 	/**
@@ -93,6 +107,24 @@ public class ChannelsBar extends JToolBar {
 		add(btnTabMoveLeft);
 		add(btnTabMoveRight);
 		
+		// Setting the tooltip size
+		tip.setTipText(i18n.getLabel("ChannelsBar.volume", 1000));
+		tip.setMinimumSize(tip.getPreferredSize());
+		tip.setPreferredSize(tip.getPreferredSize()); // workaround for preserving that size
+		tip.setComponent(slVolume);
+		///////
+		
+		int i = preferences().getIntProperty(MAXIMUM_MASTER_VOLUME);
+		slVolume.setMaximum(i);
+		String s = MAXIMUM_MASTER_VOLUME;
+		preferences().addPropertyChangeListener(s, new PropertyChangeListener() {
+			public void
+			propertyChange(PropertyChangeEvent e) {
+				int j = preferences().getIntProperty(MAXIMUM_MASTER_VOLUME);
+				slVolume.setMaximum(j);
+			}
+		});
+		
 		slVolume.addChangeListener(new ChangeListener() {
 			public void
 			stateChanged(ChangeEvent e) { setVolume(); }
@@ -104,13 +136,39 @@ public class ChannelsBar extends JToolBar {
 		});
 		
 		updateVolume();
+		
+		slVolume.addMouseListener(new MouseAdapter() {
+			public void
+			mousePressed(MouseEvent e) {
+				if(popup != null) {
+					popup.hide();
+					popup = null;
+				}
+				
+				Point p = slVolume.getLocationOnScreen();
+				PopupFactory pf = PopupFactory.getSharedInstance();
+				popup = pf.getPopup(slVolume, tip, p.x, p.y - 22);
+				popup.show();
+			}
+			
+			public void
+			mouseReleased(MouseEvent e) {
+				if(popup != null) {
+					popup.hide();
+					popup = null;
+				}
+			}
+		});
 	}
 	
 	private void
 	setVolume() {
 		int volume = slVolume.getValue();
-		slVolume.setToolTipText(i18n.getLabel("ChannelsBar.volume", volume));
-		lVolume.setToolTipText(i18n.getLabel("ChannelsBar.volume", volume));
+		String s = i18n.getLabel("ChannelsBar.volume", volume);
+		slVolume.setToolTipText(s);
+		lVolume.setToolTipText(s);
+		tip.setTipText(s);
+		tip.repaint();
 		
 		if(slVolume.getValueIsAdjusting()) return;
 		

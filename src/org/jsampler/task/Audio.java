@@ -215,6 +215,38 @@ public class Audio {
 	}
 
 	/**
+	 * This task alters a specific setting of an audio output device.
+	 */
+	public static class SetDeviceParameter extends EnhancedTask {
+		private int dev;
+		private Parameter prm;
+	
+		/**
+		 * Creates new instance of <code>SetDeviceParameter</code>.
+		 * @param dev The id of the device whose parameter should be set.
+		 * @param prm The parameter to be set.
+		 */
+		public
+		SetDeviceParameter(int dev, Parameter prm) {
+			setTitle("Audio.SetDeviceParameter_task");
+			setDescription(i18n.getMessage("Audio.SetDeviceParameter.desc", dev));
+		
+			this.dev = dev;
+			this.prm = prm;
+		}
+	
+		/** The entry point of the task. */
+		public void
+		run() {
+			try { CC.getClient().setAudioOutputDeviceParameter(dev, prm); }
+			catch(Exception x) {
+				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
+				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
+			}
+		}
+	}
+
+	/**
 	 * This task alters a specific setting of an audio output channel.
 	 */
 	public static class SetChannelParameter extends EnhancedTask {
@@ -224,7 +256,7 @@ public class Audio {
 	
 		/**
 		 * Creates new instance of <code>SetChannelParameter</code>.
-		 * @param dev The id of the device whose port parameter should be set.
+		 * @param dev The id of the device whose channel parameter should be set.
 		 * @param channel The channel number.
 		 * @param prm The parameter to be set.
 		 */

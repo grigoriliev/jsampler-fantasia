@@ -92,13 +92,13 @@ public class JSInstrumentChooser extends OkCancelDialog {
 	private final JComboBox cbInstruments = new JComboBox();
 	
 	
-	private final JComboBox cbDbInstrument = new JComboBox();
+	private final JComboBox cbDbInstrument = createComboBox();
 	private final JButton btnBrowseDb;
 	
 	private final JLabel lFilename = new JLabel(i18n.getLabel("JSInstrumentChooser.lFilename"));
 	private final JLabel lIndex = new JLabel(i18n.getLabel("JSInstrumentChooser.lIndex"));
 	
-	private final JComboBox cbFilename = new JComboBox();
+	private final JComboBox cbFilename = createComboBox();
 	private final JSpinner spinnerIndex = new JSpinner(new SpinnerNumberModel(0, 0, 500, 1));
 	
 	private final JButton btnBrowse;
@@ -279,6 +279,9 @@ public class JSInstrumentChooser extends OkCancelDialog {
 		p.setAlignmentX(LEFT_ALIGNMENT);
 		return p;
 	}
+	
+	protected JComboBox
+	createComboBox() { return new JComboBox(); }
 	
 	protected JSPrefs
 	preferences() { return CC.getViewConfig().preferences(); }

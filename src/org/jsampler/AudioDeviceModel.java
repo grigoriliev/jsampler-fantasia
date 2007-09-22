@@ -88,6 +88,13 @@ public interface AudioDeviceModel {
 	public void setBackendActive(boolean active);
 	
 	/**
+	 * Schedules a new task for altering
+	 * a specific setting of the audio output device.
+	 * @param prm The parameter to be set.
+	 */
+	public void setBackendDeviceParameter(Parameter prm);
+	
+	/**
 	 * Schedules a new task for changing the channel number of the audio device.
 	 * @param channels The new number of audio channels.
 	 */

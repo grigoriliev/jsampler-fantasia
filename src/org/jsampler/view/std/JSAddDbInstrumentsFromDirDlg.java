@@ -208,6 +208,9 @@ public class JSAddDbInstrumentsFromDirDlg extends OkCancelDialog {
 		});
 	}
 	
+	protected JComboBox
+	createComboBox() { return new JComboBox(); }
+	
 	protected JSPrefs
 	preferences() { return CC.getViewConfig().preferences(); }
 	

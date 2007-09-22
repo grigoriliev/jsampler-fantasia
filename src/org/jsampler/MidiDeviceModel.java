@@ -87,6 +87,13 @@ public interface MidiDeviceModel {
 	public void setBackendActive(boolean active);
 	
 	/**
+	 * Schedules a new task for altering
+	 * a specific setting of the MIDI input device.
+	 * @param prm The parameter to be set.
+	 */
+	public void setBackendDeviceParameter(Parameter prm);
+	
+	/**
 	 * Schedules a new task for changing the port number of the MIDI device.
 	 * @param ports The new number of ports.
 	 */

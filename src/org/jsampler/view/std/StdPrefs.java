@@ -59,6 +59,12 @@ public class StdPrefs extends JSPrefs {
 	/** Property which specifies whether the LS Console should be shown when script is run. */
 	public final static String SHOW_LS_CONSOLE_WHEN_RUN_SCRIPT = "showLSConsoleWhenRunScript";
 	
+	/** Property representing the maximum master volume (in percents). */
+	public final static String MAXIMUM_MASTER_VOLUME = "maximumMasterVolume";
+	
+	/** Property representing the maximum channel volume (in percents). */
+	public final static String MAXIMUM_CHANNEL_VOLUME = "maximumChannelVolume";
+	
 	
 	/**
 	 * Creates a new instance of <code>StdPrefs</code>.
@@ -87,6 +93,8 @@ public class StdPrefs extends JSPrefs {
 		if(name == DEFAULT_CHANNEL_VOLUME) return 100;
 		if(name == LS_CONSOLE_HISTSIZE) return 1000;
 		if(name == RECENT_LSCP_SCRIPTS_SIZE) return 7;
+		if(name == MAXIMUM_MASTER_VOLUME) return 100;
+		if(name == MAXIMUM_CHANNEL_VOLUME) return 100;
 		
 		return super.getDefaultIntValue(name);
 	}

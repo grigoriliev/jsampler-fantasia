@@ -49,6 +49,7 @@ import org.jsampler.view.std.JSConnectionPropsPane;
 import org.jsampler.view.std.JSDefaultsPropsPane;
 import org.jsampler.view.std.JSGeneralProps;
 import org.jsampler.view.std.JSLSConsolePropsPane;
+import org.jsampler.view.std.JSViewProps;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jsampler.view.fantasia.FantasiaPrefs.*;
@@ -60,6 +61,7 @@ import static org.jsampler.view.fantasia.FantasiaPrefs.*;
  */
 public class PrefsDlg extends EnhancedDialog {
 	private final GeneralPane genPane = new GeneralPane();
+	private final ViewPane viewPane = new ViewPane();
 	private final ConsolePane consolePane = new ConsolePane();
 	private final JSConnectionPropsPane connectionPane = new JSConnectionPropsPane();
 	private final JSDefaultsPropsPane defaultsPane;
@@ -77,6 +79,7 @@ public class PrefsDlg extends EnhancedDialog {
 		
 		JTabbedPane tp = new JTabbedPane();
 		tp.addTab(i18n.getLabel("PrefsDlg.tabGeneral"), genPane);
+		tp.addTab(i18n.getLabel("PrefsDlg.tabView"), viewPane);
 		tp.addTab(i18n.getLabel("PrefsDlg.tabConsole"), consolePane);
 		
 		JPanel p = new JPanel();
@@ -141,6 +144,7 @@ public class PrefsDlg extends EnhancedDialog {
 	private void
 	onApply() {
 		genPane.apply();
+		viewPane.apply();
 		consolePane.apply();
 		connectionPane.apply();
 		defaultsPane.apply();
@@ -158,6 +162,8 @@ class GeneralPane extends JPanel {
 	
 	private final JCheckBox checkShowLSConsoleWhenRunScript =
 		new JCheckBox(i18n.getLabel("GeneralPane.checkShowLSConsoleWhenRunScript"));
+	
+	private final JSGeneralProps.MaxVolumePane maxVolPane = new JSGeneralProps.MaxVolumePane();
 	
 	private final JSGeneralProps.JSamplerHomePane jSamplerHomePane =
 		new JSGeneralProps.JSamplerHomePane();
@@ -186,6 +192,10 @@ class GeneralPane extends JPanel {
 		
 		add(Box.createRigidArea(new Dimension(0, 6)));
 		
+		add(maxVolPane);
+		
+		add(Box.createRigidArea(new Dimension(0, 6)));
+		
 		add(jSamplerHomePane);
 		
 		add(Box.createRigidArea(new Dimension(0, 6)));
@@ -200,6 +210,8 @@ class GeneralPane extends JPanel {
 	
 	protected void
 	apply() {
+		maxVolPane.apply();
+		
 		boolean b = !checkTurnOffAnimationEffects.isSelected();
 		preferences().setBoolProperty(ANIMATED, b);
 		
@@ -221,6 +233,23 @@ class GeneralPane extends JPanel {
 		clearRecentScripts() {
 			((MainFrame)CC.getMainFrame()).clearRecentScripts();
 		}
+	}
+}
+
+class ViewPane extends JPanel {
+	private final JSViewProps.MidiDevicesPane midiDevsPane = new JSViewProps.MidiDevicesPane();
+	private final JSViewProps.AudioDevicesPane audioDevsPane = new JSViewProps.AudioDevicesPane();
+	
+	ViewPane() {
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		add(midiDevsPane);
+		add(audioDevsPane);
+	}
+	
+	protected void
+	apply() {
+		midiDevsPane.apply();
+		audioDevsPane.apply();
 	}
 }
 

@@ -111,6 +111,8 @@ import org.linuxsampler.lscp.SamplerChannel;
 import org.linuxsampler.lscp.SamplerEngine;
 
 import static org.jsampler.view.classic.ClassicI18n.i18n;
+import static org.jsampler.view.classic.ClassicPrefs.preferences;
+import static org.jsampler.view.std.StdPrefs.*;
 
 
 /**
@@ -428,6 +430,17 @@ public class Channel extends org.jsampler.view.JSChannel {
 		d = getPreferredSize();
 		setMaximumSize(new Dimension(getMaximumSize().width, d.height));
 		
+		int i = preferences().getIntProperty(MAXIMUM_CHANNEL_VOLUME);
+		slVolume.setMaximum(i);
+		String mcv = MAXIMUM_CHANNEL_VOLUME;
+		preferences().addPropertyChangeListener(mcv, new PropertyChangeListener() {
+			public void
+			propertyChange(PropertyChangeEvent e) {
+				int j = preferences().getIntProperty(MAXIMUM_CHANNEL_VOLUME);
+				slVolume.setMaximum(j);
+			}
+		});
+		
 		getModel().addSamplerChannelListener(getHandler());
 		
 		actInstr = new AbstractAction() {
@@ -694,6 +707,9 @@ public class Channel extends org.jsampler.view.JSChannel {
 			else btnInstr.setText(i18n.getLabel("Channel.btnInstr"));
 		}
 		
+		boolean b = status == 100;
+		if(btnEdit.isEnabled() != b) btnEdit.setEnabled(b);
+		
 		updateMuteIcon(sc);
 		
 		if(sc.isSoloChannel()) btnSolo.setIcon(iconSoloOn);
@@ -701,7 +717,7 @@ public class Channel extends org.jsampler.view.JSChannel {
 		
 		slVolume.setValue((int)(sc.getVolume() * 100));
 		
-		boolean b = sc.getEngine() != null;
+		b = sc.getEngine() != null;
 		slVolume.setEnabled(b);
 		btnSolo.setEnabled(b);
 		btnMute.setEnabled(b);

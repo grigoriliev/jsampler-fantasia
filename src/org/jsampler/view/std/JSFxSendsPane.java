@@ -27,6 +27,8 @@ import java.awt.Dimension;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -43,6 +45,9 @@ import javax.swing.JSlider;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
+import javax.swing.JToolTip;
+import javax.swing.Popup;
+import javax.swing.PopupFactory;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -86,7 +91,9 @@ public class JSFxSendsPane extends JPanel implements ListSelectionListener {
 	protected final Action actionRemoveFxSend = new RemoveFxSendAction();
 	
 	private final JComboBox cbMidiCtrls = new JComboBox();
-	private final JSlider slVolume = new JSlider(0, 100);
+	private final JSlider slVolume = new JSlider(0, 100, 100);
+	private Popup popup = null;
+	private final JToolTip tip = new JToolTip();
 	
 	private final JLabel lMidiCtrl = new JLabel(i18n.getLabel("JSFxSendsPane.lMidiCtrl"));
 	private final JLabel lVolume = new JLabel(i18n.getLabel("JSFxSendsPane.lVolume"));
@@ -141,6 +148,36 @@ public class JSFxSendsPane extends JPanel implements ListSelectionListener {
 		int h = d.height > 300 ? d.height : 300;
 		setPreferredSize(new Dimension(w, h));
 		splitPane.setDividerLocation(200);
+		
+		// Setting the tooltip size
+		tip.setTipText(i18n.getLabel("JSFxSendsPane.volume", 100));
+		tip.setMinimumSize(tip.getPreferredSize());
+		tip.setPreferredSize(tip.getPreferredSize()); // workaround for preserving that size
+		tip.setComponent(slVolume);
+		///////
+		
+		slVolume.addMouseListener(new MouseAdapter() {
+			public void
+			mousePressed(MouseEvent e) {
+				if(popup != null) {
+					popup.hide();
+					popup = null;
+				}
+				
+				java.awt.Point p = slVolume.getLocationOnScreen();
+				PopupFactory pf = PopupFactory.getSharedInstance();
+				popup = pf.getPopup(slVolume, tip, p.x, p.y - 22);
+				popup.show();
+			}
+			
+			public void
+			mouseReleased(MouseEvent e) {
+				if(popup != null) {
+					popup.hide();
+					popup = null;
+				}
+			}
+		});
 	}
 	
 	protected JToolBar
@@ -189,16 +226,7 @@ public class JSFxSendsPane extends JPanel implements ListSelectionListener {
 		
 		slVolume.addChangeListener(new ChangeListener() {
 			public void
-			stateChanged(ChangeEvent e) {
-				if(slVolume.getValueIsAdjusting() || fxSend == null) return;
-				
-				int i = (int)(fxSend.getLevel() * 100);
-				if(slVolume.getValue() == i) return;
-				
-				float vol = slVolume.getValue();
-				vol /= 100;
-				channelModel.setBackendFxSendLevel(fxSend.getFxSendId(), vol);
-			}
+			stateChanged(ChangeEvent e) { setVolume(); }
 		});
 		
 		JPanel rightPane = new JPanel();
@@ -231,6 +259,22 @@ public class JSFxSendsPane extends JPanel implements ListSelectionListener {
 		rightPane.add(new JScrollPane(channelRoutingTable));
 		
 		return rightPane;
+	}
+	
+	private void
+	setVolume() {
+		String s = i18n.getLabel("JSFxSendsPane.volume", slVolume.getValue());
+		slVolume.setToolTipText(s);
+		tip.setTipText(s);
+		tip.repaint();
+		if(fxSend == null || slVolume.getValueIsAdjusting()) return;
+		
+		int i = (int)(fxSend.getLevel() * 100);
+		if(slVolume.getValue() == i) return;
+		
+		float vol = slVolume.getValue();
+		vol /= 100;
+		channelModel.setBackendFxSendLevel(fxSend.getFxSendId(), vol);
 	}
 	
 	public void

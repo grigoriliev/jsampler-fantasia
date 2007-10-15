@@ -1,4 +1,4 @@
-CVS HEAD
+JSampler v0.7a: 2007-10-15
   * Added options for choosing default actions when channel is
     created and assignment of default MIDI/audio drivers to be used
     (choose Edit/Preferences, then click the `Defaults' tab)
@@ -62,6 +62,8 @@ CVS HEAD
     - the first loaded script was not always been executed
     - some javadoc documentation fixes
     - some minor bugfixes
+
+  * Some GUI enhancements and code cleanup
 
 JSampler v0.6a: 2007-08-10
   * The Fantasia distribution is now capable of

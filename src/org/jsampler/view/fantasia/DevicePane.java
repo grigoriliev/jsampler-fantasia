@@ -80,6 +80,7 @@ public class DevicePane extends JPanel {
 		lDevName.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		Dimension d = new Dimension(Short.MAX_VALUE, lDevName.getPreferredSize().height);
 		lDevName.setMaximumSize(d);
+		lDevName.setMinimumSize(new Dimension(70, lDevName.getPreferredSize().height));
 		p.add(lDevName);
 		
 		p.add(Box.createRigidArea(new Dimension(5, 0)));

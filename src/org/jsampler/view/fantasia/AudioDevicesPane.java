@@ -22,13 +22,20 @@
 
 package org.jsampler.view.fantasia;
 
+import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Insets;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
@@ -38,14 +45,26 @@ import net.sf.juife.ComponentList;
 import net.sf.juife.ComponentListModel;
 import net.sf.juife.DefaultComponentListModel;
 
+import net.sf.juife.event.TaskEvent;
+import net.sf.juife.event.TaskListener;
+
+import org.jdesktop.swingx.JXCollapsiblePane;
+
 import org.jsampler.CC;
 import org.jsampler.AudioDeviceModel;
 
 import org.jsampler.event.ListEvent;
 import org.jsampler.event.ListListener;
 
+import org.jsampler.task.Audio;
+
+import org.jsampler.view.std.JSNewAudioDeviceDlg;
+
+import org.linuxsampler.lscp.AudioOutputDriver;
+
 import static org.jsampler.view.fantasia.A4n.a4n;
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
+import static org.jsampler.view.fantasia.FantasiaPrefs.*;
 
 /**
  *
@@ -111,45 +130,124 @@ public class AudioDevicesPane extends JPanel {
 	}
 	
 	
-	class NewDevicePane extends PixmapPane {
-		private final PixmapButton btnNew =
-			new PixmapButton(a4n.createAudioDevice, Res.gfxPowerOff18);
+	class NewDevicePane extends JPanel {
+		private final PixmapButton btnNew = new PixmapButton(Res.gfxPowerOff18);
+		private JXCollapsiblePane createDevicePane = null;
+		private boolean createDevice = false;
 		
 		NewDevicePane() {
-			super(Res.gfxDeviceBg);
-			setPixmapInsets(new Insets(1, 1, 1, 1));
+			setLayout(new BorderLayout());
 			
-			setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-			add(Box.createRigidArea(new Dimension(3, 0)));
-			add(btnNew);
-			add(Box.createRigidArea(new Dimension(3, 0)));
+			PixmapPane p = new PixmapPane(Res.gfxDeviceBg);
+			p.setPixmapInsets(new Insets(1, 1, 1, 1));
 			
-			add(createVSeparator());
+			p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
+			p.add(Box.createRigidArea(new Dimension(3, 0)));
+			p.add(btnNew);
+			p.add(Box.createRigidArea(new Dimension(3, 0)));
+			
+			p.add(createVSeparator());
 			
 			Dimension d = new Dimension(77, 24);
-			setPreferredSize(d);
-			setMinimumSize(d);
-			setMaximumSize(new Dimension(Short.MAX_VALUE, 24));
+			p.setPreferredSize(d);
+			p.setMinimumSize(d);
+			p.setMaximumSize(new Dimension(Short.MAX_VALUE, 24));
 			
 			btnNew.setPressedIcon(Res.gfxPowerOn18);
 			
-			addMouseListener(new MouseAdapter() {
+			btnNew.addActionListener(new ActionListener() {
+				public void
+				actionPerformed(ActionEvent e) {
+					showHidePopup();
+				}
+			});
+			
+			p.addMouseListener(new MouseAdapter() {
 				public void
 				mouseClicked(MouseEvent e) {
 					if(e.getButton() != e.BUTTON1) {
 						return;
 					}
 					
-					a4n.createAudioDevice.actionPerformed(null);
+					showHidePopup();
 				}
 			});
 			
-			setAlignmentX(LEFT_ALIGNMENT);
-			setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+			p.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			
 			String s = i18n.getLabel("AudioDevicesPane.newDevice");
 			btnNew.setToolTipText(s);
-			setToolTipText(s);
+			p.setToolTipText(s);
+			
+			add(p, BorderLayout.NORTH);
+			setAlignmentX(LEFT_ALIGNMENT);
+		}
+		
+		private JXCollapsiblePane
+		getCreateDevicePane() {
+			if(createDevicePane != null) return createDevicePane;
+			
+			createDevicePane = new JXCollapsiblePane();
+			final JSNewAudioDeviceDlg.Pane pane = new JSNewAudioDeviceDlg.Pane();
+			
+			PixmapPane p1 = new PixmapPane(Res.gfxChannelOptions);
+			p1.setPixmapInsets(new Insets(1, 1, 1, 1));
+			p1.setLayout(new BorderLayout());
+			p1.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
+			
+			PixmapPane p2 = new PixmapPane(Res.gfxBorder);
+			p2.setPixmapInsets(new Insets(1, 1, 1, 1));
+			p2.setLayout(new BorderLayout());
+			p2.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+			p2.add(pane);
+			p1.add(p2);
+			
+			p1.setPreferredSize(new Dimension(getWidth(), 210));
+			p1.setPreferredSize(new Dimension(100, 210));
+			
+			createDevicePane.setContentPane(p1);
+			createDevicePane.setAnimated(false);
+			createDevicePane.setCollapsed(true);
+			createDevicePane.setAnimated(preferences().getBoolProperty(ANIMATED));
+		
+			preferences().addPropertyChangeListener(ANIMATED, new PropertyChangeListener() {
+				public void
+				propertyChange(PropertyChangeEvent e) {
+					boolean b = preferences().getBoolProperty(ANIMATED);
+					createDevicePane.setAnimated(b);
+				}
+			});
+			
+			String s = JXCollapsiblePane.ANIMATION_STATE_KEY;
+			createDevicePane.addPropertyChangeListener(s, new PropertyChangeListener() {
+				public void
+				propertyChange(PropertyChangeEvent e) {
+					if(e.getNewValue() == "collapsed") {
+						if(createDevice) {
+							createAudioDevice0(pane);
+							createDevice = false;
+						}
+					}
+				}
+			});
+			
+			add(createDevicePane);
+			
+			pane.btnCancel.addActionListener(new ActionListener() {
+				public void
+				actionPerformed(ActionEvent e) {
+					createDevicePane.setCollapsed(true);
+				}
+			});
+			
+			pane.btnCreate.addActionListener(new ActionListener() {
+				public void
+				actionPerformed(ActionEvent e) {
+					createAudioDevice(pane);
+				}
+			});
+			
+			return createDevicePane;
 		}
 		
 		private JPanel
@@ -160,6 +258,40 @@ public class AudioDevicesPane extends JPanel {
 			p.setMinimumSize(p.getPreferredSize());
 			p.setMaximumSize(p.getPreferredSize());
 			return p;
+		}
+		
+		private void
+		showHidePopup() {
+			getCreateDevicePane().setCollapsed(!getCreateDevicePane().isCollapsed());
+		}
+		
+		private void
+		createAudioDevice(final JSNewAudioDeviceDlg.Pane pane) {
+			if(!createDevicePane.isAnimated()) {
+				createAudioDevice0(pane);
+				return;
+			}
+			
+			createDevice = true;
+			createDevicePane.setCollapsed(true);
+		}
+		
+		private void
+		createAudioDevice0(final JSNewAudioDeviceDlg.Pane pane) {
+			pane.btnCreate.setEnabled(false);
+			final AudioOutputDriver driver = pane.getSelectedDriver();
+			final Audio.CreateDevice cmd =
+				new  Audio.CreateDevice(driver.getName(), driver.getParameters());
+				
+			cmd.addTaskListener(new TaskListener() {
+				public void
+				taskPerformed(TaskEvent e) {
+					pane.btnCreate.setEnabled(true);
+					getCreateDevicePane().setCollapsed(true);
+				}
+			});
+			
+			CC.getTaskQueue().add(cmd);
 		}
 	}
 	

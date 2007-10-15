@@ -65,6 +65,7 @@ import org.jsampler.view.ParameterTable;
 import org.linuxsampler.lscp.AudioOutputChannel;
 import org.linuxsampler.lscp.AudioOutputDevice;
 import org.linuxsampler.lscp.Parameter;
+import org.linuxsampler.lscp.ParameterFactory;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jsampler.view.fantasia.FantasiaPrefs.preferences;
@@ -89,7 +90,8 @@ public class AudioDevicePane extends DevicePane {
 		setOptionsPane(optionsPane);
 		
 		int id = model.getDeviceId();
-		setDeviceName(i18n.getLabel("AudioDevicePane.lDevName", id));
+		String s = model.getDeviceInfo().getDriverName();
+		setDeviceName(i18n.getLabel("AudioDevicePane.lDevName", id, s));
 	}
 	
 	protected void
@@ -212,8 +214,7 @@ public class AudioDevicePane extends DevicePane {
 				cbChannel.addItem(chn);
 			}
 			
-			Parameter[] pS = audioDeviceModel.getDeviceInfo().getAdditionalParameters();
-			additionalParamsTable.getModel().setParameters(pS);
+			updateParams(audioDeviceModel.getDeviceInfo());
 			additionalParamsTable.getModel().addParameterListener(new ParameterListener() {
 				public void
 				parameterChanged(ParameterEvent e) {
@@ -276,9 +277,7 @@ public class AudioDevicePane extends DevicePane {
 			if(a != na) checkActive.setSelected(na);
 			
 			AudioOutputDevice d = e.getAudioDeviceModel().getDeviceInfo();
-			
-			Parameter[] params = d.getAdditionalParameters();
-			additionalParamsTable.getModel().setParameters(params);
+			updateParams(d);
 			
 			int idx = cbChannel.getSelectedIndex();
 			cbChannel.removeAllItems();
@@ -298,6 +297,18 @@ public class AudioDevicePane extends DevicePane {
 			}
 			
 			audioDeviceModel.setBackendChannelParameter(c, e.getParameter());
+		}
+		
+		private void
+		updateParams(AudioOutputDevice d) {
+			Parameter[] params = d.getAdditionalParameters();
+			Parameter[] p2s = new Parameter[params.length + 1];
+			
+			for(int i = 0; i < params.length; i++) p2s[i] = params[i];
+			
+			p2s[params.length] = d.getSampleRateParameter();
+			
+			additionalParamsTable.getModel().setParameters(p2s);
 		}
 	}
 	

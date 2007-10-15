@@ -66,6 +66,7 @@ import org.jsampler.view.ParameterTable;
 import org.linuxsampler.lscp.MidiInputDevice;
 import org.linuxsampler.lscp.MidiPort;
 import org.linuxsampler.lscp.Parameter;
+import org.linuxsampler.lscp.ParameterFactory;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jsampler.view.fantasia.FantasiaPrefs.preferences;
@@ -89,7 +90,8 @@ public class MidiDevicePane extends DevicePane {
 		setOptionsPane(optionsPane);
 		
 		int id = model.getDeviceId();
-		setDeviceName(i18n.getLabel("MidiDevicePane.lDevName", id));
+		String s = model.getDeviceInfo().getDriverName();
+		setDeviceName(i18n.getLabel("MidiDevicePane.lDevName", id, s));
 	}
 	
 	protected void

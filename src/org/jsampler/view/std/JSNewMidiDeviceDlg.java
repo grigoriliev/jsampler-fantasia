@@ -70,13 +70,7 @@ import static org.jsampler.view.std.StdPrefs.*;
  * @author Grigor Iliev
  */
 public class JSNewMidiDeviceDlg extends EnhancedDialog {
-	private final JLabel lDriver = new JLabel(i18n.getLabel("JSNewMidiDeviceDlg.lDriver"));
-	private final JComboBox cbDrivers = new JComboBox();
-	private final ParameterTable parameterTable = new ParameterTable();
-	
-	private final JButton btnCreate =
-		new JButton(i18n.getButtonLabel("JSNewMidiDeviceDlg.btnCreate"));
-	private final JButton btnCancel = new JButton(i18n.getButtonLabel("cancel"));
+	private final Pane mainPane = new Pane();
 	
 	/**
 	 * Creates a new instance of JSNewMidiDeviceDlg
@@ -98,135 +92,35 @@ public class JSNewMidiDeviceDlg extends EnhancedDialog {
 	
 	private void
 	initNewMidiDeviceDlg() {
-		JPanel mainPane = new JPanel();
-		mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.Y_AXIS));
-		
-		JPanel p = new JPanel();
-		p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
-		p.add(lDriver);
-		
-		parameterTable.getModel().setEditFixedParameters(true);
-		
-		parameterTable.getModel().addParameterListener(new ParameterListener() {
-			public void
-			parameterChanged(ParameterEvent e) {
-				updateParameters();
-			}
-		});
-		
-		cbDrivers.addActionListener(new ActionListener() {
-			public void
-			actionPerformed(ActionEvent e) {
-				MidiInputDriver d = (MidiInputDriver)cbDrivers.getSelectedItem();
-				if(d == null) return;
-				
-				cbDrivers.setToolTipText(d.getDescription());
-				parameterTable.getModel().setParameters(d.getParameters());
-				updateParameters();
-			}
-		});
-		
-		MidiInputDriver[] drivers = CC.getSamplerModel().getMidiInputDrivers();
-		if(drivers != null) {
-			for(MidiInputDriver d : drivers) cbDrivers.addItem(d);
-			
-			String s = preferences().getStringProperty(DEFAULT_MIDI_DRIVER);
-			for(MidiInputDriver d : drivers) {
-				if(d.getName().equals(s)) {
-					cbDrivers.setSelectedItem(d);
-					break;
-				}
-			}
-		}
-		
-		cbDrivers.setMaximumSize(cbDrivers.getPreferredSize());
-		p.add(Box.createRigidArea(new Dimension(5, 0)));
-		p.add(cbDrivers);
-		
-		p.setAlignmentX(LEFT_ALIGNMENT);
-		mainPane.add(p);
-		
-		mainPane.add(Box.createRigidArea(new Dimension(0, 12)));
-		
-		//parameterTable.setModel(new ParameterTableModel(CC.getSamplerModel().));
-		JScrollPane sp = new JScrollPane(parameterTable);
-		sp.setAlignmentX(LEFT_ALIGNMENT);
-		mainPane.add(sp);
-		
-		mainPane.setBorder(BorderFactory.createEmptyBorder(12, 12, 17, 12));
+		mainPane.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
 		mainPane.setPreferredSize (
-			JuifeUtils.getUnionSize(mainPane.getMinimumSize(), new Dimension(250, 200))
+			JuifeUtils.getUnionSize(mainPane.getMinimumSize(), new Dimension(250, 230))
 		);
 		add(mainPane);
-		
-		JPanel btnPane = new JPanel();
-		btnPane.setLayout(new BoxLayout(btnPane, BoxLayout.X_AXIS));
-		btnPane.add(Box.createGlue());
-		btnPane.add(btnCreate);
-		btnPane.add(Box.createRigidArea(new Dimension(5, 0)));
-		btnPane.add(btnCancel);
-		
-		btnPane.setBorder(BorderFactory.createEmptyBorder(0, 12, 12, 12));
-		add(btnPane, BorderLayout.SOUTH);
-		
 		pack();
 		
 		setLocation(JuifeUtils.centerLocation(this, getOwner()));
 		
-		btnCancel.addActionListener(new ActionListener() {
+		mainPane.btnCancel.addActionListener(new ActionListener() {
 			public void
 			actionPerformed(ActionEvent e) { onCancel(); }
 		});
 		
-		btnCreate.addActionListener(new ActionListener() {
+		mainPane.btnCreate.addActionListener(new ActionListener() {
 			public void
 			actionPerformed(ActionEvent e) { onOk(); }
 		});
 		
 		addWindowListener(new WindowAdapter() {
 			public void
-			windowActivated(WindowEvent e) { btnCreate.requestFocusInWindow(); }
+			windowActivated(WindowEvent e) { mainPane.btnCreate.requestFocusInWindow(); }
 		});
-	}
-	
-	private void
-	updateParameters() {
-		MidiInputDriver d = (MidiInputDriver)cbDrivers.getSelectedItem();
-		if(d == null) return;
-		
-		final Parameter[] parameters = parameterTable.getModel().getParameters();
-		
-		final Midi.GetDriverParametersInfo task =
-			new Midi.GetDriverParametersInfo(d.getName(), parameters);
-		
-		task.addTaskListener(new TaskListener() {
-			public void
-			taskPerformed(TaskEvent e) {
-				if(task.doneWithErrors()) return;
-				for(Parameter p : parameters) {
-					for(Parameter p2 : task.getResult()) {
-						if(p2.getName().equals(p.getName())) {
-							p2.setValue(p.getValue());
-							if(p2.getValue() == null) {
-								p2.setValue(p2.getDefault());
-							}
-							break;
-						}
-						
-					}
-				}
-				
-				parameterTable.getModel().setParameters(task.getResult());
-			}
-		});
-		
-		CC.getTaskQueue().add(task);
 	}
 	
 	protected void
 	onOk() {
-		Object obj = cbDrivers.getSelectedItem();
-		if(obj == null) {
+		MidiInputDriver driver = mainPane.getSelectedDriver();
+		if(driver == null) {
 			JOptionPane.showMessageDialog (
 				this, i18n.getMessage("JSNewMidiDeviceDlg.selectDriver!"),
 				"",
@@ -236,9 +130,7 @@ public class JSNewMidiDeviceDlg extends EnhancedDialog {
 			return;
 		}
 		
-		btnCreate.setEnabled(false);
-		
-		MidiInputDriver driver = (MidiInputDriver)obj;
+		mainPane.btnCreate.setEnabled(false);
 		
 		final Midi.CreateDevice cmd =
 			new  Midi.CreateDevice(driver.getName(), driver.getParameters());
@@ -246,7 +138,7 @@ public class JSNewMidiDeviceDlg extends EnhancedDialog {
 		cmd.addTaskListener(new TaskListener() {
 			public void
 			taskPerformed(TaskEvent e) {
-				btnCreate.setEnabled(true);
+				mainPane.btnCreate.setEnabled(true);
 				setVisible(false);
 			}
 		});
@@ -259,4 +151,124 @@ public class JSNewMidiDeviceDlg extends EnhancedDialog {
 	
 	private static JSPrefs
 	preferences() { return CC.getViewConfig().preferences(); }
+	
+	public static class Pane extends JPanel {
+		private final JLabel lDriver = new JLabel(i18n.getLabel("JSNewMidiDeviceDlg.lDriver"));
+		public final JComboBox cbDrivers = new JComboBox();
+		private final ParameterTable parameterTable = new ParameterTable();
+		
+		public final JButton btnCreate =
+			new JButton(i18n.getButtonLabel("JSNewMidiDeviceDlg.btnCreate"));
+		public final JButton btnCancel = new JButton(i18n.getButtonLabel("cancel"));
+		
+		
+		public
+		Pane() {
+			setLayout(new BorderLayout());
+			JPanel mainPane = new JPanel();
+			mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.Y_AXIS));
+			
+			JPanel p = new JPanel();
+			p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
+			p.add(lDriver);
+			
+			parameterTable.getModel().setEditFixedParameters(true);
+			
+			parameterTable.getModel().addParameterListener(new ParameterListener() {
+				public void
+				parameterChanged(ParameterEvent e) {
+					updateParameters();
+				}
+			});
+			
+			cbDrivers.addActionListener(new ActionListener() {
+				public void
+				actionPerformed(ActionEvent e) {
+					MidiInputDriver d = (MidiInputDriver)cbDrivers.getSelectedItem();
+					if(d == null) return;
+					
+					cbDrivers.setToolTipText(d.getDescription());
+					parameterTable.getModel().setParameters(d.getParameters());
+					updateParameters();
+				}
+			});
+		
+			MidiInputDriver[] drivers = CC.getSamplerModel().getMidiInputDrivers();
+			if(drivers != null) {
+				for(MidiInputDriver d : drivers) cbDrivers.addItem(d);
+				
+				String s = preferences().getStringProperty(DEFAULT_MIDI_DRIVER);
+				for(MidiInputDriver d : drivers) {
+					if(d.getName().equals(s)) {
+						cbDrivers.setSelectedItem(d);
+						break;
+					}
+				}
+			}
+			
+			cbDrivers.setMaximumSize(cbDrivers.getPreferredSize());
+			p.add(Box.createRigidArea(new Dimension(5, 0)));
+			p.add(cbDrivers);
+			
+			p.setAlignmentX(LEFT_ALIGNMENT);
+			mainPane.add(p);
+			
+			mainPane.add(Box.createRigidArea(new Dimension(0, 12)));
+			
+			//parameterTable.setModel(new ParameterTableModel(CC.getSamplerModel().));
+			JScrollPane sp = new JScrollPane(parameterTable);
+			sp.setAlignmentX(LEFT_ALIGNMENT);
+			mainPane.add(sp);
+			
+			add(mainPane);
+			
+			JPanel btnPane = new JPanel();
+			btnPane.setLayout(new BoxLayout(btnPane, BoxLayout.X_AXIS));
+			btnPane.add(Box.createGlue());
+			btnPane.add(btnCreate);
+			btnPane.add(Box.createRigidArea(new Dimension(5, 0)));
+			btnPane.add(btnCancel);
+			
+			btnPane.setBorder(BorderFactory.createEmptyBorder(17, 0, 0, 0));
+			add(btnPane, BorderLayout.SOUTH);
+		}
+		
+		public MidiInputDriver
+		getSelectedDriver() {
+			return (MidiInputDriver)cbDrivers.getSelectedItem();
+		}
+		
+		private void
+		updateParameters() {
+			MidiInputDriver d = (MidiInputDriver)cbDrivers.getSelectedItem();
+			if(d == null) return;
+			
+			final Parameter[] parameters = parameterTable.getModel().getParameters();
+			
+			final Midi.GetDriverParametersInfo task =
+				new Midi.GetDriverParametersInfo(d.getName(), parameters);
+				
+			task.addTaskListener(new TaskListener() {
+				public void
+				taskPerformed(TaskEvent e) {
+					if(task.doneWithErrors()) return;
+					for(Parameter p : parameters) {
+						for(Parameter p2 : task.getResult()) {
+							if(p2.getName().equals(p.getName())) {
+								p2.setValue(p.getValue());
+								if(p2.getValue() == null) {
+									p2.setValue(p2.getDefault());
+								}
+								break;
+							}
+						}
+					}
+					
+					parameterTable.getModel().setParameters(task.getResult());
+				}
+			});
+			
+			CC.getTaskQueue().add(task);
+		}
+	}
 }

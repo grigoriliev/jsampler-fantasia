@@ -42,9 +42,14 @@ import org.jvnet.substance.combo.SubstanceComboPopup;
  */
 public class FantasiaUtils {
 	
-	/** Forbitsh the instantiation of the class */
+	/** Forbits the instantiation of the class */
 	private
 	FantasiaUtils() { }
+	
+	public static JComboBox
+	createEnhancedComboBox() {
+		return new JComboBox();
+	}
 	
 	public static JSInstrumentChooser
 	createInstrumentChooser(Frame owner) {
@@ -55,6 +60,8 @@ public class FantasiaUtils {
 		InstrumentChooser(Frame owner) {
 			super(owner);
 		}
+		
+		protected JComboBox
+		createComboBox() { return createEnhancedComboBox(); }
 	}
 }
-

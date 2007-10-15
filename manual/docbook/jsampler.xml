@@ -112,12 +112,12 @@
 
       <para>Currently, there are two distributions available for download -
       <ulink
-      url="http://downloads.sourceforge.net/jsampler/JS_Classic-0.6a.jar">JS
+      url="http://downloads.sourceforge.net/jsampler/JS_Classic-0.7a.jar">JS
       Classic</ulink> and <ulink
-      url="http://downloads.sourceforge.net/jsampler/Fantasia-0.6a.jar">Fantasia</ulink>.</para>
+      url="http://downloads.sourceforge.net/jsampler/Fantasia-0.7a.jar">Fantasia</ulink>.</para>
 
       <para>The source code is available in the <ulink
-      url="http://downloads.sourceforge.net/jsampler/JSampler-0.6a.tar.bz2">JSampler
+      url="http://downloads.sourceforge.net/jsampler/JSampler-0.7a.tar.bz2">JSampler
       package</ulink>, which also contains this manual and startup scripts
       that can be used to run a particular JSampler distribution.</para>
 
@@ -197,7 +197,7 @@ locate bin/java</command></literallayout></para>
 
       <para>There are scripts In the <code>scripts</code> directory of the
       <ulink
-      url="http://downloads.sourceforge.net/jsampler/JSampler-0.6a.tar.bz2">JSampler
+      url="http://downloads.sourceforge.net/jsampler/JSampler-0.7a.tar.bz2">JSampler
       package</ulink> that, with a little adjustments (if needed), can be used
       to run a JSampler distribution. Copy them to a desired location and edit
       with your preferred editor.</para>

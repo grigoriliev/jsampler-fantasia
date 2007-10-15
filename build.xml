@@ -1,11 +1,11 @@
 <project name="JSampler" default="build-jsclassic" basedir=".">
     <description>This buildfile is used to build JSampler distributions</description>
     
-    <property name="jlscp.version" value="0.5a"/>
+    <property name="jlscp.version" value="0.6a"/>
     <property name="jlscp.srcdir" value="lib/required/jlscp/src"/>
     <property name="juife.version" value="0.4a"/>
     <property name="juife.srcdir" value="lib/required/juife/src"/>
-    <property name="JSampler.version" value="0.6a"/>
+    <property name="JSampler.version" value="0.7a"/>
     
     <target name="build-jsclassic" depends="clean-jsclassic,build-manifest">
         <manifest file="dist/build/views.mf">
@@ -53,7 +53,7 @@
             <fileset dir="res/js-classic"/>
         </copy>
         <delete dir="./dist/build/org/jsampler/view/fantasia"/>
-        <jar basedir="./dist/build" excludes="Manifest" destfile="./dist/JS_Classic-0.6a.jar" manifest="./dist/build/Manifest"/>
+        <jar basedir="./dist/build" excludes="Manifest" destfile="./dist/JS_Classic-0.7a.jar" manifest="./dist/build/Manifest"/>
         <delete dir="./dist/build"/>
     </target>
 
@@ -113,7 +113,7 @@
             <fileset dir="res/fantasia"/>
         </copy>
         <delete dir="./dist/build/org/jsampler/view/classic"/>
-        <jar basedir="./dist/build" excludes="Manifest" destfile="./dist/Fantasia-0.6a.jar" manifest="./dist/build/Manifest"/>
+        <jar basedir="./dist/build" excludes="Manifest" destfile="./dist/Fantasia-0.7a.jar" manifest="./dist/build/Manifest"/>
         <delete dir="./dist/build"/>
     </target>
 
@@ -128,7 +128,7 @@
             <package name="org.jsampler.view"/>
             <doctitle>JSampler ${JSampler.version} API specification</doctitle>
             <header><![CDATA[<b>JSampler</b><br><font size=-1>v${JSampler.version}</font>]]></header>
-            <bottom><![CDATA[<font size=-1>Copyright &copy; 2005 Grigor Iliev. All rights reserved.</font>]]></bottom>
+            <bottom><![CDATA[<font size=-1>Copyright &copy; 2007 Grigor Iliev. All rights reserved.</font>]]></bottom>
         </javadoc>
     </target>
     
@@ -179,7 +179,7 @@
 
             <section name="org/jsampler/">
                 <attribute name="Specification-Title" value="A java front-end for LinuxSampler"/>
-                <attribute name="Specification-Version" value="0.6"/>
+                <attribute name="Specification-Version" value="0.7"/>
                 <attribute name="Specification-Vendor" value="Grigor Iliev"/>
                 <attribute name="Implementation-Title" value="org.jsampler"/>
                 <attribute name="Implementation-Version" value="${JSampler.version}"/>

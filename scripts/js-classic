@@ -24,10 +24,10 @@
 # Set the JAVA_HOME variable to specify the java distribution to be used.
 #JAVA_HOME=
 
-JS_CLASSIC=JS_Classic-0.6a.jar
+JS_CLASSIC=JS_Classic-0.7a.jar
 
-# If you want to run JS_Classic-0.6a.jar from a different directory
-# you must define JS_CLASSIC_PATH to point to JS_Classic-0.6a.jar location.
+# If you want to run JS_Classic-0.7a.jar from a different directory
+# you must define JS_CLASSIC_PATH to point to JS_Classic-0.7a.jar location.
 #JS_CLASSIC_PATH=
 
 if [ -n "$JAVA_HOME" ]  ; then

@@ -1081,7 +1081,7 @@ public class Channel {
 		/** The entry point of the task. */
 		public void
 		run() {
-			try { CC.getClient().editInstrument(chn); }
+			try { CC.getClient().editChannelInstrument(chn); }
 			catch(Exception x) {
 				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
 				CC.getLogger().log(Level.FINE, getErrorMessage(), x);

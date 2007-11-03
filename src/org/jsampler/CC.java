@@ -403,6 +403,7 @@ public class CC {
 		try {
 			String s = getJSamplerHome();
 			if(s == null) return;
+			getOrchestras().addOrchestraListListener(getHandler());
 			
 			File f = new File(s + File.separator + "orchestras.xml.bkp");
 			if(f.isFile()) HF.createBackup("orchestras.xml.bkp", "orchestras.xml.rec");
@@ -431,7 +432,6 @@ public class CC {
 		for(int i = 0; i < getOrchestras().getOrchestraCount(); i++) {
 			getOrchestras().getOrchestra(i).addOrchestraListener(getHandler());
 		}
-		getOrchestras().addOrchestraListListener(getHandler());
 	}
 	
 	private static void
@@ -729,7 +729,7 @@ public class CC {
 		SamplerChannelModel[] channels = getSamplerModel().getChannels();
 		
 		for(int i = 0; i < channels.length; i++) {
-			SamplerChannelModel scm = getSamplerModel().getChannelById(i);
+			SamplerChannelModel scm = channels[i];
 			exportChannelToLscpScript(scm.getChannelInfo(), i, lscpClient);
 			sb.append(out.toString());
 			out.reset();
@@ -797,14 +797,28 @@ public class CC {
 		try {
 			lscpCLient.addSamplerChannel();
 			
-			int i = chn.getMidiInputDevice();
-			if(i != -1) lscpCLient.setChannelMidiInputDevice(chnId, i);
+			SamplerModel sm = CC.getSamplerModel();
+			int id = chn.getMidiInputDevice();
+			if(id != -1) {
+				for(int i = 0; i < sm.getMidiDeviceCount(); i++) {
+					if(sm.getMidiDevice(i).getDeviceId() == id) {
+						lscpCLient.setChannelMidiInputDevice(chnId, i);
+						break;
+					}
+				}
+			}
 			lscpCLient.setChannelMidiInputPort(chnId, chn.getMidiInputPort());
 			lscpCLient.setChannelMidiInputChannel(chnId, chn.getMidiInputChannel());
 			
-			i = chn.getAudioOutputDevice();
-			if(i != -1) {
-				lscpCLient.setChannelAudioOutputDevice(chnId, i);
+			id = chn.getAudioOutputDevice();
+			if(id != -1) {
+				for(int i = 0; i < sm.getAudioDeviceCount(); i++) {
+					if(sm.getAudioDevice(i).getDeviceId() == id) {
+						lscpCLient.setChannelAudioOutputDevice(chnId, i);
+						break;
+					}
+				}
+				
 				Integer[] routing = chn.getAudioOutputRouting();
 				
 				for(int j = 0; j < routing.length; j++) {
@@ -821,7 +835,7 @@ public class CC {
 			}
 			
 			String s = chn.getInstrumentFile();
-			i = chn.getInstrumentIndex();
+			int i = chn.getInstrumentIndex();
 			if(s != null) lscpCLient.loadInstrument(s, i, chnId, true);
 			
 			if(chn.isMuted()) lscpCLient.setChannelMute(chnId, true);

@@ -35,7 +35,7 @@ public class LscpTree {
 		LscpNode copy = new LscpNode("COPY");
 		LscpNode create = new LscpNode("CREATE");
 		LscpNode destroy = new LscpNode("DESTROY");
-		LscpNode edit = new LscpNode("EDIT", new LscpNode("INSTRUMENT", true, true));
+		LscpNode edit = new LscpNode("EDIT");
 		LscpNode find = new LscpNode("FIND");
 		LscpNode format = new LscpNode("FORMAT", new LscpNode("INSTRUMENTS_DB", true, false));
 		LscpNode get = new LscpNode("GET");
@@ -102,6 +102,13 @@ public class LscpTree {
 		nodes[1] = new LscpNode("FX_SEND");
 		nodes[2] = new LscpNode("MIDI_INPUT_DEVICE");
 		destroy.setChildren(nodes);
+		
+		//EDIT command
+		nodes = new LscpNode[1];
+		LscpNode editChn = new LscpNode("CHANNEL", new LscpNode("INSTRUMENT", true, true));
+		nodes[0] = editChn;
+		edit.setChildren(nodes);
+		
 		
 		// FIND command
 		nodes = new LscpNode[2];

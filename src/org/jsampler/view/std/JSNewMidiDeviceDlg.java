@@ -133,7 +133,7 @@ public class JSNewMidiDeviceDlg extends EnhancedDialog {
 		mainPane.btnCreate.setEnabled(false);
 		
 		final Midi.CreateDevice cmd =
-			new  Midi.CreateDevice(driver.getName(), driver.getParameters());
+			new  Midi.CreateDevice(driver.getName(), mainPane.getParameters());
 		
 		cmd.addTaskListener(new TaskListener() {
 			public void
@@ -237,6 +237,9 @@ public class JSNewMidiDeviceDlg extends EnhancedDialog {
 		getSelectedDriver() {
 			return (MidiInputDriver)cbDrivers.getSelectedItem();
 		}
+		
+		public Parameter[]
+		getParameters() { return parameterTable.getModel().getParameters(); }
 		
 		private void
 		updateParameters() {

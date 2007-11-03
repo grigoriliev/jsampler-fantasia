@@ -1,3 +1,13 @@
+CVS HEAD
+  * Bug fixes:
+    - The parameter changes were discarded when creating
+      new audio/MIDI device
+    - The orchestras changes were not saved for the next session
+      when orchestras.xml does not exist in the JSampler's home directory
+    - In some cases the sampler configuration was not exported
+      properly to LSCP script
+    - Some minor bugfixes and enhancements
+
 JSampler v0.7a: 2007-10-15
   * Added options for choosing default actions when channel is
     created and assignment of default MIDI/audio drivers to be used

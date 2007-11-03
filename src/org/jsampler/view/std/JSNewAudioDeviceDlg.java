@@ -130,7 +130,7 @@ public class JSNewAudioDeviceDlg extends EnhancedDialog {
 		mainPane.btnCreate.setEnabled(false);
 		
 		final Audio.CreateDevice cad =
-			new Audio.CreateDevice(driver.getName(), driver.getParameters());
+			new Audio.CreateDevice(driver.getName(), mainPane.getParameters());
 		
 		cad.addTaskListener(new TaskListener() {
 			public void
@@ -228,6 +228,9 @@ public class JSNewAudioDeviceDlg extends EnhancedDialog {
 			add(btnPane, BorderLayout.SOUTH);
 			
 		}
+		
+		public Parameter[]
+		getParameters() { return parameterTable.getModel().getParameters(); }
 		
 		public AudioOutputDriver
 		getSelectedDriver() {

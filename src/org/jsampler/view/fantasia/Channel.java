@@ -22,10 +22,12 @@
 
 package org.jsampler.view.fantasia;
 
+import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Insets;
+import java.awt.Rectangle;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -50,6 +52,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
@@ -271,8 +274,13 @@ public class Channel extends org.jsampler.view.JSChannel {
 				public void
 				propertyChange(PropertyChangeEvent e) {
 					if(e.getNewValue() == "expanded") {
+						// TODO: this should be done regardles the listener != null?
 						mainPane.removePropertyChangeListener(s, this);
+						///////
 						listener.actionPerformed(null);
+						ensureChannelIsVisible();
+					} else if(e.getNewValue() == "expanding/collapsing") {
+						ensureChannelIsVisible();
 					}
 				}
 			});
@@ -298,6 +306,22 @@ public class Channel extends org.jsampler.view.JSChannel {
 		}
 		
 		CC.getSamplerModel().addSamplerChannelListListener(getHandler());
+	}
+	
+	private void
+	ensureChannelIsVisible() {
+		Container p = getParent();
+		JScrollPane sp = null;
+		while(p != null) {
+			if(p instanceof JScrollPane) {
+				sp = (JScrollPane)p;
+				break;
+			}
+			p = p.getParent();
+		}
+		if(sp == null) return;
+		int h = sp.getViewport().getView().getHeight();
+		sp.getViewport().scrollRectToVisible(new Rectangle(0, h - 2, 1, 1));
 	}
 	
 	private JPanel

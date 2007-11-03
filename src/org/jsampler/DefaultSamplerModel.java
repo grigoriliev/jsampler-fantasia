@@ -210,6 +210,17 @@ public class DefaultSamplerModel implements SamplerModel {
 	setAudioOutputDrivers(AudioOutputDriver[] drivers) { aoDrvS = drivers; }
 	
 	/**
+	 * Gets the model of the audio device at the specified position.
+	 * @param index The position of the audio device to return.
+	 * @return The model of the audio device at the specified position.
+	 * @see #getAudioDeviceCount
+	 */
+	public AudioDeviceModel
+	getAudioDevice(int index) {
+		return audioDeviceModels.get(index);
+	}
+	
+	/**
 	 * Gets the model of the audio device with ID <code>deviceId</code>.
 	 * @param deviceId The ID of the audio device whose model should be obtained.
 	 * @return The model of the specified audio device or <code>null</code> 
@@ -296,6 +307,16 @@ public class DefaultSamplerModel implements SamplerModel {
 	 */
 	public void
 	setMidiInputDrivers(MidiInputDriver[] drivers) { miDrvS = drivers; }
+	
+	/**
+	 * Gets the model of the MIDI device at the specified position.
+	 * @param index The position of the MIDI device to return.
+	 * @return The model of the MIDI device at the specified position.
+	 */
+	public MidiDeviceModel
+	getMidiDevice(int index) {
+		return midiDeviceModels.get(index);
+	}
 	
 	/**
 	 * Gets the model of the MIDI device with ID <code>deviceId</code>.
@@ -601,6 +622,17 @@ public class DefaultSamplerModel implements SamplerModel {
 	 */
 	public void
 	setEngines(SamplerEngine[] engines) { this.engines = engines; }
+	
+	/**
+	 * Gets the model of the sampler channel in the specified position.
+	 * @param index The position of the channel to return.
+	 * @return The model of the specified sampler channel.
+	 * @see #getchannelCount
+	 */
+	public SamplerChannelModel
+	getChannel(int index) {
+		return channelModels.get(index);
+	}
 	
 	/**
 	 * Gets the model of the sampler channel with ID <code>channelId</code>.

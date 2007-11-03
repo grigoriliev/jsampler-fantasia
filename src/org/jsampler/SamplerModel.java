@@ -113,6 +113,16 @@ public interface SamplerModel {
 	 */
 	public AudioOutputDriver[] getAudioOutputDrivers();
 	
+	
+	
+	/**
+	 * Gets the model of the audio device at the specified position.
+	 * @param index The position of the audio device to return.
+	 * @return The model of the audio device at the specified position.
+	 * @see #getAudioDeviceCount
+	 */
+	public AudioDeviceModel getAudioDevice(int index);
+	
 	/**
 	 * Gets the model of the audio device with ID <code>deviceId</code>.
 	 * @param deviceId The ID of the audio device whose model should be obtained.
@@ -160,6 +170,13 @@ public interface SamplerModel {
 	 * available for the LinuxSampler instance.
 	 */
 	public MidiInputDriver[] getMidiInputDrivers();
+	
+	/**
+	 * Gets the model of the MIDI device at the specified position.
+	 * @param index The position of the MIDI device to return.
+	 * @return The model of the MIDI device at the specified position.
+	 */
+	public MidiDeviceModel getMidiDevice(int index);
 	
 	/**
 	 * Gets the model of the MIDI device with ID <code>deviceId</code>.
@@ -321,6 +338,14 @@ public interface SamplerModel {
 	 * @return The current list of sampler channel models.
 	 */
 	public SamplerChannelModel[] getChannels();
+	
+	/**
+	 * Gets the model of the sampler channel in the specified position.
+	 * @param index The position of the channel to return.
+	 * @return The model of the specified sampler channel.
+	 * @see #getchannelCount
+	 */
+	public SamplerChannelModel getChannel(int index);
 	
 	/**
 	 * Gets the model of the sampler channel with ID <code>channelId</code>.

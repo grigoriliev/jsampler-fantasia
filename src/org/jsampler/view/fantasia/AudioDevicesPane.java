@@ -23,9 +23,11 @@
 package org.jsampler.view.fantasia;
 
 import java.awt.BorderLayout;
+import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Insets;
+import java.awt.Rectangle;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -39,6 +41,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 
 import net.sf.juife.ComponentList;
@@ -222,11 +225,14 @@ public class AudioDevicesPane extends JPanel {
 			createDevicePane.addPropertyChangeListener(s, new PropertyChangeListener() {
 				public void
 				propertyChange(PropertyChangeEvent e) {
-					if(e.getNewValue() == "collapsed") {
+					Object o = e.getNewValue();
+					if(o == "collapsed") {
 						if(createDevice) {
 							createAudioDevice0(pane);
 							createDevice = false;
 						}
+					} else if(o == "expanded" || o == "expanding/collapsing") {
+						ensureCreateDevicePaneIsVisible();
 					}
 				}
 			});
@@ -281,7 +287,7 @@ public class AudioDevicesPane extends JPanel {
 			pane.btnCreate.setEnabled(false);
 			final AudioOutputDriver driver = pane.getSelectedDriver();
 			final Audio.CreateDevice cmd =
-				new  Audio.CreateDevice(driver.getName(), driver.getParameters());
+				new  Audio.CreateDevice(driver.getName(), pane.getParameters());
 				
 			cmd.addTaskListener(new TaskListener() {
 				public void
@@ -292,6 +298,24 @@ public class AudioDevicesPane extends JPanel {
 			});
 			
 			CC.getTaskQueue().add(cmd);
+		}
+		
+		private void
+		ensureCreateDevicePaneIsVisible() {
+			Container p = createDevicePane.getParent();
+			JScrollPane sp = null;
+			int i = createDevicePane.getLocation().y + createDevicePane.getHeight();
+			while(p != null) {
+				if(p instanceof JScrollPane) {
+					sp = (JScrollPane)p;
+					break;
+				}
+				i += p.getLocation().y;
+				p = p.getParent();
+			}
+			
+			if(sp == null) return;
+			sp.getViewport().scrollRectToVisible(new Rectangle(0, i, 5, 5));
 		}
 	}
 	

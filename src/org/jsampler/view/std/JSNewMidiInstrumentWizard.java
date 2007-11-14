@@ -598,8 +598,12 @@ class ManualSelectWizardPage extends UserInputPage {
 		int result = fc.showOpenDialog(this);
 		if(result != JFileChooser.APPROVE_OPTION) return;
 		
-		cbFilename.setSelectedItem(toEscapedString(fc.getSelectedFile().getPath()));
-		String path = fc.getCurrentDirectory().getAbsolutePath();
+		String path = fc.getSelectedFile().getAbsolutePath();
+		if(java.io.File.separatorChar == '\\') {
+			path.replace('\\', '/');
+		}
+		cbFilename.setSelectedItem(toEscapedString(path));
+		path = fc.getCurrentDirectory().getAbsolutePath();
 		preferences().setStringProperty("lastInstrumentLocation", path);
 	}
 	

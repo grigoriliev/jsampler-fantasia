@@ -471,13 +471,17 @@ public class JSInstrumentChooser extends OkCancelDialog {
 		String s = preferences().getStringProperty("lastInstrumentLocation");
 		JFileChooser fc = new JFileChooser(s);
 		int result = fc.showOpenDialog(this);
-		if(result == JFileChooser.APPROVE_OPTION) {
-			cbFilename.setSelectedItem(toEscapedString(fc.getSelectedFile().getPath()));
-			btnOk.requestFocusInWindow();
-			
-			String path = fc.getCurrentDirectory().getAbsolutePath();
-			preferences().setStringProperty("lastInstrumentLocation", path);
+		if(result != JFileChooser.APPROVE_OPTION) return;
+		
+		String path = fc.getSelectedFile().getAbsolutePath();
+		if(java.io.File.separatorChar == '\\') {
+			path.replace('\\', '/');
 		}
+		cbFilename.setSelectedItem(toEscapedString(path));
+		btnOk.requestFocusInWindow();
+		
+		path = fc.getCurrentDirectory().getAbsolutePath();
+		preferences().setStringProperty("lastInstrumentLocation", path);
 	}
 	
 	private void

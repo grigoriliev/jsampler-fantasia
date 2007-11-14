@@ -253,8 +253,12 @@ public class JSAddOrEditInstrumentDlg extends OkCancelDialog {
 			int result = fc.showOpenDialog(JSAddOrEditInstrumentDlg.this);
 			if(result != JFileChooser.APPROVE_OPTION) return;
 			
-			String s = toEscapedString(fc.getSelectedFile().getAbsolutePath());
-			cbPath.setSelectedItem(s);
+			path = fc.getSelectedFile().getAbsolutePath();
+			if(java.io.File.separatorChar == '\\') {
+				path.replace('\\', '/');
+			}
+			path = toEscapedString(path);
+			cbPath.setSelectedItem(path);
 			path = fc.getCurrentDirectory().getAbsolutePath();
 			preferences().setStringProperty("lastInstrumentLocation", path);
 		}

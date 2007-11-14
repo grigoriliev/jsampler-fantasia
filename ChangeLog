@@ -1,4 +1,6 @@
 CVS HEAD
+  * Added Windows file path support
+
   * Bug fixes:
     - The parameter changes were discarded when creating
       new audio/MIDI device

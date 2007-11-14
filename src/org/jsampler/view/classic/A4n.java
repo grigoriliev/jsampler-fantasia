@@ -31,7 +31,6 @@ import java.util.logging.Level;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.JFileChooser;
 
 import net.sf.juife.event.TaskEvent;
 import net.sf.juife.event.TaskListener;

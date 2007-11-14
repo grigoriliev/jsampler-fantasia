@@ -625,7 +625,11 @@ class InstrumentWizardPage extends UserInputPage {
 		JFileChooser fc = new JFileChooser();
 		int result = fc.showOpenDialog(this);
 		if(result == JFileChooser.APPROVE_OPTION) {
-			tfFilename.setText(toEscapedString(fc.getSelectedFile().getPath()));
+			String path = fc.getSelectedFile().getPath();
+			if(java.io.File.separatorChar == '\\') {
+				path.replace('\\', '/');
+			}
+			tfFilename.setText(toEscapedString(path));
 		}
 	}
 }

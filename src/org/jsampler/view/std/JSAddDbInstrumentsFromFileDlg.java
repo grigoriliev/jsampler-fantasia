@@ -242,8 +242,12 @@ public class JSAddDbInstrumentsFromFileDlg extends OkCancelDialog {
 		int result = fc.showOpenDialog(this);
 		if(result != JFileChooser.APPROVE_OPTION) return;
 		
-		String s = toEscapedString(fc.getSelectedFile().getPath());
-		cbSource.setSelectedItem(s);
+		path = fc.getSelectedFile().getAbsolutePath();
+		if(java.io.File.separatorChar == '\\') {
+			path.replace('\\', '/');
+		}
+		path = toEscapedString(path);
+		cbSource.setSelectedItem(path);
 		path = fc.getCurrentDirectory().getAbsolutePath();
 		preferences().setStringProperty("lastInstrumentLocation", path);
 	}

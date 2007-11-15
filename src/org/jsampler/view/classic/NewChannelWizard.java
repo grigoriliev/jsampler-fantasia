@@ -627,7 +627,7 @@ class InstrumentWizardPage extends UserInputPage {
 		if(result == JFileChooser.APPROVE_OPTION) {
 			String path = fc.getSelectedFile().getPath();
 			if(java.io.File.separatorChar == '\\') {
-				path.replace('\\', '/');
+				path = path.replace('\\', '/');
 			}
 			tfFilename.setText(toEscapedString(path));
 		}

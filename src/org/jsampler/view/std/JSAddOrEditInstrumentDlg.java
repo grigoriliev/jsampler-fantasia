@@ -255,7 +255,7 @@ public class JSAddOrEditInstrumentDlg extends OkCancelDialog {
 			
 			path = fc.getSelectedFile().getAbsolutePath();
 			if(java.io.File.separatorChar == '\\') {
-				path.replace('\\', '/');
+				path = path.replace('\\', '/');
 			}
 			path = toEscapedString(path);
 			cbPath.setSelectedItem(path);

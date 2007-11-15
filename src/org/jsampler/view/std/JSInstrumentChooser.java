@@ -475,7 +475,7 @@ public class JSInstrumentChooser extends OkCancelDialog {
 		
 		String path = fc.getSelectedFile().getAbsolutePath();
 		if(java.io.File.separatorChar == '\\') {
-			path.replace('\\', '/');
+			path = path.replace('\\', '/');
 		}
 		cbFilename.setSelectedItem(toEscapedString(path));
 		btnOk.requestFocusInWindow();

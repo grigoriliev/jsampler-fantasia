@@ -600,7 +600,7 @@ class ManualSelectWizardPage extends UserInputPage {
 		
 		String path = fc.getSelectedFile().getAbsolutePath();
 		if(java.io.File.separatorChar == '\\') {
-			path.replace('\\', '/');
+			path = path.replace('\\', '/');
 		}
 		cbFilename.setSelectedItem(toEscapedString(path));
 		path = fc.getCurrentDirectory().getAbsolutePath();

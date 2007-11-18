@@ -229,8 +229,16 @@ public class JSNewAudioDeviceDlg extends EnhancedDialog {
 			
 		}
 		
+		/**
+		 * Stops any cell editing in progress and returns the parameters
+		 */
 		public Parameter[]
-		getParameters() { return parameterTable.getModel().getParameters(); }
+		getParameters() {
+			if(parameterTable.getCellEditor() != null) {
+				parameterTable.getCellEditor().stopCellEditing();
+			}
+			return parameterTable.getModel().getParameters();
+		}
 		
 		public AudioOutputDriver
 		getSelectedDriver() {

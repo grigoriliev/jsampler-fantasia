@@ -8,6 +8,10 @@ CVS HEAD
       when orchestras.xml does not exist in the JSampler's home directory
     - In some cases the sampler configuration was not exported
       properly to LSCP script
+    - Fixed a bug in the parameter table occuring when combo box
+      is used as cell editor
+    - If there is a cell editing in progress in the parameter table,
+      it is now finalized before creating new audio/MIDI device
     - Some minor bugfixes and enhancements
 
 JSampler v0.7a: 2007-10-15

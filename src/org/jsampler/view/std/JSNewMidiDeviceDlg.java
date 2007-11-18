@@ -238,8 +238,16 @@ public class JSNewMidiDeviceDlg extends EnhancedDialog {
 			return (MidiInputDriver)cbDrivers.getSelectedItem();
 		}
 		
+		/**
+		 * Stops any cell editing in progress and returns the parameters
+		 */
 		public Parameter[]
-		getParameters() { return parameterTable.getModel().getParameters(); }
+		getParameters() {
+			if(parameterTable.getCellEditor() != null) {
+				parameterTable.getCellEditor().stopCellEditing();
+			}
+			return parameterTable.getModel().getParameters();
+		}
 		
 		private void
 		updateParameters() {

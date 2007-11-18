@@ -197,7 +197,9 @@ public class ParameterTableModel extends AbstractTableModel {
 				return stringListEditor;
 			}
 		} else if(p.hasPossibilities()) {
-			return new DefaultCellEditor(new JComboBox(p.getPossibilities()));
+			JComboBox cb = new JComboBox(p.getPossibilities());
+			cb.setSelectedItem(null);
+			return new DefaultCellEditor(cb);
 		} else if(p.getType() == ParameterType.INT) {
 			Integer i = p.hasRangeMin() ? p.getRangeMin().intValue() : null;
 			integerEditor.setMinimum(i);

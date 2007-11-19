@@ -237,17 +237,29 @@ class GeneralPane extends JPanel {
 }
 
 class ViewPane extends JPanel {
+	private final JCheckBox checkTurnOffCustomWindowDecoration =
+		new JCheckBox(i18n.getLabel("ViewPane.checkTurnOffCustomWindowDecoration"));
+	
 	private final JSViewProps.MidiDevicesPane midiDevsPane = new JSViewProps.MidiDevicesPane();
 	private final JSViewProps.AudioDevicesPane audioDevsPane = new JSViewProps.AudioDevicesPane();
 	
 	ViewPane() {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		
+		boolean b = preferences().getBoolProperty("TurnOffCustomWindowDecoration");
+		checkTurnOffCustomWindowDecoration.setSelected(b);
+		checkTurnOffCustomWindowDecoration.setAlignmentX(JPanel.LEFT_ALIGNMENT);
+		add(checkTurnOffCustomWindowDecoration);
+		add(Box.createRigidArea(new Dimension(0, 6)));
 		add(midiDevsPane);
 		add(audioDevsPane);
 	}
 	
 	protected void
 	apply() {
+		String s = "TurnOffCustomWindowDecoration";
+		preferences().setBoolProperty(s, checkTurnOffCustomWindowDecoration.isSelected());
+		
 		midiDevsPane.apply();
 		audioDevsPane.apply();
 	}

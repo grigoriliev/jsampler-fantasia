@@ -75,7 +75,7 @@ public class DevicePane extends JPanel {
 		
 		p.add(Box.createRigidArea(new Dimension(6, 0)));
 		
-		lDevName = new FantasiaLabel("");
+		lDevName = new FantasiaLabel("", true);
 		lDevName.setOpaque(false);
 		lDevName.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		Dimension d = new Dimension(Short.MAX_VALUE, lDevName.getPreferredSize().height);

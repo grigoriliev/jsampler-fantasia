@@ -117,10 +117,7 @@ public class MidiDevicePane extends DevicePane {
 			new JCheckBox(i18n.getLabel("MidiDevicePane.checkActive"));
 		
 		private final JLabel lPorts = new JLabel(i18n.getLabel("MidiDevicePane.lPorts"));
-		
-		private final JSpinner spinnerPorts
-			= new JSpinner(new SpinnerNumberModel(1, 1, 100, 1));
-		
+		private final JSpinner spinnerPorts;
 		private final JLabel lPort = new JLabel(i18n.getLabel("MidiDevicePane.lPort"));
 		private final JComboBox cbPort = new JComboBox();
 		
@@ -152,6 +149,15 @@ public class MidiDevicePane extends DevicePane {
 			p.add(Box.createRigidArea(new Dimension(12, 0)));
 			p.add(lPorts);
 			p.add(Box.createRigidArea(new Dimension(5, 0)));
+			
+			Parameter<Integer> prm = midiDeviceModel.getDeviceInfo().getPortsParameter();
+			int min = 1;
+			if(prm.getRangeMin() != null) min = prm.getRangeMin().intValue();
+			int max = 50;
+			if(prm.getRangeMax() != null) max = prm.getRangeMax().intValue();
+			spinnerPorts = new JSpinner(new SpinnerNumberModel(1, min, max, 1));
+			if(prm.isFixed()) spinnerPorts.setEnabled(false);
+			
 			p.add(spinnerPorts);
 			p.setOpaque(false);
 			

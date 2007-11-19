@@ -119,8 +119,7 @@ public class AudioDevicePane extends DevicePane {
 		private final JLabel lChannels
 			= new JLabel(i18n.getLabel("AudioDevicePane.lChannels"));
 		
-		private final JSpinner spinnerChannels
-			= new JSpinner(new SpinnerNumberModel(1, 1, 50, 1));
+		private final JSpinner spinnerChannels;
 		
 		private final JLabel lChannel =
 			new JLabel(i18n.getLabel("AudioDevicePane.lChannel"));
@@ -155,6 +154,16 @@ public class AudioDevicePane extends DevicePane {
 			p.add(Box.createRigidArea(new Dimension(12, 0)));
 			p.add(lChannels);
 			p.add(Box.createRigidArea(new Dimension(5, 0)));
+			
+			Parameter<Integer> prm =
+				audioDeviceModel.getDeviceInfo().getChannelsParameter();
+			int min = 1;
+			if(prm.getRangeMin() != null) min = prm.getRangeMin().intValue();
+			int max = 50;
+			if(prm.getRangeMax() != null) max = prm.getRangeMax().intValue();
+			
+			spinnerChannels = new JSpinner(new SpinnerNumberModel(1, min, max, 1));
+			if(prm.isFixed()) spinnerChannels.setEnabled(false);
 			p.add(spinnerChannels);
 			p.setOpaque(false);
 			

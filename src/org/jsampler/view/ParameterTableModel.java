@@ -342,8 +342,6 @@ public class ParameterTableModel extends AbstractTableModel {
 				setBorder(UIManager.getBorder("Table.focusCellHighlightBorder"));
 			} else { setBorder(emptyBorder); }
 			
-			setToolTipText(parameters[row].getDescription());
-			
 			return this;
 		}
 	}

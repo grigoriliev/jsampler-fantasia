@@ -50,8 +50,13 @@ public class ViewConfig extends JSViewConfig {
 		try {
 			UIManager.setLookAndFeel(new SubstanceRavenGraphiteLookAndFeel());
 			UIManager.put(SubstanceLookAndFeel.WATERMARK_IGNORE, Boolean.TRUE);
-			javax.swing.JFrame.setDefaultLookAndFeelDecorated(true);
-			javax.swing.JDialog.setDefaultLookAndFeelDecorated(true);
+			
+			if(!preferences().getBoolProperty("TurnOffCustomWindowDecoration")) {
+				javax.swing.JFrame.setDefaultLookAndFeelDecorated(true);
+				javax.swing.JDialog.setDefaultLookAndFeelDecorated(true);
+			}
+			
+			Res.loadTheme(preferences().getStringProperty("Theme"));
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

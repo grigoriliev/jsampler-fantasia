@@ -423,6 +423,12 @@ public class MainFrame extends JSMainFrame {
 		// Help
 		m = new FantasiaMenu(i18n.getMenuLabel("help"));
 		
+		mi = new JMenuItem(a4n.browseOnlineTutorial);
+		mi.setIcon(null);
+		m.add(mi);
+		
+		m.addSeparator();
+		
 		mi = new JMenuItem(a4n.helpAbout);
 		mi.setIcon(null);
 		m.add(mi);

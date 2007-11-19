@@ -631,11 +631,18 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		
 		// Help
 		m = new JMenu(i18n.getMenuLabel("help"));
-		menuBar.add(m);
 		
 		mi = new JMenuItem(A4n.helpAbout);
 		mi.setIcon(null);
 		m.add(mi);
+		
+		m.addSeparator();
+		
+		mi = new JMenuItem(a4n.browseOnlineTutorial);
+		mi.setIcon(null);
+		m.add(mi);
+		
+		menuBar.add(m);
 	}
 	
 	private class RecentScriptHandler implements ActionListener {

@@ -26,6 +26,7 @@ import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Rectangle;
 
@@ -674,9 +675,9 @@ class ChannelScreen extends PixmapPane {
 	
 	private final JPopupMenu menuEngines = new JPopupMenu();
 	
-	private final JLabel lVolume = new Label();
-	private final JLabel lStreams = new Label("--");
-	private final JLabel lVoices = new Label("--");
+	private final JLabel lVolume = new ScreenLabel("");
+	private final JLabel lStreams = new ScreenLabel(" --");
+	private final JLabel lVoices = new ScreenLabel("-- ");
 	
 	private InformationDialog fxSendsDlg = null;
 	
@@ -684,20 +685,10 @@ class ChannelScreen extends PixmapPane {
 	
 	private Timer timer;
 	
-	class Label extends JLabel {
-		Label() { this(""); }
-		
-		Label(String s) {
-			super(s);
-			setFont(Res.fontScreen);
-			setForeground(new java.awt.Color(0xFFA300));
-		}
-	}
-	
 	ChannelScreen(final Channel channel) {
 		super(Res.gfxChannelScreen);
 		setPixmapInsets(new Insets(6, 6, 6, 6));
-		setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+		setBorder(BorderFactory.createEmptyBorder(5, 4, 5, 4));
 		
 		this.channel = channel;
 		
@@ -749,11 +740,16 @@ class ChannelScreen extends PixmapPane {
 		
 		p.add(Box.createGlue());
 		
+		lStreams.setFont(Res.fontScreenMono);
+		lStreams.setHorizontalAlignment(JLabel.RIGHT);
 		p.add(lStreams);
-		p.add(new Label("/"));
-		p.add(lVoices);
 		
-		p.add(Box.createRigidArea(new Dimension(12, 0)));
+		JLabel l = new ScreenLabel("/");
+		l.setFont(Res.fontScreenMono);
+		p.add(l);
+		
+		lVoices.setFont(Res.fontScreenMono);
+		p.add(lVoices);
 		
 		lVolume.setIcon(Res.iconVolume14);
 		lVolume.setAlignmentX(RIGHT_ALIGNMENT);
@@ -1005,6 +1001,18 @@ class ChannelScreen extends PixmapPane {
 			setFont(Res.fontScreen);
 			setForeground(new java.awt.Color(0xFFA300));
 		}
+		
+		protected void
+		paintComponent(Graphics g) {
+			Graphics2D g2d = (Graphics2D)g;
+			
+			g2d.setRenderingHint (
+				java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
+				java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON
+			);
+			
+			super.paintComponent(g2d);
+		}
 	}
 	
 	static class ScreenButtonBg extends PixmapPane {
@@ -1020,6 +1028,30 @@ class ChannelScreen extends PixmapPane {
 		public Dimension
 		getPreferredSize() {
 			return new Dimension(super.getPreferredSize().width, 13);
+		}
+	}
+	
+	
+	
+	static class ScreenLabel extends JLabel {
+		ScreenLabel() { this(""); }
+		
+		ScreenLabel(String s) {
+			super(s);
+			setFont(Res.fontScreen);
+			setForeground(new java.awt.Color(0xFFA300));
+		}
+		
+		protected void
+		paintComponent(Graphics g) {
+			Graphics2D g2d = (Graphics2D)g;
+			
+			g2d.setRenderingHint (
+				java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
+				java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON
+			);
+			
+			super.paintComponent(g2d);
 		}
 	}
 	

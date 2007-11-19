@@ -76,8 +76,8 @@ public class StandardBar extends PixmapPane {
 		setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 5));
 		
 		
-		mainPane = new PixmapPane(Res.gfxToolbar);
-		mainPane.setPixmapInsets(new Insets(1, 1, 1, 1));
+		mainPane = new PixmapPane(Res.gfxToolBar);
+		mainPane.setPixmapInsets(Res.insetsToolBar);
 		mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.X_AXIS));
 		
 		toolbar.setOpaque(false);
@@ -105,18 +105,4 @@ public class StandardBar extends PixmapPane {
 	
 	public void
 	showFantasiaLogo(boolean b) { lLogo.setVisible(b); }
-	
-	private static class FantasiaToolBar extends JToolBar {
-		private static Insets pixmapInsets = new Insets(1, 1, 1, 1);
-		
-		FantasiaToolBar() {
-			setOpaque(false);
-		}
-		
-		protected void
-		paintComponent(Graphics g) {
-			super.paintComponent(g);
-			PixmapPane.paintComponent(this, g, Res.gfxToolbar, pixmapInsets);
-		}
-	}
 }

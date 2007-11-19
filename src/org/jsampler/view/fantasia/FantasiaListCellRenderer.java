@@ -23,6 +23,7 @@
 package org.jsampler.view.fantasia;
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Insets;
 
 import javax.swing.BorderFactory;
@@ -68,6 +69,13 @@ public class FantasiaListCellRenderer extends SubstanceDefaultListCellRenderer {
 		
 		protected void
 		paintComponent(Graphics g) {
+			Graphics2D g2d = (Graphics2D)g;
+			
+			g2d.setRenderingHint (
+				java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
+				java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON
+			);
+			
 			PixmapPane.paintComponent(this, g, Res.gfxCbLabelBg, pixmapInsets);
 			super.paintComponent(g);
 		}

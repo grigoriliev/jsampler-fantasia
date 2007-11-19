@@ -163,4 +163,19 @@ public abstract class StdA4n {
 			exportMidiInstrumentMaps();
 		}
 	}
+	
+	public final Action browseOnlineTutorial = new BrowseOnlineTutorial();
+		
+	private class BrowseOnlineTutorial extends AbstractAction {
+		BrowseOnlineTutorial() {
+			super(i18n.getMenuLabel("help.onlineTutorial"));
+			
+			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("help.onlineTutorial.tt"));
+		}
+		
+		public void
+		actionPerformed(ActionEvent e) {
+			StdUtils.browse("http://jsampler.sourceforge.net/");
+		}
+	}
 }

@@ -23,10 +23,17 @@
 package org.jsampler.view.fantasia;
 
 import java.awt.Font;
+import java.awt.Insets;
+
+import java.util.Properties;
+import java.util.logging.Level;
+
 import javax.swing.ImageIcon;
 
 import org.jsampler.CC;
 import org.jsampler.HF;
+
+import org.linuxsampler.lscp.Parser;
 
 
 /**
@@ -38,8 +45,7 @@ public class Res {
 	/** Forbits the instantiation of this class. */
 	private Res() { }
 	
-	protected final static ImageIcon gfxFantasiaLogo
-		= new ImageIcon(Res.class.getResource("res/gfx/fantasia_logo.png"));
+	protected static ImageIcon gfxFantasiaLogo;
 	
 	protected final static ImageIcon gfxPowerOn
 		= new ImageIcon(Res.class.getResource("res/gfx/power_on.png"));
@@ -163,8 +169,8 @@ public class Res {
 	protected final static ImageIcon gfxChannelsBg
 		= new ImageIcon(Res.class.getResource("res/gfx/channels_bg.png"));
 	
-	protected final static ImageIcon gfxToolbar
-		= new ImageIcon(Res.class.getResource("res/gfx/toolbar.png"));
+	protected static ImageIcon gfxToolBar;
+	protected static Insets insetsToolBar;
 	
 	protected final static ImageIcon gfxBorder
 		= new ImageIcon(Res.class.getResource("res/gfx/border.png"));
@@ -174,6 +180,9 @@ public class Res {
 	
 	protected final static ImageIcon gfxBtnCrRO
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_cr_ro.png"));
+	
+	protected final static ImageIcon gfxStatusBar
+		= new ImageIcon(Res.class.getResource("res/gfx/statusbar.png"));
 	
 	
 	protected final static ImageIcon iconAppIcon
@@ -273,17 +282,75 @@ public class Res {
 		= new ImageIcon(Res.class.getResource("res/icons/LinuxSampler-logo.png"));
 	
 	protected static Font fontScreen = null;
+	protected static Font fontScreenMono = null;
 		
 	
 	static {
 		try {
 			fontScreen = Font.createFont (
 				Font.TRUETYPE_FONT,
-				Res.class.getResourceAsStream("res/fonts/LiberationSans-Bold.ttf")
+				Res.class.getResourceAsStream("res/fonts/DejaVuLGCCondensedSansBold.ttf")
 			);
 			fontScreen = fontScreen.deriveFont(10.0f);
+			
+			fontScreenMono = Font.createFont (
+				Font.TRUETYPE_FONT,
+				Res.class.getResourceAsStream("res/fonts/DejaVuLGCMonoSansBold.ttf")
+			);
+			fontScreenMono = fontScreenMono.deriveFont(10.0f);
 		} catch(Exception e) {
 			CC.getLogger().warning(HF.getErrorMessage(e));
 		}
+	}
+	
+	protected static void
+	loadTheme(String themeName) {
+		try {
+			Properties p = new Properties();
+			p.load(Res.class.getResourceAsStream("res/themes/themes.properties"));
+			
+			String path = p.getProperty(themeName);
+			if(path == null) {
+				String s = "Failed to load theme " + themeName;
+				s += "! Falling back to the default theme...";
+				CC.getLogger().warning(s);
+				path = p.getProperty("Graphite");
+				if(path == null) {
+					CC.getLogger().warning("Failed to load the default theme!");
+					CC.cleanExit();
+					return;
+				}
+			}
+			
+			path = "res/" + path;
+			if(path.charAt(path.length() - 1) != '/') path += "/";
+			path += "theme.properties";
+			p.load(Res.class.getResourceAsStream(path));
+			
+			String s = "res/" + p.getProperty("FantasiaLogo.gfx");
+			gfxFantasiaLogo = new ImageIcon(Res.class.getResource(s));
+			
+			s = "res/" + p.getProperty("StandardBar.gfx");
+			gfxToolBar = new ImageIcon(Res.class.getResource(s));
+			
+			insetsToolBar = parseInsets(p.getProperty("StandardBar.insets"));
+		} catch(Exception e) {
+			CC.getLogger().log(Level.INFO, "Failed to load theme " + themeName, e);
+			CC.cleanExit();
+		}
+	}
+	
+	private static Insets
+	parseInsets(String s) {
+		Insets i = new Insets(0, 0, 0, 0);
+		try {
+			Integer[] list = Parser.parseIntList(s);
+			if(list.length != 4) throw new Exception();
+			i.set(list[0], list[1], list[2], list[3]);
+		} catch(Exception x) {
+			CC.getLogger().warning("Failed to parse insets: " + s);
+		}
+		
+		return i;
 	}
 }

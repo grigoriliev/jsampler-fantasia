@@ -1,5 +1,11 @@
 CVS HEAD
+  * Added new menu item: Help/Online Tutorial
+
   * Added Windows file path support
+
+  * Fantasia:
+    - Added option for turning off the custom window decoration
+      (choose Edit/Preferences, then click the `View' tab)
 
   * Bug fixes:
     - The parameter changes were discarded when creating
@@ -12,6 +18,7 @@ CVS HEAD
       is used as cell editor
     - If there is a cell editing in progress in the parameter table,
       it is now finalized before creating new audio/MIDI device
+    - Fantasia: Fixed the view of the channel's stream/voice count statistic
     - Some minor bugfixes and enhancements
 
 JSampler v0.7a: 2007-10-15

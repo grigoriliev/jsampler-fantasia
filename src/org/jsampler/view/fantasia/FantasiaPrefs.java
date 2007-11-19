@@ -82,6 +82,13 @@ public class FantasiaPrefs extends StdPrefs {
 		return super.getDefaultIntValue(name);
 	}
 	
+	public String
+	getDefaultStringValue(String name) {
+		if(name == "Theme") return "Graphite";
+		
+		return super.getDefaultStringValue(name);
+	}
+	
 	public boolean
 	getDefaultBoolValue(String name) {
 		if(name == ANIMATED) return true;

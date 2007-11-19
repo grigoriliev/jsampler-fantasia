@@ -69,10 +69,14 @@ public class ParameterTable extends JTable {
 	public TableCellRenderer
 	getCellRenderer(int row, int column) {
 		TableCellRenderer r = getModel().getCellRenderer(row, column);
-		//return r != null ? r : super.getCellRenderer(row, column);
-		if(r == null) {
-			r = super.getCellRenderer(row, column);
-			((JComponent)r).setToolTipText(getModel().getParameter(row).getDescription());
+		if(r == null) r = super.getCellRenderer(row, column);
+		
+		JComponent c = (JComponent)r;
+		Parameter p = getModel().getParameter(row);
+		if(column == 1 && p.getStringValue().length() > 15) {
+			c.setToolTipText(p.getStringValue());
+		} else {
+			c.setToolTipText(p.getDescription());
 		}
 		
 		return r;

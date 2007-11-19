@@ -52,6 +52,7 @@ import net.sf.juife.JuifeUtils;
 import net.sf.juife.LinkButton;
 
 import org.jsampler.HF;
+import org.jsampler.view.std.StdUtils;
 
 import org.jvnet.substance.SubstanceLookAndFeel;
 
@@ -117,7 +118,7 @@ public class HelpAboutDlg extends InformationDialog {
 		btnAuthor.addActionListener(new ActionListener() {
 			public void
 			actionPerformed(ActionEvent e) {
-				browse("http://www.grigoriliev.com");
+				StdUtils.browse("http://www.grigoriliev.com");
 			}
 		});
 		
@@ -213,7 +214,7 @@ public class HelpAboutDlg extends InformationDialog {
 		btn.addActionListener(new ActionListener() {
 			public void
 			actionPerformed(ActionEvent e) {
-				browse("http://swingx.dev.java.net/");
+				StdUtils.browse("http://swingx.dev.java.net/");
 			}
 		});
 		
@@ -227,7 +228,7 @@ public class HelpAboutDlg extends InformationDialog {
 		btn.addActionListener(new ActionListener() {
 			public void
 			actionPerformed(ActionEvent e) {
-				browse("http://substance.dev.java.net/");
+				StdUtils.browse("http://substance.dev.java.net/");
 			}
 		});
 		
@@ -240,7 +241,7 @@ public class HelpAboutDlg extends InformationDialog {
 		btn.addActionListener(new ActionListener() {
 			public void
 			actionPerformed(ActionEvent e) {
-				browse("http://sourceforge.net/projects/jlscp/");
+				StdUtils.browse("http://sourceforge.net/projects/jlscp/");
 			}
 		});
 		
@@ -253,7 +254,7 @@ public class HelpAboutDlg extends InformationDialog {
 		btn.addActionListener(new ActionListener() {
 			public void
 			actionPerformed(ActionEvent e) {
-				browse("http://substance-swingx.dev.java.net/");
+				StdUtils.browse("http://substance-swingx.dev.java.net/");
 			}
 		});
 		
@@ -266,7 +267,7 @@ public class HelpAboutDlg extends InformationDialog {
 		btn.addActionListener(new ActionListener() {
 			public void
 			actionPerformed(ActionEvent e) {
-				browse("http://sourceforge.net/projects/juife/");
+				StdUtils.browse("http://sourceforge.net/projects/juife/");
 			}
 		});
 		
@@ -287,33 +288,6 @@ public class HelpAboutDlg extends InformationDialog {
 	private void
 	showLicense(License license) {
 		new LicenseDlg(this, license).setVisible(true);
-	}
-	
-	private boolean
-	checkDesktopSupported() {
-		if(Desktop.isDesktopSupported()) return true;
-		
-		HF.showErrorMessage(i18n.getError("HelpAboutDlg.DesktopApiNotSupported"), this);
-		
-		return false;
-	}
-	
-	private void
-	browse(String uri) {
-		if(!checkDesktopSupported()) return;
-		
-		try { Desktop.getDesktop().browse(new URI(uri)); }
-		catch(Exception x) { x.printStackTrace(); }
-	}
-	
-	private void
-	mail(String uri) {
-		if(!checkDesktopSupported()) return;
-		
-		Desktop desktop = Desktop.getDesktop();
-		
-		try { Desktop.getDesktop().mail(new URI(uri)); }
-		catch(Exception x) { x.printStackTrace(); }
 	}
 	
 	class ContactInfoPane extends JPanel {
@@ -385,28 +359,28 @@ public class HelpAboutDlg extends InformationDialog {
 			btnAuthorEmail.addActionListener(new ActionListener() {
 				public void
 				actionPerformed(ActionEvent e) {
-					browse("mailto:grigor@grigoriliev.com");
+					StdUtils.browse("mailto:grigor@grigoriliev.com");
 				}
 			});
 		
 			btnLSWebsite.addActionListener(new ActionListener() {
 				public void
 				actionPerformed(ActionEvent e) {
-					browse("http://www.linuxsampler.org");
+					StdUtils.browse("http://www.linuxsampler.org");
 				}
 			});
 		
 			btnJSWebsite.addActionListener(new ActionListener() {
 				public void
 				actionPerformed(ActionEvent e) {
-					browse("http://sf.net/projects/jsampler/");
+					StdUtils.browse("http://sf.net/projects/jsampler/");
 				}
 			});
 		
 			btnLSMailingList.addActionListener(new ActionListener() {
 				public void
 				actionPerformed(ActionEvent e) {
-					browse("http://lists.sourceforge.net/lists/listinfo/linuxsampler-devel");
+					StdUtils.browse("http://lists.sourceforge.net/lists/listinfo/linuxsampler-devel");
 				}
 			});
 		}

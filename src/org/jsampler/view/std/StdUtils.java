@@ -21,10 +21,17 @@
  */
 package org.jsampler.view.std;
 
+import java.awt.Desktop;
+
+import java.net.URI;
+
 import java.util.Vector;
 
 import org.jsampler.CC;
+import org.jsampler.HF;
 import org.jsampler.JSPrefs;
+
+import static org.jsampler.view.std.StdI18n.i18n;
 
 
 /**
@@ -56,5 +63,33 @@ public class StdUtils {
 		
 		elements = v.toArray(new String[v.size()]);
 		preferences().setStringListProperty(property, elements);
+	}
+	
+	public static boolean
+	checkDesktopSupported() {
+		if(Desktop.isDesktopSupported()) return true;
+		
+		String s = i18n.getError("StdUtils.DesktopApiNotSupported");
+		HF.showErrorMessage(s, CC.getMainFrame());
+		
+		return false;
+	}
+	
+	public static void
+	browse(String uri) {
+		if(!checkDesktopSupported()) return;
+		
+		try { Desktop.getDesktop().browse(new URI(uri)); }
+		catch(Exception x) { x.printStackTrace(); }
+	}
+	
+	public static void
+	mail(String uri) {
+		if(!StdUtils.checkDesktopSupported()) return;
+		
+		Desktop desktop = Desktop.getDesktop();
+		
+		try { Desktop.getDesktop().mail(new URI(uri)); }
+		catch(Exception x) { x.printStackTrace(); }
 	}
 }

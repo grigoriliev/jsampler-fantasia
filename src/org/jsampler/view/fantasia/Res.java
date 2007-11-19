@@ -181,9 +181,6 @@ public class Res {
 	protected final static ImageIcon gfxBtnCrRO
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_cr_ro.png"));
 	
-	protected final static ImageIcon gfxStatusBar
-		= new ImageIcon(Res.class.getResource("res/gfx/statusbar.png"));
-	
 	
 	protected final static ImageIcon iconAppIcon
 		= new ImageIcon(Res.class.getResource("res/icons/app_icon.png"));

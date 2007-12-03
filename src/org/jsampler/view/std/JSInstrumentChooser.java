@@ -46,8 +46,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -60,11 +58,14 @@ import net.sf.juife.event.TaskEvent;
 import net.sf.juife.event.TaskListener;
 
 import org.jsampler.CC;
-import org.jsampler.Instrument;
+import org.jsampler.OrchestraInstrument;
 import org.jsampler.JSPrefs;
 import org.jsampler.OrchestraModel;
 
+import org.jsampler.task.Global;
 import org.jsampler.task.InstrumentsDb;
+
+import org.linuxsampler.lscp.Instrument;
 
 import static org.jsampler.view.std.StdI18n.i18n;
 import static org.linuxsampler.lscp.Parser.*;
@@ -92,14 +93,14 @@ public class JSInstrumentChooser extends OkCancelDialog {
 	private final JComboBox cbInstruments = new JComboBox();
 	
 	
-	private final JComboBox cbDbInstrument = createComboBox();
+	private final JComboBox cbDbInstrument = StdUtils.createPathComboBox();
 	private final JButton btnBrowseDb;
 	
 	private final JLabel lFilename = new JLabel(i18n.getLabel("JSInstrumentChooser.lFilename"));
 	private final JLabel lIndex = new JLabel(i18n.getLabel("JSInstrumentChooser.lIndex"));
 	
-	private final JComboBox cbFilename = createComboBox();
-	private final JSpinner spinnerIndex = new JSpinner(new SpinnerNumberModel(0, 0, 500, 1));
+	private final JComboBox cbFilename = StdUtils.createPathComboBox();
+	private final JComboBox cbIndex = new JComboBox();
 	
 	private final JButton btnBrowse;
 	
@@ -139,7 +140,6 @@ public class JSInstrumentChooser extends OkCancelDialog {
 				if(!rbSelectFromDb.isSelected()) rbSelectFromDb.doClick(0);
 			}
 		});
-		cbDbInstrument.setEditable(true);
 		
 		String[] instrs = preferences().getStringListProperty("recentDbInstruments");
 		for(String s : instrs) cbDbInstrument.addItem(s);
@@ -147,24 +147,28 @@ public class JSInstrumentChooser extends OkCancelDialog {
 		
 		cbFilename.addFocusListener(getHandler());
 		cbFilename.addActionListener(getHandler());
+		String[] files = preferences().getStringListProperty("recentInstrumentFiles");
+		for(String s : files) cbFilename.addItem(s);
+		cbFilename.setSelectedItem(null);
+		
+		cbFilename.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) {
+				if(!rbSelectFromFile.isSelected()) rbSelectFromFile.doClick(0);
+				updateFileInstruments();
+			}
+		});
+		
+		cbIndex.addFocusListener(getHandler());
+		cbIndex.addActionListener(getHandler());
 		cbFilename.addActionListener(new ActionListener() {
 			public void
 			actionPerformed(ActionEvent e) {
 				if(!rbSelectFromFile.isSelected()) rbSelectFromFile.doClick(0);
 			}
 		});
-		cbFilename.setEditable(true);
 		
-		String[] files = preferences().getStringListProperty("recentInstrumentFiles");
-		for(String s : files) cbFilename.addItem(s);
-		cbFilename.setSelectedItem(null);
-		
-		spinnerIndex.addChangeListener(new ChangeListener() {
-			public void
-			stateChanged(ChangeEvent e) {
-				if(!rbSelectFromFile.isSelected()) rbSelectFromFile.doClick(0);
-			}
-		});
+		for(int i = 0; i < 101; i++) cbIndex.addItem(i);
 		
 		JPanel mainPane = new JPanel();
 		mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.Y_AXIS));
@@ -280,9 +284,6 @@ public class JSInstrumentChooser extends OkCancelDialog {
 		return p;
 	}
 	
-	protected JComboBox
-	createComboBox() { return new JComboBox(); }
-	
 	protected JSPrefs
 	preferences() { return CC.getViewConfig().preferences(); }
 	
@@ -308,7 +309,7 @@ public class JSInstrumentChooser extends OkCancelDialog {
 	
 	private void
 	instrumentChanged() {
-		Instrument instr = (Instrument)cbInstruments.getSelectedItem();
+		OrchestraInstrument instr = (OrchestraInstrument)cbInstruments.getSelectedItem();
 		String s = instr == null ? null : instr.getDescription();
 		if(s != null && s.length() == 0) s = null;
 		cbInstruments.setToolTipText(s);
@@ -383,8 +384,8 @@ public class JSInstrumentChooser extends OkCancelDialog {
 			
 		c.gridx = 1;
 		c.gridy = 1;
-		gridbag.setConstraints(spinnerIndex, c);
-		filePane.add(spinnerIndex);
+		gridbag.setConstraints(cbIndex, c);
+		filePane.add(cbIndex);
 		
 		cbFilename.setPreferredSize (
 			new Dimension(200, cbFilename.getPreferredSize().height)
@@ -406,8 +407,8 @@ public class JSInstrumentChooser extends OkCancelDialog {
 		String s = "lastUsedInstrumentSelectionMethod";
 		
 		if(rbSelectFromOrchestra.isSelected()) {
-			Instrument instr = (Instrument)cbInstruments.getSelectedItem();
-			instrumentFile = instr.getPath();
+			OrchestraInstrument instr = (OrchestraInstrument)cbInstruments.getSelectedItem();
+			instrumentFile = instr.getFilePath();
 			instrumentIndex = instr.getInstrumentIndex();
 			engine = instr.getEngine();
 			setVisible(false);
@@ -427,7 +428,7 @@ public class JSInstrumentChooser extends OkCancelDialog {
 		
 		if(rbSelectFromFile.isSelected()) {
 			instrumentFile = cbFilename.getSelectedItem().toString();
-			instrumentIndex = Integer.parseInt(spinnerIndex.getValue().toString());
+			instrumentIndex = cbIndex.getSelectedIndex();
 			
 			StdUtils.updateRecentElements("recentInstrumentFiles", instrumentFile);
 			preferences().setStringProperty(s, "fromFile");
@@ -531,9 +532,38 @@ public class JSInstrumentChooser extends OkCancelDialog {
 			Object o = cbFilename.getSelectedItem();
 			if(o == null) b = false;
 			else b = o.toString().length() > 0;
+			o = cbIndex.getSelectedItem();
+			if(o == null || o.toString().length() == 0) b = false;
 		}
 		
 		btnOk.setEnabled(b);
+	}
+	
+	private void
+	updateFileInstruments() {
+		Object o = cbFilename.getSelectedItem();
+		if(o == null) return;
+		String s = o.toString();
+		final Global.GetFileInstruments t = new Global.GetFileInstruments(s);
+		
+		t.addTaskListener(new TaskListener() {
+			public void
+			taskPerformed(TaskEvent e) {
+				Instrument[] instrs = t.getResult();
+				if(instrs == null) {
+					cbIndex.removeAllItems();
+					for(int i = 0; i < 101; i++) cbIndex.addItem(i);
+					return;
+				}
+				
+				cbIndex.removeAllItems();
+				for(int i = 0; i < instrs.length; i++) {
+					cbIndex.addItem(i + " - " + instrs[i].getName());
+				}
+			}
+		});
+		
+		CC.getTaskQueue().add(t);
 	}
 	
 	private final EventHandler eventHandler = new EventHandler();
@@ -569,7 +599,7 @@ public class JSInstrumentChooser extends OkCancelDialog {
 				}
 			} else if(src == cbDbInstrument) {
 				if(!rbSelectFromDb.isSelected()) rbSelectFromDb.doClick(0);
-			} else if(src == cbFilename) {
+			} else if(src == cbFilename || src == cbIndex) {
 				if(!rbSelectFromFile.isSelected()) rbSelectFromFile.doClick(0);
 			}
 		}

@@ -33,13 +33,15 @@ import org.w3c.dom.NodeList;
  *
  * @author Grigor Iliev
  */
-public class Instrument extends Resource {
+public class OrchestraInstrument extends Resource implements org.linuxsampler.lscp.Instrument {
 	private String path = null;
 	private int instrumentIndex = 0;
 	private String engine = "GIG";
 	
-	/** Creates a new instance of <code>Instrument</code>. */
-	public Instrument() {
+	/**
+	 * Creates a new instance of <code>OrchestraInstrument</code>.
+	 */
+	public OrchestraInstrument() {
 	}
 	
 	/**
@@ -47,14 +49,14 @@ public class Instrument extends Resource {
 	 * @return The absolute pathname of the instrument location.
 	 */
 	public String
-	getPath() { return path; }
+	getFilePath() { return path; }
 	
 	/**
 	 * Sets the absolute pathname of the instrument location.
 	 * @param path Specifies the absolute pathname of the instrument location.
 	 */
 	public void
-	setPath(String path) {
+	setFilePath(String path) {
 		this.path = path;
 		fireChangeEvent();
 	}
@@ -89,6 +91,12 @@ public class Instrument extends Resource {
 	public void
 	setEngine(String engine) { this.engine = engine; }
 	
+	public String
+	getFormatFamily() { return null; }
+	
+	public String
+	getFormatVersion() { return null; }
+	
 	/**
 	 * Returns the name of this instrument.
 	 * @return The name of this instrument.
@@ -112,7 +120,7 @@ public class Instrument extends Resource {
 		sb.append(getName()).append("\n");
 		sb.append("\n");
 		sb.append(getDescription()).append("\n");
-		sb.append(getPath()).append("\n");
+		sb.append(getFilePath()).append("\n");
 		sb.append(getInstrumentIndex()).append("\n");
 		
 		return sb.toString();
@@ -135,7 +143,7 @@ public class Instrument extends Resource {
 		
 		setName(args[1]);
 		setDescription(args[3]);
-		setPath(args[4]);
+		setFilePath(args[4]);
 		
 		try { setInstrumentIndex(Integer.parseInt(args[5])); }
 		catch(Exception x) {
@@ -194,7 +202,7 @@ public class Instrument extends Resource {
 				}
 			} else if(s.equals("path")) {
 				DOMUtils.validateTextContent(node);
-				setPath(node.getFirstChild().getNodeValue());
+				setFilePath(node.getFirstChild().getNodeValue());
 			} else if(s.equals("instrument-index")) {
 				DOMUtils.validateTextContent(node);
 				try {
@@ -230,7 +238,7 @@ public class Instrument extends Resource {
 		node.appendChild(el);
 		
 		el = doc.createElement("path");
-		el.appendChild(doc.createTextNode(getPath()));
+		el.appendChild(doc.createTextNode(getFilePath()));
 		node.appendChild(el);
 		
 		el = doc.createElement("instrument-index");

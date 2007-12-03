@@ -56,7 +56,6 @@ import org.jsampler.CC;
 import org.jsampler.DOMUtils;
 import org.jsampler.DefaultOrchestraModel;
 import org.jsampler.HF;
-import org.jsampler.Instrument;
 import org.jsampler.OrchestraListModel;
 import org.jsampler.OrchestraModel;
 

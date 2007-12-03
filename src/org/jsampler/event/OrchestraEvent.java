@@ -22,7 +22,7 @@
 
 package org.jsampler.event;
 
-import org.jsampler.Instrument;
+import org.jsampler.OrchestraInstrument;
 
 
 /**
@@ -30,7 +30,7 @@ import org.jsampler.Instrument;
  * @author Grigor Iliev
  */
 public class OrchestraEvent extends java.util.EventObject {
-	private Instrument instrument;
+	private OrchestraInstrument instrument;
 	
 	/**
 	 * Constructs an <code>OrchestraEvent</code> object.
@@ -45,7 +45,7 @@ public class OrchestraEvent extends java.util.EventObject {
 	 * @param instrument The instrument that has been added, removed or changed.
 	 */
 	public
-	OrchestraEvent(Object source, Instrument instrument) {
+	OrchestraEvent(Object source, OrchestraInstrument instrument) {
 		super(source);
 		this.instrument = instrument;
 	}
@@ -55,6 +55,6 @@ public class OrchestraEvent extends java.util.EventObject {
 	 * @return The instrument that has been added, removed or changed;
 	 * <code>null</code> otherwise.
 	 */
-	public Instrument
+	public OrchestraInstrument
 	getInstrument() { return instrument; }
 }

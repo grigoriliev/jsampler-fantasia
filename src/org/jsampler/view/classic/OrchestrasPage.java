@@ -49,7 +49,7 @@ import net.sf.juife.NavigationPage;
 import org.jsampler.CC;
 import org.jsampler.DefaultOrchestraModel;
 import org.jsampler.HF;
-import org.jsampler.Instrument;
+import org.jsampler.OrchestraInstrument;
 import org.jsampler.OrchestraModel;
 
 import org.jsampler.event.OrchestraAdapter;
@@ -135,7 +135,7 @@ public class OrchestrasPage extends NavigationPage {
 			mouseClicked(MouseEvent e) {
 				if(e.getClickCount() < 2) return;
 				
-				Instrument instr = instrumentTable.getSelectedInstrument();
+				OrchestraInstrument instr = instrumentTable.getSelectedInstrument();
 				if(instr == null) return;
 				loadInstrument(instr);
 			}
@@ -143,7 +143,7 @@ public class OrchestrasPage extends NavigationPage {
 	}
 	
 	private void
-	loadInstrument(Instrument instr) {
+	loadInstrument(OrchestraInstrument instr) {
 		JSChannelsPane cp = CC.getMainFrame().getSelectedChannelsPane();
 		JSChannel chn = null;
 		
@@ -164,7 +164,7 @@ public class OrchestrasPage extends NavigationPage {
 			return;
 		}
 		
-		chn.getModel().loadBackendInstrument(instr.getPath(), instr.getInstrumentIndex());
+		chn.getModel().loadBackendInstrument(instr.getFilePath(), instr.getInstrumentIndex());
 	}
 	
 	/**

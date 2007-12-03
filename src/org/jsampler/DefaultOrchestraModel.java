@@ -46,7 +46,7 @@ public class DefaultOrchestraModel implements OrchestraModel {
 	private String name = "";
 	private String description = "";
 	
-	private final Vector<Instrument> instruments = new Vector<Instrument>();
+	private final Vector<OrchestraInstrument> instruments = new Vector<OrchestraInstrument>();
 	
 	private final Vector<OrchestraListener> listeners = new Vector<OrchestraListener>();
 	
@@ -123,7 +123,7 @@ public class DefaultOrchestraModel implements OrchestraModel {
 	 * @param idx The index of the instrument to be returned.
 	 * @return The instrument at the specified position.
 	 */
-	public Instrument
+	public OrchestraInstrument
 	getInstrument(int idx) { return instruments.get(idx); }
 	
 	/**
@@ -132,7 +132,7 @@ public class DefaultOrchestraModel implements OrchestraModel {
 	 * @throws IllegalArgumentException If <code>instr</code> is <code>null</code>.
 	 */
 	public void
-	addInstrument(Instrument instr) {
+	addInstrument(OrchestraInstrument instr) {
 		insertInstrument(instr, getInstrumentCount());
 	}
 	
@@ -144,7 +144,7 @@ public class DefaultOrchestraModel implements OrchestraModel {
 	 * @throws ArrayIndexOutOfBoundsException If the specified index is invalid.
 	 */
 	public void
-	insertInstrument(Instrument instr, int idx) {
+	insertInstrument(OrchestraInstrument instr, int idx) {
 		if(instr == null) throw new IllegalArgumentException("instr should be non-null!");
 		instruments.insertElementAt(instr, idx);
 		fireInstrumentAdded(instr);
@@ -156,7 +156,7 @@ public class DefaultOrchestraModel implements OrchestraModel {
 	 */
 	public void
 	removeInstrument(int idx) {
-		Instrument instr = instruments.get(idx);
+		OrchestraInstrument instr = instruments.get(idx);
 		instruments.removeElementAt(idx);
 		fireInstrumentRemoved(instr);
 	}
@@ -168,7 +168,7 @@ public class DefaultOrchestraModel implements OrchestraModel {
 	 * <code>false</code> otherwise.
 	 */
 	public boolean
-	removeInstrument(Instrument instr) {
+	removeInstrument(OrchestraInstrument instr) {
 		boolean b = instruments.removeElement(instr);
 		if(b) fireInstrumentRemoved(instr);
 		return b;
@@ -182,7 +182,7 @@ public class DefaultOrchestraModel implements OrchestraModel {
 	 * the orchestra does not contain the specified instrument.
 	 */
 	public int
-	getInstrumentIndex(Instrument instr) {
+	getInstrumentIndex(OrchestraInstrument instr) {
 		if(instr == null) return -1;
 		
 		for(int i = 0; i < getInstrumentCount(); i++) {
@@ -200,7 +200,7 @@ public class DefaultOrchestraModel implements OrchestraModel {
 	 * @param instr The instrument to move on top.
 	 */
 	public void
-	moveInstrumentOnTop(Instrument instr) {
+	moveInstrumentOnTop(OrchestraInstrument instr) {
 		if(instr == null) return;
 		
 		int idx = getInstrumentIndex(instr);
@@ -218,7 +218,7 @@ public class DefaultOrchestraModel implements OrchestraModel {
 	 * @param instr The instrument to move up.
 	 */
 	public void
-	moveInstrumentUp(Instrument instr) {
+	moveInstrumentUp(OrchestraInstrument instr) {
 		if(instr == null) return;
 		
 		int idx = getInstrumentIndex(instr);
@@ -237,7 +237,7 @@ public class DefaultOrchestraModel implements OrchestraModel {
 	 * @param instr The instrument to move down.
 	 */
 	public void
-	moveInstrumentDown(Instrument instr) {
+	moveInstrumentDown(OrchestraInstrument instr) {
 		if(instr == null) return;
 		
 		int idx = getInstrumentIndex(instr);
@@ -254,7 +254,7 @@ public class DefaultOrchestraModel implements OrchestraModel {
 	 * @param instr The instrument to move at bottom.
 	 */
 	public void
-	moveInstrumentAtBottom(Instrument instr) {
+	moveInstrumentAtBottom(OrchestraInstrument instr) {
 		if(instr == null) return;
 		
 		int idx = getInstrumentIndex(instr);
@@ -302,7 +302,7 @@ public class DefaultOrchestraModel implements OrchestraModel {
 					setDescription(node.getFirstChild().getNodeValue());
 				}
 			} else if(s.equals("instrument")) {
-				Instrument instr = new Instrument();
+				OrchestraInstrument instr = new OrchestraInstrument();
 				instr.readObject(node);
 				addInstrument(instr);
 			} else {	// Unknown content
@@ -351,14 +351,14 @@ public class DefaultOrchestraModel implements OrchestraModel {
 	
 	/** Notifies listeners that an instrument has been added to this orchestra. */
 	private void
-	fireInstrumentAdded(Instrument instr) {
+	fireInstrumentAdded(OrchestraInstrument instr) {
 		OrchestraEvent e = new OrchestraEvent(this, instr);
 		for(OrchestraListener l : listeners) l.instrumentAdded(e);
 	}
 	
 	/** Notifies listeners that an instrument has been removed from this orchestra. */
 	private void
-	fireInstrumentRemoved(Instrument instr) {
+	fireInstrumentRemoved(OrchestraInstrument instr) {
 		OrchestraEvent e = new OrchestraEvent(this, instr);
 		for(OrchestraListener l : listeners) l.instrumentRemoved(e);
 	}
@@ -368,7 +368,7 @@ public class DefaultOrchestraModel implements OrchestraModel {
 	 * @param instr The instrument whose settings has been changed.
 	 */
 	private void
-	fireInstrumentChanged(Instrument instr) {
+	fireInstrumentChanged(OrchestraInstrument instr) {
 		OrchestraEvent e = new OrchestraEvent(this, instr);
 		for(OrchestraListener l : listeners) l.instrumentChanged(e);
 	}
@@ -382,7 +382,7 @@ public class DefaultOrchestraModel implements OrchestraModel {
 		/** Invoked when the settings of an instrument are changed. */
 		public void
 		stateChanged(ChangeEvent e) {
-			fireInstrumentChanged((Instrument)e.getSource());
+			fireInstrumentChanged((OrchestraInstrument)e.getSource());
 		}
 		
 		/** Invoked when an instrument is added to the orchestra. */

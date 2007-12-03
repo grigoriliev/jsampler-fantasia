@@ -806,9 +806,9 @@ public class CC {
 						break;
 					}
 				}
+				lscpCLient.setChannelMidiInputPort(chnId, chn.getMidiInputPort());
+				lscpCLient.setChannelMidiInputChannel(chnId, chn.getMidiInputChannel());
 			}
-			lscpCLient.setChannelMidiInputPort(chnId, chn.getMidiInputPort());
-			lscpCLient.setChannelMidiInputChannel(chnId, chn.getMidiInputChannel());
 			
 			id = chn.getAudioOutputDevice();
 			if(id != -1) {

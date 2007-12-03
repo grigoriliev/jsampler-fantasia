@@ -22,18 +22,34 @@
 
 package org.jsampler.view;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import org.jsampler.JSPrefs;
+
+import static org.jsampler.JSPrefs.VOL_MEASUREMENT_UNIT_DECIBEL;
 
 /**
  * Provides the view configuration.
  * @author Grigor Iliev
  */
 public abstract class JSViewConfig {
+	private boolean measurementUnitDecibel;
 	
 	/** Creates a new instance of <code>JSViewConfig</code> */
 	public
 	JSViewConfig() {
+		measurementUnitDecibel = preferences().getBoolProperty(VOL_MEASUREMENT_UNIT_DECIBEL);
 		
+		String s = VOL_MEASUREMENT_UNIT_DECIBEL;
+		preferences().addPropertyChangeListener(s, new PropertyChangeListener() {
+			public void
+			propertyChange(PropertyChangeEvent e) {
+				boolean b;
+				b = preferences().getBoolProperty(VOL_MEASUREMENT_UNIT_DECIBEL);
+				measurementUnitDecibel = b;
+			}
+		});
 	}
 	
 	/**
@@ -54,4 +70,10 @@ public abstract class JSViewConfig {
 	 */
 	public boolean
 	getInstrumentsDbSupport() { return false; }
+	
+	/**
+	 * Determines whether the volume values should be shown in decibels.
+	 */
+	public boolean
+	isMeasurementUnitDecibel() { return measurementUnitDecibel; }
 }

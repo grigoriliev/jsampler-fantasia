@@ -188,7 +188,11 @@ public class JSManageOrchestrasPane extends JPanel {
 				if(!HF.showYesNoDialog(CC.getMainFrame(), s)) return;
 			}
 			
+			int i = orchestraTable.getSelectedRow();
 			CC.getOrchestras().removeOrchestra(om);
+			if(orchestraTable.getRowCount() > i) {
+				orchestraTable.getSelectionModel().setSelectionInterval(i, i);
+			}
 		}
 	}
 	

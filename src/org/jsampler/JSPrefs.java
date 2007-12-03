@@ -88,6 +88,9 @@ public class JSPrefs extends PropertyChangeSupport {
 	 */
 	public final static String DEFAULT_AUDIO_DRIVER = "defaultAudioDriver";
 	
+	/** Property which specifies whether the volume values should be shown in decibels. */
+	public final static String VOL_MEASUREMENT_UNIT_DECIBEL = "volMeasurementUnitDecibel";
+	
 	
 	private final String pathName;
 	private final Preferences userPrefs;
@@ -311,9 +314,11 @@ public class JSPrefs extends PropertyChangeSupport {
 	 * The default value is used when the property is not set.
 	 * Override this method to provide custom default values for specific properties.
 	 * @param name The name of the property whose default value should be obtained.
-	 * @return <code>false</code>
 	 * @see #getBoolProperty(String name)
 	 */
 	public boolean
-	getDefaultBoolValue(String name) { return false; }
+	getDefaultBoolValue(String name) {
+		if(name == VOL_MEASUREMENT_UNIT_DECIBEL) return true;
+		return false;
+	}
 }

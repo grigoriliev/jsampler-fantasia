@@ -23,7 +23,6 @@
 package org.jsampler.view.fantasia;
 
 import java.awt.Container;
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -40,6 +39,8 @@ import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import java.text.NumberFormat;
+
 import java.util.logging.Level;
 
 import javax.swing.Action;
@@ -49,6 +50,7 @@ import javax.swing.BoxLayout;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -71,6 +73,7 @@ import org.jdesktop.swingx.JXCollapsiblePane;
 
 import org.jsampler.AudioDeviceModel;
 import org.jsampler.CC;
+import org.jsampler.HF;
 import org.jsampler.MidiDeviceModel;
 import org.jsampler.MidiInstrumentMap;
 import org.jsampler.SamplerChannelModel;
@@ -94,12 +97,9 @@ import org.jsampler.event.SamplerListener;
 import org.jsampler.view.std.JSChannelOutputRoutingDlg;
 import org.jsampler.view.std.JSFxSendsPane;
 import org.jsampler.view.std.JSInstrumentChooser;
-
-import org.jvnet.lafwidget.animation.FadeConfigurationManager;
-import org.jvnet.lafwidget.animation.FadeKind;
+import org.jsampler.view.std.JSVolumeEditorPopup;
 
 import org.jvnet.substance.SubstanceImageCreator;
-import org.jvnet.substance.SubstanceLookAndFeel;
 
 import org.linuxsampler.lscp.AudioOutputDevice;
 import org.linuxsampler.lscp.MidiInputDevice;
@@ -109,6 +109,8 @@ import org.linuxsampler.lscp.SamplerEngine;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jsampler.view.fantasia.FantasiaPrefs.*;
+import static org.jsampler.view.fantasia.FantasiaUtils.*;
+import static org.jsampler.view.std.JSVolumeEditorPopup.VolumeType;
 
 
 /**
@@ -263,6 +265,16 @@ public class Channel extends org.jsampler.view.JSChannel {
 			}
 		});
 		
+		String vmud = VOL_MEASUREMENT_UNIT_DECIBEL;
+		preferences().addPropertyChangeListener(vmud, new PropertyChangeListener() {
+			public void
+			propertyChange(PropertyChangeEvent e) {
+				boolean b;
+				b = preferences().getBoolProperty(VOL_MEASUREMENT_UNIT_DECIBEL);
+				screen.updateVolumeInfo(dialVolume.getValue());
+			}
+		});
+		
 		getModel().addSamplerChannelListener(getHandler());
 		
 		updateChannelInfo();
@@ -380,7 +392,6 @@ public class Channel extends org.jsampler.view.JSChannel {
 		
 		if(vol == dialVolume.getValue()) return;
 		
-		
 		/*
 		 * If the model's volume is not equal to the dial knob
 		 * value we assume that the change is due to user input.
@@ -404,7 +415,6 @@ public class Channel extends org.jsampler.view.JSChannel {
 		
 		if(sc.isSoloChannel()) btnSolo.setIcon(Res.gfxSoloOn);
 		else btnSolo.setIcon(Res.gfxSoloOff);
-		
 		dialVolume.setValue((int)(sc.getVolume() * 100));
 		
 		boolean b = sc.getEngine() != null;
@@ -661,36 +671,44 @@ class ChannelScreen extends PixmapPane {
 	private final Channel channel;
 	
 	private final InstrumentPane instrumentPane;
-	private JButton btnInstr = new ScreenButton(i18n.getButtonLabel("ChannelScreen.btnInstr"));
+	
+	private JButton btnInstr =
+		createScreenButton(i18n.getButtonLabel("ChannelScreen.btnInstr"));
 	
 	private final JButton btnEditInstr =
-		new ScreenButton(i18n.getButtonLabel("ChannelScreen.btnEditInstr"));
+		createScreenButton(i18n.getButtonLabel("ChannelScreen.btnEditInstr"));
 	private final ScreenButtonBg sbbEditInstr = new ScreenButtonBg(btnEditInstr);
 	
 	private final JButton btnFxSends =
-		new ScreenButton(i18n.getButtonLabel("ChannelScreen.btnFxSends"));
+		createScreenButton(i18n.getButtonLabel("ChannelScreen.btnFxSends"));
 	
 	private final JButton btnEngine
-		= new ScreenButton(i18n.getButtonLabel("ChannelScreen.btnEngine"));
+		= createScreenButton(i18n.getButtonLabel("ChannelScreen.btnEngine"));
 	
 	private final JPopupMenu menuEngines = new JPopupMenu();
 	
-	private final JLabel lVolume = new ScreenLabel("");
-	private final JLabel lStreams = new ScreenLabel(" --");
-	private final JLabel lVoices = new ScreenLabel("-- ");
+	private final JButton btnVolume = createScreenButton("");
+	private JSVolumeEditorPopup popupVolume;
+	
+	private final JLabel lStreams = createScreenLabel(" --");
+	private final JLabel lVoices = createScreenLabel("-- ");
 	
 	private InformationDialog fxSendsDlg = null;
 	
-	private Dimension dimVolume;
-	
 	private Timer timer;
+	
+	private static NumberFormat numberFormat = NumberFormat.getInstance();
+	static {
+		numberFormat.setMaximumFractionDigits(1);
+	}
 	
 	ChannelScreen(final Channel channel) {
 		super(Res.gfxChannelScreen);
 		setPixmapInsets(new Insets(6, 6, 6, 6));
-		setBorder(BorderFactory.createEmptyBorder(5, 4, 5, 4));
+		setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		
 		this.channel = channel;
+		popupVolume = new JSVolumeEditorPopup(btnVolume, VolumeType.CHANNEL);
 		
 		setOpaque(false);
 		
@@ -706,7 +724,7 @@ class ChannelScreen extends PixmapPane {
 		JPanel p = new JPanel();
 		p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
 		p.setAlignmentX(CENTER_ALIGNMENT);
-		p.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
+		p.setBorder(BorderFactory.createEmptyBorder(5, 2, 0, 0));
 		
 		btnFxSends.setToolTipText(i18n.getButtonLabel("ChannelScreen.btnFxSends.tt"));
 		btnFxSends.addActionListener(new ActionListener() {
@@ -728,9 +746,11 @@ class ChannelScreen extends PixmapPane {
 		
 		p.add(btnFxSends);
 		
-		p.add(Box.createRigidArea(new Dimension(6, 0)));
+		//p.add(Box.createRigidArea(new Dimension(6, 0)));
+		p.add(Box.createGlue());
 		
 		btnEngine.setIcon(Res.iconEngine12);
+		btnEngine.setIconTextGap(1);
 		p.add(btnEngine);
 		//p.add(new Label("|"));
 		
@@ -742,21 +762,51 @@ class ChannelScreen extends PixmapPane {
 		
 		lStreams.setFont(Res.fontScreenMono);
 		lStreams.setHorizontalAlignment(JLabel.RIGHT);
+		lStreams.setToolTipText(i18n.getLabel("ChannelScreen.streamVoiceCount"));
 		p.add(lStreams);
 		
-		JLabel l = new ScreenLabel("/");
+		JLabel l = createScreenLabel("/");
 		l.setFont(Res.fontScreenMono);
+		l.setToolTipText(i18n.getLabel("ChannelScreen.streamVoiceCount"));
 		p.add(l);
 		
 		lVoices.setFont(Res.fontScreenMono);
+		lVoices.setToolTipText(i18n.getLabel("ChannelScreen.streamVoiceCount"));
 		p.add(lVoices);
 		
-		lVolume.setIcon(Res.iconVolume14);
-		lVolume.setAlignmentX(RIGHT_ALIGNMENT);
+		btnVolume.setIcon(Res.iconVolume14);
+		btnVolume.setIconTextGap(2);
+		btnVolume.setAlignmentX(RIGHT_ALIGNMENT);
+		btnVolume.setHorizontalAlignment(btnVolume.LEFT);
 		updateVolumeInfo(100);
-		dimVolume = lVolume.getPreferredSize();
-		p.add(lVolume);
-		p.setPreferredSize(new Dimension(250, p.getPreferredSize().height));
+		Dimension d = btnVolume.getPreferredSize();
+		d.width = 60;
+		btnVolume.setPreferredSize(d);
+		btnVolume.setMinimumSize(d);
+		
+		btnVolume.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) {
+				if(popupVolume.isVisible()) {
+					popupVolume.commit();
+					popupVolume.hide();
+				} else {
+					float vol = channel.getModel().getChannelInfo().getVolume();
+					popupVolume.setCurrentVolume(vol);
+					popupVolume.show();
+				}
+			}
+		});
+		
+		popupVolume.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) {
+				channel.getModel().setBackendVolume(popupVolume.getVolumeFactor());
+			}
+		});
+		
+		p.add(btnVolume);
+		p.setPreferredSize(new Dimension(260, p.getPreferredSize().height));
 		p.setMinimumSize(p.getPreferredSize());
 		p.setMaximumSize(p.getPreferredSize());
 		
@@ -779,7 +829,8 @@ class ChannelScreen extends PixmapPane {
 	private void
 	createEngineMenu() {
 		for(final SamplerEngine engine : CC.getSamplerModel().getEngines()) {
-			JMenuItem mi = new JMenuItem(engine.getDescription());
+			JMenuItem mi = new JMenuItem(engine.getName() + " engine");
+			mi.setToolTipText(engine.getDescription());
 			
 			mi.addActionListener(new ActionListener() {
 				public void
@@ -859,18 +910,24 @@ class ChannelScreen extends PixmapPane {
 		instrumentPane.update();
 	
 		if(sc.getEngine() != null) {
-			String s = sc.getEngine().getDescription();
-			if(!s.equals(btnEngine.getText())) btnEngine.setText(s);
+			String s = sc.getEngine().getName();
+			s += " engine";
+			if(!s.equals(btnEngine.getText())) {
+				btnEngine.setText(s);
+				btnEngine.setToolTipText(sc.getEngine().getDescription());
+			}
 		}
 		
 	}
 	
 	protected void
 	updateVolumeInfo(int volume) {
-		lVolume.setText(i18n.getLabel("ChannelScreen.volume", volume));
-		lVolume.setMinimumSize(dimVolume);
-		lVolume.setPreferredSize(dimVolume);
-		
+		if(CC.getViewConfig().isMeasurementUnitDecibel()) {
+			String s = numberFormat.format(HF.percentsToDecibels(volume));
+			btnVolume.setText(s + "dB");
+		} else {
+			btnVolume.setText(String.valueOf(volume) + "%");
+		}
 	}
 	
 	/**
@@ -977,44 +1034,6 @@ class ChannelScreen extends PixmapPane {
 		}
 	}
 	
-	static class ScreenButton extends JButton {
-		ScreenButton(String s) {
-			super(s);
-			setContentAreaFilled(false);
-			setFocusPainted(false);
-			setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-			setMargin(new Insets(0, 0, 0, 0));
-			
-			putClientProperty (
-				SubstanceLookAndFeel.BUTTON_NO_MIN_SIZE_PROPERTY, Boolean.TRUE
-			);
-			
-			putClientProperty (
-				SubstanceLookAndFeel.BUTTON_PAINT_NEVER_PROPERTY, Boolean.TRUE
-			);
-			
-			putClientProperty(SubstanceLookAndFeel.FLAT_PROPERTY, Boolean.TRUE);
-			
-			FadeConfigurationManager.getInstance().disallowFades(FadeKind.ROLLOVER, this);
-			
-			setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-			setFont(Res.fontScreen);
-			setForeground(new java.awt.Color(0xFFA300));
-		}
-		
-		protected void
-		paintComponent(Graphics g) {
-			Graphics2D g2d = (Graphics2D)g;
-			
-			g2d.setRenderingHint (
-				java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
-				java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON
-			);
-			
-			super.paintComponent(g2d);
-		}
-	}
-	
 	static class ScreenButtonBg extends PixmapPane {
 		ScreenButtonBg(JButton btn) {
 			super(Res.gfxScreenBtnBg);
@@ -1031,29 +1050,6 @@ class ChannelScreen extends PixmapPane {
 		}
 	}
 	
-	
-	
-	static class ScreenLabel extends JLabel {
-		ScreenLabel() { this(""); }
-		
-		ScreenLabel(String s) {
-			super(s);
-			setFont(Res.fontScreen);
-			setForeground(new java.awt.Color(0xFFA300));
-		}
-		
-		protected void
-		paintComponent(Graphics g) {
-			Graphics2D g2d = (Graphics2D)g;
-			
-			g2d.setRenderingHint (
-				java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
-				java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON
-			);
-			
-			super.paintComponent(g2d);
-		}
-	}
 	
 	private final EventHandler eventHandler = new EventHandler();
 	

@@ -52,16 +52,22 @@ import javax.swing.event.DocumentListener;
 
 import net.sf.juife.Wizard;
 
+import net.sf.juife.event.TaskEvent;
+import net.sf.juife.event.TaskListener;
+
 import net.sf.juife.wizard.DefaultWizardModel;
 import net.sf.juife.wizard.UserInputPage;
 import net.sf.juife.wizard.WizardPage;
 
 import org.jsampler.CC;
-import org.jsampler.Instrument;
+import org.jsampler.OrchestraInstrument;
 import org.jsampler.JSPrefs;
 import org.jsampler.MidiInstrumentMap;
 import org.jsampler.OrchestraModel;
 
+import org.jsampler.task.Global;
+
+import org.linuxsampler.lscp.Instrument;
 import org.linuxsampler.lscp.MidiInstrumentEntry;
 import org.linuxsampler.lscp.MidiInstrumentInfo;
 import org.linuxsampler.lscp.SamplerEngine;
@@ -122,8 +128,10 @@ class NewMidiInstrumentWizardModel extends DefaultWizardModel {
 	
 	public String
 	getInstrumentName() {
-		if(!instrLocationMethodWizardPage.isOrchestraMethodSelected()) return null;
-		Instrument instr = orchestraSelectWizardPage.getInstrument();
+		if(!instrLocationMethodWizardPage.isOrchestraMethodSelected()) {
+			return manualSelectWizardPage.getInstrumentName();
+		}
+		OrchestraInstrument instr = orchestraSelectWizardPage.getInstrument();
 		if(instr == null) return null;
 		return instr.getName();
 	}
@@ -169,8 +177,8 @@ class NewMidiInstrumentWizardModel extends DefaultWizardModel {
 	mapInstrument() {
 		MidiInstrumentInfo instr = new MidiInstrumentInfo();
 		if(instrLocationMethodWizardPage.isOrchestraMethodSelected()) {
-			Instrument i = orchestraSelectWizardPage.getInstrument();
-			instr.setFilePath(i.getPath());
+			OrchestraInstrument i = orchestraSelectWizardPage.getInstrument();
+			instr.setFilePath(i.getFilePath());
 			instr.setInstrumentIndex(i.getInstrumentIndex());
 			instr.setEngine(i.getEngine());
 			instr.setLoadMode(orchestraSelectWizardPage.getLoadMode());
@@ -426,7 +434,7 @@ class OrchestraSelectWizardPage extends UserInputPage {
 	
 	private void
 	instrumentChanged() {
-		Instrument instr = (Instrument)cbInstruments.getSelectedItem();
+		OrchestraInstrument instr = (OrchestraInstrument)cbInstruments.getSelectedItem();
 		String s = instr == null ? null : instr.getDescription();
 		if(s != null && s.length() == 0) s = null;
 		cbInstruments.setToolTipText(s);
@@ -442,8 +450,8 @@ class OrchestraSelectWizardPage extends UserInputPage {
 	/**
 	 * Gets the selected instrument.
 	 */
-	public Instrument
-	getInstrument() { return (Instrument)cbInstruments.getSelectedItem(); }
+	public OrchestraInstrument
+	getInstrument() { return (OrchestraInstrument)cbInstruments.getSelectedItem(); }
 	
 	/**
 	 * Gets the selected load mode.
@@ -464,7 +472,7 @@ class ManualSelectWizardPage extends UserInputPage {
 		new JLabel(i18n.getLabel("ManualSelectWizardPage.lLoadMode"));
 	
 	private final JComboBox cbFilename = new JComboBox();
-	private final JSpinner spinnerIndex = new JSpinner(new SpinnerNumberModel(0, 0, 500, 1));
+	private final JComboBox cbIndex = new JComboBox();
 	
 	private final JButton btnBrowse;
 	
@@ -523,11 +531,13 @@ class ManualSelectWizardPage extends UserInputPage {
 		c.anchor = GridBagConstraints.WEST;
 		gridbag.setConstraints(cbFilename, c);
 		mainPane.add(cbFilename);
+		
+		for(int i = 0; i < 101; i++) cbIndex.addItem(i);
 			
 		c.gridx = 1;
 		c.gridy = 1;
-		gridbag.setConstraints(spinnerIndex, c);
-		mainPane.add(spinnerIndex);
+		gridbag.setConstraints(cbIndex, c);
+		mainPane.add(cbIndex);
 		
 		c.gridx = 1;
 		c.gridy = 2;
@@ -560,7 +570,10 @@ class ManualSelectWizardPage extends UserInputPage {
 		
 		cbFilename.addActionListener(new ActionListener() {
 			public void
-			actionPerformed(ActionEvent e) {  updateState(); }
+			actionPerformed(ActionEvent e) {
+				updateState();
+				updateFileInstruments();
+			}
 		});
 		
 		btnBrowse.addActionListener(new ActionListener() {
@@ -613,7 +626,48 @@ class ManualSelectWizardPage extends UserInputPage {
 		Object o = cbFilename.getSelectedItem();
 		if(o == null) b = false;
 		else b = o.toString().length() > 0;
+		
+		o = cbIndex.getSelectedItem();
+		if(o == null || o.toString().length() == 0) b = false;
+		
 		getWizard().enableNextButton(b);
+	}
+	
+	private void
+	updateFileInstruments() {
+		Object o = cbFilename.getSelectedItem();
+		if(o == null) return;
+		String s = o.toString();
+		final Global.GetFileInstruments t = new Global.GetFileInstruments(s);
+		
+		t.addTaskListener(new TaskListener() {
+			public void
+			taskPerformed(TaskEvent e) {
+				Instrument[] instrs = t.getResult();
+				if(instrs == null) {
+					cbIndex.removeAllItems();
+					for(int i = 0; i < 101; i++) cbIndex.addItem(i);
+					return;
+				} else {
+				
+					cbIndex.removeAllItems();
+					for(int i = 0; i < instrs.length; i++) {
+						cbIndex.addItem(i + " - " + instrs[i].getName());
+					}
+				}
+			}
+		});
+		
+		CC.getTaskQueue().add(t);
+	}
+	
+	public String
+	getInstrumentName() {
+		if(cbIndex.getSelectedItem() == null) return null;
+		String s = cbIndex.getSelectedItem().toString();
+		int i = s.indexOf(" - ");
+		if(i == -1) return null;
+		return s.substring(i + 3);
 	}
 	
 	public void
@@ -633,7 +687,7 @@ class ManualSelectWizardPage extends UserInputPage {
 	 * @return The index of the instrument in the instrument file.
 	 */
 	public int
-	getInstrumentIndex() { return Integer.parseInt(spinnerIndex.getValue().toString()); }
+	getInstrumentIndex() { return cbIndex.getSelectedIndex(); }
 	
 	/**
 	 * Gets the selected engine.
@@ -679,7 +733,7 @@ class InstrumentMappingWizardPage extends WizardPage  {
 	private final JComboBox cbMap = new JComboBox();
 	private final JSpinner spinnerBank = new JSpinner(new SpinnerNumberModel(0, 0, 16383, 1));
 	private final JComboBox cbProgram = new JComboBox();
-	private final JSlider slVolume = new JSlider(0, 100, 100);
+	private final JSlider slVolume = StdUtils.createVolumeSlider();
 	
 	private final NewMidiInstrumentWizardModel wizardModel;
 	
@@ -820,6 +874,7 @@ class InstrumentMappingWizardPage extends WizardPage  {
 	postinitPage() {
 		String s = wizardModel.getInstrumentName();
 		if(s != null) tfName.setText(s);
+		else tfName.setText("");
 		if(wizardModel.getDefaultMap() != null) {
 			cbMap.setSelectedItem(wizardModel.getDefaultMap());
 		}

@@ -79,7 +79,7 @@ import net.sf.juife.JuifeUtils;
 import org.jsampler.AudioDeviceModel;
 import org.jsampler.CC;
 import org.jsampler.HF;
-import org.jsampler.Instrument;
+import org.jsampler.OrchestraInstrument;
 import org.jsampler.MidiDeviceModel;
 import org.jsampler.MidiInstrumentMap;
 import org.jsampler.SamplerChannelModel;
@@ -545,15 +545,15 @@ public class Channel extends org.jsampler.view.JSChannel {
 			if(sc.getInstrumentName() == null || sc.getInstrumentStatus() < 0)
 				return null;
 			
-			Instrument instr = new Instrument();
+			OrchestraInstrument instr = new OrchestraInstrument();
 			instr.setName(sc.getInstrumentName());
 			instr.setInstrumentIndex(sc.getInstrumentIndex());
-			instr.setPath(sc.getInstrumentFile());
+			instr.setFilePath(sc.getInstrumentFile());
 			return instr.getDnDString();
 		}
 		
 		public void setInstrument(String instr) {
-			if(!Instrument.isDnDString(instr)) return;
+			if(!OrchestraInstrument.isDnDString(instr)) return;
 			
 			String[] args = instr.split("\n");
 			if(args.length < 6) return;
@@ -1428,6 +1428,9 @@ class ChannelProperties extends JPanel {
 	setEngineType() {
 		Object oldEngine = getModel().getChannelInfo().getEngine();
 		SamplerEngine newEngine = (SamplerEngine)cbEngines.getSelectedItem();
+		
+		if(newEngine == null) cbEngines.setToolTipText(null);
+		else cbEngines.setToolTipText(newEngine.getDescription());
 		
 		if(oldEngine != null) { if(oldEngine.equals(newEngine)) return; }
 		else if(newEngine == null) return;

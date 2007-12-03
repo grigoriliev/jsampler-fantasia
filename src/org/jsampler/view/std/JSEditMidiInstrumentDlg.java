@@ -27,21 +27,29 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
-import javax.swing.JSpinner;
 import javax.swing.JTextField;
-import javax.swing.SpinnerNumberModel;
 
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import net.sf.juife.OkCancelDialog;
 
-import org.jsampler.CC;
+import net.sf.juife.event.TaskEvent;
+import net.sf.juife.event.TaskListener;
 
+import org.jsampler.CC;
+import org.jsampler.JSPrefs;
+
+import org.jsampler.task.Global;
+
+import org.linuxsampler.lscp.Instrument;
 import org.linuxsampler.lscp.MidiInstrumentInfo;
 import org.linuxsampler.lscp.SamplerEngine;
 
@@ -69,11 +77,11 @@ public class JSEditMidiInstrumentDlg extends OkCancelDialog {
 		new JLabel(i18n.getLabel("JSEditMidiInstrumentDlg.lVolume"));
 	
 	private final JTextField tfName = new JTextField();
-	private final JTextField tfFilename = new JTextField();
-	private final JSpinner spinnerIndex = new JSpinner(new SpinnerNumberModel(0, 0, 500, 1));
+	private final JComboBox cbFilename = new JComboBox();
+	private final JComboBox cbIndex = new JComboBox();
 	private final JComboBox cbEngine = new JComboBox();
 	private final JComboBox cbLoadMode = new JComboBox();
-	private final JSlider slVolume = new JSlider(0, 100, 100);
+	private final JSlider slVolume = StdUtils.createVolumeSlider();
 	
 	private final MidiInstrumentInfo instrument;
 	
@@ -138,16 +146,26 @@ public class JSEditMidiInstrumentDlg extends OkCancelDialog {
 		gridbag.setConstraints(tfName, c);
 		p.add(tfName);
 		
+		cbFilename.setEditable(true);
+		String[] files = preferences().getStringListProperty("recentInstrumentFiles");
+		for(String s : files) cbFilename.addItem(s);
+		cbFilename.setSelectedItem(null);
+		Dimension d = cbFilename.getPreferredSize();
+		d.width = 250;
+		cbFilename.setPreferredSize(d);
+		
 		c.gridx = 1;
 		c.gridy = 1;
 		c.anchor = GridBagConstraints.WEST;
-		gridbag.setConstraints(tfFilename, c);
-		p.add(tfFilename);
-			
+		gridbag.setConstraints(cbFilename, c);
+		p.add(cbFilename);
+		
+		for(int i = 0; i < 101; i++) cbIndex.addItem(i);
+		
 		c.gridx = 1;
 		c.gridy = 2;
-		gridbag.setConstraints(spinnerIndex, c);
-		p.add(spinnerIndex);
+		gridbag.setConstraints(cbIndex, c);
+		p.add(cbIndex);
 		
 		c.gridx = 1;
 		c.gridy = 3;
@@ -168,9 +186,17 @@ public class JSEditMidiInstrumentDlg extends OkCancelDialog {
 		
 		setMainPane(p);
 		
+		cbFilename.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) {
+				updateState();
+				updateFileInstruments();
+			}
+		});
+		
 		tfName.setText(instr.getName());
-		tfFilename.setText(instr.getFilePath());
-		spinnerIndex.setValue(instr.getInstrumentIndex());
+		cbFilename.setSelectedItem(instr.getFilePath());
+		cbIndex.setSelectedIndex(instr.getInstrumentIndex());
 		slVolume.setValue((int)(instr.getVolume() * 100));
 		
 		for(SamplerEngine e : CC.getSamplerModel().getEngines()) {
@@ -185,8 +211,10 @@ public class JSEditMidiInstrumentDlg extends OkCancelDialog {
 		cbLoadMode.setSelectedItem(instr.getLoadMode());
 		
 		tfName.getDocument().addDocumentListener(getHandler());
-		tfFilename.getDocument().addDocumentListener(getHandler());
 	}
+	
+	protected JSPrefs
+	preferences() { return CC.getViewConfig().preferences(); }
 	
 	public MidiInstrumentInfo
 	getInstrument() { return instrument; }
@@ -194,8 +222,8 @@ public class JSEditMidiInstrumentDlg extends OkCancelDialog {
 	public void
 	onOk() {
 		instrument.setName(tfName.getText());
-		instrument.setFilePath(tfFilename.getText());
-		instrument.setInstrumentIndex(Integer.parseInt(spinnerIndex.getValue().toString()));
+		instrument.setFilePath(cbFilename.getSelectedItem().toString());
+		instrument.setInstrumentIndex(cbIndex.getSelectedIndex());
 		String s = ((SamplerEngine)cbEngine.getSelectedItem()).getName();
 		instrument.setEngine(s);
 		instrument.setLoadMode((MidiInstrumentInfo.LoadMode)cbLoadMode.getSelectedItem());
@@ -212,8 +240,47 @@ public class JSEditMidiInstrumentDlg extends OkCancelDialog {
 	
 	private void
 	updateState() {
-		boolean b = tfName.getText().length() != 0 && tfFilename.getText().length() != 0;
+		boolean b = tfName.getText().length() != 0;
+		if(cbFilename.getSelectedItem() == null) b = false;
+		Object o = cbIndex.getSelectedItem();
+		if(o == null || o.toString().length() == 0) b = false;
 		btnOk.setEnabled(b);
+	}
+	
+	private boolean init = true;
+	
+	private void
+	updateFileInstruments() {
+		Object o = cbFilename.getSelectedItem();
+		if(o == null) return;
+		String s = o.toString();
+		final Global.GetFileInstruments t = new Global.GetFileInstruments(s);
+		
+		t.addTaskListener(new TaskListener() {
+			public void
+			taskPerformed(TaskEvent e) {
+				Instrument[] instrs = t.getResult();
+				if(instrs == null) {
+					cbIndex.removeAllItems();
+					for(int i = 0; i < 101; i++) cbIndex.addItem(i);
+					return;
+				} else {
+				
+					cbIndex.removeAllItems();
+					for(int i = 0; i < instrs.length; i++) {
+						cbIndex.addItem(i + " - " + instrs[i].getName());
+					}
+				}
+				
+				if(init) {
+					int i = getInstrument().getInstrumentIndex();
+					cbIndex.setSelectedIndex(i);
+					init = false;
+				}
+			}
+		});
+		
+		CC.getTaskQueue().add(t);
 	}
 	
 	private final Handler eventHandler = new Handler();

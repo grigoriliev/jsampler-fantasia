@@ -102,7 +102,6 @@ public class StdPrefs extends JSPrefs {
 	public boolean
 	getDefaultBoolValue(String name) {
 		if(name == SAVE_LS_CONSOLE_HISTORY) return true;
-		if(name == SHOW_LS_CONSOLE_WHEN_RUN_SCRIPT) return true;
 		if(name == USE_CHANNEL_DEFAULTS) return true;
 		
 		return super.getDefaultBoolValue(name);

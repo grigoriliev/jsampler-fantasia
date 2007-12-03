@@ -80,13 +80,13 @@ public interface OrchestraModel {
 	 * @param idx The index of the instrument to be returned.
 	 * @return The instrument at the specified position.
 	 */
-	public Instrument getInstrument(int idx);
+	public OrchestraInstrument getInstrument(int idx);
 	
 	/**
 	 * Adds the specified instrument to this orchestra.
 	 * @param instr The instrument to be added.
 	 */
-	public void addInstrument(Instrument instr);
+	public void addInstrument(OrchestraInstrument instr);
 	
 	/**
 	 * Inserts the specified instrument at the specified position.
@@ -95,7 +95,7 @@ public interface OrchestraModel {
 	 * @throws IllegalArgumentException If <code>instr</code> is <code>null</code>.
 	 * @throws ArrayIndexOutOfBoundsException If the specified index is invalid.
 	 */
-	public void insertInstrument(Instrument instr, int idx);
+	public void insertInstrument(OrchestraInstrument instr, int idx);
 	
 	/**
 	 * Removes the specified instrument from this orchestra.
@@ -109,7 +109,7 @@ public interface OrchestraModel {
 	 * @return <code>true</code> if the specified instrument was in this orchestra,
 	 * <code>false</code> otherwise.
 	 */
-	public boolean removeInstrument(Instrument instr);
+	public boolean removeInstrument(OrchestraInstrument instr);
 	
 	/**
 	 * Gets the position of the specified instrument in this orchestra.
@@ -118,7 +118,7 @@ public interface OrchestraModel {
 	 * and -1 if <code>instr</code> is <code>null</code> or
 	 * the orchestra does not contain the specified instrument.
 	 */
-	public int getInstrumentIndex(Instrument instr);
+	public int getInstrumentIndex(OrchestraInstrument instr);
 	
 	/**
 	 * Moves the specified instrument one the top of the instrument list.
@@ -127,7 +127,7 @@ public interface OrchestraModel {
 	 * or if the instrument is already on the top.
 	 * @param instr The instrument to move on top.
 	 */
-	public void moveInstrumentOnTop(Instrument instr);
+	public void moveInstrumentOnTop(OrchestraInstrument instr);
 	
 	/**
 	 * Moves the specified instrument one position up in the instrument list.
@@ -136,7 +136,7 @@ public interface OrchestraModel {
 	 * or if the instrument is already on the top.
 	 * @param instr The instrument to move up.
 	 */
-	public void moveInstrumentUp(Instrument instr);
+	public void moveInstrumentUp(OrchestraInstrument instr);
 	
 	/**
 	 * Moves the specified instrument one position down in the instrument list.
@@ -145,7 +145,7 @@ public interface OrchestraModel {
 	 * or if the instrument is already at the bottom.
 	 * @param instr The instrument to move down.
 	 */
-	public void moveInstrumentDown(Instrument instr);
+	public void moveInstrumentDown(OrchestraInstrument instr);
 	
 	/**
 	 * Moves the specified instrument at the bottom of the instrument list.
@@ -154,7 +154,7 @@ public interface OrchestraModel {
 	 * or if the instrument is already at the bottom.
 	 * @param instr The instrument to move at bottom.
 	 */
-	public void moveInstrumentAtBottom(Instrument instr);
+	public void moveInstrumentAtBottom(OrchestraInstrument instr);
 	
 	/**
 	 * Reads and sets the content of this orchestra provided by <code>node</code>.

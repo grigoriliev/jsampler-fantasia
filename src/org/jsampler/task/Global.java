@@ -28,6 +28,7 @@ import org.jsampler.CC;
 import org.jsampler.HF;
 
 import org.linuxsampler.lscp.ServerInfo;
+import org.linuxsampler.lscp.Instrument;
 
 import static org.jsampler.JSI18n.i18n;
 
@@ -91,7 +92,7 @@ public class Global {
 	 * This task gets the global volume of the sampler.
 	 */
 	public static class GetVolume extends EnhancedTask<Float> {
-		/** Creates a new instance of <code>Get</code>. */
+		/** Creates a new instance of <code>GetVolume</code>. */
 		public
 		GetVolume() {
 			setTitle("Global.GetVolume_task");
@@ -135,6 +136,31 @@ public class Global {
 			} catch(Exception x) {
 				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
 				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
+			}
+		}
+	}
+	
+	/**
+	 * This task gets the list of instruments in the specified instrument file.
+	 */
+	public static class GetFileInstruments extends EnhancedTask<Instrument[]> {
+		private final String filename;
+		
+		/** Creates a new instance of <code>GetFileInstruments</code>. */
+		public
+		GetFileInstruments(String filename) {
+			this.filename = filename;
+			setTitle("Global.GetFileInstruments_task");
+			setDescription(i18n.getMessage("Global.GetFileInstruments.desc"));
+		}
+	
+		/** The entry point of the task. */
+		public void
+		run() {
+			try { setResult(CC.getClient().getFileInstruments(filename)); }
+			catch(Exception x) {
+				String s = getDescription() + ": " + HF.getErrorMessage(x);
+				CC.getLogger().log(Level.FINER, s, x);
 			}
 		}
 	}

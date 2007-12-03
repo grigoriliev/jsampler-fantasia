@@ -75,7 +75,7 @@ import javax.swing.text.StyledDocument;
 import org.jsampler.CC;
 import org.jsampler.DefaultLSConsoleModel;
 import org.jsampler.HF;
-import org.jsampler.Instrument;
+import org.jsampler.OrchestraInstrument;
 import org.jsampler.JSPrefs;
 import org.jsampler.LSConsoleModel;
 import org.jsampler.LscpUtils;
@@ -400,7 +400,7 @@ public class JSLSConsolePane extends JPanel {
 		public void setInstrumentLoad(String instr) {
 			if(instr == null) return;
 			
-			if(!Instrument.isDnDString(instr)) {
+			if(!OrchestraInstrument.isDnDString(instr)) {
 				replaceSelection(instr);
 				return;
 			}

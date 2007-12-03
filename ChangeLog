@@ -1,6 +1,9 @@
 CVS HEAD
   * Added new menu item: Help/Online Tutorial
 
+ * Implemented support for retrieving instrument information
+   from instrument files
+
   * Added Windows file path support
 
   * Fantasia:

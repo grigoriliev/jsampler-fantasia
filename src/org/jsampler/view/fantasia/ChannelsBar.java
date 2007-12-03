@@ -26,30 +26,41 @@ import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.Point;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import java.text.NumberFormat;
+
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JToolTip;
-import javax.swing.Popup;
-import javax.swing.PopupFactory;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.jsampler.CC;
+import org.jsampler.HF;
 
 import org.jsampler.event.SamplerAdapter;
 import org.jsampler.event.SamplerEvent;
 
+import org.jsampler.view.std.JSVolumeEditorPopup;
+
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jsampler.view.fantasia.FantasiaPrefs.preferences;
+import static org.jsampler.view.fantasia.FantasiaUtils.*;
+
+import static org.jsampler.view.std.JSVolumeEditorPopup.VolumeType;
 import static org.jsampler.view.std.StdPrefs.*;
 
 /**
@@ -58,13 +69,22 @@ import static org.jsampler.view.std.StdPrefs.*;
  */
 public class ChannelsBar extends PixmapPane {
 	private final JSlider slVolume = new JSlider();
-	private Popup popup = null;
-	private final JToolTip tip = new JToolTip();
+	JButton btnVolume = FantasiaUtils.createScreenButton("3 dB");
+	
+	private final JLabel lStreams = createScreenLabel(" --");
+	private final JLabel lVoices = createScreenLabel("-- ");
+	private JSVolumeEditorPopup popupVolume;
+	
+	private static NumberFormat numberFormat = NumberFormat.getInstance();
 	
 	/** Creates a new instance of <code>ChannelsBar</code> */
 	public
 	ChannelsBar() {
 		super(Res.gfxCreateChannel);
+		
+		numberFormat.setMaximumFractionDigits(1);
+		popupVolume = new JSVolumeEditorPopup(btnVolume, VolumeType.MASTER);
+		
 		setPixmapInsets(new Insets(1, 1, 1, 1));
 		
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
@@ -80,20 +100,51 @@ public class ChannelsBar extends PixmapPane {
 		slVolume.setMaximumSize(d);
 		
 		add(slVolume);
+		add(Box.createRigidArea(new Dimension(5, 0)));
 		
+		PixmapPane p = new PixmapPane(Res.gfxTextField);
+		p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
+		p.setPixmapInsets(new Insets(5, 5, 4, 5));
+		p.setBorder(BorderFactory.createEmptyBorder(1, 8, 1, 5));
+		
+		lStreams.setFont(Res.fontScreenMono);
+		lStreams.setHorizontalAlignment(JLabel.RIGHT);
+		lStreams.setPreferredSize(lStreams.getPreferredSize());
+		lStreams.setMaximumSize(lStreams.getPreferredSize());
+		lStreams.setToolTipText(i18n.getLabel("ChannelsBar.streamVoiceCount"));
+		p.add(lStreams);
+		
+		l = createScreenLabel("/");
+		l.setFont(Res.fontScreenMono);
+		l.setToolTipText(i18n.getLabel("ChannelsBar.streamVoiceCount"));
+		p.add(l);
+		
+		lVoices.setFont(Res.fontScreenMono);
+		lVoices.setPreferredSize(lVoices.getPreferredSize());
+		lVoices.setMaximumSize(lVoices.getPreferredSize());
+		lVoices.setToolTipText(i18n.getLabel("ChannelsBar.streamVoiceCount"));
+		p.add(lVoices);
+		
+		add(Box.createRigidArea(new Dimension(5, 0)));
+		
+		btnVolume.setIcon(Res.iconVolume14);
+		btnVolume.setIconTextGap(2);
+		btnVolume.setHorizontalAlignment(btnVolume.LEFT);
+		d = btnVolume.getPreferredSize();
+		d.width = 55;
+		btnVolume.setPreferredSize(d);
+		btnVolume.setMaximumSize(d);
+		p.add(btnVolume);
+		
+		p.setMaximumSize(p.getPreferredSize());
+		
+		add(p);
 		add(Box.createGlue());
 		
 		d = new Dimension(420, 29);
 		setMinimumSize(d);
 		setPreferredSize(d);
 		setMaximumSize(d);
-		
-		// Setting the tooltip size
-		tip.setTipText(i18n.getLabel("ChannelsBar.volume", 1000));
-		tip.setMinimumSize(tip.getPreferredSize());
-		tip.setPreferredSize(tip.getPreferredSize()); // workaround for preserving that size
-		tip.setComponent(slVolume);
-		///////
 		
 		int i = preferences().getIntProperty(MAXIMUM_MASTER_VOLUME);
 		slVolume.setMaximum(i);
@@ -118,26 +169,32 @@ public class ChannelsBar extends PixmapPane {
 		
 		updateVolume();
 		
-		slVolume.addMouseListener(new MouseAdapter() {
+		btnVolume.addActionListener(new ActionListener() {
 			public void
-			mousePressed(MouseEvent e) {
-				if(popup != null) {
-					popup.hide();
-					popup = null;
+			actionPerformed(ActionEvent e) {
+				if(popupVolume.isVisible()) {
+					popupVolume.commit();
+					popupVolume.hide();
+				} else {
+					float vol = CC.getSamplerModel().getVolume();
+					popupVolume.setCurrentVolume(vol);
+					popupVolume.show();
 				}
-				
-				Point p = slVolume.getLocationOnScreen();
-				PopupFactory pf = PopupFactory.getSharedInstance();
-				popup = pf.getPopup(slVolume, tip, p.x, p.y - 22);
-				popup.show();
 			}
-			
+		});
+		
+		popupVolume.addActionListener(new ActionListener() {
 			public void
-			mouseReleased(MouseEvent e) {
-				if(popup != null) {
-					popup.hide();
-					popup = null;
-				}
+			actionPerformed(ActionEvent e) {
+				CC.getSamplerModel().setBackendVolume(popupVolume.getVolumeFactor());
+			}
+		});
+		
+		s = VOL_MEASUREMENT_UNIT_DECIBEL;
+		preferences().addPropertyChangeListener(s, new PropertyChangeListener() {
+			public void
+			propertyChange(PropertyChangeEvent e) {
+				setVolume();
 			}
 		});
 	}
@@ -145,10 +202,13 @@ public class ChannelsBar extends PixmapPane {
 	private void
 	setVolume() {
 		int volume = slVolume.getValue();
-		String s = i18n.getLabel("ChannelsBar.volume", volume);
-		slVolume.setToolTipText(s);
-		tip.setTipText(s);
-		tip.repaint();
+		
+		if(CC.getViewConfig().isMeasurementUnitDecibel()) {
+			double dB = HF.percentsToDecibels(volume);
+			btnVolume.setText(numberFormat.format(dB) + "dB");
+		} else {
+			btnVolume.setText(volume + "%");
+		}
 		
 		if(slVolume.getValueIsAdjusting()) return;
 		

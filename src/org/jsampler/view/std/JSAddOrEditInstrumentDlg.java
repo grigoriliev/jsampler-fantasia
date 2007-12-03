@@ -35,18 +35,23 @@ import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSpinner;
 import javax.swing.JTextField;
-import javax.swing.SpinnerNumberModel;
 
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import net.sf.juife.OkCancelDialog;
 
+import net.sf.juife.event.TaskEvent;
+import net.sf.juife.event.TaskListener;
+
 import org.jsampler.CC;
-import org.jsampler.Instrument;
+import org.jsampler.OrchestraInstrument;
 import org.jsampler.JSPrefs;
+
+import org.jsampler.task.Global;
+
+import org.linuxsampler.lscp.Instrument;
 
 import static org.jsampler.view.std.StdI18n.i18n;
 import static org.linuxsampler.lscp.Parser.*;
@@ -68,22 +73,22 @@ public class JSAddOrEditInstrumentDlg extends OkCancelDialog {
 	private final JTextField tfName = new JTextField();
 	private final JTextField tfDesc = new JTextField();
 	private final JComboBox cbPath = new JComboBox();
-	private final JSpinner spinnerIndex = new JSpinner(new SpinnerNumberModel(0, 0, 500, 1));
+	private final JComboBox cbIndex = new JComboBox();
 	
-	private Instrument instrument;
+	private OrchestraInstrument instrument;
 	
 	
 	/**
 	 * Creates a new instance of <code>JSAddOrEditInstrumentDlg</code>.
 	 */
-	public JSAddOrEditInstrumentDlg() { this(new Instrument()); }
+	public JSAddOrEditInstrumentDlg() { this(new OrchestraInstrument()); }
 	
 	/**
 	 * Creates a new instance of <code>JSAddOrEditInstrumentDlg</code>.
 	 * 
 	 * @param instr The instrument to modify.
 	 */
-	public JSAddOrEditInstrumentDlg(Instrument instr) {
+	public JSAddOrEditInstrumentDlg(OrchestraInstrument instr) {
 		super(CC.getMainFrame(), i18n.getLabel("JSAddOrEditInstrumentDlg.title"));
 		
 		instrument = instr;
@@ -153,11 +158,13 @@ public class JSAddOrEditInstrumentDlg extends OkCancelDialog {
 		gridbag.setConstraints(cbPath, c);
 		p.add(cbPath);
 		
+		for(int i = 0; i < 101; i++) cbIndex.addItem(i);
+		
 		c.gridx = 1;
 		c.gridy = 3;
 		c.gridwidth = 2;
-		gridbag.setConstraints(spinnerIndex, c);
-		p.add(spinnerIndex);
+		gridbag.setConstraints(cbIndex, c);
+		p.add(cbIndex);
 		
 		setMainPane(p);
 		
@@ -172,7 +179,10 @@ public class JSAddOrEditInstrumentDlg extends OkCancelDialog {
 		btnBrowse.addActionListener(getHandler());
 		cbPath.addActionListener(new ActionListener() {
 			public void
-			actionPerformed(ActionEvent e) { updateState(); }
+			actionPerformed(ActionEvent e) {
+				updateState();
+				updateFileInstruments();
+			}
 		});
 		
 		updateInfo();
@@ -186,8 +196,8 @@ public class JSAddOrEditInstrumentDlg extends OkCancelDialog {
 	updateInfo() {
 		tfName.setText(getInstrument().getName());
 		tfDesc.setText(getInstrument().getDescription());
-		cbPath.setSelectedItem(getInstrument().getPath());
-		spinnerIndex.setValue(getInstrument().getInstrumentIndex());
+		cbPath.setSelectedItem(getInstrument().getFilePath());
+		cbIndex.setSelectedIndex(getInstrument().getInstrumentIndex());
 	}
 	
 	private void
@@ -196,8 +206,46 @@ public class JSAddOrEditInstrumentDlg extends OkCancelDialog {
 		if(tfName.getText().length() == 0) b = false;
 		Object o = cbPath.getSelectedItem();
 		if(o == null || o.toString().length() == 0) b = false;
+		o = cbIndex.getSelectedItem();
+		if(o == null || o.toString().length() == 0) b = false;
 		
 		btnOk.setEnabled(b);
+	}
+	
+	private boolean init = true;
+	
+	private void
+	updateFileInstruments() {
+		Object o = cbPath.getSelectedItem();
+		if(o == null) return;
+		String s = o.toString();
+		final Global.GetFileInstruments t = new Global.GetFileInstruments(s);
+		
+		t.addTaskListener(new TaskListener() {
+			public void
+			taskPerformed(TaskEvent e) {
+				Instrument[] instrs = t.getResult();
+				if(instrs == null) {
+					cbIndex.removeAllItems();
+					for(int i = 0; i < 101; i++) cbIndex.addItem(i);
+					return;
+				} else {
+				
+					cbIndex.removeAllItems();
+					for(int i = 0; i < instrs.length; i++) {
+						cbIndex.addItem(i + " - " + instrs[i].getName());
+					}
+				}
+				
+				if(init) {
+					int i = getInstrument().getInstrumentIndex();
+					cbIndex.setSelectedIndex(i);
+					init = false;
+				}
+			}
+		});
+		
+		CC.getTaskQueue().add(t);
 	}
 	
 	protected void
@@ -206,11 +254,11 @@ public class JSAddOrEditInstrumentDlg extends OkCancelDialog {
 		
 		instrument.setName(tfName.getText());
 		instrument.setDescription(tfDesc.getText());
-		instrument.setPath(cbPath.getSelectedItem().toString());
-		int idx = Integer.parseInt(spinnerIndex.getValue().toString());
+		instrument.setFilePath(cbPath.getSelectedItem().toString());
+		int idx = cbIndex.getSelectedIndex();
 		instrument.setInstrumentIndex(idx);
 		
-		StdUtils.updateRecentElements("recentInstrumentFiles", instrument.getPath());
+		StdUtils.updateRecentElements("recentInstrumentFiles", instrument.getFilePath());
 		
 		setVisible(false);
 		setCancelled(false);
@@ -225,7 +273,7 @@ public class JSAddOrEditInstrumentDlg extends OkCancelDialog {
 	 * Gets the created/modified orchestra.
 	 * @return The created/modified orchestra.
 	 */
-	public Instrument
+	public OrchestraInstrument
 	getInstrument() { return instrument; }
 	
 	

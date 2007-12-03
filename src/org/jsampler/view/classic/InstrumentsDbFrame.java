@@ -73,7 +73,6 @@ import net.sf.juife.event.TaskListener;
 
 import org.jsampler.CC;
 import org.jsampler.HF;
-import org.jsampler.Instrument;
 import org.jsampler.JSI18n;
 
 import org.jsampler.task.InstrumentsDb;

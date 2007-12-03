@@ -47,7 +47,7 @@ import net.sf.juife.JuifeUtils;
 
 import org.jsampler.CC;
 import org.jsampler.DefaultOrchestraModel;
-import org.jsampler.Instrument;
+import org.jsampler.OrchestraInstrument;
 import org.jsampler.MidiInstrumentMap;
 import org.jsampler.OrchestraModel;
 import org.jsampler.SamplerChannelModel;
@@ -141,7 +141,7 @@ public class JSOrchestraPane extends JPanel {
 		instrumentTable.getModel().setOrchestraModel(orchestra);
 	}
 	
-	public Instrument
+	public OrchestraInstrument
 	getSelectedInstrument() { return instrumentTable.getSelectedInstrument(); }
 	
 	/**
@@ -149,7 +149,7 @@ public class JSOrchestraPane extends JPanel {
 	 * @return The instrument to add
 	 * or <code>null</code> if the user cancelled the task.
 	 */
-	public Instrument
+	public OrchestraInstrument
 	createInstrument() {
 		JSAddOrEditInstrumentDlg dlg = new JSAddOrEditInstrumentDlg();
 		dlg.setVisible(true);
@@ -159,7 +159,7 @@ public class JSOrchestraPane extends JPanel {
 	}
 	
 	public void
-	editInstrument(Instrument instr) {
+	editInstrument(OrchestraInstrument instr) {
 		JSAddOrEditInstrumentDlg dlg = new JSAddOrEditInstrumentDlg(instr);
 		dlg.setVisible(true);
 	}
@@ -196,7 +196,7 @@ public class JSOrchestraPane extends JPanel {
 		
 		public void
 		actionPerformed(ActionEvent e) {
-			Instrument instr = createInstrument();
+			OrchestraInstrument instr = createInstrument();
 			if(instr == null) return;
 			orchestra.addInstrument(instr);
 		}
@@ -230,9 +230,14 @@ public class JSOrchestraPane extends JPanel {
 		
 		public void
 		actionPerformed(ActionEvent e) {
-			Instrument instr = instrumentTable.getSelectedInstrument();
+			OrchestraInstrument instr = instrumentTable.getSelectedInstrument();
 			if(instr == null) return;
+			int i = instrumentTable.getSelectedRow();
 			orchestra.removeInstrument(instr);
+			
+			if(instrumentTable.getRowCount() > i) {
+				instrumentTable.getSelectionModel().setSelectionInterval(i, i);
+			}
 		}
 	}
 	
@@ -248,7 +253,7 @@ public class JSOrchestraPane extends JPanel {
 		
 		public void
 		actionPerformed(ActionEvent e) {
-			Instrument instr = instrumentTable.getSelectedInstrument();
+			OrchestraInstrument instr = instrumentTable.getSelectedInstrument();
 			instrumentTable.getModel().getOrchestraModel().moveInstrumentUp(instr);
 			instrumentTable.setSelectedInstrument(instr);
 		}
@@ -266,7 +271,7 @@ public class JSOrchestraPane extends JPanel {
 		
 		public void
 		actionPerformed(ActionEvent e) {
-			Instrument instr = instrumentTable.getSelectedInstrument();
+			OrchestraInstrument instr = instrumentTable.getSelectedInstrument();
 			instrumentTable.getModel().getOrchestraModel().moveInstrumentDown(instr);
 			instrumentTable.setSelectedInstrument(instr);
 		}
@@ -285,12 +290,12 @@ public class JSOrchestraPane extends JPanel {
 		
 		public void
 		actionPerformed(ActionEvent e) {
-			Instrument instr = instrumentTable.getSelectedInstrument();
+			OrchestraInstrument instr = instrumentTable.getSelectedInstrument();
 			if(instr == null) return;
 			
 			int idx = instr.getInstrumentIndex();
 			channelModel.setBackendEngineType(instr.getEngine());
-			channelModel.loadBackendInstrument(instr.getPath(), idx);
+			channelModel.loadBackendInstrument(instr.getFilePath(), idx);
 		}
 	}
 	
@@ -304,40 +309,20 @@ public class JSOrchestraPane extends JPanel {
 		
 		public void
 		actionPerformed(ActionEvent e) {
-			Instrument instr = instrumentTable.getSelectedInstrument();
+			OrchestraInstrument instr = instrumentTable.getSelectedInstrument();
 			if(instr == null) return;
 			
 			JSAddMidiInstrumentDlg dlg;
 			Window w = JuifeUtils.getWindow(JSOrchestraPane.this);
 			if(w instanceof Dialog) {
-				dlg = new JSAddMidiInstrumentDlg((Dialog)w);
+				dlg = new JSAddMidiInstrumentDlg((Dialog)w, midiMap, instr);
 			} else if(w instanceof Frame) {
-				dlg = new JSAddMidiInstrumentDlg((Frame)w);
+				dlg = new JSAddMidiInstrumentDlg((Frame)w, midiMap, instr);
 			} else {
-				dlg = new JSAddMidiInstrumentDlg((Frame)null);
+				dlg = new JSAddMidiInstrumentDlg((Frame)null, midiMap, instr);
 			}
 			
-			dlg.setInstrumentName(instr.getName());
-			MidiInstrumentEntry entry = midiMap.getAvailableEntry();
-			if(entry != null) {
-				dlg.setMidiBank(entry.getMidiBank());
-				dlg.setMidiProgram(entry.getMidiProgram());
-			}
 			dlg.setVisible(true);
-			if(dlg.isCancelled()) return;
-			
-			MidiInstrumentInfo instrInfo = new MidiInstrumentInfo();
-			instrInfo.setName(dlg.getInstrumentName());
-			instrInfo.setFilePath(instr.getPath());
-			instrInfo.setInstrumentIndex(instr.getInstrumentIndex());
-			instrInfo.setEngine(instr.getEngine());
-			instrInfo.setVolume(dlg.getVolume());
-			instrInfo.setLoadMode(dlg.getLoadMode());
-			
-			int id = midiMap.getMapId();
-			int b = dlg.getMidiBank();
-			int p = dlg.getMidiProgram();
-			CC.getSamplerModel().mapBackendMidiInstrument(id, b, p, instrInfo);
 		}
 	}
 	
@@ -407,7 +392,7 @@ public class JSOrchestraPane extends JPanel {
 		
 		private void
 		updateLoadInstrumentMenuState(JMenu menu) {
-			Instrument instr = instrumentTable.getSelectedInstrument();
+			OrchestraInstrument instr = instrumentTable.getSelectedInstrument();
 			boolean b = instr == null;
 			b = b || CC.getSamplerModel().getChannelCount() == 0;
 			menu.setEnabled(!b);
@@ -426,7 +411,7 @@ public class JSOrchestraPane extends JPanel {
 		
 		private void
 		updateAddToMidiMapMenuState(JMenu menu) {
-			Instrument instr = instrumentTable.getSelectedInstrument();
+			OrchestraInstrument instr = instrumentTable.getSelectedInstrument();
 			boolean b = instr == null;
 			b = b || CC.getSamplerModel().getMidiInstrumentMapCount() == 0;
 			menu.setEnabled(!b);

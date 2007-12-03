@@ -45,9 +45,17 @@ import javax.swing.event.DocumentListener;
 
 import net.sf.juife.OkCancelDialog;
 
+import net.sf.juife.event.TaskEvent;
+import net.sf.juife.event.TaskListener;
+
 import org.jsampler.CC;
 import org.jsampler.JSPrefs;
+import org.jsampler.MidiInstrumentMap;
 
+import org.jsampler.task.Midi;
+
+import org.linuxsampler.lscp.Instrument;
+import org.linuxsampler.lscp.MidiInstrumentEntry;
 import org.linuxsampler.lscp.MidiInstrumentInfo;
 
 import static org.jsampler.view.std.StdI18n.i18n;
@@ -71,26 +79,32 @@ public class JSAddMidiInstrumentDlg extends OkCancelDialog {
 	private final JSlider slVolume = new JSlider(0, 100, 100);
 	private final JComboBox cbLoadMode = new JComboBox();
 	
+	private MidiInstrumentMap map;
+	private Instrument instr;
+	
 	/**
 	 * Creates a new instance of <code>JSAddMidiInstrumentDlg</code>
 	 */
 	public
-	JSAddMidiInstrumentDlg(Frame owner) {
+	JSAddMidiInstrumentDlg(Frame owner, MidiInstrumentMap map, Instrument instr) {
 		super(owner, i18n.getLabel("JSAddMidiInstrumentDlg.title"));
-		initAddMidiInstrumentDlg();
+		initAddMidiInstrumentDlg(map, instr);
 	}
 	
 	/**
 	 * Creates a new instance of <code>JSAddMidiInstrumentDlg</code>
 	 */
 	public
-	JSAddMidiInstrumentDlg(Dialog owner) {
+	JSAddMidiInstrumentDlg(Dialog owner, MidiInstrumentMap map, Instrument instr) {
 		super(owner, i18n.getLabel("JSAddMidiInstrumentDlg.title"));
-		initAddMidiInstrumentDlg();
+		initAddMidiInstrumentDlg(map, instr);
 	}
 	
 	private void
-	initAddMidiInstrumentDlg() {
+	initAddMidiInstrumentDlg(MidiInstrumentMap map, Instrument instr) {
+		this.map = map;
+		this.instr = instr;
+		
 		JPanel mainPane = new JPanel();
 		GridBagLayout gridbag = new GridBagLayout();
 		GridBagConstraints c = new GridBagConstraints();
@@ -182,10 +196,23 @@ public class JSAddMidiInstrumentDlg extends OkCancelDialog {
 		});
 		
 		tfName.getDocument().addDocumentListener(getHandler());
+		
+		setInstrumentName(instr.getName());
+		setMidiInstrumentEntry(map.getAvailableEntry());
 	}
 	
 	protected JSPrefs
 	preferences() { return CC.getViewConfig().preferences(); }
+	
+	/**
+	 * Sets the MIDI bank and MIDI program of the dialog.
+	 */
+	public void
+	setMidiInstrumentEntry(MidiInstrumentEntry entry) {
+		if(entry == null) return;
+		setMidiBank(entry.getMidiBank());
+		setMidiProgram(entry.getMidiProgram());
+	}
 	
 	/**
 	 * Gets the selected MIDI bank.
@@ -243,9 +270,34 @@ public class JSAddMidiInstrumentDlg extends OkCancelDialog {
 	protected void
 	onOk() {
 		if(!btnOk.isEnabled()) return;
+		
+		btnOk.setEnabled(false);
 		preferences().setIntProperty("lastUsedMidiBank", getMidiBank());
-		setCancelled(false);
-		setVisible(false);
+		
+		MidiInstrumentInfo instrInfo = new MidiInstrumentInfo();
+		instrInfo.setName(getInstrumentName());
+		instrInfo.setFilePath(instr.getFilePath());
+		instrInfo.setInstrumentIndex(instr.getInstrumentIndex());
+		instrInfo.setEngine(instr.getEngine());
+		instrInfo.setVolume(getVolume());
+		instrInfo.setLoadMode(getLoadMode());
+		
+		int id = map.getMapId();
+		int b = getMidiBank();
+		int p = getMidiProgram();
+		final Midi.MapInstrument t = new Midi.MapInstrument(id, b, p, instrInfo);
+		
+		t.addTaskListener(new TaskListener() {
+			public void
+			taskPerformed(TaskEvent e) {
+				btnOk.setEnabled(true);
+				if(t.doneWithErrors()) return;
+				setCancelled(false);
+				setVisible(false);
+			}
+		});
+		
+		CC.getTaskQueue().add(t);
 	}
 	
 	protected void

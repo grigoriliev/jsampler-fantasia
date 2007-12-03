@@ -45,7 +45,7 @@ import javax.swing.table.TableCellRenderer;
 import org.jsampler.CC;
 import org.jsampler.DefaultOrchestraModel;
 import org.jsampler.HF;
-import org.jsampler.Instrument;
+import org.jsampler.OrchestraInstrument;
 
 import org.jsampler.event.OrchestraAdapter;
 import org.jsampler.event.OrchestraEvent;
@@ -153,7 +153,7 @@ public class InstrumentTable extends JTable {
 	 * Gets the selected instrument.
 	 * @return The selected instrument, or <code>null</code> if no instrument is selected.
 	 */
-	public Instrument
+	public OrchestraInstrument
 	getSelectedInstrument() {
 		int i = getSelectedRow();
 		if(i == -1) return null;
@@ -166,7 +166,7 @@ public class InstrumentTable extends JTable {
 	 * @param instr The instrument to select.
 	 */
 	public void
-	setSelectedInstrument(Instrument instr) {
+	setSelectedInstrument(OrchestraInstrument instr) {
 		int i = getModel().getOrchestraModel().getInstrumentIndex(instr);
 		if(i < 0) {
 			clearSelection();
@@ -190,14 +190,15 @@ public class InstrumentTable extends JTable {
 	/**
 	 * Creates new instrument using the specified
 	 * drag & drop string representation of the instrument.
+	 * 
 	 * @param instr The drag & drop string representation of the instrument.
-	 * @see	Instrument#getDnDString
+	 * @see OrchestraInstrument#getDnDString
 	 */
 	public void
 	setInstrument(String instr) {
-		if(!Instrument.isDnDString(instr)) return;
+		if(!OrchestraInstrument.isDnDString(instr)) return;
 		
-		Instrument instrument = new Instrument();
+		OrchestraInstrument instrument = new OrchestraInstrument();
 		try { instrument.setDnDString(instr); }
 		catch(Exception x) {
 			CC.getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
@@ -255,19 +256,19 @@ public class InstrumentTable extends JTable {
 			if(key == CLEAR_SELECTION) {
 				clearSelection();
 			} else if(key == MOVE_ON_TOP) {
-				Instrument instr = getSelectedInstrument();
+				OrchestraInstrument instr = getSelectedInstrument();
 				getModel().getOrchestraModel().moveInstrumentOnTop(instr);
 				setSelectedInstrument(instr);
 			} else if(key == MOVE_UP) {
-				Instrument instr = getSelectedInstrument();
+				OrchestraInstrument instr = getSelectedInstrument();
 				getModel().getOrchestraModel().moveInstrumentUp(instr);
 				setSelectedInstrument(instr);
 			} else if(key == MOVE_DOWN) {
-				Instrument instr = getSelectedInstrument();
+				OrchestraInstrument instr = getSelectedInstrument();
 				getModel().getOrchestraModel().moveInstrumentDown(instr);
 				setSelectedInstrument(instr);
 			} else if(key == MOVE_AT_BOTTOM) {
-				Instrument instr = getSelectedInstrument();
+				OrchestraInstrument instr = getSelectedInstrument();
 				getModel().getOrchestraModel().moveInstrumentAtBottom(instr);
 				setSelectedInstrument(instr);
 			}

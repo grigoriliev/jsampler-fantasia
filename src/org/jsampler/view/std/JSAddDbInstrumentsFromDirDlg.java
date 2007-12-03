@@ -65,14 +65,14 @@ import static org.linuxsampler.lscp.Parser.*;
  * @author Grigor Iliev
  */
 public class JSAddDbInstrumentsFromDirDlg extends OkCancelDialog {
-	private final JComboBox cbSource = new JComboBox();
+	private final JComboBox cbSource = StdUtils.createPathComboBox();
 	private JButton btnBrowse;
 	private final JCheckBox checkScanSubdirs =
 		new JCheckBox(i18n.getLabel("JSAddDbInstrumentsFromDirDlg.checkScanSubdirs"));
 	private final JCheckBox checkFlat =
 		new JCheckBox(i18n.getLabel("JSAddDbInstrumentsFromDirDlg.checkFlat"));
 	
-	private final JComboBox cbDest = new JComboBox();
+	private final JComboBox cbDest = StdUtils.createPathComboBox();
 	private JButton btnBrowseDb;
 	
 	/**
@@ -172,7 +172,6 @@ public class JSAddDbInstrumentsFromDirDlg extends OkCancelDialog {
 		checkScanSubdirs.doClick(0);
 		checkFlat.doClick(0);
 		
-		cbSource.setEditable(true);
 		String[] dirs = preferences().getStringListProperty("recentDirectories");
 		for(String dir : dirs) cbSource.addItem(dir);
 		cbSource.setSelectedItem(null);
@@ -183,7 +182,6 @@ public class JSAddDbInstrumentsFromDirDlg extends OkCancelDialog {
 		
 		cbSource.addActionListener(getHandler());
 		
-		cbDest.setEditable(true);
 		dirs = preferences().getStringListProperty("recentDbDirectories");
 		for(String dir : dirs) cbDest.addItem(dir);
 		cbDest.setSelectedItem(dbDir);

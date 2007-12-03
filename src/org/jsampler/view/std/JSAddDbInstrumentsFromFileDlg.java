@@ -70,10 +70,10 @@ public class JSAddDbInstrumentsFromFileDlg extends OkCancelDialog {
 	private final JRadioButton rbIndex =
 		new JRadioButton(i18n.getLabel("JSAddDbInstrumentsFromFileDlg.rbIndex"));
 	
-	private final JComboBox cbSource = new JComboBox();
+	private final JComboBox cbSource = StdUtils.createPathComboBox();
 	private final JSpinner spinnerIndex = new JSpinner(new SpinnerNumberModel(0, 0, 500, 1));
 	private JButton btnBrowse;
-	private final JComboBox cbDest = new JComboBox();
+	private final JComboBox cbDest = StdUtils.createPathComboBox();
 	private JButton btnBrowseDb;
 	
 	/**
@@ -182,7 +182,6 @@ public class JSAddDbInstrumentsFromFileDlg extends OkCancelDialog {
 		btnOk.setEnabled(false);
 		spinnerIndex.setEnabled(false);
 		
-		cbSource.setEditable(true);
 		String[] dirs = preferences().getStringListProperty("recentInstrumentFiles");
 		for(String dir : dirs) cbSource.addItem(dir);
 		cbSource.setSelectedItem(null);
@@ -193,11 +192,9 @@ public class JSAddDbInstrumentsFromFileDlg extends OkCancelDialog {
 		
 		cbSource.addActionListener(getHandler());
 		
-		cbDest.setEditable(true);
 		dirs = preferences().getStringListProperty("recentDbDirectories");
 		for(String dir : dirs) cbDest.addItem(dir);
 		cbDest.setSelectedItem(dbDir);
-		
 		
 		cbDest.setPreferredSize (
 			new Dimension(200, cbDest.getPreferredSize().height)

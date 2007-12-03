@@ -66,7 +66,7 @@ import net.sf.juife.event.TaskListener;
 
 import org.jsampler.CC;
 import org.jsampler.HF;
-import org.jsampler.Instrument;
+import org.jsampler.OrchestraInstrument;
 import org.jsampler.MidiInstrumentMap;
 import org.jsampler.OrchestraModel;
 import org.jsampler.SamplerChannelModel;
@@ -646,37 +646,30 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 		
 		public void
 		actionPerformed(ActionEvent e) {
-			Object obj = getLeadObject();
-			if(obj == null || !(obj instanceof DbInstrumentInfo)) return;
+			DbInstrumentInfo[] instruments = getSelectedInstruments();
+			int l = instruments.length;
+			if(l == 0) return;
 			
-			DbInstrumentInfo info = (DbInstrumentInfo)obj;
+			if(l > 4) {
+				String s = "JSInstrumentsDbTable.confirmAddToMidiMap";
+				s = i18n.getMessage(s, l, midiMap.getName());
+				if(!HF.showYesNoDialog(JSInstrumentsDbTable.this, s)) return;
+			}
 			
 			JSAddMidiInstrumentDlg dlg;
 			Window w = JuifeUtils.getWindow(JSInstrumentsDbTable.this);
-			if(w instanceof Dialog) {
-				dlg = new JSAddMidiInstrumentDlg((Dialog)w);
-			} else if(w instanceof Frame) {
-				dlg = new JSAddMidiInstrumentDlg((Frame)w);
-			} else {
-				dlg = new JSAddMidiInstrumentDlg((Frame)null);
+				
+			for(DbInstrumentInfo i : instruments) {
+				if(w instanceof Dialog) {
+					dlg = new JSAddMidiInstrumentDlg((Dialog)w, midiMap, i);
+				} else if(w instanceof Frame) {
+					dlg = new JSAddMidiInstrumentDlg((Frame)w, midiMap, i);
+				} else {
+					dlg = new JSAddMidiInstrumentDlg((Frame)null, midiMap, i);
+				}
+				
+				dlg.setVisible(true);
 			}
-			
-			dlg.setInstrumentName(info.getName());
-			dlg.setVisible(true);
-			if(dlg.isCancelled()) return;
-			
-			MidiInstrumentInfo instrInfo = new MidiInstrumentInfo();
-			instrInfo.setName(dlg.getInstrumentName());
-			instrInfo.setFilePath(info.getFilePath());
-			instrInfo.setInstrumentIndex(info.getInstrumentIndex());
-			instrInfo.setEngine(info.getFormatFamily()); // TODO: this should be fixed
-			instrInfo.setVolume(dlg.getVolume());
-			instrInfo.setLoadMode(dlg.getLoadMode());
-			
-			int id = midiMap.getMapId();
-			int b = dlg.getMidiBank();
-			int p = dlg.getMidiProgram();
-			CC.getSamplerModel().mapBackendMidiInstrument(id, b, p, instrInfo);
 		}
 	}
 	
@@ -690,16 +683,25 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 		
 		public void
 		actionPerformed(ActionEvent e) {
-			Object obj = getLeadObject();
-			if(obj == null || !(obj instanceof DbInstrumentInfo)) return;
-			DbInstrumentInfo info = (DbInstrumentInfo)obj;
-			Instrument instr = new Instrument();
-			instr.setPath(info.getFilePath());
-			instr.setInstrumentIndex(info.getInstrumentIndex());
-			instr.setName(info.getName());
-			instr.setDescription(info.getDescription());
-			instr.setEngine(info.getFormatFamily()); // TODO: this should be fixed
-			orchestraModel.addInstrument(instr);
+			DbInstrumentInfo[] instruments = getSelectedInstruments();
+			int l = instruments.length;
+			if(l == 0) return;
+			
+			if(l > 1) {
+				String s = "JSInstrumentsDbTable.confirmAddToOrchestra";
+				s = i18n.getMessage(s, l, orchestraModel.getName());
+				if(!HF.showYesNoDialog(JSInstrumentsDbTable.this, s)) return;
+			}
+			
+			for(DbInstrumentInfo i : instruments) {
+				OrchestraInstrument instr = new OrchestraInstrument();
+				instr.setFilePath(i.getFilePath());
+				instr.setInstrumentIndex(i.getInstrumentIndex());
+				instr.setName(i.getName());
+				instr.setDescription(i.getDescription());
+				instr.setEngine(i.getFormatFamily()); // TODO: this should be fixed
+				orchestraModel.addInstrument(instr);
+			}
 		}
 	}
 	

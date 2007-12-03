@@ -275,5 +275,48 @@ public class HF {
 		return true;
 	}
 	
+	/**
+	 * Converts the volume value specified in percents to decibels.
+	 */
+	public static double
+	percentsToDecibels(int vol) {
+		if(vol == 0) return Double.NEGATIVE_INFINITY;
+		double i = vol;
+		i /= 100;
+		i = 20 * Math.log10(i);
+		return i;
+	}
 	
+	
+	
+	/**
+	 * Converts the volume value specified in decibels to percents.
+	 */
+	public static int
+	decibelsToPercents(double vol) {
+		if(vol == Double.NEGATIVE_INFINITY) return 0;
+		double i = Math.pow(10, vol/20);
+		i *= 100;
+		return (int)i;
+	}
+	
+	/**
+	 * Converts the volume value specified in decibels to volume factor.
+	 */
+	public static float
+	decibelsToFactor(double vol) {
+		if(vol == Double.NEGATIVE_INFINITY) return 0;
+		double i = Math.pow(10, vol/20);
+		return (float)i;
+	}
+	
+	/**
+	 * Converts the volume value specified in percents to volume factor.
+	 */
+	public static float
+	percentsToFactor(int vol) {
+		float f = vol;
+		f /= 100;
+		return f;
+	}
 }

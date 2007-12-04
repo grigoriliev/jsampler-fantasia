@@ -30,6 +30,9 @@ public interface SamplerListener extends java.util.EventListener {
 	/** Invoked when the global volume of the sampler is changed. */
 	public void volumeChanged(SamplerEvent e);
 	
+	/** Invoked when the total number of active streams is changed. */
+	public void totalStreamCountChanged(SamplerEvent e);
+	
 	/** Invoked when the total number of active voices is changed. */
 	public void totalVoiceCountChanged(SamplerEvent e);
 	

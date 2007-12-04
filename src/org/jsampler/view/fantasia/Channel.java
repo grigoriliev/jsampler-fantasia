@@ -254,17 +254,6 @@ public class Channel extends org.jsampler.view.JSChannel {
 		
 		setOpaque(false);
 		
-		int i = preferences().getIntProperty(MAXIMUM_CHANNEL_VOLUME);
-		dialVolume.setMaximum(i);
-		String mcv = MAXIMUM_CHANNEL_VOLUME;
-		preferences().addPropertyChangeListener(mcv, new PropertyChangeListener() {
-			public void
-			propertyChange(PropertyChangeEvent e) {
-				int j = preferences().getIntProperty(MAXIMUM_CHANNEL_VOLUME);
-				dialVolume.setMaximum(j);
-			}
-		});
-		
 		String vmud = VOL_MEASUREMENT_UNIT_DECIBEL;
 		preferences().addPropertyChangeListener(vmud, new PropertyChangeListener() {
 			public void
@@ -438,9 +427,20 @@ public class Channel extends org.jsampler.view.JSChannel {
 	
 	private class EnhancedDial extends Dial {
 		EnhancedDial() {
-			super(0, 100);
+			super(0, 100, 0);
 			
 			setMouseHandlerMode(MouseHandlerMode.LEFT_TO_RIGHT_AND_DOWN_TO_UP);
+			
+			int i = preferences().getIntProperty(MAXIMUM_CHANNEL_VOLUME);
+			setMaximum(i);
+			String mcv = MAXIMUM_CHANNEL_VOLUME;
+			preferences().addPropertyChangeListener(mcv, new PropertyChangeListener() {
+				public void
+				propertyChange(PropertyChangeEvent e) {
+					int j = preferences().getIntProperty(MAXIMUM_CHANNEL_VOLUME);
+					setMaximum(j);
+				}
+			});
 			
 			addMouseListener(new MouseAdapter() {
 				public void

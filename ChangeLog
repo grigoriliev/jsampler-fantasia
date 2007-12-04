@@ -4,6 +4,8 @@ CVS HEAD
  * Implemented support for retrieving instrument information
    from instrument files
 
+ * Added support for monitoring the total number of active disk streams
+
   * Added Windows file path support
 
   * Fantasia:

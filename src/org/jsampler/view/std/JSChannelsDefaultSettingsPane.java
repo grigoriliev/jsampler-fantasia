@@ -31,6 +31,8 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import java.text.NumberFormat;
+
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -49,6 +51,7 @@ import net.sf.juife.JuifeUtils;
 import org.linuxsampler.lscp.SamplerEngine;
 
 import org.jsampler.CC;
+import org.jsampler.HF;
 import org.jsampler.JSPrefs;
 
 import static org.jsampler.view.std.StdI18n.i18n;
@@ -103,9 +106,14 @@ public class JSChannelsDefaultSettingsPane extends JPanel {
 	
 	private DefaultMap defaultMap = new DefaultMap();
 	
+	private static NumberFormat numberFormat = NumberFormat.getInstance();
+	
+	
 	/** Creates a new instance of <code>JSChannelsDefaultSettingsPane</code> */
 	public
 	JSChannelsDefaultSettingsPane() {
+		numberFormat.setMaximumFractionDigits(1);
+		
 		GridBagLayout gridbag = new GridBagLayout();
 		GridBagConstraints c = new GridBagConstraints();
 	
@@ -176,9 +184,11 @@ public class JSChannelsDefaultSettingsPane extends JPanel {
 		
 		lVolume.setHorizontalAlignment(lVolume.RIGHT);
 		
-		// We use this to set the size of the lVolume that will be used in setVolume()
+		// We use this to set the size of the lVolume
 		// to prevent the frequent resizing of lVolume
-		lVolume.setText("100%");
+		lVolume.setText("100000%");
+		lVolume.setPreferredSize(lVolume.getPreferredSize());
+		lVolume.setMinimumSize(lVolume.getPreferredSize());
 		
 		volumePane.add(lVolume);
 		
@@ -300,12 +310,12 @@ public class JSChannelsDefaultSettingsPane extends JPanel {
 	private void
 	updateVolume() {
 		int volume = slChannelVolume.getValue();
-		Dimension d = lVolume.getPreferredSize();
-		lVolume.setText(String.valueOf(volume) + '%');
-		d = JuifeUtils.getUnionSize(d, lVolume.getPreferredSize());
-		lVolume.setMinimumSize(d);
-		lVolume.setPreferredSize(d);
-		lVolume.setMaximumSize(d);
+		if(CC.getViewConfig().isMeasurementUnitDecibel()) {
+			double dB = HF.percentsToDecibels(volume);
+			lVolume.setText(numberFormat.format(dB) + "dB");
+		} else {
+			lVolume.setText(String.valueOf(volume) + '%');
+		}
 		
 		if(slChannelVolume.getValueIsAdjusting()) return;
 		preferences().setIntProperty(DEFAULT_CHANNEL_VOLUME, slChannelVolume.getValue());

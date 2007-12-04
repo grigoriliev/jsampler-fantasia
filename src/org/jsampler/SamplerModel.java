@@ -433,6 +433,12 @@ public interface SamplerModel {
 	public int getMutedBySoloChannelCount();
 	
 	/**
+	 * Gets the total number of active streams.
+	 * @return The total number of active streams.
+	 */
+	public int getTotalStreamCount();
+	
+	/**
 	 * Gets the total number of active voices.
 	 * @return The total number of active voices.
 	 */
@@ -466,6 +472,12 @@ public interface SamplerModel {
 	 * Schedules a new task for resetting the sampler.
 	 */
 	public void resetBackend();
+	
+	/**
+	 * Updates the current number of active disk streams in the sampler.
+	 * @param count The new number of active streams.
+	 */
+	public void updateActiveStreamsInfo(int count);
 	
 	/**
 	 * Updates the current and the maximum number of active voices in the sampler.

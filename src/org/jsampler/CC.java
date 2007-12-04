@@ -265,6 +265,9 @@ public class CC {
 		getClient().removeVoiceCountListener(getHandler());
 		getClient().addVoiceCountListener(getHandler());
 		
+		getClient().removeTotalStreamCountListener(getHandler());
+		getClient().addTotalStreamCountListener(getHandler());
+		
 		getClient().removeTotalVoiceCountListener(getHandler());
 		getClient().addTotalVoiceCountListener(getHandler());
 		
@@ -872,8 +875,8 @@ public class CC {
 	
 	private static class EventHandler implements ChannelCountListener, ChannelInfoListener,
 		FxSendCountListener, FxSendInfoListener, StreamCountListener, VoiceCountListener,
-		TotalVoiceCountListener, TaskQueueListener, OrchestraListener,
-		ListListener<OrchestraModel>, MidiInstrumentCountListener,
+		TotalStreamCountListener, TotalVoiceCountListener, TaskQueueListener,
+		OrchestraListener, ListListener<OrchestraModel>, MidiInstrumentCountListener,
 		MidiInstrumentInfoListener, GlobalInfoListener {
 		
 		/** Invoked when the number of channels has changed. */
@@ -976,6 +979,12 @@ public class CC {
 			}
 			
 			scm.setVoiceCount(e.getVoiceCount());
+		}
+		
+		/** Invoked when the total number of active streams has changed. */
+		public void
+		totalStreamCountChanged(TotalStreamCountEvent e) {
+			getSamplerModel().updateActiveStreamsInfo(e.getTotalStreamCount());
 		}
 		
 		/** Invoked when the total number of active voices has changed. */

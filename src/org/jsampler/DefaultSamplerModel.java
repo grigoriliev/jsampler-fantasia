@@ -63,6 +63,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	private MidiInputDriver[] miDrvS = null;
 	private SamplerEngine[] engines = null;
 	
+	private int totalStreamCount = 0;
 	private int totalVoiceCount = 0;
 	private int totalVoiceCountMax = 0;
 	
@@ -800,6 +801,13 @@ public class DefaultSamplerModel implements SamplerModel {
 	}
 	
 	/**
+	 * Gets the total number of active streams.
+	 * @return The total number of active streams.
+	 */
+	public int
+	getTotalStreamCount() { return totalStreamCount; }
+	
+	/**
 	 * Gets the total number of active voices.
 	 * @return The total number of active voices.
 	 */
@@ -846,6 +854,18 @@ public class DefaultSamplerModel implements SamplerModel {
 	 */
 	public void
 	resetBackend() { CC.getTaskQueue().add(new org.jsampler.task.Global.ResetSampler()); }
+	
+	/**
+	 * Updates the current number of active disk streams in the sampler.
+	 * @param count The new number of active streams.
+	 */
+	public void
+	updateActiveStreamsInfo(int count) {
+		if(totalStreamCount == count) return;
+		
+		totalStreamCount = count;
+		fireTotalStreamCountChanged();
+	}
 	
 	/**
 	 * Updates the current and the maximum number of active voices in the sampler.
@@ -1094,6 +1114,28 @@ public class DefaultSamplerModel implements SamplerModel {
 	private void
 	fireVolumeChanged(SamplerEvent e) {
 		for(SamplerListener l : listeners) l.volumeChanged(e);
+	}
+	
+	/*
+	 * Notifies listeners that the total number of active streams has changed.
+	 * This method can be invoked outside the event-dispatching thread.
+	 */
+	private void
+	fireTotalStreamCountChanged() {
+		final SamplerEvent e = new SamplerEvent(this);
+			
+		SwingUtilities.invokeLater(new Runnable() {
+			public void
+			run() { fireTotalStreamCountChanged(e); }
+		});
+	}
+	
+	/**
+	 * Notifies listeners that the total number of active streams has changed.
+	 */
+	private void
+	fireTotalStreamCountChanged(SamplerEvent e) {
+		for(SamplerListener l : listeners) l.totalStreamCountChanged(e);
 	}
 	
 	/*

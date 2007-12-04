@@ -33,6 +33,10 @@ public abstract class SamplerAdapter implements SamplerListener {
 	public void
 	volumeChanged(SamplerEvent e) { }
 	
+	/** Invoked when the total number of active streams is changed. */
+	public void
+	totalStreamCountChanged(SamplerEvent e) { }
+	
 	/** Invoked when the total number of active voices is changed. */
 	public void
 	totalVoiceCountChanged(SamplerEvent e) { }

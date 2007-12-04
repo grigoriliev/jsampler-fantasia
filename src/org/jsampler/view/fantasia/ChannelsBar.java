@@ -165,6 +165,20 @@ public class ChannelsBar extends PixmapPane {
 		CC.getSamplerModel().addSamplerListener(new SamplerAdapter() {
 			public void
 			volumeChanged(SamplerEvent e) { updateVolume(); }
+			
+			public void
+			totalVoiceCountChanged(SamplerEvent e) {
+				int i = CC.getSamplerModel().getTotalVoiceCount();
+				if(i == 0) lVoices.setText("--");
+				else lVoices.setText(String.valueOf(i));
+			}
+			
+			public void
+			totalStreamCountChanged(SamplerEvent e) {
+				int i = CC.getSamplerModel().getTotalStreamCount();
+				if(i == 0) lStreams.setText("--");
+				else lStreams.setText(String.valueOf(i));
+			}
 		});
 		
 		updateVolume();

@@ -165,7 +165,13 @@ public class DefaultAudioDeviceModel implements AudioDeviceModel {
 	 */
 	private void
 	fireSettingsChanged() {
-		fireSettingsChanged(new AudioDeviceEvent(this, this));
+		SwingUtilities.invokeLater(new Runnable() {
+			public void
+			run() {
+				AudioDeviceModel model = DefaultAudioDeviceModel.this;
+				fireSettingsChanged(new AudioDeviceEvent(model, model));
+			}
+		});
 	}
 	
 	/**
@@ -174,9 +180,7 @@ public class DefaultAudioDeviceModel implements AudioDeviceModel {
 	 */
 	private void
 	fireSettingsChanged(final AudioDeviceEvent e) {
-		SwingUtilities.invokeLater(new Runnable() {
-			public void
-			run() { for(AudioDeviceListener l : listeners) l.settingsChanged(e); }
-		});
+		CC.getSamplerModel().setModified(true);
+		for(AudioDeviceListener l : listeners) l.settingsChanged(e);
 	}
 }

@@ -63,7 +63,7 @@ To build a JSampler distribution follow the next steps.
 Installation
 ============
 
-Copy the desired file (dist/JS_Classic-0.6a.jar or dist/Fantasia-0.6a.jar)
+Copy the desired file (dist/JS_Classic-0.8a.jar or dist/Fantasia-0.8a.jar)
 to some location. That's it!
 
 You may also consider using a script for running particular distribution.
@@ -77,13 +77,13 @@ On some systems double clicking on the jar file will be enough.
 If you aren't that lucky use the following
 commands to run JS Classic or Fantasia:
 
-java -jar /<path-to-js-classic>/JS_Classic-0.7a.jar
-java -jar /<path-to-fantasia>/Fantasia-0.7a.jar
+java -jar /<path-to-js-classic>/JS_Classic-0.8a.jar
+java -jar /<path-to-fantasia>/Fantasia-0.8a.jar
 
 If the java command is not in your path, locate your jre directory and type:
 
-/<jre-dir>/bin/java -jar /<path-to-js-classic>/JS_Classic-0.7a.jar
-/<jre-dir>/bin/java -jar /<path-to-fantasia>/Fantasia-0.7a.jar
+/<jre-dir>/bin/java -jar /<path-to-js-classic>/JS_Classic-0.8a.jar
+/<jre-dir>/bin/java -jar /<path-to-fantasia>/Fantasia-0.8a.jar
 
 Note that you must run LinuxSampler before running a JSampler frontend.
 

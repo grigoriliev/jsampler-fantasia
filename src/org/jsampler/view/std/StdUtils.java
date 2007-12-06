@@ -145,13 +145,15 @@ public class StdUtils {
 		VolumeSlider() {
 			super(0, 100, 100);
 			numberFormat.setMaximumFractionDigits(1);
-			// Setting the tooltip size
-			tip.setTipText(i18n.getLabel("StdUtils.volume", 10000));
+			// Setting the tooltip size (workaround for preserving that size)
+			boolean b = CC.getViewConfig().isMeasurementUnitDecibel();
+			if(b) tip.setTipText(i18n.getLabel("StdUtils.volumeDecibels", "-30.0"));
+			else tip.setTipText(i18n.getLabel("StdUtils.volume", "100"));
+			tip.setPreferredSize(tip.getPreferredSize());
 			tip.setMinimumSize(tip.getPreferredSize());
-			tip.setPreferredSize(tip.getPreferredSize()); // workaround for preserving that size
+			///////
 			tip.setComponent(this);
 			tip.setTipText(i18n.getLabel("StdUtils.volume", 0));
-			///////
 			
 			updateVolumeInfo();
 			
@@ -189,6 +191,17 @@ public class StdUtils {
 			preferences().addPropertyChangeListener(s, new PropertyChangeListener() {
 				public void
 				propertyChange(PropertyChangeEvent e) {
+					// We use this to set the size of the lVolume
+					// to prevent the frequent resizing of lVolume component
+					boolean b = CC.getViewConfig().isMeasurementUnitDecibel();
+					tip.setPreferredSize(null);
+					String s;
+					if(b) s = i18n.getLabel("StdUtils.volumeDecibels", "-30.0");
+					else s = i18n.getLabel("StdUtils.volume", "100");
+					tip.setTipText(s);
+					tip.setPreferredSize(tip.getPreferredSize());
+					tip.setMinimumSize(tip.getPreferredSize());
+					///////
 					updateVolumeInfo();
 				}
 			});

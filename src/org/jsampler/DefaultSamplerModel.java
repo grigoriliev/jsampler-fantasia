@@ -81,6 +81,8 @@ public class DefaultSamplerModel implements SamplerModel {
 	
 	private final EventListenerList listenerList = new EventListenerList();
 	
+	private boolean modified = false;
+	
 	
 	/** Creates a new instance of DefaultSamplerModel */
 	public
@@ -882,6 +884,18 @@ public class DefaultSamplerModel implements SamplerModel {
 	}
 	
 	/**
+	 * Determines whether the sampler configuration is modified.
+	 */
+	public boolean
+	isModified() { return modified; }
+	
+	/**
+	 * Sets whether the sampler configuration is modified.
+	 */
+	public void
+	setModified(boolean b) { modified = b; }
+	
+	/**
 	 * Notifies listeners that a sampler channel has been added.
 	 * This method can be invoked outside the event-dispatching thread.
 	 * @param channelModel A <code>SamplerChannelModel</code> instance.
@@ -900,6 +914,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 */
 	private void
 	fireSamplerChannelAdded(SamplerChannelListEvent e) {
+		setModified(true);
 		Object[] listeners = listenerList.getListenerList();
 		
 		for(int i = listeners.length - 2; i >= 0; i -= 2) {
@@ -929,6 +944,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 */
 	private void
 	fireSamplerChannelRemoved(SamplerChannelListEvent e) {
+		setModified(true);
 		Object[] listeners = listenerList.getListenerList();
 		
 		for(int i = listeners.length - 2; i >= 0; i -= 2) {
@@ -957,6 +973,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 */
 	private void
 	fireMidiDeviceAdded(MidiDeviceListEvent e) {
+		setModified(true);
 		Object[] listeners = listenerList.getListenerList();
 		
 		for(int i = listeners.length - 2; i >= 0; i -= 2) {
@@ -986,6 +1003,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 */
 	private void
 	fireMidiDeviceRemoved(MidiDeviceListEvent e) {
+		setModified(true);
 		Object[] listeners = listenerList.getListenerList();
 		
 		for(int i = listeners.length - 2; i >= 0; i -= 2) {
@@ -1015,6 +1033,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 */
 	private void
 	fireAudioDeviceAdded(ListEvent<AudioDeviceModel> e) {
+		setModified(true);
 		Object[] listeners = listenerList.getListenerList();
 		
 		for(int i = listeners.length - 2; i >= 0; i -= 2) {
@@ -1040,6 +1059,22 @@ public class DefaultSamplerModel implements SamplerModel {
 	}
 	
 	/**
+	 * Notifies listeners that an audio device has been removed.
+	 * This method should be invoked from the event-dispatching thread.
+	 */
+	private void
+	fireAudioDeviceRemoved(ListEvent<AudioDeviceModel> e) {
+		setModified(true);
+		Object[] listeners = listenerList.getListenerList();
+		
+		for(int i = listeners.length - 2; i >= 0; i -= 2) {
+			if(listeners[i] == ListListener.class) {
+				((ListListener<AudioDeviceModel>)listeners[i + 1]).entryRemoved(e);
+			}
+		}
+	}
+	
+	/**
 	 * Notifies listeners that a MIDI instrument map has been added to the list.
 	 * This method can be invoked outside the event-dispatching thread.
 	 */
@@ -1056,6 +1091,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	/** Notifies listeners that a MIDI instrument map has been added to the list. */
 	private void
 	fireMidiInstrumentMapAdded(ListEvent<MidiInstrumentMap> e) {
+		setModified(true);
 		for(ListListener<MidiInstrumentMap> l : mapsListeners) l.entryAdded(e);
 	}
 	
@@ -1075,23 +1111,8 @@ public class DefaultSamplerModel implements SamplerModel {
 	/** Notifies listeners that a MIDI instrument map has been removed from the list. */
 	private void
 	fireMidiInstrumentMapRemoved(ListEvent<MidiInstrumentMap> e) {
+		setModified(true);
 		for(ListListener<MidiInstrumentMap> l : mapsListeners) l.entryRemoved(e);
-	}
-	
-	
-	/**
-	 * Notifies listeners that an audio device has been removed.
-	 * This method should be invoked from the event-dispatching thread.
-	 */
-	private void
-	fireAudioDeviceRemoved(ListEvent<AudioDeviceModel> e) {
-		Object[] listeners = listenerList.getListenerList();
-		
-		for(int i = listeners.length - 2; i >= 0; i -= 2) {
-			if(listeners[i] == ListListener.class) {
-				((ListListener<AudioDeviceModel>)listeners[i + 1]).entryRemoved(e);
-			}
-		}
 	}
 	
 	/**
@@ -1113,6 +1134,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 */
 	private void
 	fireVolumeChanged(SamplerEvent e) {
+		setModified(true);
 		for(SamplerListener l : listeners) l.volumeChanged(e);
 	}
 	
@@ -1161,7 +1183,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	}
 	
 	/**
-	 * Notifies listeners that the global volume has changed.
+	 * Notifies listeners that the default MIDI instrument map is changed.
 	 */
 	private void
 	fireDefaultMapChanged() {

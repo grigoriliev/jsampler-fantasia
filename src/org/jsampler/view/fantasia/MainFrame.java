@@ -78,6 +78,7 @@ import org.jsampler.view.JSMainFrame;
 import org.jsampler.view.LscpFileFilter;
 
 import org.jsampler.view.std.JSDetailedErrorDlg;
+import org.jsampler.view.std.JSQuitDlg;
 import org.jsampler.view.std.JSamplerHomeChooser;
 
 import static org.jsampler.view.fantasia.A4n.a4n;
@@ -235,6 +236,12 @@ public class MainFrame extends JSMainFrame {
 	/** Invoked when this window is about to close. */
 	protected void
 	onWindowClose() {
+		if(CC.getSamplerModel().isModified()) {
+			JSQuitDlg dlg = new JSQuitDlg(Res.iconQuestion32);
+			dlg.setVisible(true);
+			if(dlg.isCancelled()) return;
+		}
+		
 		sidePane.savePreferences();
 		
 		int i = hSplitPane.getDividerLocation();

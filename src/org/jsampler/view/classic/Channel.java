@@ -45,8 +45,9 @@ import java.beans.PropertyChangeListener;
 
 import java.net.URL;
 
-import java.util.Vector;
+import java.text.NumberFormat;
 
+import java.util.Vector;
 import java.util.logging.Level;
 
 import javax.swing.Action;
@@ -145,7 +146,12 @@ public class Channel extends org.jsampler.view.JSChannel {
 	private final static Vector<PropertyChangeListener> propertyChangeListeners
 		= new Vector<PropertyChangeListener>();
 	
+	
+	private static NumberFormat numberFormat = NumberFormat.getInstance();
+	
 	static {
+		numberFormat.setMaximumFractionDigits(1);
+		
 		iconEdit = new ImageIcon(Channel.class.getResource("res/icons/edit.png"));
 		
 		String path = "org/jsampler/view/classic/res/icons/";
@@ -404,9 +410,14 @@ public class Channel extends org.jsampler.view.JSChannel {
 		lVolume.setBorder(BorderFactory.createEmptyBorder(3, 6, 3, 6));
 		lVolume.setHorizontalAlignment(lVolume.RIGHT);
 		
-		// We use this to set the size of the lVolume that will be used in setVolume()
-		// to prevent the frequent resizing of lVolume
-		lVolume.setText("100%");
+		// We use this to set the size of the lVolume
+		// to prevent the frequent resizing of lVolume component
+		if(CC.getViewConfig().isMeasurementUnitDecibel()) {
+			lVolume.setText("-30.0dB");
+		} else {
+			lVolume.setText("100%");
+		}
+		lVolume.setPreferredSize(lVolume.getPreferredSize());
 		
 		volumePane.add(lVolume);
 		
@@ -438,6 +449,23 @@ public class Channel extends org.jsampler.view.JSChannel {
 			propertyChange(PropertyChangeEvent e) {
 				int j = preferences().getIntProperty(MAXIMUM_CHANNEL_VOLUME);
 				slVolume.setMaximum(j);
+			}
+		});
+		
+		String vmud = VOL_MEASUREMENT_UNIT_DECIBEL;
+		preferences().addPropertyChangeListener(vmud, new PropertyChangeListener() {
+			public void
+			propertyChange(PropertyChangeEvent e) {
+				boolean b;
+				b = preferences().getBoolProperty(VOL_MEASUREMENT_UNIT_DECIBEL);
+				// We use this to set the size of the lVolume
+				// to prevent the frequent resizing of lVolume component
+				lVolume.setPreferredSize(null);
+				if(b) lVolume.setText("-30.0dB");
+				else lVolume.setText("100%");
+				lVolume.setPreferredSize(lVolume.getPreferredSize());
+				///////
+				updateVolume();
 			}
 		});
 		
@@ -790,22 +818,17 @@ public class Channel extends org.jsampler.view.JSChannel {
 	private void
 	updateVolume() {
 		int volume = slVolume.getValue();
-		slVolume.setToolTipText(i18n.getLabel("Channel.volume", volume));
-		lVolImg.setToolTipText(i18n.getLabel("Channel.volume", volume));
 		
-		setVolumeLabel(volume);
-		
-		
-	}
-	
-	private void
-	setVolumeLabel(int volume) {
-		Dimension d = lVolume.getPreferredSize();
-		lVolume.setText(String.valueOf(volume) + '%');
-		d = JuifeUtils.getUnionSize(d, lVolume.getPreferredSize());
-		lVolume.setMinimumSize(d);
-		lVolume.setPreferredSize(d);
-		lVolume.setMaximumSize(d);
+		if(CC.getViewConfig().isMeasurementUnitDecibel()) {
+			String dB = numberFormat.format(HF.percentsToDecibels(volume));
+			slVolume.setToolTipText(i18n.getLabel("Channel.volumeDecibels", dB));
+			lVolImg.setToolTipText(i18n.getLabel("Channel.volumeDecibels", dB));
+			lVolume.setText(dB + "dB");
+		} else {
+			slVolume.setToolTipText(i18n.getLabel("Channel.volume", volume));
+			lVolImg.setToolTipText(i18n.getLabel("Channel.volume", volume));
+			lVolume.setText(String.valueOf(volume) + '%');
+		}
 	}
 	
 	/**

@@ -72,6 +72,7 @@ import org.jsampler.view.JSChannelsPane;
 import org.jsampler.view.LscpFileFilter;
 
 import org.jsampler.view.std.JSDetailedErrorDlg;
+import org.jsampler.view.std.JSQuitDlg;
 import org.jsampler.view.std.JSamplerHomeChooser;
 
 import static org.jsampler.view.classic.A4n.a4n;
@@ -205,6 +206,12 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 	/** Invoked when this window is about to close. */
 	protected void
 	onWindowClose() {
+		if(CC.getSamplerModel().isModified()) {
+			JSQuitDlg dlg = new JSQuitDlg(Res.iconQuestion32);
+			dlg.setVisible(true);
+			if(dlg.isCancelled()) return;
+		}
+		
 		if(ClassicPrefs.getSaveWindowProperties()) {
 			ClassicPrefs.setWindowMaximized (
 				"Mainframe", (getExtendedState() & MAXIMIZED_BOTH) == MAXIMIZED_BOTH

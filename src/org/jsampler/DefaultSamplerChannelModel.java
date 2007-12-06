@@ -694,6 +694,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 */
 	protected void
 	fireSamplerChannelChanged(SamplerChannelEvent e) {
+		CC.getSamplerModel().setModified(true);
 		for(SamplerChannelListener l : listeners) l.channelChanged(e);
 	}
 	
@@ -756,6 +757,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 */
 	protected void
 	fireFxSendAdded(EffectSendsEvent e) {
+		CC.getSamplerModel().setModified(true);
 		for(EffectSendsListener l : fxListeners) l.effectSendAdded(e);
 	}
 	
@@ -776,6 +778,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 */
 	protected void
 	fireFxSendRemoved(EffectSendsEvent e) {
+		CC.getSamplerModel().setModified(true);
 		for(EffectSendsListener l : fxListeners) l.effectSendRemoved(e);
 	}
 	
@@ -796,6 +799,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 */
 	protected void
 	fireFxSendUpdated(EffectSendsEvent e) {
+		CC.getSamplerModel().setModified(true);
 		for(EffectSendsListener l : fxListeners) l.effectSendChanged(e);
 	}
 }

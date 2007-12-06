@@ -275,6 +275,9 @@ public class Res {
 	protected final static ImageIcon iconWarning32
 		= new ImageIcon(Res.class.getResource("res/icons/warning32.png"));
 	
+	protected final static ImageIcon iconQuestion32
+		= new ImageIcon(Res.class.getResource("res/icons/question32.png"));
+	
 	protected final static ImageIcon iconLinuxSamplerLogo
 		= new ImageIcon(Res.class.getResource("res/icons/LinuxSampler-logo.png"));
 	

@@ -45,10 +45,12 @@ import static org.jsampler.view.std.StdI18n.i18n;
  * This class provides an <code>Action</code> instances performing some of the common tasks.
  * @author Grigor Iliev
  */
-public abstract class StdA4n {
+public class StdA4n {
+	protected static StdA4n a4n = new StdA4n();
+	
 	protected StdA4n() { }
 	
-	protected abstract JSPrefs preferences();
+	protected JSPrefs preferences() { return CC.getViewConfig().preferences(); }
 	
 	protected void
 	exportSamplerConfig() {

@@ -485,4 +485,14 @@ public interface SamplerModel {
 	 * @param countMax The maximum number of active voices.
 	 */
 	public void updateActiveVoiceInfo(int count, int countMax);
+	
+	/**
+	 * Determines whether the sampler configuration is modified.
+	 */
+	public boolean isModified();
+	
+	/**
+	 * Sets whether the sampler configuration is modified.
+	 */
+	public void setModified(boolean b);
 }

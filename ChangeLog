@@ -1,12 +1,16 @@
-CVS HEAD
+JSampler v0.8a: 2007-12-06
   * Added new menu item: Help/Online Tutorial
 
- * Implemented support for retrieving instrument information
-   from instrument files
+  * Implemented support for retrieving instrument information
+    from instrument files
 
- * Added support for monitoring the total number of active disk streams
+  * Added support for monitoring the total number of active disk streams
 
   * Added Windows file path support
+
+  * The volume values are now shown in decibels
+
+  * Added confirmation dialog on exit
 
   * Fantasia:
     - Added option for turning off the custom window decoration

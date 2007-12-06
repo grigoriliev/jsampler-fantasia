@@ -64,7 +64,7 @@ import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
  */
 public class HelpAboutDlg extends InformationDialog {
 	private JLabel lProductName =
-		new JLabel("<html>\n<font size=+1>Fantasia (version 0.7a)</font>");
+		new JLabel("<html>\n<font size=+1>JSampler Fantasia (version 0.8a)</font>");
 	
 	private JLabel lAuthor = new JLabel(i18n.getLabel("HelpAboutDlg.lAuthor"));
 	private LinkButton btnAuthor = new Lnkbutton(i18n.getLabel("HelpAboutDlg.btnAuthor"));
@@ -300,6 +300,12 @@ public class HelpAboutDlg extends InformationDialog {
 		private Lnkbutton btnLSWebsite = new Lnkbutton("www.linuxsampler.org");
 		private Lnkbutton btnJSWebsite = new Lnkbutton("sf.net/projects/jsampler");
 	
+		private Button btnDocumentation =
+			new Button(i18n.getButtonLabel("HelpAboutDlg.btnDocumentation"));
+	
+		private Button btnLSDevelopers =
+			new Button(i18n.getButtonLabel("HelpAboutDlg.btnLSDevelopers"));
+	
 		private Button btnLSMailingList =
 			new Button(i18n.getButtonLabel("HelpAboutDlg.btnLSMailingList"));
 	
@@ -349,6 +355,17 @@ public class HelpAboutDlg extends InformationDialog {
 			c.gridwidth = 2;
 			c.insets = new Insets(12, 0, 0, 0);
 			c.anchor = GridBagConstraints.CENTER;
+			gridbag.setConstraints(btnDocumentation, c);
+			add(btnDocumentation);
+			
+			c.gridx = 0;
+			c.gridy = 4;
+			c.insets = new Insets(6, 0, 0, 0);
+			gridbag.setConstraints(btnLSDevelopers, c);
+			add(btnLSDevelopers);
+			
+			c.gridx = 0;
+			c.gridy = 5;
 			gridbag.setConstraints(btnLSMailingList, c);
 			add(btnLSMailingList);
 			
@@ -374,6 +391,20 @@ public class HelpAboutDlg extends InformationDialog {
 				public void
 				actionPerformed(ActionEvent e) {
 					StdUtils.browse("http://sf.net/projects/jsampler/");
+				}
+			});
+		
+			btnDocumentation.addActionListener(new ActionListener() {
+				public void
+				actionPerformed(ActionEvent e) {
+					StdUtils.browse("http://www.linuxsampler.org/documentation.html");
+				}
+			});
+		
+			btnLSDevelopers.addActionListener(new ActionListener() {
+				public void
+				actionPerformed(ActionEvent e) {
+					StdUtils.browse("http://www.linuxsampler.org/developers.html");
 				}
 			});
 		

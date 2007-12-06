@@ -166,7 +166,13 @@ public class DefaultMidiDeviceModel implements MidiDeviceModel {
 	 */
 	private void
 	fireSettingsChanged() {
-		fireSettingsChanged(new MidiDeviceEvent(this, this));
+		SwingUtilities.invokeLater(new Runnable() {
+			public void
+			run() {
+				MidiDeviceModel model = DefaultMidiDeviceModel.this;
+				fireSettingsChanged(new MidiDeviceEvent(model, model));
+			}
+		});
 	}
 	
 	/**
@@ -175,9 +181,7 @@ public class DefaultMidiDeviceModel implements MidiDeviceModel {
 	 */
 	private void
 	fireSettingsChanged(final MidiDeviceEvent e) {
-		SwingUtilities.invokeLater(new Runnable() {
-			public void
-			run() { for(MidiDeviceListener l : listeners) l.settingsChanged(e); }
-		});
+		CC.getSamplerModel().setModified(true);
+		for(MidiDeviceListener l : listeners) l.settingsChanged(e);
 	}
 }

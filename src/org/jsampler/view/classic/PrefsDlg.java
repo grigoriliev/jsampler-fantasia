@@ -190,6 +190,9 @@ class GeneralPane extends JPanel {
 	private final JCheckBox checkShowLSConsoleWhenRunScript =
 		new JCheckBox(i18n.getLabel("GeneralPane.checkShowLSConsoleWhenRunScript"));
 	
+	private final JCheckBox checkShowVolumesInDecibels =
+		new JCheckBox(i18n.getLabel("GeneralPane.checkShowVolumesInDecibels"));
+	
 	private final JSGeneralProps.MaxVolumePane maxVolPane = new JSGeneralProps.MaxVolumePane();
 	
 	private final JSGeneralProps.JSamplerHomePane jSamplerHomePane =
@@ -226,6 +229,11 @@ class GeneralPane extends JPanel {
 		
 		add(checkShowLSConsoleWhenRunScript);
 		
+		b = preferences().getBoolProperty(VOL_MEASUREMENT_UNIT_DECIBEL);
+		checkShowVolumesInDecibels.setSelected(b);
+		
+		add(checkShowVolumesInDecibels);
+		
 		add(Box.createRigidArea(new Dimension(0, 6)));
 		
 		add(maxVolPane);
@@ -251,6 +259,9 @@ class GeneralPane extends JPanel {
 		
 		boolean b = checkShowLSConsoleWhenRunScript.isSelected();
 		preferences().setBoolProperty(SHOW_LS_CONSOLE_WHEN_RUN_SCRIPT, b);
+		
+		b = checkShowVolumesInDecibels.isSelected();
+		preferences().setBoolProperty(VOL_MEASUREMENT_UNIT_DECIBEL, b);
 		
 		int size = recentScriptsPane.getRecentScriptsSize();
 		preferences().setIntProperty(RECENT_LSCP_SCRIPTS_SIZE, size);

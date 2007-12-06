@@ -613,6 +613,9 @@ public class CC {
 					gfs.addTaskListener(new GetFxSendsListener());
 					getTaskQueue().add(gfs);
 				}
+				
+				// TODO: This should be done after the fx sends are set
+				//CC.getSamplerModel().setModified(false);
 			}
 		});
 		
@@ -693,6 +696,8 @@ public class CC {
 	
 	public static String
 	exportSessionToLscpScript() {
+		CC.getSamplerModel().setModified(false);
+		
 		StringBuffer sb = new StringBuffer("# Exported by: ");
 		sb.append("JSampler - a java front-end for LinuxSampler\r\n# Version: ");
 		sb.append(JSampler.VERSION).append("\r\n");

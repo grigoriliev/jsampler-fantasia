@@ -22,13 +22,13 @@
       url="gfdl.html">GNU Free Documentation License</ulink>.</para>
     </legalnotice>
 
-    <pubdate>Updated: Fri, 10 August 2007</pubdate>
+    <pubdate>Updated: Sat, 8 December 2007</pubdate>
   </bookinfo>
 
-  <chapter>
+  <chapter id="INTRODUCTION">
     <title>Introduction</title>
 
-    <section>
+    <section id="WHAT_IS_JSAMPLER">
       <title>What is JSampler?</title>
 
       <para>JSampler is an opensource, platform-independent, GUI front-end for
@@ -57,7 +57,7 @@
       different display requirements and limitations.</para>
     </section>
 
-    <section>
+    <section id="WHAT_IS_JSAMPLER_DISTRIBUTION">
       <title>What is a JSampler distribution?</title>
 
       <para>A JSampler distribution consist of the JSampler core and at least
@@ -82,7 +82,7 @@
     </section>
   </chapter>
 
-  <chapter>
+  <chapter id="SCREENSHOTS">
     <title>Screenshots</title>
 
     <para>JS Classic with left pane, LS console, statusbar and toolbars</para>
@@ -102,22 +102,22 @@
     fileref="images/fantasia-preview.png" /></ulink></para>
   </chapter>
 
-  <chapter>
+  <chapter id="INSTALLATION">
     <title>Installation</title>
 
     <para></para>
 
-    <section id="download">
+    <section id="DOWNLOAD">
       <title>What to download?</title>
 
       <para>Currently, there are two distributions available for download -
       <ulink
-      url="http://downloads.sourceforge.net/jsampler/JS_Classic-0.7a.jar">JS
+      url="http://downloads.sourceforge.net/jsampler/JS_Classic-0.8a.jar">JS
       Classic</ulink> and <ulink
-      url="http://downloads.sourceforge.net/jsampler/Fantasia-0.7a.jar">Fantasia</ulink>.</para>
+      url="http://downloads.sourceforge.net/jsampler/Fantasia-0.8a.jar">Fantasia</ulink>.</para>
 
       <para>The source code is available in the <ulink
-      url="http://downloads.sourceforge.net/jsampler/JSampler-0.7a.tar.bz2">JSampler
+      url="http://downloads.sourceforge.net/jsampler/JSampler-0.8a.tar.bz2">JSampler
       package</ulink>, which also contains this manual and startup scripts
       that can be used to run a particular JSampler distribution.</para>
 
@@ -129,7 +129,7 @@
       jsampler</command></para>
     </section>
 
-    <section id="requirements">
+    <section id="REQUIREMENTS">
       <title lang="" xreflabel="">Requirements</title>
 
       <para>To run JSampler you need Java Runtime Environment (JRE) version 6
@@ -141,11 +141,11 @@
       tool</ulink>.</para>
     </section>
 
-    <section id="running-js-dist">
+    <section id="RUNNING_JSAMPLER">
       <title>Running a JSampler distribution</title>
 
       <para>Let's assume that you want to run from the command line
-      <code>JS_Classic-0.6a.jar</code>, which is located in
+      <code>JS_Classic-0.8a.jar</code>, which is located in
       <code>/home/me/soft</code> directory. First you should check whether the
       <code>java</code> command is in your path and the version requirements
       are met. This can be done by issuing the following command:</para>
@@ -156,7 +156,7 @@
       issuing the following command:</para>
 
       <para><command>java -jar
-      /home/me/soft/JS_Classic-0.6a.jar</command></para>
+      /home/me/soft/JS_Classic-0.8a.jar</command></para>
 
       <para>Otherwise, if the shell response is something like</para>
 
@@ -184,7 +184,7 @@ locate bin/java</command></literallayout></para>
       Classic issue the following command:</para>
 
       <para><command>/opt/jdk1.6.0/bin/java -jar
-      /home/me/soft/JS_Classic-0.6a.jar</command></para>
+      /home/me/soft/JS_Classic-0.8a.jar</command></para>
 
       <para><note>
           <para>On some systems double clicking on the jar file will be
@@ -192,18 +192,18 @@ locate bin/java</command></literallayout></para>
         </note></para>
     </section>
 
-    <section>
+    <section id="USING_SCRIPT">
       <title>Using a script to run a JSampler distribution</title>
 
       <para>There are scripts In the <code>scripts</code> directory of the
       <ulink
-      url="http://downloads.sourceforge.net/jsampler/JSampler-0.7a.tar.bz2">JSampler
+      url="http://downloads.sourceforge.net/jsampler/JSampler-0.8a.tar.bz2">JSampler
       package</ulink> that, with a little adjustments (if needed), can be used
       to run a JSampler distribution. Copy them to a desired location and edit
       with your preferred editor.</para>
     </section>
 
-    <section>
+    <section id="GNOME_JAR_ASSOCIATIONS">
       <title>Telling Gnome how to handle jar files</title>
 
       <para>This configuration is optional, but necessary if you want to run
@@ -228,7 +228,7 @@ locate bin/java</command></literallayout></para>
       <para><graphic fileref="images/add-application.png" /></para>
     </section>
 
-    <section>
+    <section id="GNOME_LAUNCHER">
       <title>Adding an application launcher to a Gnome panel</title>
 
       <para>To add an application launcher to a Gnome panel, right click on
@@ -241,14 +241,14 @@ locate bin/java</command></literallayout></para>
       <guilabel>Command</guilabel> field, of the <guilabel>Create
       Launcher</guilabel> dialog, fill in the exact command that you use to
       run the JSampler. For more information on how to run a JSampler
-      distribution from the command line <link linkend="running-js-dist">click
-      here</link>.</para>
+      distribution from the command line <link
+      linkend="RUNNING_JSAMPLER">click here</link>.</para>
 
       <para><graphic
       fileref="images/add-to-panel-create-launcher.png" /></para>
     </section>
 
-    <section>
+    <section id="RUNING_ON_WINDOWS">
       <title>Running JSampler on Windows</title>
 
       <para>To run JSampler distribution on Windows, put a shortcut on the
@@ -260,14 +260,14 @@ locate bin/java</command></literallayout></para>
     </section>
   </chapter>
 
-  <chapter>
+  <chapter id="BUILDING_FROM_SOURCE">
     <title>Building from source</title>
 
     <para>If you want to build a JSampler distribution from source, first make
-    sure that all <link linkend="requirements">requirements</link> are
+    sure that all <link linkend="REQUIREMENTS">requirements</link> are
     met.</para>
 
-    <section>
+    <section id="BUILDING_FROM_CVS">
       <title>Building from CVS</title>
 
       <para>When building from CVS, there are some additional steps that
@@ -292,8 +292,8 @@ locate bin/java</command></literallayout></para>
       directory:</para>
 
       <para><literallayout><command>cd /home/me/soft
-wget -c http://downloads.sourceforge.net/jlscp/jlscp-0.5a.tar.bz2
-tar -xjf jlscp-0.5a.tar.bz2
+wget -c http://downloads.sourceforge.net/jlscp/jlscp-0.7a.tar.bz2
+tar -xjf jlscp-0.7a.tar.bz2
 wget -c http://downloads.sourceforge.net/juife/juife-0.4a.tar.bz2
 tar -xjf juife-0.4a.tar.bz2
 cvs -z3 -d:pserver:anonymous@cvs.linuxsampler.org:/var/cvs/linuxsampler co jsampler
@@ -305,7 +305,7 @@ cp ../juife-0.4a/lib/juife.jar lib/required/juife.jar</command></literallayout><
       <para>Then follow the steps in the next section.</para>
     </section>
 
-    <section>
+    <section id="COMPILATION">
       <title>Compilation</title>
 
       <para>To build a JSampler distribution, first set the
@@ -365,6 +365,115 @@ cp ../juife-0.4a/lib/juife.jar lib/required/juife.jar</command></literallayout><
 
       <para>Then copy the jar file from the <code>dist</code> directory to the
       desired location.</para>
+    </section>
+  </chapter>
+
+  <chapter id="USING_ORCHESTRAS">
+    <title>Using Orchestras</title>
+
+    <para>Orchestras feature is like bookmarks/favorites for instruments.
+    Instead of having a thousands of unsorted instruments you can categorize
+    your most used instruments for quick access by adding them to orchestras.
+    You can create an arbitrary number of orchestras and in any orchestra you
+    can add an arbitrary number of instruments.<note>
+        <para>Orchestras are not handled by the back-end (LinuxSampler) and
+        does not depend on the <guilabel>Instruments Database</guilabel>. The
+        orchestras are handled by JSampler and are stored on the local machine
+        in <code>&lt;jsampler-home&gt;/orchestras.xml</code>. To port the
+        orchestras to another machine just copy that file.</para>
+      </note></para>
+
+    <section id="MANAGING_ORCHESTRAS">
+      <title>Managing Orchestras</title>
+
+      <para>Tool buttons:</para>
+
+      <para><inlinegraphic fileref="images/new16.png" /> <guilabel>Create new
+      orchestra</guilabel></para>
+
+      <para><inlinegraphic fileref="images/edit16.png" /> <guilabel>Edit
+      selected orchestra</guilabel></para>
+
+      <para><inlinegraphic fileref="images/delete16.png" /> <guilabel>Remove
+      selected orchestra</guilabel></para>
+
+      <para>To create a new orchestra, click on the
+      <guilabel>Orchestras</guilabel> tab then click the <guibutton>Create new
+      orchestra</guibutton> button in the <guilabel>Manage
+      Orchestras</guilabel> tool:</para>
+
+      <para><graphic align="center" fileref="images/new-orchestra.png" />Then
+      choose orchestra name and description and click
+      <guibutton>OK</guibutton> button. </para>
+
+      <para>To remove an orchestra, select the orchestra and click the
+      <guibutton>Remove selected orchestra</guibutton> button. To edit an
+      orchestra, select the orchestra and click the <guibutton>Edit selected
+      orchestra</guibutton> button, or just double-click the orchestra to
+      edit.<tip>
+          <para>To change the position of an orchestra in the orchestra list,
+          select the orchestra and use <guilabel>Alt+Up Arrow</guilabel> and
+          <guilabel>Alt+Down Arrow</guilabel> to move the selected orchestra
+          up/down. You can also use <guilabel>Alt+Shift+Up Arow</guilabel> to
+          move the selected orchestra on top and <guilabel>Alt+Shift+Down
+          Arrow</guilabel> to move the selected orchestra to bottom.</para>
+        </tip></para>
+
+      <para></para>
+    </section>
+
+    <section id="MANAGING_INSTRUMENTS">
+      <title>Managing Instruments</title>
+
+      <para>Tool buttons:</para>
+
+      <para><inlinegraphic fileref="images/new16.png" /> <guilabel>Add new
+      instrument</guilabel></para>
+
+      <para><inlinegraphic fileref="images/edit16.png" /> <guilabel>Edit
+      selected instrument</guilabel></para>
+
+      <para><inlinegraphic fileref="images/delete16.png" /> <guilabel>Remove
+      selected instrument</guilabel></para>
+
+      <para>To add a new instrument to orchestra, first select the desired
+      orchestra from the combobox then click the <guilabel>Add new
+      instrument</guilabel> button:</para>
+
+      <para><graphic align="center"
+      fileref="images/add-instrument-to-orchestra.png" /><tip>
+          <para>The easiest way to add an instrument to orchestra is to
+          right-click an instrument in the <guilabel>Instruments
+          Database</guilabel>, then select <guimenu>Add To Orchestra</guimenu>
+          and choose the orchestra to which to add the selected instrument.
+          Note that you can select and add more than one instrument to
+          orchestra at once.</para>
+        </tip>To remove an instrument, select the instrument and click the
+      <guibutton>Remove selected instrument</guibutton> button. To edit an
+      instrument, select the instrument and click the <guibutton>Edit selected
+      instrument</guibutton> button, or just double-click the instrument to
+      edit.<tip>
+          <para>To change the position of an instrument in the instrument
+          list, select the instrument and use <guilabel>Alt+Up
+          Arrow</guilabel> and <guilabel>Alt+Down Arrow</guilabel> to move the
+          selected instrument up/down. You can also use <guilabel>Alt+Shift+Up
+          Arow</guilabel> to move the selected instrument on top and
+          <guilabel>Alt+Shift+Down Arrow</guilabel> to move the selected
+          instrument to bottom.</para>
+        </tip></para>
+    </section>
+
+    <section id="LOADING_ORCHESTRA_INSTRUMENTS">
+      <title>Loading Instruments</title>
+
+      <para>To load an instrument from orchestra to a sampler channel,
+      right-click on the instrument, select <guimenu>Load
+      Instrument</guimenu>, then choose on which channel to load the selected
+      instrument. You can also load an instrument from orchestra to a sampler
+      channel using the instrument chooser of the sampler channel - click
+      <guilabel>Select instrument from orchestra</guilabel> radio button,
+      choose orchestra and isntrument from the comboboxes and click
+      <guibutton>OK</guibutton> button.</para>
     </section>
   </chapter>
 </book>

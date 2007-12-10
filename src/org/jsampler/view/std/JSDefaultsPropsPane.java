@@ -171,6 +171,9 @@ public class JSDefaultsPropsPane extends JPanel {
 			setBorder(BorderFactory.createTitledBorder(s));
 			setAlignmentX(LEFT_ALIGNMENT);
 			
+			// not connected?
+			if(CC.getSamplerModel().getMidiInputDrivers() == null) return;
+			
 			for(Object o : CC.getSamplerModel().getMidiInputDrivers()) {
 				cbDriver.addItem(o);
 			}
@@ -186,6 +189,9 @@ public class JSDefaultsPropsPane extends JPanel {
 		
 		public void
 		apply() {
+			// not connected?
+			if(CC.getSamplerModel().getMidiInputDrivers() == null) return;
+			
 			Object o = cbDriver.getSelectedItem();
 			if(o == null) {
 				preferences().setStringProperty(DEFAULT_MIDI_DRIVER, null);
@@ -221,6 +227,9 @@ public class JSDefaultsPropsPane extends JPanel {
 			setBorder(BorderFactory.createTitledBorder(s));
 			setAlignmentX(LEFT_ALIGNMENT);
 			
+			// not connected?
+			if(CC.getSamplerModel().getAudioOutputDrivers() == null) return;
+			
 			for(Object o : CC.getSamplerModel().getAudioOutputDrivers()) {
 				cbDriver.addItem(o);
 			}
@@ -236,6 +245,9 @@ public class JSDefaultsPropsPane extends JPanel {
 		
 		public void
 		apply() {
+			// not connected?
+			if(CC.getSamplerModel().getAudioOutputDrivers() == null) return;
+			
 			Object o = cbDriver.getSelectedItem();
 			if(o == null) {
 				preferences().setStringProperty(DEFAULT_AUDIO_DRIVER, null);

@@ -79,7 +79,9 @@ public class JSQuitDlg extends EnhancedDialog {
 		setLocation(JuifeUtils.centerLocation(this, CC.getMainFrame()));
 		
 		btnQuit.requestFocus();
+		btnQuit.setMnemonic('q');
 		
+		btnExport.setMnemonic('x');
 		btnExport.addActionListener(new ActionListener() {
 			public void
 			actionPerformed(ActionEvent e) {
@@ -94,6 +96,7 @@ public class JSQuitDlg extends EnhancedDialog {
 			}
 		});
 		
+		btnDontQuit.setMnemonic('n');
 		btnDontQuit.addActionListener(new ActionListener() {
 			public void
 			actionPerformed(ActionEvent e) {

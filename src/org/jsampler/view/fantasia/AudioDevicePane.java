@@ -159,7 +159,7 @@ public class AudioDevicePane extends DevicePane {
 				audioDeviceModel.getDeviceInfo().getChannelsParameter();
 			int min = 1;
 			if(prm.getRangeMin() != null) min = prm.getRangeMin().intValue();
-			int max = 50;
+			int max = 10000;
 			if(prm.getRangeMax() != null) max = prm.getRangeMax().intValue();
 			
 			spinnerChannels = new JSpinner(new SpinnerNumberModel(1, min, max, 1));
@@ -310,12 +310,16 @@ public class AudioDevicePane extends DevicePane {
 		
 		private void
 		updateParams(AudioOutputDevice d) {
+			Parameter p = d.getSampleRateParameter();
+			boolean b = p == null || p.getName() == null || p.getValue() == null;
 			Parameter[] params = d.getAdditionalParameters();
-			Parameter[] p2s = new Parameter[params.length + 1];
+			Parameter[] p2s;
+			if(b) p2s = new Parameter[params.length];
+			else p2s = new Parameter[params.length + 1];
 			
 			for(int i = 0; i < params.length; i++) p2s[i] = params[i];
 			
-			p2s[params.length] = d.getSampleRateParameter();
+			if(!b) p2s[params.length] = p;
 			
 			additionalParamsTable.getModel().setParameters(p2s);
 		}

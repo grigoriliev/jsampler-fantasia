@@ -818,6 +818,11 @@ public class CC {
 				lscpCLient.setChannelMidiInputChannel(chnId, chn.getMidiInputChannel());
 			}
 			
+			if(chn.getEngine() != null) {
+				lscpCLient.loadSamplerEngine(chn.getEngine().getName(), chnId);
+				lscpCLient.setChannelVolume(chnId, chn.getVolume());
+			}
+			
 			id = chn.getAudioOutputDevice();
 			if(id != -1) {
 				for(int i = 0; i < sm.getAudioDeviceCount(); i++) {
@@ -835,11 +840,6 @@ public class CC {
 					
 					lscpCLient.setChannelAudioOutputChannel(chnId, j, k);
 				}
-			}
-			
-			if(chn.getEngine() != null) {
-				lscpCLient.loadSamplerEngine(chn.getEngine().getName(), chnId);
-				lscpCLient.setChannelVolume(chnId, chn.getVolume());
 			}
 			
 			String s = chn.getInstrumentFile();

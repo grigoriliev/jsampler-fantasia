@@ -4,6 +4,7 @@ CVS HEAD
     - fixed a null pointer exception in the AudioDevicePane, when JACK
       driver is used and the additional device parameters are shown.
     - fixed bug #76
+    - fixed bug #77
 
 JSampler v0.8a: 2007-12-06
   * Added new menu item: Help/Online Tutorial

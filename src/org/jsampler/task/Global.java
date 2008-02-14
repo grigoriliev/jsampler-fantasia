@@ -164,4 +164,9 @@ public class Global {
 			}
 		}
 	}
+	
+	public static class DummyTask extends EnhancedTask {
+		public void
+		run() { }
+	}
 }

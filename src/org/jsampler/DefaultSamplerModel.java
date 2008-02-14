@@ -895,6 +895,46 @@ public class DefaultSamplerModel implements SamplerModel {
 	public void
 	setModified(boolean b) { modified = b; }
 	
+	/** Resets the model. */
+	public void
+	reset() {
+		removeAllMidiInstrumentMaps();
+		
+		for(int i = channelModels.size() - 1; i >= 0; i--) {
+			SamplerChannelModel m = channelModels.get(i);
+			channelModels.remove(i);
+			fireSamplerChannelRemoved(m);
+		}
+		
+		for(int i = midiDeviceModels.size() - 1; i >= 0; i--) {
+			MidiDeviceModel m = midiDeviceModels.get(i);
+			midiDeviceModels.remove(i);
+			fireMidiDeviceRemoved(m);
+		}
+		
+		for(int i = audioDeviceModels.size() - 1; i >= 0; i--) {
+			AudioDeviceModel m = audioDeviceModels.get(i);
+			audioDeviceModels.remove(i);
+			fireAudioDeviceRemoved(m);
+		}
+		
+		setServerInfo(null);
+		setAudioOutputDrivers(null);
+		setMidiInputDrivers(null);
+		setEngines(null);
+		
+		setVolume(0);
+		setModified(false);
+		
+		totalStreamCount = 0;
+		totalVoiceCount = 0;
+		totalVoiceCountMax = 0;
+		
+		fireTotalStreamCountChanged();
+		fireTotalVoiceCountChanged();
+		fireDefaultMapChanged();
+	}
+	
 	/**
 	 * Notifies listeners that a sampler channel has been added.
 	 * This method can be invoked outside the event-dispatching thread.

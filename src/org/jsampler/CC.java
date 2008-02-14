@@ -42,6 +42,9 @@ import java.util.logging.StreamHandler;
 
 import javax.swing.Timer;
 
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import net.sf.juife.Task;
 import net.sf.juife.TaskQueue;
 
@@ -77,6 +80,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import static org.jsampler.JSI18n.i18n;
+import static org.jsampler.JSPrefs.MANUAL_SERVER_SELECT_ON_STARTUP;
 
 
 /**
@@ -144,6 +148,9 @@ public class CC {
 	 */
 	public static JSViewConfig
 	getViewConfig() { return viewConfig; }
+	
+	private static JSPrefs
+	preferences() { return getViewConfig().preferences(); }
 	
 	/**
 	 * Sets the configuration of the current view.
@@ -232,9 +239,6 @@ public class CC {
 		CC.getLogger().fine("CC.jsStarted");
 		
 		HF.setUIDefaultFont(Prefs.getInterfaceFont());
-		
-		getClient().setServerAddress(Prefs.getLSAddress());
-		getClient().setServerPort(Prefs.getLSPort());
 		
 		timer.setRepeats(false);
 		
@@ -372,7 +376,24 @@ public class CC {
 	public static OrchestraListModel
 	getOrchestras() { return orchestras; }
 	
+	private final static ServerList servers = new ServerList();
+	
+	/** Returns the server list. */
+	public static ServerList
+	getServerList() { return servers; }
+	
+	private static ServerListListener serverListListener = new ServerListListener();
+	
+	private static class ServerListListener implements ChangeListener {
+		public void
+		stateChanged(ChangeEvent e) {
+			saveServerList();
+		}
+	}
+	
+	private static final Vector<ChangeListener> idtmListeners = new Vector<ChangeListener>();
 	private static InstrumentsDbTreeModel instrumentsDbTreeModel = null;
+	
 	/**
 	 * Gets the tree model of the instruments database.
 	 * If the currently used view doesn't have instruments
@@ -387,9 +408,20 @@ public class CC {
 		
 		if(instrumentsDbTreeModel == null) {
 			instrumentsDbTreeModel = new InstrumentsDbTreeModel();
+			for(ChangeListener l : idtmListeners) l.stateChanged(null);
 		}
 		
 		return instrumentsDbTreeModel;
+	}
+	
+	public static void
+	addInstrumentsDbChangeListener(ChangeListener l) {
+		idtmListeners.add(l);
+	}
+	
+	public static void
+	removeInstrumentsDbChangeListener(ChangeListener l) {
+		idtmListeners.remove(l);
 	}
 	
 	/**
@@ -405,8 +437,6 @@ public class CC {
 		
 		try {
 			String s = getJSamplerHome();
-			if(s == null) return;
-			getOrchestras().addOrchestraListListener(getHandler());
 			
 			File f = new File(s + File.separator + "orchestras.xml.bkp");
 			if(f.isFile()) HF.createBackup("orchestras.xml.bkp", "orchestras.xml.rec");
@@ -419,6 +449,8 @@ public class CC {
 		} catch(Exception x) {
 			getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
 		}
+		
+		getOrchestras().addOrchestraListListener(getHandler());
 	}
 	
 	
@@ -464,6 +496,87 @@ public class CC {
 			HF.deleteFile("orchestras.xml.bkp");
 		} catch(Exception x) {
 			HF.showErrorMessage(x, "Saving orchestras: ");
+			return;
+		}
+	}
+	
+	/**
+	 * Loads the servers' info described in <code>&lt;jsampler_home&gt;/servers.xml</code>.
+	 * If file with name <code>servers.xml.bkp</code> exist in the JSampler's home
+	 * directory, this means that the last save has failed. In that case a recovery file
+	 * <code>servers.xml.rec</code> is created and a recovery procedure
+	 * will be initiated.
+	 */
+	public static void
+	loadServerList() {
+		if(getJSamplerHome() == null) return;
+		
+		try {
+			String s = getJSamplerHome();
+			
+			File f = new File(s + File.separator + "servers.xml.bkp");
+			if(f.isFile()) HF.createBackup("servers.xml.bkp", "servers.xml.rec");
+			
+			FileInputStream fis;
+			fis = new FileInputStream(s + File.separator + "servers.xml");
+			
+			loadServerList(fis);
+			fis.close();
+		} catch(Exception x) {
+			getLogger().log(Level.INFO, HF.getErrorMessage(x), x);
+		}
+		
+		getServerList().addChangeListener(serverListListener);
+		
+		/* We should have at least one server to connect. */
+		if(getServerList().getServerCount() == 0) {
+			Server server = new Server();
+			server.setName("127.0.0.1:8888");
+			server.setAddress("127.0.0.1");
+			server.setPort(8888);
+			getServerList().addServer(server);
+		}
+	}
+	
+	
+	private static void
+	loadServerList(InputStream in) {
+		Document doc = DOMUtils.readObject(in);
+		
+		try { getServerList().readObject(doc.getDocumentElement()); }
+		catch(Exception x) {
+			HF.showErrorMessage(x, "Loading server list: ");
+			return;
+		}
+	}
+	
+	private static void
+	saveServerList() {
+		try {
+			String s = getJSamplerHome();
+			if(s == null) return;
+			
+			HF.createBackup("servers.xml", "servers.xml.bkp");
+			
+			FileOutputStream fos;
+			fos = new FileOutputStream(s + File.separator + "servers.xml", false);
+			
+			Document doc = DOMUtils.createEmptyDocument();
+		
+			Node node = doc.createElement("temp");
+			doc.appendChild(node);
+			
+			getServerList().writeObject(doc, doc.getDocumentElement());
+			
+			doc.replaceChild(node.getFirstChild(), node);
+		
+			DOMUtils.writeObject(doc, fos);
+			
+			fos.close();
+			
+			HF.deleteFile("servers.xml.bkp");
+		} catch(Exception x) {
+			HF.showErrorMessage(x, "Saving server list: ");
 			return;
 		}
 	}
@@ -524,19 +637,50 @@ public class CC {
 	getSamplerModel() { return samplerModel; }
 	
 	/**
+	 * Connects to LinuxSampler.
+	 */
+	public static void
+	connect() { initSamplerModel(); }
+	
+	/**
 	 * Reconnects to LinuxSampler.
 	 */
 	public static void
-	reconnect() {
-		initSamplerModel();
-		fireReconnectEvent();
+	reconnect() { initSamplerModel(getCurrentServer()); }
+	
+	private static Server currentServer = null;
+	
+	/**
+	 * Gets the server, to which the frontend is going to connect
+	 * or is already connected.
+	 */
+	public static Server
+	getCurrentServer() { return currentServer; }
+	
+	/**
+	 * Sets the current server.
+	 */
+	public static void
+	setCurrentServer(Server server) { currentServer = server; }
+	
+	/**
+	 * This method updates the information about the backend state.
+	 */
+	private static void
+	initSamplerModel() {
+		Server srv = getMainFrame().getServer();
+		if(srv == null) return;
+		initSamplerModel(srv);
 	}
 	
 	/**
 	 * This method updates the information about the backend state.
 	 */
-	public static void
-	initSamplerModel() {
+	private static void
+	initSamplerModel(Server srv) {
+		setCurrentServer(srv);
+		final SetServerAddress ssa = new SetServerAddress(srv.getAddress(), srv.getPort());
+		
 		final DefaultSamplerModel model = (DefaultSamplerModel)getSamplerModel();
 		
 		final Global.GetServerInfo gsi = new Global.GetServerInfo();
@@ -624,7 +768,11 @@ public class CC {
 		cnt.addTaskListener(new TaskListener() {
 			public void
 			taskPerformed(TaskEvent e) {
-				if(cnt.doneWithErrors()) return;
+				if(cnt.doneWithErrors()) {
+					setCurrentServer(null);
+					retryToConnect();
+					return;
+				}
 				
 				getTaskQueue().add(gsi);
 				getTaskQueue().add(gaod);
@@ -637,7 +785,38 @@ public class CC {
 				getTaskQueue().add(uc);
 			}
 		});
-		getTaskQueue().add(cnt);
+		
+		ssa.addTaskListener(new TaskListener() {
+			public void
+			taskPerformed(TaskEvent e) {
+				CC.getTaskQueue().add(cnt);
+			}
+		});
+		
+		getSamplerModel().reset();
+		if(instrumentsDbTreeModel != null) {
+			instrumentsDbTreeModel.reset();
+			instrumentsDbTreeModel = null;
+		}
+		
+		getTaskQueue().removePendingTasks();
+		getTaskQueue().add(ssa);
+		
+		fireReconnectEvent();
+	}
+	
+	private static void
+	retryToConnect() {
+		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+			public void
+			run() { changeBackend(); }
+		});
+	}
+	
+	public static void
+	changeBackend() {
+		Server s = getMainFrame().getServer(true);
+		if(s != null) initSamplerModel(s);
 	}
 	
 	private static class GetFxSendsListener implements TaskListener {
@@ -870,6 +1049,29 @@ public class CC {
 		} catch(Exception e) {
 			CC.getLogger().log(Level.FINE, HF.getErrorMessage(e), e);
 		}
+	}
+	
+	public static void
+	scheduleInTaskQueue(final Runnable r) {
+		Task dummy = new Global.DummyTask();
+		dummy.addTaskListener(new TaskListener() {
+			public void
+			taskPerformed(TaskEvent e) {
+				javax.swing.SwingUtilities.invokeLater(r);
+			}
+		});
+		
+		CC.getTaskQueue().add(dummy);
+	}
+	
+	public static boolean
+	verifyConnection() {
+		if(getCurrentServer() == null) {
+			HF.showErrorMessage(i18n.getError("CC.notConnected"));
+			return false;
+		}
+		
+		return true;
 	}
 	
 	

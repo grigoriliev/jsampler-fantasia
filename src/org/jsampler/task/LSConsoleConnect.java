@@ -60,8 +60,8 @@ public class LSConsoleConnect extends EnhancedTask<Socket> {
 	public void
 	run() {
 		try {
-			String address = CC.getClient().getServerAddress();
-			int port = CC.getClient().getServerPort();
+			String address = CC.getCurrentServer().getAddress();
+			int port = CC.getCurrentServer().getPort();
 			
 			if(oldSocket != null) oldSocket.close();
 			InetSocketAddress sockAddr = new InetSocketAddress(address, port);

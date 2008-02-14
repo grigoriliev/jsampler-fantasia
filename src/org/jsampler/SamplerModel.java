@@ -495,4 +495,7 @@ public interface SamplerModel {
 	 * Sets whether the sampler configuration is modified.
 	 */
 	public void setModified(boolean b);
+	
+	/** Resets the model. */
+	public void reset();
 }

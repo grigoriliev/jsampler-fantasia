@@ -88,8 +88,6 @@ public class DefaultLSConsoleModel implements LSConsoleModel {
 	/** Creates a new instance of <code>DefaultLSConsoleModel</code>. */
 	public
 	DefaultLSConsoleModel() {
-		reconnect();
-		
 		CC.addReconnectListener(new ActionListener() {
 			public void
 			actionPerformed(ActionEvent e) { reconnect(); }

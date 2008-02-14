@@ -59,7 +59,8 @@ public class JSampler {
 			run() {
 				CC.checkJSamplerHome();
 				CC.loadOrchestras();
-				CC.reconnect();
+				CC.loadServerList();
+				CC.connect();
 			}
 		});
 	}

@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -22,23 +22,45 @@
 
 package org.jsampler.view.std;
 
+import java.awt.Dialog;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Window;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import net.sf.juife.JuifeUtils;
+
 import org.jsampler.CC;
+import org.jsampler.HF;
+import org.jsampler.JSPrefs;
 import org.jsampler.Prefs;
 
 import org.jsampler.task.SetServerAddress;
 
+import org.jsampler.view.ServerTable;
+import org.jsampler.view.ServerTableModel;
+
 import static org.jsampler.view.std.StdI18n.i18n;
+import static org.jsampler.view.std.StdPrefs.*;
 
 
 /**
@@ -46,107 +68,190 @@ import static org.jsampler.view.std.StdI18n.i18n;
  * @author Grigor Iliev
  */
 public class JSConnectionPropsPane extends JPanel {
-	private final JLabel lAddress = new JLabel(i18n.getLabel("JSConnectionPropsPane.address"));
-	private final JLabel lPort = new JLabel(i18n.getLabel("JSConnectionPropsPane.port"));
-	private final JTextField tfAddress = new JTextField();
-	private final JTextField tfPort = new JTextField();
+	private final JCheckBox checkManualSelect =
+		new JCheckBox(i18n.getLabel("JSConnectionPropsPane.checkManualSelect"));
+	
+	private final ServerListPane serverListPane;
 	
 	
 	/** Creates a new instance of <code>JSConnectionPropsPane</code> */
 	public
 	JSConnectionPropsPane() {
-		GridBagLayout gridbag = new GridBagLayout();
-		GridBagConstraints c = new GridBagConstraints();
-	
-		setLayout(gridbag);
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
-		// Set preferred size for username & password fields
-		int w1 = (int) tfAddress.getMinimumSize().getWidth();
-		int h1 = (int) tfAddress.getMinimumSize().getHeight();
-		Dimension d = new Dimension(w1 > 150 ? w1 : 150, h1);
-		tfAddress.setMinimumSize(d);
-		tfAddress.setPreferredSize(d);
-	
-		w1 = (int) tfPort.getMinimumSize().getWidth();
-		h1 = (int) tfPort.getMinimumSize().getHeight();
-		d = new Dimension(w1 > 150 ? w1 : 150, h1);
-		tfPort.setMinimumSize(d);
-		tfPort.setPreferredSize(d);
-	
-		c.fill = GridBagConstraints.NONE;
-	
-		c.gridx = 0;
-		c.gridy = 0;
-		c.anchor = GridBagConstraints.EAST;
-		c.insets = new Insets(3, 3, 3, 3);
-		gridbag.setConstraints(lAddress, c);
-		add(lAddress); 
-
-		c.gridx = 0;
-		c.gridy = 1;
-		gridbag.setConstraints(lPort, c);
-		add(lPort);
-	
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridx = 1;
-		c.gridy = 0;
-		c.weightx = 1.0;
-		c.anchor = GridBagConstraints.WEST;
-		gridbag.setConstraints(tfAddress, c);
-		add(tfAddress);
+		boolean b = preferences().getBoolProperty(MANUAL_SERVER_SELECT_ON_STARTUP);
+		checkManualSelect.setSelected(b);
 		
-		c.gridx = 1;
-		c.gridy = 1;
-		gridbag.setConstraints(tfPort, c);
-		add(tfPort);
-		
-		String s = i18n.getLabel("JSConnectionPropsPane.title");
-		setBorder(BorderFactory.createTitledBorder(s));
-		setMaximumSize(new Dimension(Short.MAX_VALUE, getPreferredSize().height));
+		checkManualSelect.setAlignmentX(LEFT_ALIGNMENT);
+		add(checkManualSelect);
+		add(Box.createRigidArea(new Dimension(0, 6)));
+		serverListPane = createServerListPane();
+		add(serverListPane);
+		setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
 	}
 	
-	public String
-	getLSAddress() { return tfAddress.getText(); }
+	private ServerListPane
+	createServerListPane() {
+		ServerListPane p = new ServerListPane();
+		p.setPreferredSize(new Dimension(200, 200));
+		p.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
+		
+		String s = i18n.getLabel("JSConnectionPropsPane.title");
+		p.setBorder(BorderFactory.createTitledBorder(s));
+		p.setAlignmentX(LEFT_ALIGNMENT);
+		
+		return p;
+	}
 	
-	public void
-	setLSAddress(String address) { tfAddress.setText(address); }
-	
-	public String
-	getLSPort() { return tfPort.getText(); }
-	
-	public void
-	setLSPort(String port) { tfPort.setText(port); }
+	private static JSPrefs
+	preferences() { return CC.getViewConfig().preferences(); }
 	
 	public void
 	apply() {
-		Prefs.setLSAddress(getLSAddress());
+		boolean b = checkManualSelect.isSelected();
+		preferences().setBoolProperty(MANUAL_SERVER_SELECT_ON_STARTUP, b);
 		
-		boolean b = true;
-		String s = getLSPort();
-		try {
-			if(s.length() > 0) {
-				int port = Integer.parseInt(s);
-				if(port > 0 && port < 0xffff)
-					Prefs.setLSPort(port);
-				else b = false;
-			} else Prefs.setLSPort(-1);	// -1 resets to default value
-		} catch(NumberFormatException x) {
-			b = false;
-		}
+		int i = serverListPane.serverTable.getSelectedRow();
+		if(i != -1) preferences().setIntProperty(SERVER_INDEX, i);
+	}
+	
+	public static class ServerListPane extends JPanel {
+		protected final ServerTable serverTable;
 		
-		if(!b) {
-			JOptionPane.showMessageDialog (
-				this, 
-				i18n.getError("JSConnectionPropsPane.invalidPort", s),
-				i18n.getError("error"),
-				JOptionPane.ERROR_MESSAGE
-			);
+		private final JButton btnAdd = new JButton(i18n.getButtonLabel("add"));
+		private final JButton btnRemove = new JButton(i18n.getButtonLabel("remove"));
+		
+		private final JButton btnMoveUp =
+			new JButton(i18n.getButtonLabel("JSConnectionPropsPane.btnMoveUp"));
+		
+		private final JButton btnMoveDown =
+			new JButton(i18n.getButtonLabel("JSConnectionPropsPane.btnMoveDown"));
+		
+		public
+		ServerListPane() {
+			setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 			
-			return;
+			ServerTableModel model = new ServerTableModel(CC.getServerList());
+			serverTable = new ServerTable(model);
+			
+			add(new JScrollPane(serverTable));
+			
+			int h = btnAdd.getPreferredSize().height;
+			btnAdd.setMaximumSize(new Dimension(Short.MAX_VALUE, h));
+			
+			h = btnRemove.getPreferredSize().height;
+			btnRemove.setMaximumSize(new Dimension(Short.MAX_VALUE, h));
+			
+			h = btnMoveUp.getPreferredSize().height;
+			btnMoveUp.setMaximumSize(new Dimension(Short.MAX_VALUE, h));
+			
+			h = btnMoveDown.getPreferredSize().height;
+			btnMoveDown.setMaximumSize(new Dimension(Short.MAX_VALUE, h));
+			
+			JPanel p = new JPanel();
+			p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+			p.add(btnAdd);
+			p.add(Box.createRigidArea(new Dimension(0, 5)));
+			p.add(btnRemove);
+			p.add(Box.createRigidArea(new Dimension(0, 17)));
+			p.add(btnMoveUp);
+			p.add(Box.createRigidArea(new Dimension(0, 5)));
+			p.add(btnMoveDown);
+			p.add(Box.createGlue());
+			
+			p.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
+			
+			add(p);
+			
+			installListeners();
+			
+			int i = preferences().getIntProperty(JSPrefs.SERVER_INDEX);
+			int size = CC.getServerList().getServerCount();
+			if(size > 0) {
+				if(i < 0 || i >= size) {
+					serverTable.getSelectionModel().setSelectionInterval(0, 0);
+				} else {
+					serverTable.getSelectionModel().setSelectionInterval(i, i);
+				}
+			}
 		}
 		
-		CC.getTaskQueue().add (
-			new SetServerAddress(Prefs.getLSAddress(), Prefs.getLSPort())
-		);
+		private void
+		installListeners() {
+			btnAdd.addActionListener(new ActionListener() {
+				public void
+				actionPerformed(ActionEvent e) { addServer(); }
+			});
+			
+			btnRemove.addActionListener(new ActionListener() {
+				public void
+				actionPerformed(ActionEvent e) {
+					removeServer();
+				}
+			});
+			
+			btnMoveUp.addActionListener(new ActionListener() {
+				public void
+				actionPerformed(ActionEvent e) {
+					serverTable.moveSelectedServerUp();
+				}
+			});
+			
+			btnMoveDown.addActionListener(new ActionListener() {
+				public void
+				actionPerformed(ActionEvent e) {
+					serverTable.moveSelectedServerDown();
+				}
+			});
+			
+			ServerSelectionHandler l = new ServerSelectionHandler();
+			serverTable.getSelectionModel().addListSelectionListener(l);
+		}
+		
+		private void
+		addServer() {
+			int i = serverTable.getSelectedRow();
+			
+			JSAddServerDlg dlg;
+			Window w = JuifeUtils.getWindow(this);
+			if(w instanceof Dialog) dlg = new JSAddServerDlg((Dialog)w);
+			else if(w instanceof Frame) dlg = new JSAddServerDlg((Frame)w);
+			else dlg = new JSAddServerDlg(CC.getMainFrame());
+			
+			dlg.setVisible(true);
+			if(dlg.isCancelled()) return;
+			
+			serverTable.getSelectionModel().setSelectionInterval(i, i);
+		}
+		
+		private void
+		removeServer() {
+			if(CC.getServerList().getServerCount() < 2) {
+				Window w = JuifeUtils.getWindow(this);
+				String s = i18n.getError("JSConnectionPropsPane.cantRemove");
+				if(w instanceof Dialog) HF.showErrorMessage(s, (Dialog)w);
+				else if(w instanceof Frame) HF.showErrorMessage(s, (Frame)w);
+				return;
+			}
+			
+			serverTable.removeSelectedServer();
+		}
+		
+		private class ServerSelectionHandler implements ListSelectionListener {
+			public void
+			valueChanged(ListSelectionEvent e) {
+				if(e.getValueIsAdjusting()) return;
+				
+				if(serverTable.getSelectedServer() == null) {
+					btnMoveUp.setEnabled(false);
+					btnMoveDown.setEnabled(false);
+					return;
+				}
+				
+				int idx = serverTable.getSelectedRow();
+				btnMoveUp.setEnabled(idx != 0);
+				btnMoveDown.setEnabled(idx != serverTable.getRowCount() - 1);
+			}
+		}
 	}
 }

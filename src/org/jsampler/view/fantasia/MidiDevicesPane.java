@@ -268,6 +268,7 @@ public class MidiDevicesPane extends JPanel {
 		
 		private void
 		showHidePopup() {
+			if(!CC.verifyConnection()) return;
 			getCreateDevicePane().setCollapsed(!getCreateDevicePane().isCollapsed());
 		}
 		

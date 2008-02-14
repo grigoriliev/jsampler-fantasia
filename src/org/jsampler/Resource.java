@@ -45,15 +45,15 @@ public class Resource {
 	Resource() { }
 	
 	/**
-	 * Registers the specified listener to be notified when the instrument settings are changed.
-	 * @param l The <code>OrchestraListener</code> to register.
+	 * Registers the specified listener to be notified when the resource info is changed.
+	 * @param l The <code>ChangeListener</code> to register.
 	 */
 	public void
 	addChangeListener(ChangeListener l) { listeners.add(l); }
 	
 	/**
 	 * Removes the specified listener.
-	 * @param l The <code>OrchestraListener</code> to remove.
+	 * @param l The <code>ChangeListener</code> to remove.
 	 */
 	public void
 	removeChangeListener(ChangeListener l) { listeners.remove(l); }

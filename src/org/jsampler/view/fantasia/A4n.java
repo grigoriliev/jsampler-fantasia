@@ -57,16 +57,6 @@ public class A4n extends StdA4n {
 		return FantasiaPrefs.preferences();
 	}
 	
-	private static boolean
-	verifyConnection() {
-		if(!CC.getClient().isConnected()) {
-			HF.showErrorMessage(i18n.getError("A4n.notConnected"));
-			return false;
-		}
-		
-		return true;
-	}
-	
 	public final Action samplerInfo = new SamplerInfo();
 	
 	private static class SamplerInfo extends AbstractAction {
@@ -95,7 +85,7 @@ public class A4n extends StdA4n {
 		
 		public void
 		actionPerformed(ActionEvent e) {
-			((MainFrame)CC.getMainFrame()).runScript();
+			if(!((MainFrame)CC.getMainFrame()).runScript()) return;
 			
 			if(preferences().getBoolProperty(SHOW_LS_CONSOLE_WHEN_RUN_SCRIPT)) {
 				windowLSConsole.actionPerformed(null);
@@ -116,7 +106,7 @@ public class A4n extends StdA4n {
 		
 		public void
 		actionPerformed(ActionEvent e) {
-			if(!verifyConnection()) return;
+			if(!CC.verifyConnection()) return;
 			new JSNewMidiDeviceDlg(CC.getMainFrame()).setVisible(true);
 		}
 	}
@@ -134,7 +124,7 @@ public class A4n extends StdA4n {
 		
 		public void
 		actionPerformed(ActionEvent e) {
-			if(!verifyConnection()) return;
+			if(!CC.verifyConnection()) return;
 			new JSNewAudioDeviceDlg(CC.getMainFrame()).setVisible(true);
 		}
 	}
@@ -188,6 +178,8 @@ public class A4n extends StdA4n {
 		
 		public void
 		actionPerformed(ActionEvent e) {
+			if(!CC.verifyConnection()) return;
+			
 			if(CC.getInstrumentsDbTreeModel() == null) {
 				String s = i18n.getMessage("A4n.noInstrumentsDbSupport!");
 				HF.showErrorMessage(s, CC.getMainFrame());

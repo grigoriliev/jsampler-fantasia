@@ -100,9 +100,6 @@ public class PrefsDlg extends EnhancedDialog {
 		installListeners();
 		
 		setLocation(JuifeUtils.centerLocation(this, frm));
-		
-		connectionPane.setLSAddress(Prefs.getLSAddress());
-		connectionPane.setLSPort(String.valueOf(Prefs.getLSPort()));
 	}
 	
 	private void
@@ -115,8 +112,8 @@ public class PrefsDlg extends EnhancedDialog {
 		JPanel p = new JPanel();
 		p.setLayout(new BorderLayout());
 		p.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
-		p.add(connectionPane, BorderLayout.NORTH);
-		tp.addTab(i18n.getLabel("PrefsDlg.tabConnection"), p);
+		p.add(connectionPane);
+		tp.addTab(i18n.getLabel("PrefsDlg.tabBackend"), p);
 		tp.addTab(i18n.getLabel("PrefsDlg.tabDefaults"), defaultsPane);
 		
 		tp.setAlignmentX(RIGHT_ALIGNMENT);

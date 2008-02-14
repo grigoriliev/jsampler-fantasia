@@ -37,6 +37,7 @@ import javax.swing.JFrame;
 import org.jsampler.CC;
 import org.jsampler.JSampler;
 import org.jsampler.Prefs;
+import org.jsampler.Server;
 
 import org.jsampler.event.SamplerChannelListEvent;
 import org.jsampler.event.SamplerChannelListListener;
@@ -156,6 +157,19 @@ public abstract class JSMainFrame extends JFrame {
 	 * @return The selected <code>JSChannelsPane</code>.
 	 */
 	public abstract JSChannelsPane getSelectedChannelsPane();
+	
+	/**
+	 * Gets the server address to which to connect. If the server should be
+	 * manually selected, a dialog asking the user to choose a server is displayed.
+	 */
+	public abstract Server getServer();
+	
+	/**
+	 * Gets the server address to which to connect. If the server should be
+	 * manually selected, a dialog asking the user to choose a server is displayed.
+	 * @param manualSelect Determines whether the server should be manually selected.
+	 */
+	public abstract Server getServer(boolean manualSelect);
 	
 	/**
 	 * Sets the <code>JSChannelsPane</code> to be selected.

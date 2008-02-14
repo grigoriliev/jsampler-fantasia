@@ -71,12 +71,14 @@ import net.sf.juife.TitleBar;
 import org.jsampler.CC;
 import org.jsampler.HF;
 import org.jsampler.LSConsoleModel;
+import org.jsampler.Server;
 
 import org.jsampler.view.JSChannel;
 import org.jsampler.view.JSChannelsPane;
 import org.jsampler.view.JSMainFrame;
 import org.jsampler.view.LscpFileFilter;
 
+import org.jsampler.view.std.JSConnectDlg;
 import org.jsampler.view.std.JSDetailedErrorDlg;
 import org.jsampler.view.std.JSQuitDlg;
 import org.jsampler.view.std.JSamplerHomeChooser;
@@ -236,7 +238,8 @@ public class MainFrame extends JSMainFrame {
 	/** Invoked when this window is about to close. */
 	protected void
 	onWindowClose() {
-		if(CC.getSamplerModel().isModified()) {
+		boolean b = preferences().getBoolProperty(CONFIRM_APP_QUIT);
+		if(b && CC.getSamplerModel().isModified()) {
 			JSQuitDlg dlg = new JSQuitDlg(Res.iconQuestion32);
 			dlg.setVisible(true);
 			if(dlg.isCancelled()) return;
@@ -284,12 +287,16 @@ public class MainFrame extends JSMainFrame {
 		// Actions
 		m = new FantasiaMenu(i18n.getMenuLabel("actions"));
 		
-		mi = new JMenuItem(a4n.connect);
+		mi = new JMenuItem(a4n.refresh);
 		mi.setIcon(null);
-		//mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_MASK));
+		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
 		m.add(mi);
 		
 		mi = new JMenuItem(a4n.samplerInfo);
+		mi.setIcon(null);
+		m.add(mi);
+		
+		mi = new JMenuItem(a4n.resetSampler);
 		mi.setIcon(null);
 		m.add(mi);
 		
@@ -311,6 +318,7 @@ public class MainFrame extends JSMainFrame {
 		
 		mi = new JMenuItem(a4n.loadScript);
 		mi.setIcon(null);
+		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_MASK));
 		m.add(mi);
 		
 		String[] list = preferences().getStringListProperty(RECENT_LSCP_SCRIPTS);
@@ -319,6 +327,13 @@ public class MainFrame extends JSMainFrame {
 		updateRecentScriptsMenu();
 		
 		m.add(recentScriptsMenu);
+		
+		m.addSeparator();
+		
+		mi = new JMenuItem(a4n.changeBackend);
+		mi.setIcon(null);
+		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, KeyEvent.CTRL_MASK));
+		m.add(mi);
 		
 		m.addSeparator();
 		
@@ -492,6 +507,37 @@ public class MainFrame extends JSMainFrame {
 		dlg.setVisible(true);
 	}
 	
+	/**
+	 * Gets the server address to which to connect. If the server should be
+	 * manually selected, a dialog asking the user to choose a server is displayed.
+	 */
+	public Server
+	getServer() {
+		boolean b = preferences().getBoolProperty(MANUAL_SERVER_SELECT_ON_STARTUP);
+		return getServer(b);
+	}
+	
+	/**
+	 * Gets the server address to which to connect. If the server should be
+	 * manually selected, a dialog asking the user to choose a server is displayed.
+	 * @param manualSelect Determines whether the server should be manually selected.
+	 */
+	public Server
+	getServer(boolean manualSelect) {
+		if(manualSelect) {
+			JSConnectDlg dlg = new JSConnectDlg();
+			dlg.setVisible(true);
+			return dlg.getSelectedServer();
+		}
+		
+		int i = preferences().getIntProperty(SERVER_INDEX);
+		int size = CC.getServerList().getServerCount();
+		if(size == 0) return null;
+		if(i >= size) return CC.getServerList().getServer(0);
+		
+		return CC.getServerList().getServer(i);
+	}
+	
 	protected LSConsoleModel
 	getLSConsoleModel() { return getLSConsolePane().getModel(); }
 	
@@ -503,18 +549,20 @@ public class MainFrame extends JSMainFrame {
 	protected LSConsoleFrame
 	getLSConsoleFrame() { return lsConsoleFrame; }
 	
-	protected void
+	protected boolean
 	runScript() {
 		String s = preferences().getStringProperty("lastScriptLocation");
 		JFileChooser fc = new JFileChooser(s);
 		fc.setFileFilter(new LscpFileFilter());
 		int result = fc.showOpenDialog(this);
-		if(result != JFileChooser.APPROVE_OPTION) return;
+		if(result != JFileChooser.APPROVE_OPTION) return false;
 		
 		String path = fc.getCurrentDirectory().getAbsolutePath();
 		preferences().setStringProperty("lastScriptLocation", path);
 					
 		runScript(fc.getSelectedFile());
+		
+		return true;
 	}
 	
 	private void

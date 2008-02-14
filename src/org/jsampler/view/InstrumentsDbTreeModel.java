@@ -479,6 +479,17 @@ public class InstrumentsDbTreeModel implements TreeModel {
 		listener.actionPerformed(null);
 	}
 	
+	/** Resets this model. */
+	public void
+	reset() {
+		DbDirectoryTreeNode oldRoot = root;
+		root = null;
+		TreeModelEvent e = new TreeModelEvent(this, (TreePath)null);
+		for(TreeModelListener l : listeners) {
+			l.treeStructureChanged(e);
+		}
+	}
+	
 	private final EventHandler eventHandler = new EventHandler();
 	
 	private EventHandler

@@ -35,6 +35,7 @@ import java.beans.PropertyChangeListener;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import org.jdesktop.swingx.JXCollapsiblePane;
@@ -53,6 +54,8 @@ public class DevicePane extends JPanel {
 	
 	private final JXCollapsiblePane mainPane = new JXCollapsiblePane();
 	private final JXCollapsiblePane optionsPane = new JXCollapsiblePane();
+	private final JXCollapsiblePane confirmPane = new JXCollapsiblePane();
+	private final ConfirmRemovalPane confirmRemovalPane = new ConfirmRemovalPane();
 	
 	/** Creates a new instance of <code>DevicePane</code> */
 	public
@@ -97,30 +100,35 @@ public class DevicePane extends JPanel {
 		mainPane.add(p);
 		
 		optionsPane.setAlignmentX(LEFT_ALIGNMENT);
-		optionsPane.setAnimated(false);
-		optionsPane.setCollapsed(true);
-		optionsPane.setAnimated(preferences().getBoolProperty(ANIMATED));
 		
-		preferences().addPropertyChangeListener(ANIMATED, new PropertyChangeListener() {
-			public void
-			propertyChange(PropertyChangeEvent e) {
-				optionsPane.setAnimated(preferences().getBoolProperty(ANIMATED));
-			}
-		});
+		initCollasiblePane(optionsPane);
 		
 		mainPane.add(optionsPane);
 		
+		JPanel p2 = new JPanel();
+		
+		confirmPane.setContentPane(confirmRemovalPane);
+		confirmPane.setAlignmentX(LEFT_ALIGNMENT);
+		initCollasiblePane(confirmPane);
+		
+		mainPane.add(confirmPane);
+		
 		add(mainPane);
 		
-		mainPane.setAnimated(false);
-		mainPane.setCollapsed(true);
-		mainPane.setAnimated(preferences().getBoolProperty(ANIMATED));
+		initCollasiblePane(mainPane);
 		mainPane.setCollapsed(false);
+	}
+	
+	private void
+	initCollasiblePane(final JXCollapsiblePane pane) {
+		pane.setAnimated(false);
+		pane.setCollapsed(true);
+		pane.setAnimated(preferences().getBoolProperty(ANIMATED));
 		
 		preferences().addPropertyChangeListener(ANIMATED, new PropertyChangeListener() {
 			public void
 			propertyChange(PropertyChangeEvent e) {
-				mainPane.setAnimated(preferences().getBoolProperty(ANIMATED));
+				pane.setAnimated(preferences().getBoolProperty(ANIMATED));
 			}
 		});
 	}
@@ -138,8 +146,8 @@ public class DevicePane extends JPanel {
 	protected void
 	restoreDevice() {
 		btnDestroy.setSelected(true);
+		confirmRemovalPane.restore();
 		mainPane.setCollapsed(false);
-		
 	}
 	
 	protected void
@@ -165,7 +173,35 @@ public class DevicePane extends JPanel {
 		p.setMinimumSize(p.getPreferredSize());
 		p.setMaximumSize(new Dimension(Short.MAX_VALUE, 2));
 		return p;
-	}	
+	}
+	
+	private boolean
+	shouldConfirm() { return preferences().getBoolProperty(CONFIRM_DEVICE_REMOVAL); }
+	
+	private void
+	confirmRemoval() {
+		confirmRemovalPane.showOptions = !optionsPane.isCollapsed();
+		if(optionsPane.isCollapsed() || !optionsPane.isAnimated()) {
+			if(btnOptions.isSelected()) btnOptions.doClick(0);
+			btnOptions.setEnabled(false);
+			confirmPane.setCollapsed(false);
+			return;
+		}
+		
+		final String s = JXCollapsiblePane.ANIMATION_STATE_KEY;
+		optionsPane.addPropertyChangeListener(s, new PropertyChangeListener() {
+			public void
+			propertyChange(PropertyChangeEvent e) {
+				if(e.getNewValue() == "collapsed") {
+					confirmPane.setCollapsed(false);
+					optionsPane.removePropertyChangeListener(s, this);
+				}
+			}
+		});
+		
+		btnOptions.doClick(0);
+		btnOptions.setEnabled(false);
+	}
 	
 	private class OptionsButton extends PixmapToggleButton implements ActionListener {
 		OptionsButton() {
@@ -173,6 +209,7 @@ public class DevicePane extends JPanel {
 			setRolloverIcon(Res.gfxOptionsOffRO);
 			this.setRolloverSelectedIcon(Res.gfxOptionsOnRO);
 			addActionListener(this);
+			setToolTipText(i18n.getButtonLabel("DevicePane.ttShowOptions"));
 		}
 		
 		public void
@@ -180,8 +217,8 @@ public class DevicePane extends JPanel {
 			showOptionsPane(isSelected());
 			
 			String s;
-			if(isSelected()) s = i18n.getButtonLabel("OptionsButton.ttHideOptions");
-			else s = i18n.getButtonLabel("OptionsButton.ttShowOptions");
+			if(isSelected()) s = i18n.getButtonLabel("DevicePane.ttHideOptions");
+			else s = i18n.getButtonLabel("DevicePane.ttShowOptions");
 			
 			setToolTipText(s);
 		}
@@ -205,10 +242,17 @@ public class DevicePane extends JPanel {
 			addActionListener(this);
 			String s = JXCollapsiblePane.ANIMATION_STATE_KEY;
 			mainPane.addPropertyChangeListener(s, this);
+			setToolTipText(i18n.getButtonLabel("DevicePane.ttRemoveDevice"));
 		}
 		
 		public void
 		actionPerformed(ActionEvent e) {
+			if(shouldConfirm()) {
+				if(isSelected()) confirmRemovalPane.onCancel();
+				else confirmRemoval();
+				return;
+			}
+			
 			if(!mainPane.isAnimated()) {
 				destroyDevice();
 				return;
@@ -225,4 +269,99 @@ public class DevicePane extends JPanel {
 		}
 	}
 	
+	private class ConfirmRemovalPane extends PixmapPane implements ActionListener {
+		private final JButton btnRemove = new JButton(i18n.getButtonLabel("DevicePane.btnRemove"));
+		private final JButton btnCancel = new JButton(i18n.getButtonLabel("cancel"));
+		
+		protected boolean showOptions = false;
+	
+		ConfirmRemovalPane() {
+			super(Res.gfxChannelOptions);
+			
+			setAlignmentX(LEFT_ALIGNMENT);
+			
+			setPixmapInsets(new Insets(1, 1, 1, 1));
+			setLayout(new java.awt.BorderLayout());
+			setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+			setOpaque(false);
+			
+			PixmapPane p = new PixmapPane(Res.gfxRoundBg7);
+			p.setPixmapInsets(new Insets(3, 3, 3, 3));
+			p.setOpaque(false);
+			
+			p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
+			p.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+			
+			p.add(Box.createGlue());
+			p.add(btnRemove);
+			p.add(Box.createRigidArea(new Dimension(5, 0)));
+			p.add(btnCancel);
+			
+			add(p);
+			
+			btnRemove.addActionListener(this);
+			
+			btnCancel.addActionListener(new ActionListener() {
+				public void
+				actionPerformed(ActionEvent e) {
+					onCancel();
+				}
+			});
+		}
+		
+		protected void
+		onCancel() {
+			btnDestroy.setSelected(true);
+			btnOptions.setEnabled(true);
+			btnRemove.setEnabled(true);
+			
+			if(!showOptions) {
+				confirmPane.setCollapsed(true);
+				return;
+			}
+			showOptions = false;
+			
+			if(!confirmPane.isAnimated()) {
+				confirmPane.setCollapsed(true);
+				btnOptions.doClick(0);
+				return;
+			}
+			
+			final String s = JXCollapsiblePane.ANIMATION_STATE_KEY;
+			confirmPane.addPropertyChangeListener(s, new PropertyChangeListener() {
+				public void
+				propertyChange(PropertyChangeEvent e) {
+					if(e.getNewValue() == "collapsed") {
+						btnOptions.doClick(0);
+						confirmPane.removePropertyChangeListener(s, this);
+					}
+				}
+			});
+			
+			confirmPane.setCollapsed(true);
+		}
+		
+		protected void
+		restore() {
+			btnOptions.setEnabled(true);
+			boolean b = confirmPane.isAnimated();
+			confirmPane.setAnimated(false);
+			confirmPane.setCollapsed(true);
+			confirmPane.setAnimated(b);
+			btnRemove.setEnabled(true);
+			showOptions = false;
+		}
+		
+		public void
+		actionPerformed(ActionEvent e) {
+			btnRemove.setEnabled(false);
+			
+			if(!mainPane.isAnimated()) {
+				destroyDevice();
+				return;
+			}
+			
+			mainPane.setCollapsed(true);
+		}
+	}
 }

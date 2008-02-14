@@ -91,6 +91,16 @@ public class JSPrefs extends PropertyChangeSupport {
 	/** Property which specifies whether the volume values should be shown in decibels. */
 	public final static String VOL_MEASUREMENT_UNIT_DECIBEL = "volMeasurementUnitDecibel";
 	
+	/**
+	 * Property which specifies whether the user should manually select a server to connect on startup.
+	 */
+	public final static String MANUAL_SERVER_SELECT_ON_STARTUP = "manualServerSelectOnStartup";
+	
+	/**
+	 * Integer property which provides the index of the server to connect on startup.
+	 */
+	public final static String SERVER_INDEX = "serverIndex";
+	
 	
 	private final String pathName;
 	private final Preferences userPrefs;

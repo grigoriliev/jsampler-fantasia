@@ -66,11 +66,13 @@ import org.jsampler.HF;
 import org.jsampler.LSConsoleModel;
 import org.jsampler.OrchestraModel;
 import org.jsampler.Prefs;
+import org.jsampler.Server;
 
 import org.jsampler.view.JSChannel;
 import org.jsampler.view.JSChannelsPane;
 import org.jsampler.view.LscpFileFilter;
 
+import org.jsampler.view.std.JSConnectDlg;
 import org.jsampler.view.std.JSDetailedErrorDlg;
 import org.jsampler.view.std.JSQuitDlg;
 import org.jsampler.view.std.JSamplerHomeChooser;
@@ -206,7 +208,8 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 	/** Invoked when this window is about to close. */
 	protected void
 	onWindowClose() {
-		if(CC.getSamplerModel().isModified()) {
+		boolean b = preferences().getBoolProperty(CONFIRM_APP_QUIT);
+		if(b && CC.getSamplerModel().isModified()) {
 			JSQuitDlg dlg = new JSQuitDlg(Res.iconQuestion32);
 			dlg.setVisible(true);
 			if(dlg.isCancelled()) return;
@@ -324,21 +327,16 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		m = new JMenu(i18n.getMenuLabel("actions"));
 		menuBar.add(m);
 		
-		mi = new JMenuItem(a4n.connect);
-		mi.setIcon(null);
-		//mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_MASK));
-		m.add(mi);
-		
 		mi = new JMenuItem(a4n.refresh);
 		mi.setIcon(null);
 		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
 		m.add(mi);
 		
-		mi = new JMenuItem(a4n.resetSampler);
+		mi = new JMenuItem(A4n.samplerInfo);
 		mi.setIcon(null);
 		m.add(mi);
 		
-		mi = new JMenuItem(A4n.samplerInfo);
+		mi = new JMenuItem(a4n.resetSampler);
 		mi.setIcon(null);
 		m.add(mi);
 		
@@ -374,6 +372,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		m.addSeparator();
 		
 		mi = new JMenuItem(A4n.loadScript);
+		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_MASK));
 		mi.setIcon(null);
 		m.add(mi);
 		
@@ -383,6 +382,13 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		updateRecentScriptsMenu();
 		
 		m.add(recentScriptsMenu);
+		
+		m.addSeparator();
+		
+		mi = new JMenuItem(a4n.changeBackend);
+		mi.setIcon(null);
+		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, KeyEvent.CTRL_MASK));
+		m.add(mi);
 		
 		m.addSeparator();
 		
@@ -1208,5 +1214,36 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 			owner, Res.iconWarning32, i18n.getError("error"), err, details
 		);
 		dlg.setVisible(true);
+	}
+	
+	/**
+	 * Gets the server address to which to connect. If the server should be
+	 * manually selected, a dialog asking the user to choose a server is displayed.
+	 */
+	public Server
+	getServer() {
+		boolean b = preferences().getBoolProperty(MANUAL_SERVER_SELECT_ON_STARTUP);
+		return getServer(b);
+	}
+	
+	/**
+	 * Gets the server address to which to connect. If the server should be
+	 * manually selected, a dialog asking the user to choose a server is displayed.
+	 * @param manualSelect Determines whether the server should be manually selected.
+	 */
+	public Server
+	getServer(boolean manualSelect) {
+		if(manualSelect) {
+			JSConnectDlg dlg = new JSConnectDlg();
+			dlg.setVisible(true);
+			return dlg.getSelectedServer();
+		}
+		
+		int i = preferences().getIntProperty(SERVER_INDEX);
+		int size = CC.getServerList().getServerCount();
+		if(size == 0) return null;
+		if(i >= size) return CC.getServerList().getServer(0);
+		
+		return CC.getServerList().getServer(i);
 	}
 }

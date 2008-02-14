@@ -110,7 +110,7 @@ public class MidiDevicePane extends DevicePane {
 	public int
 	getDeviceId() { return midiDeviceModel.getDeviceId(); }
 	
-	class OptionsPane extends PixmapPane  implements ActionListener, ItemListener,
+	class OptionsPane extends PixmapPane implements ActionListener, ItemListener,
 				ChangeListener, MidiDeviceListener, ParameterListener {
 		
 		private final JCheckBox checkActive =

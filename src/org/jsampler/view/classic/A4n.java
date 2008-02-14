@@ -620,6 +620,8 @@ public class A4n extends StdA4n {
 		
 		public void
 		actionPerformed(ActionEvent e) {
+			if(!CC.verifyConnection()) return;
+			
 			if(CC.getInstrumentsDbTreeModel() == null) {
 				String s = i18n.getMessage("A4n.noInstrumentsDbSupport!");
 				HF.showErrorMessage(s, CC.getMainFrame());

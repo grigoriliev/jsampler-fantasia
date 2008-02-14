@@ -65,6 +65,15 @@ public class StdPrefs extends JSPrefs {
 	/** Property representing the maximum channel volume (in percents). */
 	public final static String MAXIMUM_CHANNEL_VOLUME = "maximumChannelVolume";
 	
+	/** Property which specifies whether the user should confirm channel removals. */
+	public final static String CONFIRM_CHANNEL_REMOVAL = "confirmChannelRemoval";
+	
+	/** Property which specifies whether the user should confirm audio/MIDI device removals. */
+	public final static String CONFIRM_DEVICE_REMOVAL = "confirmDeviceRemoval";
+	
+	/** Property which specifies whether the user should confirm quiting. */
+	public final static String CONFIRM_APP_QUIT = "confirmAppQuit";
+	
 	
 	/**
 	 * Creates a new instance of <code>StdPrefs</code>.
@@ -101,6 +110,9 @@ public class StdPrefs extends JSPrefs {
 	
 	public boolean
 	getDefaultBoolValue(String name) {
+		if(name == CONFIRM_CHANNEL_REMOVAL) return true;
+		if(name == CONFIRM_DEVICE_REMOVAL) return true;
+		if(name == CONFIRM_APP_QUIT) return true;
 		if(name == SAVE_LS_CONSOLE_HISTORY) return true;
 		if(name == USE_CHANNEL_DEFAULTS) return true;
 		

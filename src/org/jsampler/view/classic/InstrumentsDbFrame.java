@@ -54,6 +54,8 @@ import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
@@ -120,6 +122,20 @@ public class InstrumentsDbFrame extends JFrame {
 		if(Res.appIcon != null) setIconImage(Res.appIcon.getImage());
 		
 		instrumentsDbTree = new JSInstrumentsDbTree(CC.getInstrumentsDbTreeModel());
+		CC.addInstrumentsDbChangeListener(new ChangeListener() {
+			public void
+			stateChanged(ChangeEvent e) {
+				instrumentsDbTree.setModel(CC.getInstrumentsDbTreeModel());
+				
+				CC.scheduleInTaskQueue(new Runnable() {
+					public void
+					run() {
+						instrumentsDbTree.setSelectedDirectory("/");
+						navigationHistoryModel.clearHistory();
+					}
+				});
+			}
+		});
 		
 		sidePane = new SidePane();
 		mainPane = new MainPane();

@@ -72,7 +72,7 @@ public class PrefsDlg extends EnhancedDialog {
 	
 	/** Creates a new instance of <code>PrefsDlg</code> */
 	public
-	PrefsDlg(Frame owner) {
+	PrefsDlg(Frame owner) { 
 		super(owner, i18n.getLabel("PrefsDlg.title"), true);
 		
 		defaultsPane = new JSDefaultsPropsPane(this, Res.iconEdit16);
@@ -85,8 +85,8 @@ public class PrefsDlg extends EnhancedDialog {
 		JPanel p = new JPanel();
 		p.setLayout(new BorderLayout());
 		p.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
-		p.add(connectionPane, BorderLayout.NORTH);
-		tp.addTab(i18n.getLabel("PrefsDlg.tabConnection"), p);
+		p.add(connectionPane);
+		tp.addTab(i18n.getLabel("PrefsDlg.tabBackend"), p);
 		tp.addTab(i18n.getLabel("PrefsDlg.tabDefaults"), defaultsPane);
 		
 		tp.setAlignmentX(RIGHT_ALIGNMENT);
@@ -117,9 +117,6 @@ public class PrefsDlg extends EnhancedDialog {
 		setLocation(JuifeUtils.centerLocation(this, owner));
 		
 		installListeners();
-		
-		connectionPane.setLSAddress(Prefs.getLSAddress());
-		connectionPane.setLSPort(String.valueOf(Prefs.getLSPort()));
 	}
 	
 	private void
@@ -256,6 +253,9 @@ class ViewPane extends JPanel {
 	private final JSViewProps.MidiDevicesPane midiDevsPane = new JSViewProps.MidiDevicesPane();
 	private final JSViewProps.AudioDevicesPane audioDevsPane = new JSViewProps.AudioDevicesPane();
 	
+	private final JSViewProps.ConfirmationMessagesPane confirmationMessagesPane =
+		new JSViewProps.ConfirmationMessagesPane();
+	
 	ViewPane() {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
@@ -266,6 +266,7 @@ class ViewPane extends JPanel {
 		add(Box.createRigidArea(new Dimension(0, 6)));
 		add(midiDevsPane);
 		add(audioDevsPane);
+		add(confirmationMessagesPane);
 	}
 	
 	protected void
@@ -275,6 +276,7 @@ class ViewPane extends JPanel {
 		
 		midiDevsPane.apply();
 		audioDevsPane.apply();
+		confirmationMessagesPane.apply();
 	}
 }
 

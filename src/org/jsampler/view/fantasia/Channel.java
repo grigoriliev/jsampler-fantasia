@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -537,10 +537,24 @@ public class Channel extends org.jsampler.view.JSChannel {
 		
 			setSelected(true);
 			addActionListener(this);
+			setToolTipText(i18n.getButtonLabel("Channel.ttRemoveChannel"));
 		}
 		
 		public void
 		actionPerformed(ActionEvent e) {
+			boolean b = preferences().getBoolProperty(CONFIRM_CHANNEL_REMOVAL);
+			if(b) {
+				String s = i18n.getMessage("Channel.remove?", getChannelId());
+				if(!HF.showYesNoDialog(Channel.this, s)) {
+					setSelected(true);
+					return;
+				}
+			}
+			remove();
+		}
+		
+		private void
+		remove() {
 			if(!mainPane.isAnimated()) {
 				CC.getSamplerModel().removeBackendChannel(getChannelId());
 				return;
@@ -637,6 +651,7 @@ public class Channel extends org.jsampler.view.JSChannel {
 			setRolloverIcon(Res.gfxOptionsOffRO);
 			this.setRolloverSelectedIcon(Res.gfxOptionsOnRO);
 			addActionListener(this);
+			setToolTipText(i18n.getButtonLabel("Channel.ttShowOptions"));
 		}
 		
 		public void
@@ -644,8 +659,8 @@ public class Channel extends org.jsampler.view.JSChannel {
 			showOptionsPane(isSelected());
 			
 			String s;
-			if(isSelected()) s = i18n.getButtonLabel("OptionsButton.ttHideOptions");
-			else s = i18n.getButtonLabel("OptionsButton.ttShowOptions");
+			if(isSelected()) s = i18n.getButtonLabel("Channel.ttHideOptions");
+			else s = i18n.getButtonLabel("Channel.ttShowOptions");
 			
 			setToolTipText(s);
 		}

@@ -47,12 +47,6 @@ public class Prefs {
 	private final static String INTERFACE_FONT = "iface.font";
 	private final static String DEF_INTERFACE_FONT = null;
 	
-	private final static String LS_ADDRESS = "LinuxSampler.address";
-	private final static String DEF_LS_ADDRESS = "127.0.0.1";
-	
-	private final static String LS_PORT = "LinuxSampler.port";
-	private final static int DEF_LS_PORT = 8888;
-	
 		
 	private static Preferences userPrefs = Preferences.userRoot().node(prefNode);
 	
@@ -181,41 +175,5 @@ public class Prefs {
 			return true;
 		}
 		return false;
-	}
-	
-	/**
-	 * Gets the LinuxSampler address.
-	 * @return The LinuxSampler address.
-	 */
-	public static String
-	getLSAddress() { return user().get(LS_ADDRESS, DEF_LS_ADDRESS); }
-	
-	/**
-	 * Sets the LinuxSampler address.
-	 * @param address The LinuxSampler address.
-	 */
-	public static void
-	setLSAddress(String address) {
-		if(address.length() == 0) user().remove(LS_ADDRESS);
-		else if(!address.equals(getLSAddress()))
-			user().put(LS_ADDRESS, address);
-	}
-
-	/**
-	 * Gets the LinuxSampler port.
-	 * @return The LinuxSampler port number.
-	 */
-	public static int
-	getLSPort() { return user().getInt(LS_PORT, DEF_LS_PORT); }
-	
-	/**
-	 * Sets the LinuxSampler port number.
-	 * This method das not check the validity of the port number.
-	 * @param port the port number. Use -1 to reset to default value.
-	 */
-	public static void
-	setLSPort(int port) {
-		if(port == -1) user().remove(LS_PORT);
-		else if(port != getLSPort()) user().putInt(LS_PORT, port);
 	}
 }

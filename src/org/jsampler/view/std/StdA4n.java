@@ -117,7 +117,13 @@ public class StdA4n {
 		}
 		
 		public void
-		actionPerformed(ActionEvent e) { CC.initSamplerModel(); }
+		actionPerformed(ActionEvent e) {
+			if(!CC.verifyConnection()) {
+				CC.changeBackend();
+				return;
+			}
+			CC.reconnect();
+		}
 	}
 	
 	public final Action resetSampler = new Reset();
@@ -130,7 +136,13 @@ public class StdA4n {
 		}
 		
 		public void
-		actionPerformed(ActionEvent e) { CC.getSamplerModel().resetBackend(); }
+		actionPerformed(ActionEvent e) {
+			if(!CC.verifyConnection()) return;
+			
+			String s = i18n.getMessage("StdA4n.resetSampler?");
+			if(!HF.showYesNoDialog(CC.getMainFrame(), s)) return;
+			CC.getSamplerModel().resetBackend();
+		}
 	}
 	
 	public final Action exportSamplerConfig = new ExportSamplerConfig();
@@ -146,6 +158,7 @@ public class StdA4n {
 		
 		public void
 		actionPerformed(ActionEvent e) {
+			if(!CC.verifyConnection()) return;
 			exportSamplerConfig();
 		}
 	}
@@ -162,8 +175,22 @@ public class StdA4n {
 		
 		public void
 		actionPerformed(ActionEvent e) {
+			if(!CC.verifyConnection()) return;
 			exportMidiInstrumentMaps();
 		}
+	}
+	
+	public final Action changeBackend = new ChangeBackend();
+	
+	private class ChangeBackend extends AbstractAction {
+		ChangeBackend() {
+			super(i18n.getMenuLabel("actions.changeBackend"));
+			
+			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("actions.changeBackend.tt"));
+		}
+		
+		public void
+		actionPerformed(ActionEvent e) { CC.changeBackend(); }
 	}
 	
 	public final Action browseOnlineTutorial = new BrowseOnlineTutorial();

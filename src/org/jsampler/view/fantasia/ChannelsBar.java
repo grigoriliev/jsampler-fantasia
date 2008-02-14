@@ -131,7 +131,7 @@ public class ChannelsBar extends PixmapPane {
 		btnVolume.setIconTextGap(2);
 		btnVolume.setHorizontalAlignment(btnVolume.LEFT);
 		d = btnVolume.getPreferredSize();
-		d.width = 55;
+		d.width = 59;
 		btnVolume.setPreferredSize(d);
 		btnVolume.setMaximumSize(d);
 		p.add(btnVolume);

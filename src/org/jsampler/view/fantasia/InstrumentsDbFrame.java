@@ -33,6 +33,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import java.util.List;
 import java.util.logging.Level;
 
 import javax.swing.AbstractAction;
@@ -53,11 +54,15 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
+import javax.swing.RowSorter.SortKey;
+import javax.swing.SortOrder;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.RowSorterEvent;
+import javax.swing.event.RowSorterListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 
@@ -89,8 +94,10 @@ import org.linuxsampler.lscp.DbDirectoryInfo;
 import org.linuxsampler.lscp.DbInstrumentInfo;
 import org.linuxsampler.lscp.DbSearchQuery;
 
+import static javax.swing.event.RowSorterEvent.Type.SORT_ORDER_CHANGED;
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jsampler.view.fantasia.FantasiaPrefs.preferences;
+import static org.jsampler.view.fantasia.FantasiaPrefs.INSTRUMENTS_DB_FRAME_SORT_ORDER;
 
 /**
  *
@@ -663,8 +670,35 @@ public class InstrumentsDbFrame extends JFrame {
 			);
 			
 			instrumentsTable.getParent().setBackground(instrumentsTable.getBackground());
-			instrumentsTable.getRowSorter().toggleSortOrder(0);
+			
+			int i = preferences().getIntProperty(INSTRUMENTS_DB_FRAME_SORT_ORDER);
+			boolean descending = i < 0;
+			if(i < 0) i *= -1;
+			
+			instrumentsTable.getRowSorter().toggleSortOrder(--i);
+			if(descending) instrumentsTable.getRowSorter().toggleSortOrder(i);
 			searchResultsNode.setDetached(true);
+			
+			RowSorterListener l = new RowSorterListener() {
+				public void
+				sorterChanged(RowSorterEvent e) {
+					if(e.getType() != SORT_ORDER_CHANGED) return;
+					rowSorterChanged();
+				}
+			};
+			
+			instrumentsTable.getRowSorter().addRowSorterListener(l);
+		}
+		
+		private void
+		rowSorterChanged() {
+			List<? extends SortKey> list = instrumentsTable.getRowSorter().getSortKeys();
+			if(list.isEmpty()) return;
+			SortKey k = list.get(0);
+			int i = k.getColumn() + 1;
+			if(k.getSortOrder() == SortOrder.UNSORTED) return;
+			if(k.getSortOrder() == SortOrder.DESCENDING) i *= -1;
+			preferences().setIntProperty(INSTRUMENTS_DB_FRAME_SORT_ORDER, i);
 		}
 		
 		public JSInstrumentsDbTable

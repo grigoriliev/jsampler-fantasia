@@ -74,6 +74,9 @@ public class StdPrefs extends JSPrefs {
 	/** Property which specifies whether the user should confirm quiting. */
 	public final static String CONFIRM_APP_QUIT = "confirmAppQuit";
 	
+	/** Property which specifies the sort order in the instruments database frame. */
+	public final static String INSTRUMENTS_DB_FRAME_SORT_ORDER = "instrumentsDbFrameSortOrder";
+	
 	
 	/**
 	 * Creates a new instance of <code>StdPrefs</code>.
@@ -104,6 +107,7 @@ public class StdPrefs extends JSPrefs {
 		if(name == RECENT_LSCP_SCRIPTS_SIZE) return 7;
 		if(name == MAXIMUM_MASTER_VOLUME) return 100;
 		if(name == MAXIMUM_CHANNEL_VOLUME) return 100;
+		if(name == INSTRUMENTS_DB_FRAME_SORT_ORDER) return 1;
 		
 		return super.getDefaultIntValue(name);
 	}

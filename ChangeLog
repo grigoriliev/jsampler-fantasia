@@ -7,6 +7,9 @@ CVS HEAD
   * Added confirmation messages for removing sampler channels and
     audio/MIDI devices (Edit/Preferences, then click the `View' tab)
 
+  * The column sort order in the Instruments Database window is now saved
+    for the next session
+
   * Bug fixes:
     - fixed bug #66
     - fixed a null pointer exception in the AudioDevicePane, when JACK

@@ -16,6 +16,7 @@ CVS HEAD
       driver is used and the additional device parameters are shown.
     - fixed bug #76
     - fixed bug #77
+    - fixed bug #84
 
 JSampler v0.8a: 2007-12-06
   * Added new menu item: Help/Online Tutorial

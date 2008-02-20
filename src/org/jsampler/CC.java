@@ -913,6 +913,10 @@ public class CC {
 			sb.append("\r\n");
 		}
 		
+		exportInstrMapsToLscpScript(lscpClient);
+		sb.append(out.toString());
+		out.reset();
+		
 		SamplerChannelModel[] channels = getSamplerModel().getChannels();
 		
 		for(int i = 0; i < channels.length; i++) {
@@ -929,10 +933,6 @@ public class CC {
 			
 			sb.append("\r\n");
 		}
-		
-		exportInstrMapsToLscpScript(lscpClient);
-		sb.append(out.toString());
-		out.reset();
 		
 		return sb.toString();
 	}
@@ -1000,6 +1000,8 @@ public class CC {
 			if(chn.getEngine() != null) {
 				lscpCLient.loadSamplerEngine(chn.getEngine().getName(), chnId);
 				lscpCLient.setChannelVolume(chnId, chn.getVolume());
+				int mapId = chn.getMidiInstrumentMapId();
+				lscpCLient.setChannelMidiInstrumentMap(chnId, mapId);
 			}
 			
 			id = chn.getAudioOutputDevice();

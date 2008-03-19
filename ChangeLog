@@ -10,6 +10,8 @@ CVS HEAD
   * The column sort order in the Instruments Database window is now saved
     for the next session
 
+  * Optimized the MIDI instrument update process
+
   * Bug fixes:
     - fixed bug #66
     - fixed a null pointer exception in the AudioDevicePane, when JACK

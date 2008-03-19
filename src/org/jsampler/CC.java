@@ -136,10 +136,6 @@ public class CC {
 	scheduleTask(Task t) {
 		while(getTaskQueue().removeTask(t)) { }
 		
-		if(getTaskQueue().getPendingTaskCount() == 0) {
-			if(t.equals(getTaskQueue().getRunningTask())) return;
-		}
-		
 		getTaskQueue().add(t);
 	}
 	
@@ -916,6 +912,7 @@ public class CC {
 		exportInstrMapsToLscpScript(lscpClient);
 		sb.append(out.toString());
 		out.reset();
+		sb.append("\r\n");
 		
 		SamplerChannelModel[] channels = getSamplerModel().getChannels();
 		
@@ -1205,7 +1202,7 @@ public class CC {
 		/** Invoked when the number of MIDI instruments in a MIDI instrument map is changed. */
 		public void
 		instrumentCountChanged(MidiInstrumentCountEvent e) {
-			getTaskQueue().add(new Midi.UpdateInstruments(e.getMapId()));
+			scheduleTask(new Midi.UpdateInstruments(e.getMapId()));
 		}
 		
 		/** Invoked when a MIDI instrument in a MIDI instrument map is changed. */

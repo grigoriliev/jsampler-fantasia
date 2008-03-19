@@ -768,15 +768,17 @@ public class Midi {
 		run() {
 			try { 
 				SamplerModel sm = CC.getSamplerModel();
-				MidiInstrumentInfo[] iS = CC.getClient().getMidiInstruments(mapId);
+				int[][] entries = CC.getClient().getMidiInstrumentEntries(mapId);
 				MidiInstrumentMap map = sm.getMidiInstrumentMapById(mapId);
-				
+				System.out.println(entries.length);
 				boolean found = false;
 				
 				for(MidiInstrument instr : map.getAllMidiInstruments()) {
-					for(int i = 0; i < iS.length; i++) {
-						if(instr.getInfo().equals(iS[i])) {
-							iS[i] = null;
+					for(int i = 0; i < entries.length; i++) {
+						if(entries[i] == null) continue;
+						
+						if(equal(instr, entries[i])) {
+							entries[i] = null;
 							found = true;
 						}
 					}
@@ -786,17 +788,48 @@ public class Midi {
 					}
 					found = false;
 				}
-			
-				for(MidiInstrumentInfo mii : iS) {
-					if(mii != null) {
-						MidiInstrument instr = new MidiInstrument(mii);
-						map.mapMidiInstrument(mii.getEntry(), instr);
+				
+				for(int[] entry : entries) {
+					if(entry != null) {
+						MidiInstrumentInfo i;
+						i = CC.getClient().getMidiInstrumentInfo (
+							entry[0], entry[1], entry[2]
+						);
+						MidiInstrument instr = new MidiInstrument(i);
+						map.mapMidiInstrument(i.getEntry(), instr);
 					}
 				}
 			} catch(Exception x) {
 				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
 				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
 			}
+		}
+		
+		private boolean
+		equal(MidiInstrument instr, int[] entry) {
+			if (
+				instr.getInfo().getMapId() == entry[0] &&
+				instr.getInfo().getMidiBank() == entry[1] &&
+				instr.getInfo().getMidiProgram() == entry[2]
+			) return true;
+			
+			return false;
+		}
+		
+		public int
+		getMapId() { return mapId; }
+		
+		/**
+		 * Used to decrease the traffic. All task in the queue
+		 * equal to this are removed.
+		 */
+		public boolean
+		equals(Object obj) {
+			if(obj == null) return false;
+			if(!(obj instanceof UpdateInstruments)) return false;
+			if(((UpdateInstruments)obj).getMapId() != getMapId()) return false;
+			
+			return true;
 		}
 	}
 

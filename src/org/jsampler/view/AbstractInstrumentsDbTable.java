@@ -282,68 +282,73 @@ public abstract class AbstractInstrumentsDbTable extends JTable {
 		
 	public void
 	loadColumnWidths() {
+		loadColumnWidths("");
+	}
+		
+	public void
+	loadColumnWidths(String prefix) {
 		InstrumentsDbTableModel m = getModel();
 		TableColumnModel tcm = getColumnModel();
 		
 		for(int i = 0; i < m.getColumnCount(); i++) {
 			switch(m.getColumnType(i)) {
 			case NAME:
-				String s = "DbInstrumentsTable.nameColumnWidth";
+				String s = prefix + "DbInstrumentsTable.nameColumnWidth";
 				int w = preferences().getIntProperty(s);
 				if(w > 0) tcm.getColumn(i).setPreferredWidth(w);
 				break;
 			case SIZE:
-				s = "DbInstrumentsTable.sizeColumnWidth";
+				s = prefix + "DbInstrumentsTable.sizeColumnWidth";
 				w = preferences().getIntProperty(s);
 				if(w > 0) tcm.getColumn(i).setPreferredWidth(w);
 				break;
 			case FORMAT_FAMILY:
-				s = "DbInstrumentsTable.formatFamilyColumnWidth";
+				s = prefix + "DbInstrumentsTable.formatFamilyColumnWidth";
 				w = preferences().getIntProperty(s);
 				if(w > 0) tcm.getColumn(i).setPreferredWidth(w);
 				break;
 			case FORMAT_VERSION:
-				s = "DbInstrumentsTable.formatVersionColumnWidth";
+				s = prefix + "DbInstrumentsTable.formatVersionColumnWidth";
 				w = preferences().getIntProperty(s);
 				if(w > 0) tcm.getColumn(i).setPreferredWidth(w);
 				break;
 			case IS_DRUM:
-				s = "DbInstrumentsTable.isDrumColumnWidth";
+				s = prefix + "DbInstrumentsTable.isDrumColumnWidth";
 				w = preferences().getIntProperty(s);
 				if(w > 0) tcm.getColumn(i).setPreferredWidth(w);
 				break;
 			case CREATED:
-				s = "DbInstrumentsTable.createdColumnWidth";
+				s = prefix + "DbInstrumentsTable.createdColumnWidth";
 				w = preferences().getIntProperty(s);
 				if(w > 0) tcm.getColumn(i).setPreferredWidth(w);
 				break;
 			case MODIFIED:
-				s = "DbInstrumentsTable.modifiedColumnWidth";
+				s = prefix + "DbInstrumentsTable.modifiedColumnWidth";
 				w = preferences().getIntProperty(s);
 				if(w > 0) tcm.getColumn(i).setPreferredWidth(w);
 				break;
 			case PRODUCT:
-				s = "DbInstrumentsTable.productColumnWidth";
+				s = prefix + "DbInstrumentsTable.productColumnWidth";
 				w = preferences().getIntProperty(s);
 				if(w > 0) tcm.getColumn(i).setPreferredWidth(w);
 				break;
 			case ARTISTS:
-				s = "DbInstrumentsTable.artistsColumnWidth";
+				s = prefix + "DbInstrumentsTable.artistsColumnWidth";
 				w = preferences().getIntProperty(s);
 				if(w > 0) tcm.getColumn(i).setPreferredWidth(w);
 				break;
 			case INSTRUMENT_FILE:
-				s = "DbInstrumentsTable.instrumentFileColumnWidth";
+				s = prefix + "DbInstrumentsTable.instrumentFileColumnWidth";
 				w = preferences().getIntProperty(s);
 				if(w > 0) tcm.getColumn(i).setPreferredWidth(w);
 				break;
 			case INSTRUMENT_NR:
-				s = "DbInstrumentsTable.instrumentNrColumnWidth";
+				s = prefix + "DbInstrumentsTable.instrumentNrColumnWidth";
 				w = preferences().getIntProperty(s);
 				if(w > 0) tcm.getColumn(i).setPreferredWidth(w);
 				break;
 			case KEYWORDS:
-				s = "DbInstrumentsTable.keywordsColumnWidth";
+				s = prefix + "DbInstrumentsTable.keywordsColumnWidth";
 				w = preferences().getIntProperty(s);
 				if(w > 0) tcm.getColumn(i).setPreferredWidth(w);
 				break;
@@ -356,60 +361,64 @@ public abstract class AbstractInstrumentsDbTable extends JTable {
 	
 	public void
 	saveColumnWidths() {
+		saveColumnWidths("");
+	}
+	
+	public void
+	saveColumnWidths(String prefix) {
 		InstrumentsDbTableModel m = getModel();
 		TableColumnModel tcm = getColumnModel();
 		
 		for(int i = 0; i < m.getColumnCount(); i++) {
 			switch(m.getColumnType(i)) {
 			case NAME:
-				String s = "DbInstrumentsTable.nameColumnWidth";
+				String s = prefix + "DbInstrumentsTable.nameColumnWidth";
 				preferences().setIntProperty(s, tcm.getColumn(i).getWidth());
 				break;
 			case SIZE:
-				s = "DbInstrumentsTable.sizeColumnWidth";
+				s = prefix + "DbInstrumentsTable.sizeColumnWidth";
 				preferences().setIntProperty(s, tcm.getColumn(i).getWidth());
 				break;
 			case FORMAT_FAMILY:
-				s = "DbInstrumentsTable.formatFamilyColumnWidth";
+				s = prefix + "DbInstrumentsTable.formatFamilyColumnWidth";
 				preferences().setIntProperty(s, tcm.getColumn(i).getWidth());
 				break;
 			case FORMAT_VERSION:
-				s = "DbInstrumentsTable.formatVersionColumnWidth";
+				s = prefix + "DbInstrumentsTable.formatVersionColumnWidth";
 				preferences().setIntProperty(s, tcm.getColumn(i).getWidth());
 				break;
 			case IS_DRUM:
-				s = "DbInstrumentsTable.isDrumColumnWidth";
+				s = prefix + "DbInstrumentsTable.isDrumColumnWidth";
 				preferences().setIntProperty(s, tcm.getColumn(i).getWidth());
 				break;
 			case CREATED:
-				s = "DbInstrumentsTable.createdColumnWidth";
+				s = prefix + "DbInstrumentsTable.createdColumnWidth";
 				preferences().setIntProperty(s, tcm.getColumn(i).getWidth());
 				break;
 			case MODIFIED:
-				s = "DbInstrumentsTable.modifiedColumnWidth";
+				s = prefix + "DbInstrumentsTable.modifiedColumnWidth";
 				preferences().setIntProperty(s, tcm.getColumn(i).getWidth());
 				break;
 			case PRODUCT:
-				s = "DbInstrumentsTable.productColumnWidth";
+				s = prefix + "DbInstrumentsTable.productColumnWidth";
 				preferences().setIntProperty(s, tcm.getColumn(i).getWidth());
 				break;
 			case ARTISTS:
-				s = "DbInstrumentsTable.artistsColumnWidth";
+				s = prefix + "DbInstrumentsTable.artistsColumnWidth";
 				preferences().setIntProperty(s, tcm.getColumn(i).getWidth());
 				break;
 			case INSTRUMENT_FILE:
-				s = "DbInstrumentsTable.instrumentFileColumnWidth";
+				s = prefix + "DbInstrumentsTable.instrumentFileColumnWidth";
 				preferences().setIntProperty(s, tcm.getColumn(i).getWidth());
 				break;
 			case INSTRUMENT_NR:
-				s = "DbInstrumentsTable.instrumentNrColumnWidth";
+				s = prefix + "DbInstrumentsTable.instrumentNrColumnWidth";
 				preferences().setIntProperty(s, tcm.getColumn(i).getWidth());
 				break;
 			case KEYWORDS:
-				s = "DbInstrumentsTable.keywordsColumnWidth";
+				s = prefix + "DbInstrumentsTable.keywordsColumnWidth";
 				preferences().setIntProperty(s, tcm.getColumn(i).getWidth());
 				break;
-			
 			}
 		}
 	}

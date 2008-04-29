@@ -250,6 +250,9 @@ class ViewPane extends JPanel {
 	private final JCheckBox checkTurnOffCustomWindowDecoration =
 		new JCheckBox(i18n.getLabel("ViewPane.checkTurnOffCustomWindowDecoration"));
 	
+	private final JCheckBox checkShowInstrumentsDb =
+		new JCheckBox(i18n.getLabel("ViewPane.checkShowInstrumentsDb"));
+	
 	private final JSViewProps.MidiDevicesPane midiDevsPane = new JSViewProps.MidiDevicesPane();
 	private final JSViewProps.AudioDevicesPane audioDevsPane = new JSViewProps.AudioDevicesPane();
 	
@@ -264,6 +267,13 @@ class ViewPane extends JPanel {
 		checkTurnOffCustomWindowDecoration.setAlignmentX(JPanel.LEFT_ALIGNMENT);
 		add(checkTurnOffCustomWindowDecoration);
 		add(Box.createRigidArea(new Dimension(0, 6)));
+		
+		b = preferences().getBoolProperty("rightSidePane.showInstrumentsDb");
+		checkShowInstrumentsDb.setSelected(b);
+		checkShowInstrumentsDb.setAlignmentX(JPanel.LEFT_ALIGNMENT);
+		add(checkShowInstrumentsDb);
+		add(Box.createRigidArea(new Dimension(0, 6)));
+		
 		add(midiDevsPane);
 		add(audioDevsPane);
 		add(confirmationMessagesPane);
@@ -273,6 +283,9 @@ class ViewPane extends JPanel {
 	apply() {
 		String s = "TurnOffCustomWindowDecoration";
 		preferences().setBoolProperty(s, checkTurnOffCustomWindowDecoration.isSelected());
+		
+		s = "rightSidePane.showInstrumentsDb";
+		preferences().setBoolProperty(s, checkShowInstrumentsDb.isSelected());
 		
 		midiDevsPane.apply();
 		audioDevsPane.apply();

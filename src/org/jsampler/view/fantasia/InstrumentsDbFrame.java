@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -89,6 +89,7 @@ import org.jsampler.view.InstrumentsDbTableModel;
 import org.jsampler.view.InstrumentsDbTableView;
 import org.jsampler.view.std.JSInstrumentsDbTable;
 import org.jsampler.view.std.JSInstrumentsDbTree;
+import org.jsampler.view.std.JSLostFilesDlg;
 
 import org.linuxsampler.lscp.DbDirectoryInfo;
 import org.linuxsampler.lscp.DbInstrumentInfo;
@@ -104,6 +105,7 @@ import static org.jsampler.view.fantasia.FantasiaPrefs.INSTRUMENTS_DB_FRAME_SORT
  * @author Grigor Iliev
  */
 public class InstrumentsDbFrame extends JFrame {
+	private final ToolBar toolbar;
 	private final JMenuBar menuBar = new JMenuBar();
 	private final JSInstrumentsDbTree instrumentsDbTree;
 	private final SidePane sidePane;
@@ -149,7 +151,8 @@ public class InstrumentsDbFrame extends JFrame {
 		
 		instrumentsDbTree.setSelectedDirectory("/");
 		
-		getContentPane().add(new ToolbarBar(), BorderLayout.NORTH);
+		toolbar = new ToolBar();
+		getContentPane().add(toolbar, BorderLayout.NORTH);
 		
 		splitPane = new JSplitPane (
 			JSplitPane.HORIZONTAL_SPLIT,
@@ -224,6 +227,15 @@ public class InstrumentsDbFrame extends JFrame {
 			}
 		});
 		
+		mi = new JMenuItem(i18n.getMenuLabel("instrumentsdb.actions.checkForLostFiles"));
+		m.add(mi);
+		mi.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) {
+				new JSLostFilesDlg(InstrumentsDbFrame.this).setVisible(true);
+			}
+		});
+		
 		m.addSeparator();
 		
 		loadInstrumentMenu =
@@ -272,6 +284,22 @@ public class InstrumentsDbFrame extends JFrame {
 		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_MASK));
 		mi.setIcon(null);
 		m.add(mi);
+		
+		m.addSeparator();
+		
+		mi = new JMenuItem(i18n.getMenuLabel("instrumentsdb.edit.find"));
+		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.CTRL_MASK));
+		m.add(mi);
+		mi.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) {
+				if(toolbar.btnFind.isSelected()) return;
+				
+				String path = instrumentsDbTree.getSelectedDirectoryPath();
+				if(path != null) sidePane.searchPage.setSearchPath(path);
+				toolbar.btnFind.doClick(0);
+			}
+		});
 		
 		m.addSeparator();
 		
@@ -465,7 +493,7 @@ public class InstrumentsDbFrame extends JFrame {
 		}
 	}
 	
-	class ToolbarBar extends JToolBar {
+	class ToolBar extends JToolBar {
 		private final ToggleButton btnFolders = new ToggleButton();
 		private final ToggleButton btnFind = new ToggleButton();
 		
@@ -477,7 +505,7 @@ public class InstrumentsDbFrame extends JFrame {
 		
 		private final ToolbarButton btnPreferences = new ToolbarButton();
 		
-		public ToolbarBar() {
+		public ToolBar() {
 			super(i18n.getLabel("InstrumentsDbFrame.ToolbarBar.name"));
 			setFloatable(false);
 			
@@ -674,9 +702,16 @@ public class InstrumentsDbFrame extends JFrame {
 			int i = preferences().getIntProperty(INSTRUMENTS_DB_FRAME_SORT_ORDER);
 			boolean descending = i < 0;
 			if(i < 0) i *= -1;
+			i--;
 			
-			instrumentsTable.getRowSorter().toggleSortOrder(--i);
-			if(descending) instrumentsTable.getRowSorter().toggleSortOrder(i);
+			if(i < 0 || i >= instrumentsTable.getModel().getColumnCount()) {
+				instrumentsTable.getRowSorter().toggleSortOrder(0);
+				CC.getLogger().warning("Unknown table column: " + i);
+			} else {
+				instrumentsTable.getRowSorter().toggleSortOrder(i);
+				if(descending) instrumentsTable.getRowSorter().toggleSortOrder(i);
+			}
+			
 			searchResultsNode.setDetached(true);
 			
 			RowSorterListener l = new RowSorterListener() {

@@ -93,8 +93,9 @@ public class FantasiaPrefs extends StdPrefs {
 	getDefaultBoolValue(String name) {
 		if(name == ANIMATED) return true;
 		if("toolBar.visible".equals(name)) return true;
-		if("sidePane.visible".equals(name)) return true;
-		if("devicesPane.visible".equals(name)) return true;
+		if("leftSidePane.visible".equals(name)) return true;
+		if("rightSidePane.visible".equals(name)) return true;
+		if("rightSidePane.showInstrumentsDb".equals(name)) return true;
 		
 		return super.getDefaultBoolValue(name);
 	}

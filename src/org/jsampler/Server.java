@@ -79,6 +79,15 @@ public class Server extends Resource {
 		fireChangeEvent();
 	}
 	
+	/** Determines whether this server is on the local host. */
+	public boolean
+	isLocal() {
+		if(getAddress() == null) return false;
+		if("127.0.0.1".equals(getAddress())) return true;
+		if("localhost".equals(getAddress())) return true;
+		return false;
+	}
+	
 	/**
 	 * Reads and sets the the server information provided by <code>node</code>.
 	 * @param node The node providing the server information.

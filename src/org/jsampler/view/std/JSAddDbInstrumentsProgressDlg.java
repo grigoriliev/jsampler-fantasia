@@ -65,13 +65,14 @@ public class JSAddDbInstrumentsProgressDlg extends JDialog {
 		new JButton(i18n.getButtonLabel("JSAddDbInstrumentsProgressDlg.btnHide"));
 	
 	private final int jobId;
+	private boolean finished = false;
 	
 	/**
 	 * Creates a new instance of <code>JSAddDbInstrumentsProgressDlg</code>
 	 */
 	public
 	JSAddDbInstrumentsProgressDlg(Frame owner, int jobId) {
-		super(owner, i18n.getLabel("JSAddDbInstrumentsProgressDlg.title"), true);
+		super(owner, i18n.getLabel("JSAddDbInstrumentsProgressDlg.title"));
 		this.jobId = jobId;
 		
 		initAddDbInstrumentsProgressDlg();
@@ -82,7 +83,7 @@ public class JSAddDbInstrumentsProgressDlg extends JDialog {
 	 */
 	public
 	JSAddDbInstrumentsProgressDlg(Dialog owner, int jobId) {
-		super(owner, i18n.getLabel("JSAddDbInstrumentsProgressDlg.title"), true);
+		super(owner, i18n.getLabel("JSAddDbInstrumentsProgressDlg.title"));
 		this.jobId = jobId;
 		
 		initAddDbInstrumentsProgressDlg();
@@ -133,7 +134,6 @@ public class JSAddDbInstrumentsProgressDlg extends JDialog {
 	public void
 	updateStatus() {
 		final GetScanJobInfo t = new GetScanJobInfo(jobId);
-		
 		t.addTaskListener(new TaskListener() {
 			public void
 			taskPerformed(TaskEvent e) {
@@ -152,6 +152,8 @@ public class JSAddDbInstrumentsProgressDlg extends JDialog {
 	private void
 	updateStatus(ScanJobInfo info) {
 		if(info.isFinished()) {
+			finished = true;
+			
 			// TODO: vvv this should be done out of the event-dispatching thread
 			CC.getClient().removeInstrumentsDbListener(getHandler());
 			//////
@@ -164,7 +166,7 @@ public class JSAddDbInstrumentsProgressDlg extends JDialog {
 			progressJobStatus.setValue(progressJobStatus.getMaximum());
 			progressFileStatus.setValue(progressFileStatus.getMaximum());
 			
-			setVisible(false);
+			dispose();
 			getOwner().setVisible(false);
 			return;
 		}
@@ -186,6 +188,14 @@ public class JSAddDbInstrumentsProgressDlg extends JDialog {
 	
 	private void
 	failed() {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void
+			run() { failed0(); }
+		});
+	}
+	
+	private void
+	failed0() {
 		HF.showErrorMessage(i18n.getMessage("JSAddDbInstrumentsProgressDlg.failed"), this);
 		setVisible(false);
 	}
@@ -200,7 +210,6 @@ public class JSAddDbInstrumentsProgressDlg extends JDialog {
 		public void
 		jobStatusChanged(InstrumentsDbEvent e) {
 			if(e.getJobId() != jobId) return;
-			
 			SwingUtilities.invokeLater(new Runnable() {
 				public void
 				run() { updateStatus(); }

@@ -400,6 +400,7 @@ public class CC {
 	 */
 	public static InstrumentsDbTreeModel
 	getInstrumentsDbTreeModel() {
+		if(CC.getSamplerModel().getServerInfo() == null) return null;
 		if(!CC.getSamplerModel().getServerInfo().hasInstrumentsDbSupport()) return null;
 		
 		if(instrumentsDbTreeModel == null) {
@@ -419,6 +420,11 @@ public class CC {
 	removeInstrumentsDbChangeListener(ChangeListener l) {
 		idtmListeners.remove(l);
 	}
+	
+	private static final LostFilesModel lostFilesModel = new LostFilesModel();
+	
+	public static LostFilesModel
+	getLostFilesModel() { return lostFilesModel; }
 	
 	/**
 	 * Loads the orchestras described in <code>&lt;jsampler_home&gt;/orchestras.xml</code>.

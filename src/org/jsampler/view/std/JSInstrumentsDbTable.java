@@ -422,7 +422,12 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 		actionPerformed(ActionEvent e) {
 			DbDirectoryTreeNode n = instrumentsDbTree.getSelectedDirectoryNode();
 			if(n == null) return;
-			instrumentsDbTree.refreshDirectoryContent(n.getInfo().getDirectoryPath());
+			final String path = n.getInfo().getDirectoryPath();
+			instrumentsDbTree.refreshDirectoryContent(path);
+			CC.scheduleInTaskQueue(new Runnable() {
+				public void
+				run() { instrumentsDbTree.setSelectedDirectory(path); }
+			});
 		}
 		
 		public void

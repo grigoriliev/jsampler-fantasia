@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -119,7 +119,7 @@ public class LscpTree {
 		find.setChildren(nodes);
 		
 		// GET command
-		nodes = new LscpNode[30];
+		nodes = new LscpNode[32];
 		nodes[0] = new LscpNode("AUDIO_OUTPUT_CHANNEL", new LscpNode("INFO"));
 		nodes[1] = new LscpNode("AUDIO_OUTPUT_CHANNEL_PARAMETER", new LscpNode("INFO"));
 		nodes[2] = new LscpNode("AUDIO_OUTPUT_DEVICE", new LscpNode("INFO"));
@@ -136,21 +136,23 @@ public class LscpTree {
 		nodes[12] = new LscpNode("DB_INSTRUMENT_DIRECTORIES", true);
 		nodes[13] = new LscpNode("DB_INSTRUMENT_DIRECTORY", new LscpNode("INFO", true));
 		nodes[14] = new LscpNode("DB_INSTRUMENTS", true);
-		nodes[15] = new LscpNode("ENGINE", new LscpNode("INFO"));
-		nodes[16] = new LscpNode("FX_SEND", new LscpNode("INFO"));
-		nodes[17] = new LscpNode("FX_SENDS");
-		nodes[18] = new LscpNode("MIDI_INPUT_DEVICE", new LscpNode("INFO"));
-		nodes[19] = new LscpNode("MIDI_INPUT_DEVICES", true, false);
-		nodes[20] = new LscpNode("MIDI_INPUT_DRIVER", new LscpNode("INFO"));
-		nodes[21] = new LscpNode("MIDI_INPUT_DRIVER_PARAMETER", new LscpNode("INFO"));
-		nodes[22] = new LscpNode("MIDI_INPUT_PORT", new LscpNode("INFO"));
-		nodes[23] = new LscpNode("MIDI_INPUT_PORT_PARAMETER", new LscpNode("INFO"));
-		nodes[24] = new LscpNode("MIDI_INSTRUMENT", new LscpNode("INFO"));
-		nodes[25] = new LscpNode("MIDI_INSTRUMENT_MAP", new LscpNode("INFO"));
-		nodes[26] = new LscpNode("MIDI_INSTRUMENT_MAPS", true, false);
-		nodes[27] = new LscpNode("MIDI_INSTRUMENTS", new LscpNode("ALL", true, false), true);
-		nodes[28] = new LscpNode("SERVER", new LscpNode("INFO", true, false));
-		nodes[29] = new LscpNode("VOLUME", true, false);
+		nodes[15] = new LscpNode("DB_INSTRUMENTS_JOB", new LscpNode("INFO"));
+		nodes[16] = new LscpNode("ENGINE", new LscpNode("INFO"));
+		nodes[17] = new LscpNode("FILE", new LscpNode("INSTRUMENT", new LscpNode("INFO")));
+		nodes[18] = new LscpNode("FX_SEND", new LscpNode("INFO"));
+		nodes[19] = new LscpNode("FX_SENDS");
+		nodes[20] = new LscpNode("MIDI_INPUT_DEVICE", new LscpNode("INFO"));
+		nodes[21] = new LscpNode("MIDI_INPUT_DEVICES", true, false);
+		nodes[22] = new LscpNode("MIDI_INPUT_DRIVER", new LscpNode("INFO"));
+		nodes[23] = new LscpNode("MIDI_INPUT_DRIVER_PARAMETER", new LscpNode("INFO"));
+		nodes[24] = new LscpNode("MIDI_INPUT_PORT", new LscpNode("INFO"));
+		nodes[25] = new LscpNode("MIDI_INPUT_PORT_PARAMETER", new LscpNode("INFO"));
+		nodes[26] = new LscpNode("MIDI_INSTRUMENT", new LscpNode("INFO"));
+		nodes[27] = new LscpNode("MIDI_INSTRUMENT_MAP", new LscpNode("INFO"));
+		nodes[28] = new LscpNode("MIDI_INSTRUMENT_MAPS", true, false);
+		nodes[29] = new LscpNode("MIDI_INSTRUMENTS", new LscpNode("ALL", true, false), true);
+		nodes[30] = new LscpNode("SERVER", new LscpNode("INFO", true, false));
+		nodes[31] = new LscpNode("VOLUME", true, false);
 		get.setChildren(nodes);
 		
 		// GET CHANNEL command
@@ -173,7 +175,7 @@ public class LscpTree {
 		nodes[7] = new LscpNode("FX_SENDS");
 		nodes[8] = new LscpNode("MIDI_INPUT_DEVICES", true, false);
 		nodes[9] = new LscpNode("MIDI_INSTRUMENT_MAPS", true, false);
-		nodes[10] = new LscpNode("MIDI_INSTRUMENTS", true, false);
+		nodes[10] = new LscpNode("MIDI_INSTRUMENTS", true);
 		list.setChildren(nodes);
 		
 		// LOAD command

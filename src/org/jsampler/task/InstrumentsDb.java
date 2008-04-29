@@ -875,6 +875,64 @@ public class InstrumentsDb {
 	}
 	
 	/**
+	 * This task gets a list of all instrument files in the database
+	 * that that doesn't exist in the filesystem.
+	 */
+	public static class FindLostInstrumentFiles extends EnhancedTask<String[]> {
+		
+		/**
+		 * Creates a new instance of <code>FindLostInstrumentFiles</code>.
+		 */
+		public
+		FindLostInstrumentFiles() {
+			setTitle("InstrumentsDb.FindLostInstrumentFiles_task");
+			setDescription(i18n.getMessage("InstrumentsDb.FindLostInstrumentFiles.desc"));
+		}
+	
+		/** The entry point of the task. */
+		public void
+		run() {
+			try { setResult(CC.getClient().findLostDbInstrumentFiles()); }
+			catch(Exception x) {
+				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
+				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
+			}
+		}
+	}
+	
+	/**
+	 * This task substitutes all occurrences of the specified instrument file
+	 * in the database, with the specified new path.
+	 */
+	public static class SetInstrumentFilePath extends EnhancedTask {
+		private String oldPath;
+		private String newPath;
+		
+		/**
+		 * Creates a new instance of <code>SetInstrumentFilePath</code>.
+		 * @param oldPath The absolute path name of the instrument file to substitute.
+		 * @param newPath The new absolute path name.
+		 */
+		public
+		SetInstrumentFilePath(String oldPath, String newPath) {
+			setTitle("InstrumentsDb.SetInstrumentFilePath_task");
+			setDescription(i18n.getMessage("InstrumentsDb.SetInstrumentFilePath.desc"));
+			this.oldPath = oldPath;
+			this.newPath = newPath;
+		}
+	
+		/** The entry point of the task. */
+		public void
+		run() {
+			try { CC.getClient().setDbInstrumentFilePath(oldPath, newPath); }
+			catch(Exception x) {
+				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
+				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
+			}
+		}
+	}
+	
+	/**
 	 * This task retrieves information about a scan job.
 	 */
 	public static class GetScanJobInfo extends EnhancedTask<ScanJobInfo> {

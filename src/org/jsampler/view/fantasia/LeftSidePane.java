@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -35,25 +35,27 @@ import static org.jsampler.view.fantasia.FantasiaPrefs.preferences;
  *
  * @author Grigor Iliev
  */
-public class SidePane extends PixmapPane {
+public class LeftSidePane extends PixmapPane {
 	JTabbedPane tabbedPane = new JTabbedPane();
 	private final OrchestrasPane orchestraPane = new OrchestrasPane();
 	private final MidiInstrumentsPane midiInstrumentsPane = new MidiInstrumentsPane();
 	
-	/** Creates a new instance of <code>SidePane</code> */
+	/**
+	 * Creates a new instance of <code>LeftSidePane</code>
+	 */
 	public
-	SidePane() {
+	LeftSidePane() {
 		super(Res.gfxRoundBg14);
 		setOpaque(false);
 		setPixmapInsets(new java.awt.Insets(6, 6, 6, 6));
 		setLayout(new BorderLayout());
 		JTabbedPane tp = tabbedPane;
-		tp.addTab(i18n.getLabel("SidePane.tabOrchestras"), orchestraPane);
-		tp.addTab(i18n.getLabel("SidePane.tabMidiInstruments"), midiInstrumentsPane);
+		tp.addTab(i18n.getLabel("LeftSidePane.tabOrchestras"), orchestraPane);
+		tp.addTab(i18n.getLabel("LeftSidePane.tabMidiInstruments"), midiInstrumentsPane);
 		add(tp);
 		setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
 		
-		int i = preferences().getIntProperty("SidePane.tabIndex", 0);
+		int i = preferences().getIntProperty("leftSidePane.tabIndex", 0);
 		if(tp.getTabCount() > i) tp.setSelectedIndex(i);
 	}
 	
@@ -62,6 +64,6 @@ public class SidePane extends PixmapPane {
 		orchestraPane.savePreferences();
 		midiInstrumentsPane.savePreferences();
 		int i = tabbedPane.getSelectedIndex();
-		if(i != -1) preferences().setIntProperty("SidePane.tabIndex", i);
+		if(i != -1) preferences().setIntProperty("leftSidePane.tabIndex", i);
 	}
 }

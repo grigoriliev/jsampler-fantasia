@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -98,15 +98,14 @@ public class MainFrame extends JSMainFrame {
 	private final FantasiaMenuBar menuBar = new FantasiaMenuBar();
 	private final JPanel rootPane = new JPanel();
 	private final MainPane mainPane = new MainPane();
-	private final DevicesPane devicesPane = new DevicesPane();
-	private final JScrollPane spDevicesPane = new JScrollPane();
 	
 	private final JMenu recentScriptsMenu =
 		new JMenu(i18n.getMenuLabel("actions.recentScripts"));
 	
 	private final JSplitPane hSplitPane;
 	
-	private final SidePane sidePane = new SidePane();
+	private final LeftSidePane leftSidePane = new LeftSidePane();
+	private final RightSidePane rightSidePane = new RightSidePane();
 	private final JPanel rightPane;
 	
 	private final LSConsoleFrame lsConsoleFrame = new LSConsoleFrame();
@@ -116,11 +115,11 @@ public class MainFrame extends JSMainFrame {
 	private final JCheckBoxMenuItem cbmiToolBarVisible =
 			new JCheckBoxMenuItem(i18n.getMenuLabel("view.toolBar"));
 	
-	private final JCheckBoxMenuItem cbmiSidePaneVisible =
-			new JCheckBoxMenuItem(i18n.getMenuLabel("view.sidePane"));
+	private final JCheckBoxMenuItem cbmiLeftSidePaneVisible =
+			new JCheckBoxMenuItem(i18n.getMenuLabel("view.leftSidePane"));
 	
-	private final JCheckBoxMenuItem cbmiDevicesPaneVisible =
-			new JCheckBoxMenuItem(i18n.getMenuLabel("view.devicesPane"));
+	private final JCheckBoxMenuItem cbmiRightSidePaneVisible =
+			new JCheckBoxMenuItem(i18n.getMenuLabel("view.rightSidePane"));
 	
 	/** Creates a new instance of <code>MainFrame</code> */
 	public
@@ -136,7 +135,7 @@ public class MainFrame extends JSMainFrame {
 		hSplitPane = new JSplitPane (
 			JSplitPane.HORIZONTAL_SPLIT,
 			true,	// continuousLayout 
-			sidePane, rightPane
+			leftSidePane, rightPane
 		);
 		hSplitPane.setResizeWeight(0.5);
 		
@@ -167,24 +166,19 @@ public class MainFrame extends JSMainFrame {
 		
 		c.fill = GridBagConstraints.BOTH;
 		
-		spDevicesPane.setViewportView(devicesPane);
-		spDevicesPane.setBorder(BorderFactory.createEmptyBorder());
-		int h = spDevicesPane.getMinimumSize().height;
-		spDevicesPane.setMinimumSize(new Dimension(200, h));
-		
 		c.gridx = 1;
 		c.gridy = 0;
 		c.weightx = 1.0;
 		c.weighty = 1.0;
-		c.insets = new Insets(0, 3, 3, 0);
-		gridbag.setConstraints(spDevicesPane, c);
-		p.add(spDevicesPane);
+		c.insets = new Insets(0, 3, 0, 0);
+		gridbag.setConstraints(rightSidePane, c);
+		p.add(rightSidePane);
 		
 		c.gridx = 0;
 		c.gridy = 0;
 		c.weightx = 0.0;
 		c.weighty = 1.0;
-		c.insets = new Insets(0, 3, 3, 3);
+		c.insets = new Insets(0, 3, 0, 3);
 		c.fill = GridBagConstraints.VERTICAL;
 		gridbag.setConstraints(mainPane, c);
 		p.add(mainPane);
@@ -245,7 +239,8 @@ public class MainFrame extends JSMainFrame {
 			if(dlg.isCancelled()) return;
 		}
 		
-		sidePane.savePreferences();
+		leftSidePane.savePreferences();
+		rightSidePane.savePreferences();
 		
 		int i = hSplitPane.getDividerLocation();
 		preferences().setIntProperty("MainFrame.hSplitDividerLocation", i);
@@ -396,36 +391,36 @@ public class MainFrame extends JSMainFrame {
 		cbmiToolBarVisible.setSelected(b);
 		showToolBar(b);
 		
-		cbmiSidePaneVisible.setAccelerator(KeyStroke.getKeyStroke (
+		cbmiLeftSidePaneVisible.setAccelerator(KeyStroke.getKeyStroke (
 			KeyEvent.VK_L, KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK
 		));
-		m.add(cbmiSidePaneVisible);
+		m.add(cbmiLeftSidePaneVisible);
 		
-		cbmiSidePaneVisible.addActionListener(new ActionListener() {
+		cbmiLeftSidePaneVisible.addActionListener(new ActionListener() {
 			public void
 			actionPerformed(ActionEvent e) {
-				showSidePane(cbmiSidePaneVisible.getState());
+				showSidePane(cbmiLeftSidePaneVisible.getState());
 			}
 		});
 		
-		b = preferences().getBoolProperty("sidePane.visible");
-		cbmiSidePaneVisible.setSelected(b);
+		b = preferences().getBoolProperty("leftSidePane.visible");
+		cbmiLeftSidePaneVisible.setSelected(b);
 		showSidePane(b);
 		
-		cbmiDevicesPaneVisible.setAccelerator(KeyStroke.getKeyStroke (
+		cbmiRightSidePaneVisible.setAccelerator(KeyStroke.getKeyStroke (
 			KeyEvent.VK_R, KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK
 		));
-		m.add(cbmiDevicesPaneVisible);
+		m.add(cbmiRightSidePaneVisible);
 		
-		cbmiDevicesPaneVisible.addActionListener(new ActionListener() {
+		cbmiRightSidePaneVisible.addActionListener(new ActionListener() {
 			public void
 			actionPerformed(ActionEvent e) {
-				showDevicesPane(cbmiDevicesPaneVisible.getState());
+				showDevicesPane(cbmiRightSidePaneVisible.getState());
 			}
 		});
 		
-		b = preferences().getBoolProperty("devicesPane.visible");
-		cbmiDevicesPaneVisible.setSelected(b);
+		b = preferences().getBoolProperty("rightSidePane.visible");
+		cbmiRightSidePaneVisible.setSelected(b);
 		showDevicesPane(b);
 		
 		
@@ -630,7 +625,7 @@ public class MainFrame extends JSMainFrame {
 	
 	private void
 	showSidePane(boolean b) {
-		preferences().setBoolProperty("sidePane.visible", b);
+		preferences().setBoolProperty("leftSidePane.visible", b);
 		rootPane.remove(rightPane);
 		rootPane.remove(hSplitPane);
 		
@@ -662,25 +657,25 @@ public class MainFrame extends JSMainFrame {
 	
 	private void
 	showDevicesPane(boolean b) {
-		preferences().setBoolProperty("devicesPane.visible", b);
+		preferences().setBoolProperty("rightSidePane.visible", b);
 		
-		int width = sidePane.getWidth();
-		int height = sidePane.getPreferredSize().height;
-		if(width != 0) sidePane.setPreferredSize(new Dimension(width, height));
+		int width = leftSidePane.getWidth();
+		int height = leftSidePane.getPreferredSize().height;
+		if(width != 0) leftSidePane.setPreferredSize(new Dimension(width, height));
 		
 		if(b) {
 			int w = preferences().getIntProperty("devicesPane.width", 200);
 			
-			int h = spDevicesPane.getPreferredSize().height;
-			spDevicesPane.setPreferredSize(new Dimension(w, h));
+			int h = rightSidePane.getPreferredSize().height;
+			rightSidePane.setPreferredSize(new Dimension(w, h));
 		} else {
-			int w = spDevicesPane.getWidth();
+			int w = rightSidePane.getWidth();
 			if(w > 0 && w < 200) w = 200;
 			if(w != 0) preferences().setIntProperty("devicesPane.width", w);
 		}
 		
 		hSplitPane.setResizeWeight(0.0);
-		spDevicesPane.setVisible(b);
+		rightSidePane.setVisible(b);
 		hSplitPane.resetToPreferredSizes();
 		
 		int w = getPreferredSize().width;
@@ -699,16 +694,16 @@ public class MainFrame extends JSMainFrame {
 	
 	private void
 	sidePanesVisibilityChanged() {
-		boolean sidePaneVisible = cbmiSidePaneVisible.isSelected();
-		boolean devicesPaneVisible = cbmiDevicesPaneVisible.isSelected();
+		boolean leftSidePaneVisible = cbmiLeftSidePaneVisible.isSelected();
+		boolean rightSidePaneVisible = cbmiRightSidePaneVisible.isSelected();
 		
-		if(sidePaneVisible && devicesPaneVisible) {
+		if(leftSidePaneVisible && rightSidePaneVisible) {
 			hSplitPane.setResizeWeight(0.5);
-		} else if(sidePaneVisible && !devicesPaneVisible) {
+		} else if(leftSidePaneVisible && !rightSidePaneVisible) {
 			hSplitPane.setResizeWeight(1.0);
 		}
 		
-		if(!sidePaneVisible && !devicesPaneVisible) {
+		if(!leftSidePaneVisible && !rightSidePaneVisible) {
 			standardBar.showFantasiaLogo(false);
 			if(isResizable()) setResizable(false);
 		} else {

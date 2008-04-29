@@ -770,7 +770,6 @@ public class Midi {
 				SamplerModel sm = CC.getSamplerModel();
 				int[][] entries = CC.getClient().getMidiInstrumentEntries(mapId);
 				MidiInstrumentMap map = sm.getMidiInstrumentMapById(mapId);
-				System.out.println(entries.length);
 				boolean found = false;
 				
 				for(MidiInstrument instr : map.getAllMidiInstruments()) {

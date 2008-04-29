@@ -33,6 +33,7 @@ import org.jsampler.view.InstrumentsDbTableView;
 import org.jsampler.view.InstrumentsDbTreeView;
 import org.jsampler.view.JSViewConfig;
 
+import org.jvnet.substance.utils.SubstanceConstants;
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.skin.SubstanceRavenGraphiteLookAndFeel;
 
@@ -50,6 +51,11 @@ public class ViewConfig extends JSViewConfig {
 		try {
 			UIManager.setLookAndFeel(new SubstanceRavenGraphiteLookAndFeel());
 			UIManager.put(SubstanceLookAndFeel.WATERMARK_IGNORE, Boolean.TRUE);
+			
+			UIManager.put (
+				SubstanceLookAndFeel.TABBED_PANE_CONTENT_BORDER_KIND,
+				SubstanceConstants.TabContentPaneBorderKind.SINGLE_FULL
+			);
 			
 			if(!preferences().getBoolProperty("TurnOffCustomWindowDecoration")) {
 				javax.swing.JFrame.setDefaultLookAndFeelDecorated(true);

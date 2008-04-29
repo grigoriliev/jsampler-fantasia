@@ -120,6 +120,23 @@ public class InstrumentsDbTableModel extends AbstractTableModel {
 		return columns.indexOf(ColumnType.DUMMY);
 	}
 	
+	/** Sets only the <b>Name</b> column to be shown. */
+	public void
+	showNameColumnOnly() {
+		showSizeColumn = false;
+		showFormatFamilyColumn = false;
+		showFormatVersionColumn = false;
+		showIsDrumColumn = false;
+		showCreatedColumn = false;
+		showModifiedColumn = false;
+		showProductColumn = false;
+		showArtistsColumn = false;
+		showInstrumentFileColumn = false;
+		showInstrumentNrColumn = false;
+		showKeywordsColumn = false;
+		updateColumns();
+	}
+	
 	/** Gets whether the <b>Size</b> column is shown. */
 	public boolean
 	getShowSizeColumn() { return showSizeColumn; }

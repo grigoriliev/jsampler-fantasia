@@ -301,7 +301,7 @@ public class JSAddDbInstrumentsFromFileDlg extends OkCancelDialog {
 		dlg = new JSAddDbInstrumentsProgressDlg(this, jobId);
 		SwingUtilities.invokeLater(new Runnable() {
 			public void
-			run() { dlg.setVisible(true); }
+			run() { dlg.setVisible(true); dlg.updateStatus(); }
 		});
 	}
 	

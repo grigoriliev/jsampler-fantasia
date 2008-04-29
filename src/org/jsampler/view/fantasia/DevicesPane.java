@@ -30,6 +30,7 @@ import java.awt.Insets;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
 import org.jvnet.substance.SubstanceLookAndFeel;
@@ -44,13 +45,14 @@ import static org.jsampler.view.fantasia.FantasiaPrefs.*;
  * @author Grigor Iliev
  */
 public class DevicesPane extends JPanel {
-	private final TaskPaneContainer taskPaneContainer = new EnhancedTaskPaneContainer();
+	private final TaskPaneContainer taskPaneContainer = new TaskPaneContainer();
 	private final TaskPane midiDevicesTaskPane = new TaskPane();
 	private final TaskPane audioDevicesTaskPane = new TaskPane();
 	
 	/** Creates a new instance of <code>DevicesPane</code> */
 	public
 	DevicesPane() {
+		setOpaque(false);
 		setLayout(new BorderLayout());
 		midiDevicesTaskPane.setTitle(i18n.getLabel("DevicesPane.midiDevicesTaskPane"));
 		midiDevicesTaskPane.setAnimated(preferences().getBoolProperty(ANIMATED));
@@ -84,24 +86,12 @@ public class DevicesPane extends JPanel {
 		
 		taskPaneContainer.add(midiDevicesTaskPane);
 		taskPaneContainer.add(audioDevicesTaskPane);
+		taskPaneContainer.setBorder(BorderFactory.createEmptyBorder());
 		add(taskPaneContainer);
 		
 		midiDevicesTaskPane.add(new MidiDevicesPane());
 		audioDevicesTaskPane.add(new AudioDevicesPane());
 		
 		taskPaneContainer.setOpaque(false);
-	}
-	
-	class EnhancedTaskPaneContainer extends TaskPaneContainer {
-		EnhancedTaskPaneContainer() {
-			
-		}
-	
-		protected void
-		paintComponent(Graphics g) {
-			super.paintComponent(g);
-			PixmapPane.paintComponent(this, g, Res.gfxRoundBg14, new Insets(6, 6, 6, 6));
-			
-		}
 	}
 }

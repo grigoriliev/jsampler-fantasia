@@ -12,6 +12,16 @@ CVS HEAD
 
   * Optimized the MIDI instrument update process
 
+  * Added support for handling lost files in the Instruments Database
+    (In the Instruments Database window choose Actions/Check For Lost Files)
+
+  * Added new menu item in the Instruments Database window: Edit/Find
+
+  * Fantasia:
+    - Added option to show the Instruments Database on
+      the Right-Side Pane of the Fantasia's main window
+      (choose Edit/Preferences, then click the `View' tab)
+
   * Bug fixes:
     - fixed bug #66
     - fixed a null pointer exception in the AudioDevicePane, when JACK
@@ -19,6 +29,7 @@ CVS HEAD
     - fixed bug #76
     - fixed bug #77
     - fixed bug #84
+    - Some minor bugfixes and enhancements
 
 JSampler v0.8a: 2007-12-06
   * Added new menu item: Help/Online Tutorial

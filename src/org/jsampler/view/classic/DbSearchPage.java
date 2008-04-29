@@ -76,6 +76,9 @@ public class DbSearchPage extends NavigationPage {
 		});
 	}
 	
+	public void
+	setSearchPath(String path) { dbSearchPane.setSearchPath(path); }
+	
 	class DbSearchPane extends JSDbSearchPane {
 		DbSearchPane(Frame owner) {
 			super(owner);

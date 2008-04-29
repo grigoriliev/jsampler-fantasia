@@ -259,6 +259,9 @@ public abstract class JSDbSearchPane extends JPanel {
 	public DbInstrumentInfo[]
 	getInstrumentResults() { return instrumentResults; }
 	
+	public void
+	setSearchPath(String path) { tfLookIn.setText(path); }
+	
 	private void
 	setSearchResults(DbDirectoryInfo[] dirs, DbInstrumentInfo[] instruments) {
 		directoryResults = dirs;

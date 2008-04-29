@@ -79,6 +79,19 @@ public class InstrumentsDbTreeModel implements TreeModel {
 		initDb(l);
 	}
 	
+	/**
+	 * Creates a new instance of <code>InstrumentsDbTreeModel</code>.
+	 */
+	public
+	InstrumentsDbTreeModel(boolean dummy) {
+		if(dummy) return;
+		// TODO: This shouldn't be done in the event-dispatcing thread
+		CC.getClient().addInstrumentsDbListener(getHandler());
+		///////
+				
+		initDb(null);
+	}
+	
 	private void
 	initDb(final ActionListener l) {
 		final InstrumentsDb.GetDrectory gdi = new InstrumentsDb.GetDrectory("/");

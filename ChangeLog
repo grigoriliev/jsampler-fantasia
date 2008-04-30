@@ -21,6 +21,7 @@ CVS HEAD
     - Added option to show the Instruments Database on
       the Right-Side Pane of the Fantasia's main window
       (choose Edit/Preferences, then click the `View' tab)
+    - Implemented pluggable channel view
 
   * Bug fixes:
     - fixed bug #66

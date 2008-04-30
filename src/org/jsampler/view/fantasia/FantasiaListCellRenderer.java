@@ -62,8 +62,9 @@ public class FantasiaListCellRenderer extends SubstanceDefaultListCellRenderer {
 		
 		FantasiaRenderer() {
 			setOpaque(false);
-			setBorder(BorderFactory.createEmptyBorder(4, 3, 6, 5));
+			setBorder(BorderFactory.createEmptyBorder(4, 5, 6, 5));
 			setForeground(new java.awt.Color(0xFFA300));
+			setBackground(new java.awt.Color(0x818181));
 			setFont(Res.fontScreen);
 		}
 		

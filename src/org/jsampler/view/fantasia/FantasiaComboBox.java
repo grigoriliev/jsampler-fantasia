@@ -46,6 +46,7 @@ public class FantasiaComboBox extends JComboBox {
 		setBackground(new java.awt.Color(0x818181));
 		setBorder(BorderFactory.createEmptyBorder());
 		setRenderer(new FantasiaListCellRenderer());
+		putClientProperty(SubstanceLookAndFeel.COLORIZATION_FACTOR, 1.0);
 		//putClientProperty(SubstanceLookAndFeel.FLAT_PROPERTY, Boolean.TRUE);
 		//putClientProperty(SubstanceLookAndFeel.PAINT_ACTIVE_PROPERTY, Boolean.TRUE);
 	}

@@ -77,6 +77,9 @@ public class StdPrefs extends JSPrefs {
 	/** Property which specifies the sort order in the instruments database frame. */
 	public final static String INSTRUMENTS_DB_FRAME_SORT_ORDER = "instrumentsDbFrameSortOrder";
 	
+	/** Property representing the channel view to be used when creating a sampler channel. */
+	public final static String DEFAULT_CHANNEL_VIEW = "defaultChannelView";
+	
 	
 	/**
 	 * Creates a new instance of <code>StdPrefs</code>.
@@ -108,6 +111,7 @@ public class StdPrefs extends JSPrefs {
 		if(name == MAXIMUM_MASTER_VOLUME) return 100;
 		if(name == MAXIMUM_CHANNEL_VOLUME) return 100;
 		if(name == INSTRUMENTS_DB_FRAME_SORT_ORDER) return 1;
+		if(name == DEFAULT_CHANNEL_VIEW) return 1;
 		
 		return super.getDefaultIntValue(name);
 	}

@@ -193,9 +193,9 @@ public class MainPane extends JPanel {
 			setPixmapInsets(new Insets(3, 3, 3, 3));
 			
 			setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-			add(Box.createRigidArea(new Dimension(4, 0)));
-			add(btnNew);
 			add(Box.createRigidArea(new Dimension(3, 0)));
+			add(btnNew);
+			add(Box.createRigidArea(new Dimension(4, 0)));
 			
 			add(createVSeparator());
 			

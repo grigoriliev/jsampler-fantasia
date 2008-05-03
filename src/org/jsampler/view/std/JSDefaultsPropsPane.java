@@ -38,6 +38,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.jsampler.CC;
@@ -62,7 +63,13 @@ public class JSDefaultsPropsPane extends JPanel {
 	/** Creates a new instance of <code>JSDefaultsPropsPane</code> */
 	public
 	JSDefaultsPropsPane(Dialog owner, Icon iconChangeDefaults) {
-		channelDefaultsPane = new ChannelDefaultsPane(owner, iconChangeDefaults);
+		this(owner, iconChangeDefaults, false);
+	}
+	
+	/** Creates a new instance of <code>JSDefaultsPropsPane</code> */
+	public
+	JSDefaultsPropsPane(Dialog owner, Icon iconChangeDefaults, boolean showDefaultChannelView) {
+		channelDefaultsPane = new ChannelDefaultsPane(owner, iconChangeDefaults, showDefaultChannelView);
 		
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		add(channelDefaultsPane);
@@ -89,10 +96,19 @@ public class JSDefaultsPropsPane extends JPanel {
 		
 		private final JButton btnChannelDefaults;
 		
+		private final boolean showDefaultView;
+		private final JComboBox cbDefaultView = new JComboBox();
+		
 		
 		public
 		ChannelDefaultsPane(Dialog owner, Icon iconChangeDefaults) {
+			this(owner, iconChangeDefaults, false);
+		}
+		
+		public
+		ChannelDefaultsPane(Dialog owner, Icon iconChangeDefaults, boolean showDefaultView) {
 			this.owner = owner;
+			this.showDefaultView = showDefaultView;
 			btnChannelDefaults = new JButton(iconChangeDefaults);
 			btnChannelDefaults.setEnabled(false);
 			btnChannelDefaults.setMargin(new java.awt.Insets(0, 0, 0, 0));
@@ -122,8 +138,6 @@ public class JSDefaultsPropsPane extends JPanel {
 				}
 			});
 			
-			setMaximumSize(new Dimension(Short.MAX_VALUE, getMaximumSize().height));
-			
 			if(preferences().getBoolProperty(USE_CHANNEL_DEFAULTS)) {
 				checkChannelDefaults.doClick(0);
 			}
@@ -132,12 +146,46 @@ public class JSDefaultsPropsPane extends JPanel {
 				public void
 				actionPerformed(ActionEvent e) { editChannelDefaults(); }
 			});
+			
+			if(showDefaultView) {
+				p = new JPanel();
+				p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
+				
+				s = i18n.getLabel("JSDefaultsPropsPane.lDefaultChannelView");
+				p.add(new JLabel(s));
+				
+				p.add(Box.createRigidArea(new Dimension(5, 0)));
+				
+				s = i18n.getLabel("JSDefaultsPropsPane.lSmallView");
+				cbDefaultView.addItem(s);
+				
+				s = i18n.getLabel("JSDefaultsPropsPane.lNormalView");
+				cbDefaultView.addItem(s);
+				
+				int i = preferences().getIntProperty(DEFAULT_CHANNEL_VIEW);
+				if(i < 0 || i >= cbDefaultView.getItemCount()) i = 1;
+				
+				cbDefaultView.setSelectedIndex(i);
+				
+				p.add(cbDefaultView);
+				
+				p.setAlignmentX(LEFT_ALIGNMENT);
+				p.setBorder(BorderFactory.createEmptyBorder(3, 5, 3, 5));
+				add(p);
+			}
+			
+			setMaximumSize(new Dimension(Short.MAX_VALUE, getPreferredSize().height));
 		}
 		
 		public void
 		apply() {
 			boolean b = checkChannelDefaults.isSelected();
 			preferences().setBoolProperty(USE_CHANNEL_DEFAULTS, b);
+			
+			if(showDefaultView) {
+				int i = cbDefaultView.getSelectedIndex();
+				preferences().setIntProperty(DEFAULT_CHANNEL_VIEW, i);
+			}
 		}
 		
 		protected void

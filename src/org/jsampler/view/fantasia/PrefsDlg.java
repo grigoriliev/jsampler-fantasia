@@ -75,7 +75,7 @@ public class PrefsDlg extends EnhancedDialog {
 	PrefsDlg(Frame owner) { 
 		super(owner, i18n.getLabel("PrefsDlg.title"), true);
 		
-		defaultsPane = new JSDefaultsPropsPane(this, Res.iconEdit16);
+		defaultsPane = new JSDefaultsPropsPane(this, Res.iconEdit16, true);
 		
 		JTabbedPane tp = new JTabbedPane();
 		tp.addTab(i18n.getLabel("PrefsDlg.tabGeneral"), genPane);

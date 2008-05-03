@@ -22,6 +22,11 @@ CVS HEAD
       the Right-Side Pane of the Fantasia's main window
       (choose Edit/Preferences, then click the `View' tab)
     - Implemented pluggable channel view
+    - Implemented Small View for sampler channels
+      (right-click on the sampler channel then choose Small View)
+    - Implemented option to choose default sampler channel view
+      (choose Edit/Preferences, then click the `Defaults' tab)
+    - Added context menu to sampler channels
 
   * Bug fixes:
     - fixed bug #66

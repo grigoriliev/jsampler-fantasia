@@ -59,17 +59,32 @@ public class Res {
 	protected final static ImageIcon gfxMuteOff
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_mute_off.png"));
 	
+	protected final static ImageIcon gfxMuteSmallOn
+		= new ImageIcon(Res.class.getResource("res/gfx/btn_mute_s_on.png"));
+	
+	protected final static ImageIcon gfxMuteSmallOff
+		= new ImageIcon(Res.class.getResource("res/gfx/btn_mute_s_off.png"));
+	
 	protected final static ImageIcon gfxMuteSoloDisabled
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_mute_solo_disabled.png"));
 	
 	protected final static ImageIcon gfxMutedBySolo
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_mute_off.png"));
 	
+	protected final static ImageIcon gfxMutedBySoloSmall
+		= new ImageIcon(Res.class.getResource("res/gfx/btn_mute_s_off.png"));
+	
 	protected final static ImageIcon gfxSoloOn
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_solo_on.png"));
 	
 	protected final static ImageIcon gfxSoloOff
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_mute_off.png"));
+	
+	protected final static ImageIcon gfxSoloSmallOn
+		= new ImageIcon(Res.class.getResource("res/gfx/btn_solo_s_on.png"));
+	
+	protected final static ImageIcon gfxSoloSmallOff
+		= new ImageIcon(Res.class.getResource("res/gfx/btn_solo_s_off.png"));
 	
 	protected final static ImageIcon gfxMuteTitle
 		= new ImageIcon(Res.class.getResource("res/gfx/title_mute.png"));
@@ -97,6 +112,12 @@ public class Res {
 	
 	protected final static ImageIcon gfxOptionsOffRO
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_show_channel_options_ro.png"));
+	
+	protected final static ImageIcon gfxFx
+		= new ImageIcon(Res.class.getResource("res/gfx/btn_fx.png"));
+	
+	protected final static ImageIcon gfxFxRO
+		= new ImageIcon(Res.class.getResource("res/gfx/btn_fx_ro.png"));
 	
 	protected final static ImageIcon gfxMidiInputTitle
 		= new ImageIcon(Res.class.getResource("res/gfx/title_midi_input.png"));

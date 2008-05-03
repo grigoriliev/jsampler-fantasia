@@ -35,8 +35,6 @@ import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import java.text.NumberFormat;
-
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -47,23 +45,17 @@ import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JToolBar;
 import javax.swing.Timer;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import net.sf.juife.Dial;
-import net.sf.juife.InformationDialog;
 import net.sf.juife.JuifeUtils;
 
 import org.jsampler.CC;
 import org.jsampler.HF;
 import org.jsampler.SamplerChannelModel;
-
-import org.jsampler.view.std.JSFxSendsPane;
-import org.jsampler.view.std.JSInstrumentChooser;
-import org.jsampler.view.std.JSVolumeEditorPopup;
 
 import org.jvnet.substance.SubstanceImageCreator;
 
@@ -73,7 +65,6 @@ import org.linuxsampler.lscp.SamplerEngine;
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jsampler.view.fantasia.FantasiaPrefs.*;
 import static org.jsampler.view.fantasia.FantasiaUtils.*;
-import static org.jsampler.view.std.JSVolumeEditorPopup.VolumeType;
 
 /**
  *
@@ -86,10 +77,10 @@ public class NormalChannelView extends JPanel implements ChannelView {
 	private final EnhancedDial dialVolume = new EnhancedDial();
 	private final ChannelScreen screen;
 	
-	private final PowerButton btnPower = new PowerButton();
+	private final Channel.PowerButton btnPower;
 	private final MuteButton btnMute = new MuteButton();
 	private final SoloButton btnSolo = new SoloButton();
-	private final OptionsButton btnOptions = new OptionsButton();
+	private final Channel.OptionsButton btnOptions;
 	
 	
 	/** Creates a new instance of <code>NormalChannelView</code> */
@@ -103,6 +94,11 @@ public class NormalChannelView extends JPanel implements ChannelView {
 	NormalChannelView(Channel channel, ChannelOptionsView channelOptionsView) {
 		this.channel = channel;
 		this.channelOptionsView = channelOptionsView;
+		
+		addMouseListener(channel.getContextMenu());
+		
+		btnPower = new Channel.PowerButton(channel);
+		btnOptions = new Channel.OptionsButton(channel);
 		
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
@@ -233,6 +229,8 @@ public class NormalChannelView extends JPanel implements ChannelView {
 		SamplerChannel sc = channel.getChannelInfo();
 		
 		screen.updateScreenInfo(sc);
+		float f = sc.getVolume() * 100.0f;
+		screen.updateVolumeInfo((int)f);
 		updateMuteIcon(sc);
 		
 		if(sc.isSoloChannel()) btnSolo.setIcon(Res.gfxSoloOn);
@@ -344,33 +342,6 @@ public class NormalChannelView extends JPanel implements ChannelView {
 	}
 	
 	
-	private class PowerButton extends PixmapToggleButton implements ActionListener {
-		
-		PowerButton() {
-			super(Res.gfxPowerOff, Res.gfxPowerOn);
-		
-			setSelected(true);
-			addActionListener(this);
-			setToolTipText(i18n.getButtonLabel("Channel.ttRemoveChannel"));
-		}
-		
-		public void
-		actionPerformed(ActionEvent e) {
-			boolean b = preferences().getBoolProperty(CONFIRM_CHANNEL_REMOVAL);
-			if(b) {
-				String s = i18n.getMessage("Channel.remove?", channel.getChannelId());
-				if(!HF.showYesNoDialog(NormalChannelView.this, s)) {
-					setSelected(true);
-					return;
-				}
-			}
-			channel.remove();
-		}
-		
-		public boolean
-		contains(int x, int y) { return (x - 11)*(x - 11) + (y - 11)*(y - 11) < 71; }
-	}
-	
 	private class MuteButton extends PixmapButton implements ActionListener {
 		MuteButton() {
 			super(Res.gfxMuteOff);
@@ -439,30 +410,6 @@ public class NormalChannelView extends JPanel implements ChannelView {
 		public boolean
 		contains(int x, int y) { return (x > 5 && x < 23) && (y > 5 && y < 16); }
 	}
-	
-	private class OptionsButton extends PixmapToggleButton implements ActionListener {
-		OptionsButton() {
-			super(Res.gfxOptionsOff, Res.gfxOptionsOn);
-			setRolloverIcon(Res.gfxOptionsOffRO);
-			this.setRolloverSelectedIcon(Res.gfxOptionsOnRO);
-			addActionListener(this);
-			setToolTipText(i18n.getButtonLabel("Channel.ttShowOptions"));
-		}
-		
-		public void
-		actionPerformed(ActionEvent e) {
-			channel.showOptionsPane(isSelected());
-			
-			String s;
-			if(isSelected()) s = i18n.getButtonLabel("Channel.ttHideOptions");
-			else s = i18n.getButtonLabel("Channel.ttShowOptions");
-			
-			setToolTipText(s);
-		}
-		
-		public boolean
-		contains(int x, int y) { return super.contains(x, y) & y < 13; }
-	}
 }
 
 
@@ -479,6 +426,10 @@ class ChannelScreen extends PixmapPane {
 	
 	private final InstrumentPane instrumentPane;
 	
+	private final Channel.StreamVoiceCountPane streamVoiceCountPane;
+	
+	private final Channel.VolumePane volumePane;
+	
 	private JButton btnInstr =
 		createScreenButton(i18n.getButtonLabel("ChannelScreen.btnInstr"));
 	
@@ -494,20 +445,7 @@ class ChannelScreen extends PixmapPane {
 	
 	private final JPopupMenu menuEngines = new JPopupMenu();
 	
-	private final JButton btnVolume = createScreenButton("");
-	private JSVolumeEditorPopup popupVolume;
-	
-	private final JLabel lStreams = createScreenLabel(" --");
-	private final JLabel lVoices = createScreenLabel("-- ");
-	
-	private InformationDialog fxSendsDlg = null;
-	
 	private Timer timer;
-	
-	private static NumberFormat numberFormat = NumberFormat.getInstance();
-	static {
-		numberFormat.setMaximumFractionDigits(1);
-	}
 	
 	ChannelScreen(final Channel channel) {
 		super(Res.gfxChannelScreen);
@@ -515,7 +453,9 @@ class ChannelScreen extends PixmapPane {
 		setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		
 		this.channel = channel;
-		popupVolume = new JSVolumeEditorPopup(btnVolume, VolumeType.CHANNEL);
+		addMouseListener(channel.getContextMenu());
+		streamVoiceCountPane = new Channel.StreamVoiceCountPane(channel);
+		volumePane = new Channel.VolumePane(channel);
 		
 		setOpaque(false);
 		
@@ -524,6 +464,7 @@ class ChannelScreen extends PixmapPane {
 		btnInstr.setAlignmentX(CENTER_ALIGNMENT);
 		btnInstr.setRolloverEnabled(false);
 		btnInstr.setBorder(BorderFactory.createEmptyBorder(3, 0, 0, 0));
+		btnInstr.addMouseListener(channel.getContextMenu());
 		
 		instrumentPane = new InstrumentPane();
 		add(instrumentPane);
@@ -537,19 +478,11 @@ class ChannelScreen extends PixmapPane {
 		btnFxSends.addActionListener(new ActionListener() {
 			public void
 			actionPerformed(ActionEvent e) {
-				if(fxSendsDlg != null && fxSendsDlg.isVisible()) {
-					fxSendsDlg.toFront();
-					return;
-				}
-				FxSendsPane p = new FxSendsPane(channel.getModel());
-				int id = channel.getModel().getChannelId();
-				fxSendsDlg = new InformationDialog(CC.getMainFrame(), p);
-				fxSendsDlg.setTitle(i18n.getLabel("FxSendsDlg.title", id));
-				fxSendsDlg.setModal(false);
-				fxSendsDlg.showCloseButton(false);
-				fxSendsDlg.setVisible(true);
+				channel.showFxSendsDialog();
 			}
 		});
+		
+		btnFxSends.addMouseListener(channel.getContextMenu());
 		
 		p.add(btnFxSends);
 		
@@ -558,6 +491,7 @@ class ChannelScreen extends PixmapPane {
 		
 		btnEngine.setIcon(Res.iconEngine12);
 		btnEngine.setIconTextGap(1);
+		btnEngine.addMouseListener(channel.getContextMenu());
 		p.add(btnEngine);
 		//p.add(new Label("|"));
 		
@@ -567,52 +501,9 @@ class ChannelScreen extends PixmapPane {
 		
 		p.add(Box.createGlue());
 		
-		lStreams.setFont(Res.fontScreenMono);
-		lStreams.setHorizontalAlignment(JLabel.RIGHT);
-		lStreams.setToolTipText(i18n.getLabel("ChannelScreen.streamVoiceCount"));
-		p.add(lStreams);
+		p.add(streamVoiceCountPane);
+		p.add(volumePane);
 		
-		JLabel l = createScreenLabel("/");
-		l.setFont(Res.fontScreenMono);
-		l.setToolTipText(i18n.getLabel("ChannelScreen.streamVoiceCount"));
-		p.add(l);
-		
-		lVoices.setFont(Res.fontScreenMono);
-		lVoices.setToolTipText(i18n.getLabel("ChannelScreen.streamVoiceCount"));
-		p.add(lVoices);
-		
-		btnVolume.setIcon(Res.iconVolume14);
-		btnVolume.setIconTextGap(2);
-		btnVolume.setAlignmentX(RIGHT_ALIGNMENT);
-		btnVolume.setHorizontalAlignment(btnVolume.LEFT);
-		updateVolumeInfo(100);
-		Dimension d = btnVolume.getPreferredSize();
-		d.width = 60;
-		btnVolume.setPreferredSize(d);
-		btnVolume.setMinimumSize(d);
-		
-		btnVolume.addActionListener(new ActionListener() {
-			public void
-			actionPerformed(ActionEvent e) {
-				if(popupVolume.isVisible()) {
-					popupVolume.commit();
-					popupVolume.hide();
-				} else {
-					float vol = channel.getModel().getChannelInfo().getVolume();
-					popupVolume.setCurrentVolume(vol);
-					popupVolume.show();
-				}
-			}
-		});
-		
-		popupVolume.addActionListener(new ActionListener() {
-			public void
-			actionPerformed(ActionEvent e) {
-				channel.getModel().setBackendVolume(popupVolume.getVolumeFactor());
-			}
-		});
-		
-		p.add(btnVolume);
 		p.setPreferredSize(new Dimension(260, p.getPreferredSize().height));
 		p.setMinimumSize(p.getPreferredSize());
 		p.setMaximumSize(p.getPreferredSize());
@@ -654,7 +545,7 @@ class ChannelScreen extends PixmapPane {
 	installListeners() {
 		btnInstr.addActionListener(new ActionListener() {
 			public void
-			actionPerformed(ActionEvent e) { loadInstrument(); }
+			actionPerformed(ActionEvent e) { channel.loadInstrument(); }
 		});
 		
 		btnEditInstr.addActionListener(new ActionListener() {
@@ -689,17 +580,6 @@ class ChannelScreen extends PixmapPane {
 		timer.start();
 	}
 	
-	private void
-	loadInstrument() {
-		JSInstrumentChooser dlg = FantasiaUtils.createInstrumentChooser(CC.getMainFrame());
-		dlg.setVisible(true);
-		
-		if(!dlg.isCancelled()) {
-			SamplerChannelModel m = channel.getModel();
-			m.loadBackendInstrument(dlg.getInstrumentFile(), dlg.getInstrumentIndex());
-		}
-	}
-	
 	protected void
 	updateScreenInfo(SamplerChannel sc) {
 		int status = sc.getInstrumentStatus();
@@ -729,12 +609,7 @@ class ChannelScreen extends PixmapPane {
 	
 	protected void
 	updateVolumeInfo(int volume) {
-		if(CC.getViewConfig().isMeasurementUnitDecibel()) {
-			String s = numberFormat.format(HF.percentsToDecibels(volume));
-			btnVolume.setText(s + "dB");
-		} else {
-			btnVolume.setText(String.valueOf(volume) + "%");
-		}
+		volumePane.updateVolumeInfo(volume);
 	}
 	
 	/**
@@ -743,12 +618,7 @@ class ChannelScreen extends PixmapPane {
 	 */
 	protected void
 	updateStreamCount(int count) {
-		Dimension d = lStreams.getPreferredSize();
-		lStreams.setText(count == 0 ? "--" : String.valueOf(count));
-		d = JuifeUtils.getUnionSize(d, lStreams.getPreferredSize());
-		lStreams.setMinimumSize(d);
-		lStreams.setPreferredSize(d);
-		lStreams.setMaximumSize(d);
+		streamVoiceCountPane.updateStreamCount(count);
 	}
 	
 	/**
@@ -757,12 +627,7 @@ class ChannelScreen extends PixmapPane {
 	 */
 	protected void
 	updateVoiceCount(int count) {
-		Dimension d = lVoices.getPreferredSize();
-		lVoices.setText(count == 0 ? "--" : String.valueOf(count));
-		d = JuifeUtils.getUnionSize(d, lVoices.getPreferredSize());
-		lVoices.setMinimumSize(d);
-		lVoices.setPreferredSize(d);
-		lVoices.setMaximumSize(d);
+		streamVoiceCountPane.updateVoiceCount(count);
 	}
 	
 	class InstrumentPane extends JPanel {
@@ -815,29 +680,6 @@ class ChannelScreen extends PixmapPane {
 			rightPane.setMaximumSize(d);
 			
 			validate();
-		}
-	}
-	
-	class FxSendsPane extends JSFxSendsPane {
-		FxSendsPane(SamplerChannelModel model) {
-			super(model);
-			
-			actionAddFxSend.putValue(Action.SMALL_ICON, Res.iconNew16);
-			actionRemoveFxSend.putValue(Action.SMALL_ICON, Res.iconDelete16);
-		}
-		
-		protected JToolBar
-		createToolBar() {
-			JToolBar tb = new JToolBar();
-			Dimension d = new Dimension(Short.MAX_VALUE, tb.getPreferredSize().height);
-			tb.setMaximumSize(d);
-			tb.setFloatable(false);
-			tb.setAlignmentX(JPanel.RIGHT_ALIGNMENT);
-			
-			tb.add(new ToolbarButton(actionAddFxSend));
-			tb.add(new ToolbarButton(actionRemoveFxSend));
-		
-			return tb;
 		}
 	}
 	

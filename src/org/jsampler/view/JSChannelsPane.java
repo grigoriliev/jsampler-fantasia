@@ -160,4 +160,24 @@ public abstract class JSChannelsPane extends JPanel {
 	 * @param listener The <code>ListSelectionListener</code> to remove.
 	 */
 	public abstract void removeListSelectionListener(ListSelectionListener listener);
+	
+	/**
+	 * Determines whether the channel list UI should be automatically updated
+	 * when channel is added/removed. The default value is <code>true</code>.
+	 * @see updateChannelListUI
+	 */
+	public abstract boolean getAutoUpdate();
+	
+	/**
+	 * Determines whether the channel list UI should be automatically updated
+	 * when channel is added/removed.
+	 * @see updateChannelListUI
+	 */
+	public abstract void setAutoUpdate(boolean b);
+	
+	/**
+	 * Updates the channel list UI.
+	 * @see setAutoUpdate
+	 */
+	public abstract void updateChannelListUI();
 }

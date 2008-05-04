@@ -24,6 +24,9 @@ package org.jsampler.view.std;
 
 import java.awt.Dialog;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -96,8 +99,8 @@ public class JSDefaultsPropsPane extends JPanel {
 		
 		private final JButton btnChannelDefaults;
 		
+		private ChannelViewDefaultsPane channelViewDefaultsPane = null;
 		private final boolean showDefaultView;
-		private final JComboBox cbDefaultView = new JComboBox();
 		
 		
 		public
@@ -125,8 +128,6 @@ public class JSDefaultsPropsPane extends JPanel {
 			p.setBorder(BorderFactory.createEmptyBorder(3, 5, 3, 5));
 			add(p);
 			
-			setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
-			
 			String s = i18n.getLabel("JSDefaultsPropsPane.titleChannels");
 			setBorder(BorderFactory.createTitledBorder(s));
 			setAlignmentX(LEFT_ALIGNMENT);
@@ -148,30 +149,12 @@ public class JSDefaultsPropsPane extends JPanel {
 			});
 			
 			if(showDefaultView) {
-				p = new JPanel();
-				p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
+				add(Box.createRigidArea(new Dimension(0, 6)));
+				add(new javax.swing.JSeparator());
+				add(Box.createRigidArea(new Dimension(0, 6)));
 				
-				s = i18n.getLabel("JSDefaultsPropsPane.lDefaultChannelView");
-				p.add(new JLabel(s));
-				
-				p.add(Box.createRigidArea(new Dimension(5, 0)));
-				
-				s = i18n.getLabel("JSDefaultsPropsPane.lSmallView");
-				cbDefaultView.addItem(s);
-				
-				s = i18n.getLabel("JSDefaultsPropsPane.lNormalView");
-				cbDefaultView.addItem(s);
-				
-				int i = preferences().getIntProperty(DEFAULT_CHANNEL_VIEW);
-				if(i < 0 || i >= cbDefaultView.getItemCount()) i = 1;
-				
-				cbDefaultView.setSelectedIndex(i);
-				
-				p.add(cbDefaultView);
-				
-				p.setAlignmentX(LEFT_ALIGNMENT);
-				p.setBorder(BorderFactory.createEmptyBorder(3, 5, 3, 5));
-				add(p);
+				channelViewDefaultsPane = new ChannelViewDefaultsPane();
+				add(channelViewDefaultsPane);
 			}
 			
 			setMaximumSize(new Dimension(Short.MAX_VALUE, getPreferredSize().height));
@@ -183,8 +166,7 @@ public class JSDefaultsPropsPane extends JPanel {
 			preferences().setBoolProperty(USE_CHANNEL_DEFAULTS, b);
 			
 			if(showDefaultView) {
-				int i = cbDefaultView.getSelectedIndex();
-				preferences().setIntProperty(DEFAULT_CHANNEL_VIEW, i);
+				channelViewDefaultsPane.apply();
 			}
 		}
 		
@@ -192,6 +174,105 @@ public class JSDefaultsPropsPane extends JPanel {
 		editChannelDefaults() {
 			JDialog dlg = new JSChannelsDefaultSettingsPane().createDialog(owner);
 			dlg.setVisible(true);
+		}
+	}
+	
+	public static class ChannelViewDefaultsPane extends JPanel {
+		private final ComboBox cbDefaultView = new ComboBox();
+		private final ComboBox cbMouseOverView = new ComboBox();
+		
+		private final JCheckBox checkMouseOverView =
+			new JCheckBox(i18n.getLabel("JSDefaultsPropsPane.checkMouseOverView"));
+		
+		ChannelViewDefaultsPane() {
+			GridBagLayout gridbag = new GridBagLayout();
+			GridBagConstraints c = new GridBagConstraints();
+			
+			setLayout(gridbag);
+			
+			c.fill = GridBagConstraints.NONE;
+			
+			String s = i18n.getLabel("JSDefaultsPropsPane.lDefaultChannelView");
+			JLabel l = new JLabel(s);
+			
+			c.gridx = 0;
+			c.gridy = 0;
+			c.anchor = GridBagConstraints.EAST;
+			c.insets = new Insets(3, 3, 3, 3);
+			gridbag.setConstraints(l, c);
+			add(l);
+			
+			
+			
+			int i = preferences().getIntProperty(DEFAULT_CHANNEL_VIEW);
+			cbDefaultView.setView(i);
+			
+			c.gridx = 1;
+			c.gridy = 0;
+			c.fill = GridBagConstraints.HORIZONTAL;
+			c.anchor = GridBagConstraints.WEST;
+			gridbag.setConstraints(cbDefaultView, c);
+			add(cbDefaultView);
+			
+			c.gridx = 0;
+			c.gridy = 1;
+			c.gridwidth = 2;
+			c.insets = new Insets(9, 3, 3, 3);
+			gridbag.setConstraints(checkMouseOverView, c);
+			add(checkMouseOverView);
+			
+			i = preferences().getIntProperty(CHANNEL_VIEW_ON_MOUSE_OVER);
+			cbMouseOverView.setView(i);
+			
+			c.gridx = 1;
+			c.gridy = 2;
+			c.gridwidth = 1;
+			c.insets = new Insets(0, 3, 5, 3);
+			gridbag.setConstraints(cbMouseOverView, c);
+			add(cbMouseOverView);
+			
+			setAlignmentX(LEFT_ALIGNMENT);
+			
+			checkMouseOverView.addItemListener(new ItemListener() {
+				public void
+				itemStateChanged(ItemEvent e) {
+					cbMouseOverView.setEnabled(checkMouseOverView.isSelected());
+				}
+			});
+			
+			cbMouseOverView.setEnabled(false);
+			if(preferences().getBoolProperty(DIFFERENT_CHANNEL_VIEW_ON_MOUSE_OVER)) {
+				checkMouseOverView.doClick(0);
+			}
+		}
+		
+		public void
+		apply() {
+			int i = cbDefaultView.getSelectedIndex();
+			preferences().setIntProperty(DEFAULT_CHANNEL_VIEW, i);
+			
+			boolean b = checkMouseOverView.isSelected();
+			preferences().setBoolProperty(DIFFERENT_CHANNEL_VIEW_ON_MOUSE_OVER, b);
+			
+			i = cbMouseOverView.getSelectedIndex();
+			preferences().setIntProperty(CHANNEL_VIEW_ON_MOUSE_OVER, i);
+		}
+		
+		class ComboBox extends JComboBox {
+			ComboBox() {
+				String s = i18n.getLabel("JSDefaultsPropsPane.lSmallView");
+				addItem(s);
+				
+				s = i18n.getLabel("JSDefaultsPropsPane.lNormalView");
+				addItem(s);
+			}
+			
+			public void
+			setView(int i) {
+				if(i < 0 || i >= getItemCount()) i = 1;
+			
+				setSelectedIndex(i);
+			}
 		}
 	}
 	

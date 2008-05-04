@@ -27,9 +27,12 @@ import java.awt.Insets;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+
+import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -64,6 +67,8 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 	private final SoloButton btnSolo = new SoloButton();
 	private final Channel.OptionsButton btnOptions;
 	
+	private final Vector<JComponent> components = new Vector<JComponent>();
+	
 	/** Creates a new instance of <code>SmallChannelView</code> */
 	public
 	SmallChannelView(Channel channel) {
@@ -77,14 +82,20 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 		
 		setPixmapInsets(new Insets(1, 1, 1, 1));
 		
+		components.add(this);
+		
 		this.channel = channel;
 		this.channelOptionsView = channelOptionsView;
 		
 		addMouseListener(channel.getContextMenu());
 		
 		screen = new ChannelScreen(channel);
+		
 		btnPower = new Channel.PowerButton(channel);
+		components.add(btnPower);
+		
 		btnOptions = new Channel.OptionsButton(channel);
+		components.add(btnOptions);
 		
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		
@@ -105,6 +116,9 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 		add(createVSeparator());
 		add(Box.createRigidArea(new Dimension(1, 0)));
 		
+		components.add(btnMute);
+		components.add(btnSolo);
+		
 		add(btnMute);
 		add(btnSolo);
 		
@@ -124,6 +138,9 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 	//////////////////////////////////////////////
 	// Implementation of the ChannelView interface
 	//////////////////////////////////////////////
+	
+	public Type
+	getType() { return Type.SMALL; }
 	
 	public JComponent
 	getComponent() { return this; }
@@ -175,6 +192,28 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 	expandChannel() {
 		if(btnOptions.isSelected()) return;
 		btnOptions.doClick();
+	}
+	
+	public boolean
+	isOptionsButtonSelected() { return btnOptions.isSelected(); }
+	
+	public void
+	setOptionsButtonSelected(boolean b) {
+		btnOptions.setSelected(b);
+	}
+	
+	public void
+	addEnhancedMouseListener(MouseListener l) {
+		removeEnhancedMouseListener(l);
+		
+		for(JComponent c : components) c.addMouseListener(l);
+		screen.addEnhancedMouseListener(l);
+	}
+	
+	public void
+	removeEnhancedMouseListener(MouseListener l) {
+		for(JComponent c : components) c.removeMouseListener(l);
+		screen.removeEnhancedMouseListener(l);
 	}
 	
 	//////////////////////////////////////////////
@@ -288,17 +327,23 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 	
 		private static Insets pixmapInsets = new Insets(5, 5, 4, 5);
 		
+		private final Vector<JComponent> components = new Vector<JComponent>();
+		
 		ChannelScreen(final Channel channel) {
 			super(Res.gfxTextField);
+			
+			components.add(this);
 			
 			this.channel = channel;
 			
 			addMouseListener(channel.getContextMenu());
 			
 			streamVoiceCountPane = new Channel.StreamVoiceCountPane(channel);
+			components.add(streamVoiceCountPane);
 			
 			//channelInfoPane = new ChannelInfoPane(channel);
 			volumePane = new Channel.VolumePane(channel);
+			components.add(volumePane);
 			
 			setPixmapInsets(pixmapInsets);
 			setBorder(BorderFactory.createEmptyBorder(4, 3, 3, 4));
@@ -306,6 +351,7 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 			setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 			
 			JPanel p = new JPanel();
+			components.add(p);
 			p.setOpaque(false);
 			p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
 			
@@ -320,6 +366,7 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 			btnInstr.setPreferredSize(new Dimension(100, h));
 			btnInstr.setMinimumSize(btnInstr.getPreferredSize());
 			btnInstr.setMaximumSize(new Dimension(Short.MAX_VALUE, h));
+			components.add(btnInstr);
 			
 			p.add(btnInstr);
 			
@@ -342,6 +389,17 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 				public void
 				actionPerformed(ActionEvent e) { channel.loadInstrument(); }
 			});
+		}
+		
+		public void
+		addEnhancedMouseListener(MouseListener l) {
+			removeEnhancedMouseListener(l);
+			for(JComponent c : components) c.addMouseListener(l);
+		}
+		
+		public void
+		removeEnhancedMouseListener(MouseListener l) {
+			for(JComponent c : components) c.removeMouseListener(l);
 		}
 		
 		protected void

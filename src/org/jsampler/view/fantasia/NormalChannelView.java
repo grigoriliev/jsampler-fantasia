@@ -31,9 +31,12 @@ import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+
+import java.util.Vector;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -45,7 +48,6 @@ import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.Timer;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -70,7 +72,7 @@ import static org.jsampler.view.fantasia.FantasiaUtils.*;
  *
  * @author Grigor Iliev
  */
-public class NormalChannelView extends JPanel implements ChannelView {
+public class NormalChannelView extends PixmapPane implements ChannelView {
 	private final Channel channel;
 	private final ChannelOptionsView channelOptionsView;
 	
@@ -82,6 +84,8 @@ public class NormalChannelView extends JPanel implements ChannelView {
 	private final SoloButton btnSolo = new SoloButton();
 	private final Channel.OptionsButton btnOptions;
 	
+	private final Vector<JComponent> components = new Vector<JComponent>();
+	
 	
 	/** Creates a new instance of <code>NormalChannelView</code> */
 	public
@@ -92,25 +96,28 @@ public class NormalChannelView extends JPanel implements ChannelView {
 	/** Creates a new instance of <code>NormalChannelView</code> */
 	public
 	NormalChannelView(Channel channel, ChannelOptionsView channelOptionsView) {
+		super(Res.gfxChannel);
+		setPixmapInsets(new Insets(3, 3, 3, 3));
+		
+		components.add(this);
+		
 		this.channel = channel;
 		this.channelOptionsView = channelOptionsView;
 		
 		addMouseListener(channel.getContextMenu());
 		
 		btnPower = new Channel.PowerButton(channel);
+		components.add(btnPower);
 		btnOptions = new Channel.OptionsButton(channel);
-		
-		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		components.add(btnOptions);
 		
 		screen = new ChannelScreen(channel);
-		ChannelPane p = new ChannelPane();
-		p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
-		
-		//p.add(Box.createRigidArea(new Dimension(3, 0)));
+		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		
 		btnPower.setAlignmentY(JPanel.TOP_ALIGNMENT);
 		
 		JPanel tb = new JPanel();
+		components.add(tb);
 		tb.setBorder(BorderFactory.createEmptyBorder(3, 3, 0, 4));
 		tb.setLayout(new BoxLayout(tb, BoxLayout.X_AXIS));
 		tb.setOpaque(false);
@@ -119,60 +126,77 @@ public class NormalChannelView extends JPanel implements ChannelView {
 		tb.setPreferredSize(new Dimension(tb.getPreferredSize().width, 58));
 		tb.setMinimumSize(tb.getPreferredSize());
 		tb.setMaximumSize(tb.getPreferredSize());
-		p.add(tb);
+		add(tb);
 		
 		//p.add(Box.createRigidArea(new Dimension(4, 0)));
 		
-		p.add(createVSeparator());
+		add(createVSeparator());
 		
 		//p.add(Box.createRigidArea(new Dimension(3, 0)));
 		
 		JPanel p2 = new JPanel();
+		components.add(p2);
 		p2.setOpaque(false);
 		p2.setLayout(new BoxLayout(p2, BoxLayout.Y_AXIS));
 		p2.setAlignmentY(JPanel.TOP_ALIGNMENT);
 		p2.setBorder(BorderFactory.createEmptyBorder(5, 3, 0, 2));
 		p2.add(screen);
-		p.add(p2);
+		add(p2);
 		
-		p.add(createVSeparator());
+		add(createVSeparator());
 		
 		p2 = new JPanel();
+		components.add(p2);
 		p2.setOpaque(false);
 		p2.setLayout(new BoxLayout(p2, BoxLayout.Y_AXIS));
 		p2.setAlignmentY(JPanel.TOP_ALIGNMENT);
 		p2.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
-		p2.add(new JLabel(Res.gfxMuteTitle));
+		
+		JLabel l = new JLabel(Res.gfxMuteTitle);
+		components.add(l);
+		p2.add(l);
+		components.add(btnMute);
 		p2.add(btnMute);
-		p2.add(new JLabel(Res.gfxSoloTitle));
+		
+		l = new JLabel(Res.gfxSoloTitle);
+		components.add(l);
+		p2.add(l);
+		
+		components.add(btnSolo);
 		p2.add(btnSolo);
 		
-		p.add(p2);
+		add(p2);
 		
-		p.add(createVSeparator());
+		add(createVSeparator());
 		
 		p2 = new JPanel();
+		components.add(p2);
 		p2.setOpaque(false);
 		p2.setLayout(new BoxLayout(p2, BoxLayout.Y_AXIS));
 		p2.setAlignmentY(JPanel.TOP_ALIGNMENT);
 		p2.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
-		JLabel l = new JLabel(Res.gfxVolumeTitle);
+		l = new JLabel(Res.gfxVolumeTitle);
+		components.add(l);
 		l.setAlignmentX(JPanel.CENTER_ALIGNMENT);
 		l.setBorder(BorderFactory.createEmptyBorder(0, 0, 2, 0));
 		p2.add(l);
+		
+		components.add(dialVolume);
 		dialVolume.setDialPixmap(Res.gfxVolumeDial, 30, 330);
 		dialVolume.setAlignmentX(JPanel.CENTER_ALIGNMENT);
 		p2.add(dialVolume);
-		p.add(p2);
+		add(p2);
 		
-		p.add(createVSeparator());
+		add(createVSeparator());
 		
 		p2 = new JPanel();
+		components.add(p2);
 		p2.setOpaque(false);
 		p2.setLayout(new BoxLayout(p2, BoxLayout.Y_AXIS));
 		p2.setAlignmentY(JPanel.TOP_ALIGNMENT);
 		p2.setBorder(BorderFactory.createEmptyBorder(27, 0, 0, 0));
 		l = new JLabel(Res.gfxOptionsTitle);
+		components.add(l);
 		l.setAlignmentX(JPanel.CENTER_ALIGNMENT);
 		l.setBorder(BorderFactory.createEmptyBorder(0, 0, 2, 0));
 		p2.add(l);
@@ -181,17 +205,15 @@ public class NormalChannelView extends JPanel implements ChannelView {
 		
 		btnOptions.setAlignmentX(JPanel.CENTER_ALIGNMENT);
 		p2.add(btnOptions);
-		p.add(p2);
+		add(p2);
 		
 		
-		p.setPreferredSize(new Dimension(420, 60));
-		p.setMinimumSize(p.getPreferredSize());
-		p.setMaximumSize(p.getPreferredSize());
+		setPreferredSize(new Dimension(420, 60));
+		setMinimumSize(getPreferredSize());
+		setMaximumSize(getPreferredSize());
 		//p.setBorder(BorderFactory.createEmptyBorder(1, 0, 1, 0));
 
-		p.setAlignmentX(JPanel.CENTER_ALIGNMENT);
-		
-		add(p);
+		setAlignmentX(JPanel.CENTER_ALIGNMENT);
 		
 		installView();
 	}
@@ -199,6 +221,9 @@ public class NormalChannelView extends JPanel implements ChannelView {
 	//////////////////////////////////////////////
 	// Implementation of the ChannelView interface
 	//////////////////////////////////////////////
+	
+	public Type
+	getType() { return Type.NORMAL; }
 	
 	public JComponent
 	getComponent() { return this; }
@@ -214,6 +239,8 @@ public class NormalChannelView extends JPanel implements ChannelView {
 				screen.updateVolumeInfo(dialVolume.getValue());
 			}
 		});
+		
+		screen.installListeners();
 	}
 	
 	public void
@@ -253,6 +280,28 @@ public class NormalChannelView extends JPanel implements ChannelView {
 	expandChannel() {
 		if(btnOptions.isSelected()) return;
 		btnOptions.doClick();
+	}
+	
+	public boolean
+	isOptionsButtonSelected() { return btnOptions.isSelected(); }
+	
+	public void
+	setOptionsButtonSelected(boolean b) {
+		btnOptions.setSelected(b);
+	}
+	
+	public void
+	addEnhancedMouseListener(MouseListener l) {
+		removeEnhancedMouseListener(l);
+		
+		for(JComponent c : components) c.addMouseListener(l);
+		screen.addEnhancedMouseListener(l);
+	}
+	
+	public void
+	removeEnhancedMouseListener(MouseListener l) {
+		for(JComponent c : components) c.removeMouseListener(l);
+		screen.removeEnhancedMouseListener(l);
 	}
 	
 	//////////////////////////////////////////////
@@ -413,14 +462,6 @@ public class NormalChannelView extends JPanel implements ChannelView {
 }
 
 
-
-class ChannelPane extends PixmapPane {
-	ChannelPane() {
-		super(Res.gfxChannel);
-		setPixmapInsets(new Insets(3, 3, 3, 3));
-	}
-}
-
 class ChannelScreen extends PixmapPane {
 	private final Channel channel;
 	
@@ -445,17 +486,25 @@ class ChannelScreen extends PixmapPane {
 	
 	private final JPopupMenu menuEngines = new JPopupMenu();
 	
-	private Timer timer;
+	private final ActionListener guiListener;
+	
+	private final Vector<JComponent> components = new Vector<JComponent>();
 	
 	ChannelScreen(final Channel channel) {
 		super(Res.gfxChannelScreen);
 		setPixmapInsets(new Insets(6, 6, 6, 6));
 		setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		
+		components.add(this);
+		
 		this.channel = channel;
 		addMouseListener(channel.getContextMenu());
+		
 		streamVoiceCountPane = new Channel.StreamVoiceCountPane(channel);
+		components.add(streamVoiceCountPane);
+		
 		volumePane = new Channel.VolumePane(channel);
+		components.add(volumePane);
 		
 		setOpaque(false);
 		
@@ -465,15 +514,19 @@ class ChannelScreen extends PixmapPane {
 		btnInstr.setRolloverEnabled(false);
 		btnInstr.setBorder(BorderFactory.createEmptyBorder(3, 0, 0, 0));
 		btnInstr.addMouseListener(channel.getContextMenu());
+		components.add(btnInstr);
 		
 		instrumentPane = new InstrumentPane();
+		components.add(instrumentPane);
 		add(instrumentPane);
 		
 		JPanel p = new JPanel();
+		components.add(p);
 		p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
 		p.setAlignmentX(CENTER_ALIGNMENT);
 		p.setBorder(BorderFactory.createEmptyBorder(5, 2, 0, 0));
 		
+		components.add(btnFxSends);
 		btnFxSends.setToolTipText(i18n.getButtonLabel("ChannelScreen.btnFxSends.tt"));
 		btnFxSends.addActionListener(new ActionListener() {
 			public void
@@ -489,6 +542,7 @@ class ChannelScreen extends PixmapPane {
 		//p.add(Box.createRigidArea(new Dimension(6, 0)));
 		p.add(Box.createGlue());
 		
+		components.add(btnEngine);
 		btnEngine.setIcon(Res.iconEngine12);
 		btnEngine.setIconTextGap(1);
 		btnEngine.addMouseListener(channel.getContextMenu());
@@ -518,11 +572,32 @@ class ChannelScreen extends PixmapPane {
 		setMaximumSize(getPreferredSize());
 		
 		createEngineMenu();
-		installListeners();
+		
+		guiListener = new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) {
+				if(getMousePosition(true) != null) {
+					getHandler().mouseEntered(null);
+				} else {
+					getHandler().mouseExited(null);
+				}
+			}
+		};
+	}
+	
+	public void
+	addEnhancedMouseListener(MouseListener l) {
+		removeEnhancedMouseListener(l);
+		for(JComponent c : components) c.addMouseListener(l);
+	}
+	
+	public void
+	removeEnhancedMouseListener(MouseListener l) {
+		for(JComponent c : components) c.removeMouseListener(l);
 	}
 	
 	protected void
-	onDestroy() { timer.stop(); }
+	onDestroy() { uninstallListeners(); }
 	
 	private void
 	createEngineMenu() {
@@ -541,7 +616,7 @@ class ChannelScreen extends PixmapPane {
 		}
 	}
 	
-	private void
+	protected void
 	installListeners() {
 		btnInstr.addActionListener(new ActionListener() {
 			public void
@@ -566,18 +641,12 @@ class ChannelScreen extends PixmapPane {
 		addMouseListener(getHandler());
 		addHierarchyListener(getHandler());
 		
-		ActionListener l = new ActionListener() {
-			public void
-			actionPerformed(ActionEvent e) {
-				if(getMousePosition(true) != null) {
-					getHandler().mouseEntered(null);
-				} else {
-					getHandler().mouseExited(null);
-				}
-			}
-		};
-		timer = new Timer(1000, l);
-		timer.start();
+		((MainFrame)CC.getMainFrame()).getGuiTimer().addActionListener(guiListener);
+	}
+	
+	private void
+	uninstallListeners() {
+		((MainFrame)CC.getMainFrame()).getGuiTimer().removeActionListener(guiListener);
 	}
 	
 	protected void

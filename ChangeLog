@@ -27,8 +27,13 @@ CVS HEAD
     - Implemented option to choose default sampler channel view
       (choose Edit/Preferences, then click the `Defaults' tab)
     - Added context menu to sampler channels
+    - Implemented option to show different channel view when
+      the mouse pointer is over sampler channel
+      (choose Edit/Preferences, then click the `Defaults' tab)
 
   * Bug fixes:
+    - bugfix: JSampler took forever to load a configuration with
+      too many sampler channels
     - fixed bug #66
     - fixed a null pointer exception in the AudioDevicePane, when JACK
       driver is used and the additional device parameters are shown.

@@ -140,6 +140,17 @@ public class CC {
 	}
 	
 	/**
+	 * Adds the specified task to the task queue only if the last
+	 * task in the is not equal to <code>t</code>.
+	 */
+	public static void
+	addTask(Task t) {
+		Task[] tasks = getTaskQueue().getPendingTasks();
+		if(tasks.length > 0 && tasks[tasks.length - 1].equals(t)) return;
+		getTaskQueue().add(t);
+	} 
+	
+	/**
 	 * Gets the configuration of the current view.
 	 */
 	public static JSViewConfig
@@ -784,7 +795,7 @@ public class CC {
 				getTaskQueue().add(mgim);
 				getTaskQueue().add(new Midi.UpdateDevices());
 				getTaskQueue().add(new Audio.UpdateDevices());
-				getTaskQueue().add(uc);
+				addTask(uc);
 			}
 		});
 		
@@ -1094,7 +1105,7 @@ public class CC {
 		/** Invoked when the number of channels has changed. */
 		public void
 		channelCountChanged( ChannelCountEvent e) {
-			getTaskQueue().add(new UpdateChannels());
+			addTask(new UpdateChannels());
 		}
 		
 		/** Invoked when changes to the sampler channel has occured. */

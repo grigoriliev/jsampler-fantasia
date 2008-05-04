@@ -80,6 +80,18 @@ public class StdPrefs extends JSPrefs {
 	/** Property representing the channel view to be used when creating a sampler channel. */
 	public final static String DEFAULT_CHANNEL_VIEW = "defaultChannelView";
 	
+	/**
+	 * Property which specifies whether a different sampler channel view should be shown
+	 * when the mouse cursor is over a sampler channel.
+	 */
+	public final static String DIFFERENT_CHANNEL_VIEW_ON_MOUSE_OVER = "differentChannelViewOnMO";
+	
+	/**
+	 * Property representing the channel view to be used when
+	 * the mouse cursor is over a sampler channel.
+	 */
+	public final static String CHANNEL_VIEW_ON_MOUSE_OVER = "channelViewOnMouseOver";
+	
 	
 	/**
 	 * Creates a new instance of <code>StdPrefs</code>.
@@ -112,12 +124,14 @@ public class StdPrefs extends JSPrefs {
 		if(name == MAXIMUM_CHANNEL_VOLUME) return 100;
 		if(name == INSTRUMENTS_DB_FRAME_SORT_ORDER) return 1;
 		if(name == DEFAULT_CHANNEL_VIEW) return 1;
+		if(name == CHANNEL_VIEW_ON_MOUSE_OVER) return 1;
 		
 		return super.getDefaultIntValue(name);
 	}
 	
 	public boolean
 	getDefaultBoolValue(String name) {
+		if(name == DIFFERENT_CHANNEL_VIEW_ON_MOUSE_OVER) return true;
 		if(name == CONFIRM_CHANNEL_REMOVAL) return true;
 		if(name == CONFIRM_DEVICE_REMOVAL) return true;
 		if(name == CONFIRM_APP_QUIT) return true;

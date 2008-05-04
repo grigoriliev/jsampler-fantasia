@@ -140,7 +140,8 @@ public class InstrumentsDb {
 		
 		/**
 		 * Used to decrease the traffic. All task in the queue
-		 * equal to this are removed.
+		 * equal to this are removed if added using {@link org.jsampler.CC#scheduleTask}.
+		 * @see org.jsampler.CC#addTask
 		 */
 		public boolean
 		equals(Object obj) {
@@ -387,7 +388,8 @@ public class InstrumentsDb {
 		
 		/**
 		 * Used to decrease the traffic. All task in the queue
-		 * equal to this are removed.
+		 * equal to this are removed if added using {@link org.jsampler.CC#scheduleTask}.
+		 * @see org.jsampler.CC#addTask
 		 */
 		public boolean
 		equals(Object obj) {
@@ -964,7 +966,8 @@ public class InstrumentsDb {
 		
 		/**
 		 * Used to decrease the traffic. All task in the queue
-		 * equal to this are removed.
+		 * equal to this are removed if added using {@link org.jsampler.CC#scheduleTask}.
+		 * @see org.jsampler.CC#addTask
 		 */
 		public boolean
 		equals(Object obj) {

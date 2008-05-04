@@ -22,6 +22,8 @@
 
 package org.jsampler.view.fantasia;
 
+import java.awt.event.MouseListener;
+
 import javax.swing.JComponent;
 
 /**
@@ -29,6 +31,11 @@ import javax.swing.JComponent;
  * @author Grigor Iliev
  */
 public interface ChannelView {
+	enum Type { SMALL, NORMAL }
+	
+	/** Determines the type of the view. */
+	public Type getType();
+	
 	public JComponent getComponent();
 	
 	/** Configures the view. */
@@ -59,4 +66,20 @@ public interface ChannelView {
 	public void updateVoiceCount(int count);
 	
 	public void expandChannel();
+	
+	/** Determines whether the <code>Options</code> button is selected. */
+	public boolean isOptionsButtonSelected();
+	
+	/** Sets whether the <code>Options</code> button should be selected or not. */
+	public void setOptionsButtonSelected(boolean b);
+	
+	/**
+	 * Registers the specified listener to listen on the component
+	 * and some of its children.
+	 */
+	public void addEnhancedMouseListener(MouseListener l);
+	
+	/**  Removes the specified listener. */
+	public void removeEnhancedMouseListener(MouseListener l);
+	
 }

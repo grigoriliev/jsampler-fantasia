@@ -64,6 +64,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.swing.UIManager;
 
 import net.sf.juife.TitleBar;
@@ -121,6 +122,8 @@ public class MainFrame extends JSMainFrame {
 	private final JCheckBoxMenuItem cbmiRightSidePaneVisible =
 			new JCheckBoxMenuItem(i18n.getMenuLabel("view.rightSidePane"));
 	
+	private final Timer guiTimer = new Timer(1000, null);
+	
 	/** Creates a new instance of <code>MainFrame</code> */
 	public
 	MainFrame() {
@@ -154,6 +157,8 @@ public class MainFrame extends JSMainFrame {
 		hSplitPane.setDividerLocation(i);
 		
 		setSavedSize();
+		
+		guiTimer.start();
 	}
 	
 	private JPanel
@@ -532,6 +537,9 @@ public class MainFrame extends JSMainFrame {
 		
 		return CC.getServerList().getServer(i);
 	}
+	
+	public Timer
+	getGuiTimer() { return guiTimer; }
 	
 	protected LSConsoleModel
 	getLSConsoleModel() { return getLSConsolePane().getModel(); }

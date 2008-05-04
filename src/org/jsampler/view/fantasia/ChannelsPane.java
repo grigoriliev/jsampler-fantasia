@@ -235,4 +235,27 @@ public class ChannelsPane extends JSChannelsPane {
 	removeListSelectionListener(ListSelectionListener listener) {
 		listenerList.remove(ListSelectionListener.class, listener);
 	}
+	
+	/**
+	 * Determines whether the channel list UI should be automatically updated
+	 * when channel is added/removed. The default value is <code>true</code>.
+	 * @see updateChannelListUI
+	 */
+	public boolean
+	getAutoUpdate() { return chnList.getAutoUpdate(); }
+	
+	/**
+	 * Determines whether the channel list UI should be automatically updated
+	 * when channel is added/removed.
+	 * @see updateChannelListUI
+	 */
+	public void
+	setAutoUpdate(boolean b) { chnList.setAutoUpdate(b); }
+	
+	/**
+	 * Updates the channel list UI.
+	 * @see setAutoUpdate
+	 */
+	public void
+	updateChannelListUI() { chnList.updateList(); }
 }

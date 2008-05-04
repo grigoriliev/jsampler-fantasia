@@ -26,13 +26,18 @@ import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import java.util.Vector;
 import java.util.logging.Level;
 
+import javax.swing.AbstractAction;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.KeyStroke;
 
 import org.jsampler.CC;
 import org.jsampler.JSampler;
@@ -49,6 +54,7 @@ import org.jsampler.event.SamplerChannelListListener;
  */
 public abstract class JSMainFrame extends JFrame {
 	private final Vector<JSChannelsPane> chnPaneList = new Vector<JSChannelsPane>();
+	private boolean autoUpdateChannelListUI = true;
 	
 	/** Creates a new instance of <code>JSMainFrame</code>. */
 	public
@@ -62,6 +68,18 @@ public abstract class JSMainFrame extends JFrame {
 		});
 		
 		CC.getSamplerModel().addSamplerChannelListListener(new EventHandler());
+		
+		getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put (
+			KeyStroke.getKeyStroke(KeyEvent.VK_G, KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK),
+			"RunGarbageCollector"
+		);
+		
+		getRootPane().getActionMap().put ("RunGarbageCollector", new AbstractAction() {
+			public void
+			actionPerformed(ActionEvent e) {
+				System.gc();
+			}
+		});
 	}
 	
 	/**
@@ -241,5 +259,36 @@ public abstract class JSMainFrame extends JFrame {
 		}
 		
 		return null;
+	}
+	
+	/**
+	 * Determines whether the channel list UI should be automatically updated
+	 * when channel is added/removed. The default value is <code>true</code>.
+	 */
+	public boolean
+	getAutoUpdateChannelListUI() { return autoUpdateChannelListUI; }
+	
+	/**
+	 * Determines whether the channel list UI should be automatically updated
+	 * when channel is added/removed.
+	 */
+	public void
+	setAutoUpdateChannelListUI(boolean b) {
+		if(b == autoUpdateChannelListUI) return;
+		
+		autoUpdateChannelListUI = b;
+		for(JSChannelsPane cp : getChannelsPaneList()) {
+			cp.setAutoUpdate(b);
+		}
+	}
+	
+	/**
+	 * Updates the channel list UI.
+	 */
+	public void
+	updateChannelListUI() {
+		for(JSChannelsPane cp : getChannelsPaneList()) {
+			cp.updateChannelListUI();
+		}
 	}
 }

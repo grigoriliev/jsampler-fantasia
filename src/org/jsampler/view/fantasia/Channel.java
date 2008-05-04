@@ -67,6 +67,8 @@ import org.jsampler.event.SamplerChannelListEvent;
 import org.jsampler.event.SamplerChannelListListener;
 import org.jsampler.event.SamplerChannelListener;
 
+import org.jsampler.view.JSChannel;
+
 import org.jsampler.view.std.JSChannelOutputRoutingDlg;
 import org.jsampler.view.std.JSFxSendsPane;
 import org.jsampler.view.std.JSInstrumentChooser;
@@ -84,11 +86,12 @@ import static org.jsampler.view.std.JSVolumeEditorPopup.VolumeType;
  *
  * @author Grigor Iliev
  */
-public class Channel extends org.jsampler.view.JSChannel {
+public class Channel extends JSChannel {
 	private final JXCollapsiblePane mainPane;
-	private ChannelView channelView;
 	private ChannelOptionsView channelOptionsView;
 	private final ChannelOptionsPane optionsPane = new ChannelOptionsPane();
+	
+	private final ViewTracker viewTracker;
 	
 	private InformationDialog fxSendsDlg = null;
 	
@@ -132,6 +135,8 @@ public class Channel extends org.jsampler.view.JSChannel {
 		optionsPane.setAlignmentX(JPanel.CENTER_ALIGNMENT);
 		
 		mainPane = new JXCollapsiblePane();
+		viewTracker = new ViewTracker();
+		
 		mainPane.getContentPane().setLayout (
 			new BoxLayout(mainPane.getContentPane(), BoxLayout.Y_AXIS)
 		);
@@ -231,7 +236,7 @@ public class Channel extends org.jsampler.view.JSChannel {
 	expandChannel(boolean animated) {
 		boolean b = optionsPane.isAnimated();
 		optionsPane.setAnimated(animated);
-		channelView.expandChannel();
+		viewTracker.getCurrentView().expandChannel();
 		optionsPane.setAnimated(b);
 	}
 	
@@ -241,8 +246,8 @@ public class Channel extends org.jsampler.view.JSChannel {
 	 */
 	private void
 	updateChannelInfo() {
-		channelView.updateChannelInfo();
-		channelOptionsView.updateChannelInfo();
+		viewTracker.getCurrentView().updateChannelInfo();
+		viewTracker.getCurrentView().getChannelOptionsView().updateChannelInfo();
 	}
 	
 	public void
@@ -256,13 +261,22 @@ public class Channel extends org.jsampler.view.JSChannel {
 		}
 	}
 	
+	public void
+	fallbackToOriginalView() {
+		viewTracker.fallbackToOriginalView();
+	}
+	
+	public boolean
+	isUsingOriginalView() {
+		return viewTracker.isUsingOriginalView();
+	}
+	
 	protected void
 	onDestroy() {
 		CC.getSamplerModel().removeSamplerChannelListListener(getHandler());
 		preferences().removePropertyChangeListener(ANIMATED, animatedPorpetyListener);
 		
-		channelView.uninstallView();
-		channelOptionsView.uninstallView();
+		viewTracker.onDestroy();
 	}
 		
 	public void
@@ -317,7 +331,7 @@ public class Channel extends org.jsampler.view.JSChannel {
 		 */
 		public void
 		streamCountChanged(SamplerChannelEvent e) {
-			channelView.updateStreamCount(getModel().getStreamCount());
+			viewTracker.getCurrentView().updateStreamCount(getModel().getStreamCount());
 		}
 	
 		/**
@@ -327,7 +341,7 @@ public class Channel extends org.jsampler.view.JSChannel {
 		 */
 		public void
 		voiceCountChanged(SamplerChannelEvent e) {
-			channelView.updateVoiceCount(getModel().getVoiceCount());
+			viewTracker.getCurrentView().updateVoiceCount(getModel().getVoiceCount());
 		}
 		
 		/**
@@ -356,6 +370,272 @@ public class Channel extends org.jsampler.view.JSChannel {
 			if(e.getNewValue() == "collapsed") {
 				CC.getSamplerModel().removeBackendChannel(getChannelId());
 			}
+		}
+	}
+	
+	private static boolean viewTrackerMousePressed = false;
+	
+	class ViewTracker extends MouseAdapter implements PropertyChangeListener {
+		private ChannelView originalView;
+		private ChannelView mouseOverView;
+		private ChannelView currentView;
+		
+		
+		private boolean mouseOver = false;
+		
+		private final ActionListener guiListener;
+		
+		ViewTracker() {
+			guiListener = new ActionListener() {
+				public void
+				actionPerformed(ActionEvent e) {
+					if(viewTrackerMousePressed) return;
+					
+					if(mainPane.getMousePosition(true) != null) {
+						mouseEntered(null);
+					} else {
+						mouseExited(null);
+					}
+				}
+			};
+			
+			updateMouseOverViewType();
+			
+			String s = DIFFERENT_CHANNEL_VIEW_ON_MOUSE_OVER;
+			preferences().addPropertyChangeListener(s, this);
+			
+			s = CHANNEL_VIEW_ON_MOUSE_OVER;
+			preferences().addPropertyChangeListener(s, this);
+		}
+		
+		public boolean
+		isUsingOriginalView() {
+			return currentView == originalView;
+		}
+		
+		private void
+		installListeners() {
+			((MainFrame)CC.getMainFrame()).getGuiTimer().addActionListener(guiListener);
+		}
+		
+		private void
+		uninstallListeners() {
+			((MainFrame)CC.getMainFrame()).getGuiTimer().removeActionListener(guiListener);
+		}
+		
+		private void
+		updateMouseOverViewType() {
+			if(mouseOverView != null) {
+				mouseOverView.removeEnhancedMouseListener(this);
+			}
+			
+			boolean b;
+			b = preferences().getBoolProperty(DIFFERENT_CHANNEL_VIEW_ON_MOUSE_OVER);
+			if(!b) {
+				mouseOverView = null;
+				uninstallListeners();
+				return;
+			}
+			
+			Channel channel = Channel.this;
+			int i = preferences().getIntProperty(CHANNEL_VIEW_ON_MOUSE_OVER);
+			
+			switch(i) {
+				case 0: mouseOverView = new SmallChannelView(channel); break;
+				case 1: mouseOverView = new NormalChannelView(channel); break;
+				default:mouseOverView = null;
+			}
+			
+			if(mouseOverView != null) {
+				installListeners();
+				mouseOverView.addEnhancedMouseListener(this);
+			}
+		}
+		
+		public ChannelView
+		getCurrentView() { return currentView; }
+		
+		public void
+		setView(ChannelView view) {
+			setView(view, true);
+		}
+		
+		public void
+		setView(ChannelView view, boolean manual) {
+			boolean selected = false;
+			if(currentView != null) selected = currentView.isOptionsButtonSelected();
+			
+			if(manual) {
+				if(originalView != null) {
+					originalView.removeEnhancedMouseListener(this);
+				}
+				
+				if(originalView != currentView) destroyOriginalView();
+				if(currentView != null && currentView.getType() == view.getType()) {
+					originalView = currentView;
+					originalView.addEnhancedMouseListener(this);
+					destroyView(view);
+					return;
+				}
+				
+				removeCurrentView();
+				
+				originalView = view;
+				originalView.addEnhancedMouseListener(this);
+				currentView = view;
+			} else {
+				if(view.getType() == getCurrentView().getType()) {
+					destroyView(view);
+					return;
+				}
+				
+				removeCurrentView();
+				currentView = view;
+			}
+			
+			currentView.setOptionsButtonSelected(selected);
+			
+			updateView();
+		}
+		
+		private void
+		updateView() {
+			JComponent c = getCurrentView().getChannelOptionsView().getComponent();
+			optionsPane.setContentPane(c);
+			
+			updateChannelInfo();
+		
+			mainPane.add(getCurrentView().getComponent());
+			mainPane.add(optionsPane);
+			mainPane.validate();
+			mainPane.revalidate();
+			mainPane.repaint();
+		}
+		
+		public void
+		fallbackToOriginalView() {
+			if(currentView == originalView) return;
+			
+			boolean selected = false;
+			if(currentView != null) selected = currentView.isOptionsButtonSelected();
+			
+			removeCurrentView();
+			currentView = originalView;
+			currentView.setOptionsButtonSelected(selected);
+			
+			updateView();
+		}
+		
+		private void
+		removeCurrentView() { removeView(currentView); }
+		
+		private void
+		destroyCurrentView() { destroyView(currentView); }
+		
+		private void
+		removeOriginalView() { removeView(originalView); }
+		
+		private void
+		destroyOriginalView() { destroyView(originalView); }
+		
+		private void
+		removeView(ChannelView view) {
+			if(view == null) return;
+			
+			mainPane.remove(view.getComponent());
+			mainPane.remove(optionsPane);
+				
+			destroyView(view);
+		}
+		
+		private void
+		destroyView(ChannelView view) {
+			if(view == null) return;
+			
+			view.uninstallView();
+			view.getChannelOptionsView().uninstallView();
+			
+			view = null;
+		}
+		
+		private void
+		mouseEntered() {
+			if(mouseOverView == null) return;
+			if(getCurrentView().getType() == mouseOverView.getType()) return;
+			
+			JSChannel[] channels = CC.getMainFrame().getChannelsPane(0).getChannels();
+			for(JSChannel c : channels) {
+				if(c == Channel.this) continue;
+				
+				Channel chn = (Channel)c;
+				if(!(chn).isUsingOriginalView()) chn.fallbackToOriginalView();
+			}
+			
+			setView(mouseOverView, false);
+		}
+		
+		private void
+		mouseExited() {
+			if(mouseOverView == null) return;
+			if(getCurrentView().getType() == originalView.getType()) return;
+			
+			fallbackToOriginalView();
+		}
+		
+		public void
+		mouseEntered(MouseEvent e) {
+			if(viewTrackerMousePressed) return;
+			
+			if(mouseOver) return;
+			mouseOver = true;
+			mouseEntered();
+		}
+		
+		public void
+		mouseExited(MouseEvent e) {
+			if(viewTrackerMousePressed) return;
+			
+			if(mainPane.getMousePosition(true) != null) return;
+			if(!mouseOver) return;
+			mouseOver = false;
+			mouseExited();
+		}
+		
+		public void
+		mousePressed(MouseEvent e) {
+			viewTrackerMousePressed = true;
+		}
+		
+		public void
+		mouseReleased(MouseEvent e) {
+			viewTrackerMousePressed = false;
+		}
+		
+		public void
+		onDestroy() {
+			destroyCurrentView();
+			destroyOriginalView();
+			
+			uninstallListeners();
+			
+			if(currentView != null) {
+				currentView.removeEnhancedMouseListener(this);
+			}
+			
+			if(mouseOverView != null) {
+				mouseOverView.removeEnhancedMouseListener(this);
+			}
+			
+			String s = DIFFERENT_CHANNEL_VIEW_ON_MOUSE_OVER;
+			preferences().removePropertyChangeListener(s, this);
+			
+			s = CHANNEL_VIEW_ON_MOUSE_OVER;
+			preferences().removePropertyChangeListener(s, this);
+		}
+		
+		public void
+		propertyChange(PropertyChangeEvent e) {
+			updateMouseOverViewType();
 		}
 	}
 	
@@ -428,26 +708,7 @@ public class Channel extends org.jsampler.view.JSChannel {
 		
 		public void
 		actionPerformed(ActionEvent e) {
-			if(channelView instanceof SmallChannelView) return;
-			
-			if(channelView != null) {
-				mainPane.remove(channelView.getComponent());
-				mainPane.remove(optionsPane);
-				
-				channelView.uninstallView();
-				channelOptionsView.uninstallView();
-			}
-			
-			channelView = new SmallChannelView(Channel.this);
-			channelOptionsView = channelView.getChannelOptionsView();
-			
-			optionsPane.setContentPane(channelOptionsView.getComponent());
-			
-			updateChannelInfo();
-		
-			mainPane.add(channelView.getComponent());
-			mainPane.add(optionsPane);
-			mainPane.validate();
+			viewTracker.setView(new SmallChannelView(Channel.this));
 		}
 	}
 	
@@ -458,26 +719,7 @@ public class Channel extends org.jsampler.view.JSChannel {
 		
 		public void
 		actionPerformed(ActionEvent e) {
-			if(channelView instanceof NormalChannelView) return;
-			
-			if(channelView != null) {
-				mainPane.remove(channelView.getComponent());
-				mainPane.remove(optionsPane);
-				
-				channelView.uninstallView();
-				channelOptionsView.uninstallView();
-			}
-			
-			channelView = new NormalChannelView(Channel.this);
-			channelOptionsView = channelView.getChannelOptionsView();
-			
-			optionsPane.setContentPane(channelOptionsView.getComponent());
-			
-			updateChannelInfo();
-		
-			mainPane.add(channelView.getComponent());
-			mainPane.add(optionsPane);
-			mainPane.validate();
+			viewTracker.setView(new NormalChannelView(Channel.this));
 		}
 	}
 	

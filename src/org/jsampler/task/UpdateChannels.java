@@ -29,6 +29,8 @@ import org.jsampler.HF;
 import org.jsampler.SamplerChannelModel;
 import org.jsampler.SamplerModel;
 
+import net.sf.juife.Task;
+
 import static org.jsampler.JSI18n.i18n;
 
 
@@ -52,7 +54,12 @@ public class UpdateChannels extends EnhancedTask {
 			Integer[] chnIDs = CC.getClient().getSamplerChannelIDs();
 			
 			boolean found = false;
-				
+			
+			javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
+				public void
+				run() { CC.getMainFrame().setAutoUpdateChannelListUI(false); }
+			});
+			
 			for(SamplerChannelModel m : sm.getChannels()) {
 				for(int i = 0; i < chnIDs.length; i++) {
 					if(m.getChannelId() == chnIDs[i]) {
@@ -68,9 +75,41 @@ public class UpdateChannels extends EnhancedTask {
 			for(int id : chnIDs) {
 				if(id >= 0) sm.addChannel(CC.getClient().getSamplerChannelInfo(id));
 			}
+			
+			manageAutoUpdate(false);
 		} catch(Exception x) {
 			setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
 			CC.getLogger().log(Level.FINE, getErrorMessage(), x);
+			manageAutoUpdate(true);
 		}
+	}
+	
+	private void
+	manageAutoUpdate(boolean force) {
+		if(!force) {
+			Task[] tasks = CC.getTaskQueue().getPendingTasks();
+			for(Task t : tasks) if(t.equals(this)) return;
+		}
+		
+		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+			public void
+			run() {
+				CC.getMainFrame().setAutoUpdateChannelListUI(true);
+				CC.getMainFrame().updateChannelListUI();
+			}
+		});
+	}
+		
+	/**
+	 * Used to decrease the traffic. All task in the queue
+	 * equal to this are removed if added using {@link org.jsampler.CC#scheduleTask}.
+	 * @see org.jsampler.CC#addTask
+	 */
+	public boolean
+	equals(Object obj) {
+		if(obj == null) return false;
+		if(!(obj instanceof UpdateChannels)) return false;
+		
+		return true;
 	}
 }

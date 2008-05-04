@@ -104,8 +104,6 @@ public class NormalChannelView extends PixmapPane implements ChannelView {
 		this.channel = channel;
 		this.channelOptionsView = channelOptionsView;
 		
-		addMouseListener(channel.getContextMenu());
-		
 		btnPower = new Channel.PowerButton(channel);
 		components.add(btnPower);
 		btnOptions = new Channel.OptionsButton(channel);
@@ -241,11 +239,14 @@ public class NormalChannelView extends PixmapPane implements ChannelView {
 		});
 		
 		screen.installListeners();
+		
+		addEnhancedMouseListener(channel.getContextMenu());
 	}
 	
 	public void
 	uninstallView() {
 		screen.onDestroy();
+		//removeEnhancedMouseListener(channel.getContextMenu());
 	}
 	
 	public ChannelOptionsView
@@ -498,7 +499,6 @@ class ChannelScreen extends PixmapPane {
 		components.add(this);
 		
 		this.channel = channel;
-		addMouseListener(channel.getContextMenu());
 		
 		streamVoiceCountPane = new Channel.StreamVoiceCountPane(channel);
 		components.add(streamVoiceCountPane);
@@ -513,7 +513,6 @@ class ChannelScreen extends PixmapPane {
 		btnInstr.setAlignmentX(CENTER_ALIGNMENT);
 		btnInstr.setRolloverEnabled(false);
 		btnInstr.setBorder(BorderFactory.createEmptyBorder(3, 0, 0, 0));
-		btnInstr.addMouseListener(channel.getContextMenu());
 		components.add(btnInstr);
 		
 		instrumentPane = new InstrumentPane();
@@ -535,8 +534,6 @@ class ChannelScreen extends PixmapPane {
 			}
 		});
 		
-		btnFxSends.addMouseListener(channel.getContextMenu());
-		
 		p.add(btnFxSends);
 		
 		//p.add(Box.createRigidArea(new Dimension(6, 0)));
@@ -545,7 +542,6 @@ class ChannelScreen extends PixmapPane {
 		components.add(btnEngine);
 		btnEngine.setIcon(Res.iconEngine12);
 		btnEngine.setIconTextGap(1);
-		btnEngine.addMouseListener(channel.getContextMenu());
 		p.add(btnEngine);
 		//p.add(new Label("|"));
 		

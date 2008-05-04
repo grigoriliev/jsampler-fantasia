@@ -87,8 +87,6 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 		this.channel = channel;
 		this.channelOptionsView = channelOptionsView;
 		
-		addMouseListener(channel.getContextMenu());
-		
 		screen = new ChannelScreen(channel);
 		
 		btnPower = new Channel.PowerButton(channel);
@@ -156,11 +154,13 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 				screen.updateVolumeInfo();
 			}
 		});
+		
+		addEnhancedMouseListener(channel.getContextMenu());
 	}
 	
 	public void
 	uninstallView() {
-		
+		//removeEnhancedMouseListener(channel.getContextMenu());
 	}
 	
 	public ChannelOptionsView
@@ -336,8 +336,6 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 			
 			this.channel = channel;
 			
-			addMouseListener(channel.getContextMenu());
-			
 			streamVoiceCountPane = new Channel.StreamVoiceCountPane(channel);
 			components.add(streamVoiceCountPane);
 			
@@ -360,7 +358,6 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 			btnInstr.setRolloverEnabled(false);
 			btnInstr.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 			btnInstr.setHorizontalAlignment(btnInstr.LEFT);
-			btnInstr.addMouseListener(channel.getContextMenu());
 			
 			int h = btnInstr.getPreferredSize().height;
 			btnInstr.setPreferredSize(new Dimension(100, h));

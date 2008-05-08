@@ -25,7 +25,6 @@ package org.jsampler;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -80,7 +79,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import static org.jsampler.JSI18n.i18n;
-import static org.jsampler.JSPrefs.MANUAL_SERVER_SELECT_ON_STARTUP;
 
 
 /**

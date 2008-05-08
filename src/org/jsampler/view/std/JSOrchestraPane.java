@@ -425,6 +425,7 @@ public class JSOrchestraPane extends JPanel {
 		
 		public void
 		channelAdded(SamplerChannelListEvent e) {
+			if(CC.getSamplerModel().getChannelListIsAdjusting()) return;
 			updateLoadInstrumentMenu(mLoadInstrument);
 		}
 		

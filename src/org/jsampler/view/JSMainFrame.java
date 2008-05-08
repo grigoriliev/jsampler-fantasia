@@ -203,6 +203,7 @@ public abstract class JSMainFrame extends JFrame {
 		 */
 		public void
 		channelAdded(SamplerChannelListEvent e) {
+			if(e.getChannelModel() == null) return;
 			Integer id = e.getChannelModel().getChannelId();
 			if(findChannel(id) != null) {
 				CC.getLogger().log(Level.WARNING, "JSMainFrame.channelExist!", id);

@@ -1028,6 +1028,7 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 		
 		public void
 		channelAdded(SamplerChannelListEvent e) {
+			if(CC.getSamplerModel().getChannelListIsAdjusting()) return;
 			updateLoadInstrumentMenus();
 		}
 		

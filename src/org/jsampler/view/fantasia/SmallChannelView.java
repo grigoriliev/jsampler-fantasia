@@ -59,7 +59,7 @@ import static org.jsampler.view.fantasia.FantasiaUtils.*;
  */
 public class SmallChannelView extends PixmapPane implements ChannelView {
 	private final Channel channel;
-	private final ChannelOptionsView channelOptionsView;
+	private ChannelOptionsView channelOptionsView = null;
 	
 	private final ChannelScreen screen;
 	private final Channel.PowerButton btnPower;
@@ -69,23 +69,16 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 	
 	private final Vector<JComponent> components = new Vector<JComponent>();
 	
-	/** Creates a new instance of <code>SmallChannelView</code> */
-	public
-	SmallChannelView(Channel channel) {
-		this(channel, new NormalChannelOptionsView(channel));
-	}
 	
 	/** Creates a new instance of <code>SmallChannelView</code> */
 	public
-	SmallChannelView(Channel channel, ChannelOptionsView channelOptionsView) {
+	SmallChannelView(Channel channel) {
 		super(Res.gfxDeviceBg);
-		
 		setPixmapInsets(new Insets(1, 1, 1, 1));
 		
 		components.add(this);
 		
 		this.channel = channel;
-		this.channelOptionsView = channelOptionsView;
 		
 		screen = new ChannelScreen(channel);
 		
@@ -161,6 +154,24 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 	public void
 	uninstallView() {
 		//removeEnhancedMouseListener(channel.getContextMenu());
+		btnOptions.onDestroy();
+		uninstallChannelOptionsView();
+	}
+	
+	public void
+	installChannelOptionsView() {
+		if(channelOptionsView != null) return;
+		
+		channelOptionsView = new NormalChannelOptionsView(channel);
+		channelOptionsView.installView();
+		
+	}
+	
+	public void
+	uninstallChannelOptionsView() {
+		if(channelOptionsView == null) return;
+		channelOptionsView.uninstallView();
+		channelOptionsView = null;
 	}
 	
 	public ChannelOptionsView
@@ -180,6 +191,8 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 		boolean b = sc.getEngine() != null;
 		btnSolo.setEnabled(b);
 		btnMute.setEnabled(b);
+		
+		if(getChannelOptionsView() != null) getChannelOptionsView().updateChannelInfo();
 	}
 	
 	public void

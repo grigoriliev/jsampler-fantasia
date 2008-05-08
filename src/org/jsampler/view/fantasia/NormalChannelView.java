@@ -74,7 +74,7 @@ import static org.jsampler.view.fantasia.FantasiaUtils.*;
  */
 public class NormalChannelView extends PixmapPane implements ChannelView {
 	private final Channel channel;
-	private final ChannelOptionsView channelOptionsView;
+	private ChannelOptionsView channelOptionsView = null;
 	
 	private final EnhancedDial dialVolume = new EnhancedDial();
 	private final ChannelScreen screen;
@@ -90,19 +90,12 @@ public class NormalChannelView extends PixmapPane implements ChannelView {
 	/** Creates a new instance of <code>NormalChannelView</code> */
 	public
 	NormalChannelView(Channel channel) {
-		this(channel, new NormalChannelOptionsView(channel));
-	}
-	
-	/** Creates a new instance of <code>NormalChannelView</code> */
-	public
-	NormalChannelView(Channel channel, ChannelOptionsView channelOptionsView) {
 		super(Res.gfxChannel);
 		setPixmapInsets(new Insets(3, 3, 3, 3));
 		
 		components.add(this);
 		
 		this.channel = channel;
-		this.channelOptionsView = channelOptionsView;
 		
 		btnPower = new Channel.PowerButton(channel);
 		components.add(btnPower);
@@ -246,7 +239,25 @@ public class NormalChannelView extends PixmapPane implements ChannelView {
 	public void
 	uninstallView() {
 		screen.onDestroy();
+		btnOptions.onDestroy();
+		uninstallChannelOptionsView();
 		//removeEnhancedMouseListener(channel.getContextMenu());
+	}
+	
+	public void
+	installChannelOptionsView() {
+		if(channelOptionsView != null) return;
+		
+		channelOptionsView = new NormalChannelOptionsView(channel);
+		channelOptionsView.installView();
+		
+	}
+	
+	public void
+	uninstallChannelOptionsView() {
+		if(channelOptionsView == null) return;
+		channelOptionsView.uninstallView();
+		channelOptionsView = null;
 	}
 	
 	public ChannelOptionsView
@@ -269,6 +280,8 @@ public class NormalChannelView extends PixmapPane implements ChannelView {
 		dialVolume.setEnabled(b);
 		btnSolo.setEnabled(b);
 		btnMute.setEnabled(b);
+		
+		if(getChannelOptionsView() != null) getChannelOptionsView().updateChannelInfo();
 	}
 	
 	public void

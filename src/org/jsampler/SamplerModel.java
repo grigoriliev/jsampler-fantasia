@@ -399,6 +399,18 @@ public interface SamplerModel {
 	public void updateChannel(SamplerChannel channel);
 	
 	/**
+	 * Determines whether there are known upcoming changes to the 
+	 * channel list, which should be considered as part of a single action.
+	 */
+	public boolean getChannelListIsAdjusting();
+	
+	/**
+	 * Sets whether the upcoming changes to the 
+	 * channel list should be considered part of a single action.
+	 */
+	public void setChannelListIsAdjusting(boolean b);
+	
+	/**
 	 * Schedules a new task for starting an instrument editor for editing
 	 * the loaded instrument on the specified sampler channel.
 	 * @param channelId The sampler channel number.

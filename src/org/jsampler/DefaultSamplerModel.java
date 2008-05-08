@@ -81,6 +81,8 @@ public class DefaultSamplerModel implements SamplerModel {
 	
 	private final EventListenerList listenerList = new EventListenerList();
 	
+	private boolean channelListIsAdjusting = false;
+	
 	private boolean modified = false;
 	
 	
@@ -707,6 +709,22 @@ public class DefaultSamplerModel implements SamplerModel {
 		CC.getLogger().log (
 			Level.WARNING, "DefaultSamplerModel.unknownChannel!", channel.getChannelId()
 		);
+	}
+	
+	/**
+	 * Determines whether there are known upcoming changes to the 
+	 * channel list, which should be considered as part of a single action.
+	 */
+	public synchronized boolean
+	getChannelListIsAdjusting() { return channelListIsAdjusting; }
+	
+	/**
+	 * Sets whether the upcoming changes to the 
+	 * channel list should be considered part of a single action.
+	 */
+	public synchronized void
+	setChannelListIsAdjusting(boolean b) {
+		channelListIsAdjusting = b;
 	}
 	
 	/**

@@ -44,6 +44,17 @@ public interface ChannelView {
 	/** Reverses configuration which was done during <code>installView</code>. */
 	public void uninstallView();
 	
+	/**
+	 * Creates and installs a channel options view for this channel view.
+	 * Note that this method does nothing if there is installed view already.
+	 */
+	public void installChannelOptionsView();
+	
+	/**
+	 * Reverses configuration which was done during <code>installChannelOptionsView</code>.
+	 */
+	public void uninstallChannelOptionsView();
+	
 	public ChannelOptionsView getChannelOptionsView();
 	
 	/**
@@ -70,7 +81,10 @@ public interface ChannelView {
 	/** Determines whether the <code>Options</code> button is selected. */
 	public boolean isOptionsButtonSelected();
 	
-	/** Sets whether the <code>Options</code> button should be selected or not. */
+	/**
+	 * Sets whether the <code>Options</code> button should be selected or not.
+	 * Note that this method does not trigger an actionEvent.
+	 */
 	public void setOptionsButtonSelected(boolean b);
 	
 	/**

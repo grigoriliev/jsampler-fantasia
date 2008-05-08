@@ -22,12 +22,15 @@
 
 package org.jsampler.task;
 
+import java.util.Vector;
 import java.util.logging.Level;
 
 import org.jsampler.CC;
 import org.jsampler.HF;
 import org.jsampler.SamplerChannelModel;
 import org.jsampler.SamplerModel;
+
+import org.linuxsampler.lscp.SamplerChannel;
 
 import net.sf.juife.Task;
 
@@ -55,9 +58,14 @@ public class UpdateChannels extends EnhancedTask {
 			
 			boolean found = false;
 			
+			boolean oldValue = CC.getSamplerModel().getChannelListIsAdjusting();
+			
 			javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
 				public void
-				run() { CC.getMainFrame().setAutoUpdateChannelListUI(false); }
+				run() {
+					CC.getSamplerModel().setChannelListIsAdjusting(true);
+					CC.getMainFrame().setAutoUpdateChannelListUI(false);
+				}
 			});
 			
 			for(SamplerChannelModel m : sm.getChannels()) {
@@ -72,11 +80,19 @@ public class UpdateChannels extends EnhancedTask {
 				found = false;
 			}
 			
+			Vector<SamplerChannel> v = new Vector<SamplerChannel>();
 			for(int id : chnIDs) {
-				if(id >= 0) sm.addChannel(CC.getClient().getSamplerChannelInfo(id));
+				if(id >= 0) v.add(CC.getClient().getSamplerChannelInfo(id));
 			}
 			
+			for(int i = 0; i < v.size() - 1; i++) sm.addChannel(v.elementAt(i));
+			
 			manageAutoUpdate(false);
+			
+			if(v.size() > 0) sm.addChannel(v.elementAt(v.size() - 1));
+			else if(!CC.getSamplerModel().getChannelListIsAdjusting()) {
+				if(oldValue) sm.addChannel(null);
+			}
 		} catch(Exception x) {
 			setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
 			CC.getLogger().log(Level.FINE, getErrorMessage(), x);
@@ -94,6 +110,7 @@ public class UpdateChannels extends EnhancedTask {
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void
 			run() {
+				CC.getSamplerModel().setChannelListIsAdjusting(false);
 				CC.getMainFrame().setAutoUpdateChannelListUI(true);
 				CC.getMainFrame().updateChannelListUI();
 			}

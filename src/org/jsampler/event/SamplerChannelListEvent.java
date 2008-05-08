@@ -47,6 +47,9 @@ public class SamplerChannelListEvent extends java.util.EventObject {
 	/**
 	 * Gets the sampler channel model for which this event occurs.
 	 * @return The sampler channel model for which this event occurs.
+	 * Note that the return value can be <code>null</code> in case
+	 * of a dummy event that can be used to end an adjusting sequence.
+	 * @see org.jsampler.SamplerModel#getChannelListIsAdjusting
 	 */
 	public SamplerChannelModel
 	getChannelModel() { return channelModel; }

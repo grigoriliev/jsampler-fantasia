@@ -654,6 +654,22 @@ public class DefaultSamplerModel implements SamplerModel {
 	}
 	
 	/**
+	 * Gets the position of the specified channel.
+	 * @param channel The model of the channel.
+	 * @return The position of the specified channel in the channel list or -1
+	 * if the channel is not in the list.
+	 */
+	public int
+	getChannelIndex(SamplerChannelModel channel) {
+		if(channel == null) return -1;
+		for(int i = 0; i < channelModels.size(); i++) {
+			if(channelModels.get(i).getChannelId() == channel.getChannelId()) return i;
+		}
+		
+		return -1;
+	}
+	
+	/**
 	 * Gets the current number of sampler channels.
 	 * @return The current number of sampler channels.
 	 */

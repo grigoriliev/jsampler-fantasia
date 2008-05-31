@@ -30,7 +30,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JList;
 
-import org.jvnet.substance.SubstanceDefaultListCellRenderer;
+import org.jvnet.substance.api.renderers.SubstanceDefaultListCellRenderer;
 
 /**
  *

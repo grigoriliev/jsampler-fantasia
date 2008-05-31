@@ -88,8 +88,9 @@ import org.jsampler.view.DbDirectoryTreeNode;
 import org.jsampler.view.InstrumentsDbTableModel;
 import org.jsampler.view.InstrumentsDbTableView;
 import org.jsampler.view.std.JSInstrumentsDbTable;
-import org.jsampler.view.std.JSInstrumentsDbTree;
 import org.jsampler.view.std.JSLostFilesDlg;
+
+import org.jvnet.substance.SubstanceLookAndFeel;
 
 import org.linuxsampler.lscp.DbDirectoryInfo;
 import org.linuxsampler.lscp.DbInstrumentInfo;
@@ -107,7 +108,7 @@ import static org.jsampler.view.fantasia.FantasiaPrefs.INSTRUMENTS_DB_FRAME_SORT
 public class InstrumentsDbFrame extends JFrame {
 	private final ToolBar toolbar;
 	private final JMenuBar menuBar = new JMenuBar();
-	private final JSInstrumentsDbTree instrumentsDbTree;
+	private final FantasiaInstrumentsDbTree instrumentsDbTree;
 	private final SidePane sidePane;
 	private final JSplitPane splitPane;
 	private final MainPane mainPane;
@@ -130,7 +131,7 @@ public class InstrumentsDbFrame extends JFrame {
 		setTitle(i18n.getLabel("InstrumentsDbFrame.title"));
 		if(Res.iconAppIcon != null) setIconImage(Res.iconAppIcon.getImage());
 		
-		instrumentsDbTree = new JSInstrumentsDbTree(CC.getInstrumentsDbTreeModel());
+		instrumentsDbTree = new FantasiaInstrumentsDbTree(CC.getInstrumentsDbTreeModel());
 		CC.addInstrumentsDbChangeListener(new ChangeListener() {
 			public void
 			stateChanged(ChangeEvent e) {
@@ -639,7 +640,7 @@ public class InstrumentsDbFrame extends JFrame {
 		}
 	}
 	
-	public JSInstrumentsDbTree
+	public FantasiaInstrumentsDbTree
 	getInstrumentsDbTree() { return instrumentsDbTree; }
 	
 	public void
@@ -687,6 +688,8 @@ public class InstrumentsDbFrame extends JFrame {
 		MainPane() {
 			setLayout(new BorderLayout());
 			JScrollPane sp = new JScrollPane(instrumentsTable);
+			sp.setOpaque(false);
+			sp.getViewport().setOpaque(false);
 			add(sp);
 			
 			//instrumentsTable.setBackground(new java.awt.Color(0x626262));

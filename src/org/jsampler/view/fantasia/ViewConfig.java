@@ -33,7 +33,7 @@ import org.jsampler.view.InstrumentsDbTableView;
 import org.jsampler.view.InstrumentsDbTreeView;
 import org.jsampler.view.JSViewConfig;
 
-import org.jvnet.substance.utils.SubstanceConstants;
+import org.jvnet.substance.api.SubstanceConstants;
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.skin.SubstanceRavenGraphiteLookAndFeel;
 
@@ -50,7 +50,7 @@ public class ViewConfig extends JSViewConfig {
 	ViewConfig() {
 		try {
 			UIManager.setLookAndFeel(new SubstanceRavenGraphiteLookAndFeel());
-			UIManager.put(SubstanceLookAndFeel.WATERMARK_IGNORE, Boolean.TRUE);
+			UIManager.put(SubstanceLookAndFeel.WATERMARK_VISIBLE, Boolean.FALSE);
 			
 			UIManager.put (
 				SubstanceLookAndFeel.TABBED_PANE_CONTENT_BORDER_KIND,

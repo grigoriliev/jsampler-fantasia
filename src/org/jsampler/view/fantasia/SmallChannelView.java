@@ -43,6 +43,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.jsampler.CC;
+import org.jsampler.event.SamplerChannelListEvent;
+import org.jsampler.event.SamplerChannelListListener;
 
 import org.jvnet.substance.SubstanceImageCreator;
 
@@ -149,11 +151,14 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 		});
 		
 		addEnhancedMouseListener(channel.getContextMenu());
+		CC.getSamplerModel().addSamplerChannelListListener(getHandler());
 	}
 	
 	public void
 	uninstallView() {
 		//removeEnhancedMouseListener(channel.getContextMenu());
+		CC.getSamplerModel().removeSamplerChannelListListener(getHandler());
+		screen.onDestroy();
 		btnOptions.onDestroy();
 		uninstallChannelOptionsView();
 	}
@@ -256,6 +261,27 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 	}
 	
 	
+	private final EventHandler eventHandler = new EventHandler();
+	
+	private EventHandler
+	getHandler() { return eventHandler; }
+	
+	private class EventHandler implements SamplerChannelListListener {
+		public void
+		channelAdded(SamplerChannelListEvent e) {
+			if(CC.getSamplerModel().getChannelListIsAdjusting()) return;
+			screen.channelInfoPane.updateChannelIndex();
+		}
+	
+		public void
+		channelRemoved(SamplerChannelListEvent e) {
+			//if(CC.getSamplerModel().getChannelListIsAdjusting()) return; //TODO: 
+			
+			screen.channelInfoPane.updateChannelIndex();
+		}
+	}
+	
+	
 	private class MuteButton extends PixmapButton implements ActionListener {
 		MuteButton() {
 			super(Res.gfxMuteSmallOff);
@@ -327,7 +353,7 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 	static class ChannelScreen extends PixmapPane {
 		private final Channel channel;
 		
-		//private final ChannelInfoPane channelInfoPane;
+		private final ChannelInfoPane channelInfoPane;
 		
 		private final Channel.StreamVoiceCountPane streamVoiceCountPane;
 			
@@ -342,6 +368,12 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 		
 		private final Vector<JComponent> components = new Vector<JComponent>();
 		
+		private final PropertyChangeListener chnNumberingListener;
+		private final PropertyChangeListener showMidiInfoListener;
+		
+		private boolean bShowNumbering;
+		private boolean bShowMidiInfo;
+		
 		ChannelScreen(final Channel channel) {
 			super(Res.gfxTextField);
 			
@@ -352,7 +384,7 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 			streamVoiceCountPane = new Channel.StreamVoiceCountPane(channel);
 			components.add(streamVoiceCountPane);
 			
-			//channelInfoPane = new ChannelInfoPane(channel);
+			channelInfoPane = new ChannelInfoPane(channel);
 			volumePane = new Channel.VolumePane(channel);
 			components.add(volumePane);
 			
@@ -366,7 +398,7 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 			p.setOpaque(false);
 			p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
 			
-			//p.add(channelInfoPane);
+			p.add(channelInfoPane);
 			
 			btnInstr.setRolloverEnabled(false);
 			btnInstr.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
@@ -399,6 +431,38 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 				public void
 				actionPerformed(ActionEvent e) { channel.loadInstrument(); }
 			});
+			
+			final String s = "channel.smallView.showChannelNumbering";
+			
+			chnNumberingListener = new PropertyChangeListener() {
+				public void
+				propertyChange(PropertyChangeEvent e) {
+					bShowNumbering = preferences().getBoolProperty(s);
+					channelInfoPane.setShowNumbering(bShowNumbering);
+				}
+			};
+						
+			preferences().addPropertyChangeListener(s, chnNumberingListener);
+			
+			bShowNumbering = preferences().getBoolProperty(s);
+			channelInfoPane.setShowNumbering(bShowNumbering);
+			
+			
+			
+			final String s2 = "channel.smallView.showMidiInfo";
+			
+			showMidiInfoListener = new PropertyChangeListener() {
+				public void
+				propertyChange(PropertyChangeEvent e) {
+					bShowMidiInfo = preferences().getBoolProperty(s2);
+					channelInfoPane.setShowMidiInfo(bShowMidiInfo);
+				}
+			};
+						
+			preferences().addPropertyChangeListener(s2, showMidiInfoListener);
+			
+			bShowMidiInfo = preferences().getBoolProperty(s2);
+			channelInfoPane.setShowMidiInfo(bShowMidiInfo);
 		}
 		
 		public void
@@ -438,25 +502,46 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 	
 		protected void
 		updateScreenInfo(SamplerChannel sc) {
+			String s = btnInstr.getToolTipText();
+			
 			int status = sc.getInstrumentStatus();
 			if(status >= 0 && status < 100) {
 				btnInstr.setText(i18n.getLabel("ChannelScreen.loadingInstrument", status));
+				if(s != null) btnInstr.setToolTipText(null);
 			} else if(status == -1) {
 				btnInstr.setText(i18n.getButtonLabel("ChannelScreen.btnInstr"));
+				if(s != null) btnInstr.setToolTipText(null);
 			} else if(status < -1) {
 				 btnInstr.setText(i18n.getLabel("ChannelScreen.errorLoadingInstrument"));
+				 if(s != null) btnInstr.setToolTipText(null);
 			} else {
 				if(sc.getInstrumentName() != null) btnInstr.setText(sc.getInstrumentName());
 				else btnInstr.setText(i18n.getButtonLabel("ChannelScreen.btnInstr"));
+				
+				btnInstr.setToolTipText(sc.getInstrumentName());
 			}
 			
-			//channelInfoPane.updateChannelInfo();
+			channelInfoPane.updateChannelInfo();
+		}
+		
+		public void
+		onDestroy() {
+			String s = "channel.smallView.showChannelNumbering";
+			preferences().removePropertyChangeListener(s, chnNumberingListener);
+			
+			s = "channel.smallView.showMidiInfo";
+			preferences().removePropertyChangeListener(s, showMidiInfoListener);
 		}
 	}
 	
 	private static class ChannelInfoPane extends JPanel {
 		private final Channel channel;
 		private final JLabel lInfo;
+		
+		private int channelIndex = -1;
+		
+		private boolean showNumbering;
+		private boolean showMidiInfo;
 			
 		ChannelInfoPane(Channel channel) {
 			this.channel = channel;
@@ -466,31 +551,87 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 			
 			lInfo = createScreenLabel("");
 			lInfo.setFont(Res.fontScreenMono);
-			lInfo.setText("1234");
+			lInfo.setToolTipText(i18n.getLabel("SmallChannelView.ttMidiPortChannel"));
+			
+			updateChannelIndex();
+			
+			updateLabelLength();
+			
+			add(lInfo);
+		}
+		
+		private void
+		updateLabelLength() {
+			lInfo.setPreferredSize(null);
+			
+			int l = 0;
+			if(getShowNumbering()) l += 4;
+			if(getShowMidiInfo()) l += 6;
+			
+			StringBuffer sb = new StringBuffer();
+			for(int i = 0; i < l; i++) sb.append("0");
+			lInfo.setText(sb.toString());
+			
 			lInfo.setPreferredSize(lInfo.getPreferredSize()); // Don't remove this!
 			lInfo.setMinimumSize(lInfo.getPreferredSize());
 			lInfo.setMaximumSize(lInfo.getPreferredSize());
-			
-			updateChannelInfo();
-			
-			add(lInfo);
-			
-			setPreferredSize(getPreferredSize()); // Don't remove this!
-			setMinimumSize(getPreferredSize());
-			setMaximumSize(getPreferredSize());
 		}
 		
 		protected void
 		updateChannelInfo() {
-			String s = channel.getChannelId() < 10 ? " " : "";
-			s += String.valueOf(channel.getChannelId()) + ":";
+			StringBuffer sb = new StringBuffer();
 			
-			/*SamplerChannel sc = channel.getChannelInfo();
-			s += sc.getMidiInputPort() + "/";
+			if(getShowNumbering()) {
+				if(channelIndex < 10) sb.append(" ");
+				sb.append(channelIndex + 1).append(": ");
+			}
 			
-			if(sc.getMidiInputChannel() == -1) s += "All";
-			else s += sc.getMidiInputChannel() + 1;*/
-			lInfo.setText(s);
+			if(getShowMidiInfo()) {
+				SamplerChannel sc = channel.getChannelInfo();
+				if(sc.getMidiInputDevice() == -1) {
+					sb.append("-/-");
+				} else {
+					sb.append(sc.getMidiInputPort()).append("/");
+					
+					if(sc.getMidiInputChannel() == -1) sb.append("All");
+					else sb.append(sc.getMidiInputChannel() + 1);
+				}
+			}
+			
+			lInfo.setText(sb.toString());
+		}
+		
+		protected void
+		updateChannelIndex() {
+			int i = CC.getSamplerModel().getChannelIndex(channel.getModel());
+			channelIndex = i;
+			if(!getShowNumbering()) return;
+			
+			updateChannelInfo();
+		}
+		
+		protected boolean
+		getShowNumbering() { return showNumbering; }
+		
+		protected void
+		setShowNumbering(boolean b) {
+			if(b == showNumbering) return;
+			showNumbering = b;
+			
+			updateLabelLength();
+			updateChannelIndex();
+		}
+		
+		protected boolean
+		getShowMidiInfo() { return showMidiInfo; }
+		
+		protected void
+		setShowMidiInfo(boolean b) {
+			if(b == showMidiInfo) return;
+			showMidiInfo = b;
+			
+			updateLabelLength();
+			updateChannelInfo();
 		}
 	}
 	

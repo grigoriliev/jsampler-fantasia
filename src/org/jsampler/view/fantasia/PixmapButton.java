@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -30,6 +30,8 @@ import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+
+import javax.swing.plaf.basic.BasicButtonUI;
 
 import org.jvnet.lafwidget.animation.FadeConfigurationManager;
 import org.jvnet.lafwidget.animation.FadeKind;
@@ -67,11 +69,7 @@ public class PixmapButton extends JButton {
 		setFocusPainted(false);
 		setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 		setMargin(new Insets(0, 0, 0, 0));
-		putClientProperty(SubstanceLookAndFeel.BUTTON_PAINT_NEVER_PROPERTY, Boolean.TRUE);
-		putClientProperty(SubstanceLookAndFeel.BUTTON_NO_MIN_SIZE_PROPERTY, Boolean.TRUE);
-		//putClientProperty(SubstanceLookAndFeel.FLAT_PROPERTY, Boolean.TRUE);
-		FadeConfigurationManager.getInstance().disallowFades(FadeKind.ROLLOVER, this);
-	
+		
 		setIcon(icon);
 		
 		if(rolloverIcon != null) {
@@ -87,4 +85,7 @@ public class PixmapButton extends JButton {
 		
 		setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 	}
+	
+	public void
+	updateUI() { setUI(new BasicButtonUI()); }
 }

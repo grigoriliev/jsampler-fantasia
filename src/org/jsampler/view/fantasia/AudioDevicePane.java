@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -86,6 +86,8 @@ public class AudioDevicePane extends DevicePane {
 	AudioDevicePane(AudioDeviceModel model) {
 		audioDeviceModel = model;
 		
+		channelParamTable.setFillsViewportHeight(true);
+		
 		optionsPane = new OptionsPane();
 		setOptionsPane(optionsPane);
 		
@@ -164,6 +166,8 @@ public class AudioDevicePane extends DevicePane {
 			
 			spinnerChannels = new JSpinner(new SpinnerNumberModel(1, min, max, 1));
 			if(prm.isFixed()) spinnerChannels.setEnabled(false);
+			int h = spinnerChannels.getPreferredSize().height;
+			spinnerChannels.setPreferredSize(new Dimension(30, h));
 			p.add(spinnerChannels);
 			p.setOpaque(false);
 			

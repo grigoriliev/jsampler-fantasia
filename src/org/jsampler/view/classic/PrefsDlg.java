@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -80,6 +80,8 @@ import static org.jsampler.view.std.StdPrefs.*;
  * @author Grigor Iliev
  */
 public class PrefsDlg extends EnhancedDialog {
+	private final JTabbedPane tabbedPane = new JTabbedPane();
+	
 	private final GeneralPane genPane = new GeneralPane();
 	private final ViewPane viewPane = new ViewPane();
 	private final ConsolePane consolePane = new ConsolePane();
@@ -100,11 +102,17 @@ public class PrefsDlg extends EnhancedDialog {
 		installListeners();
 		
 		setLocation(JuifeUtils.centerLocation(this, frm));
+		
+		int i = preferences().getIntProperty("PrefsDlg.tabIndex");
+		
+		if(i >= 0 && i < tabbedPane.getTabCount()) tabbedPane.setSelectedIndex(i);
 	}
 	
 	private void
 	initPrefsDlg() {
-		JTabbedPane tp = new JTabbedPane();
+		JTabbedPane tp = tabbedPane;
+		tp.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+		
 		tp.addTab(i18n.getLabel("PrefsDlg.tabGeneral"), genPane);
 		tp.addTab(i18n.getLabel("PrefsDlg.tabView"), viewPane);
 		tp.addTab(i18n.getLabel("PrefsDlg.tabConsole"), consolePane);
@@ -169,6 +177,8 @@ public class PrefsDlg extends EnhancedDialog {
 		consolePane.apply();
 		connectionPane.apply();
 		defaultsPane.apply();
+		
+		preferences().setIntProperty("PrefsDlg.tabIndex", tabbedPane.getSelectedIndex());
 		
 		setVisible(false);
 	}

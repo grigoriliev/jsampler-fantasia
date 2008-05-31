@@ -169,6 +169,7 @@ public class JSNewAudioDeviceDlg extends EnhancedDialog {
 			p.add(lDriver);
 			
 			parameterTable.getModel().setEditFixedParameters(true);
+			parameterTable.setFillsViewportHeight(true);
 			
 			parameterTable.getModel().addParameterListener(new ParameterListener() {
 				public void

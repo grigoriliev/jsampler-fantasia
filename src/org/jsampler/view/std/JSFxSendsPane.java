@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -147,6 +147,9 @@ public class JSFxSendsPane extends JPanel implements ListSelectionListener {
 	
 	protected JSPrefs
 	preferences() { return CC.getViewConfig().preferences(); }
+	
+	public SamplerChannelModel
+	getChannelModel() { return channelModel; }
 	
 	protected JToolBar
 	createToolBar() {

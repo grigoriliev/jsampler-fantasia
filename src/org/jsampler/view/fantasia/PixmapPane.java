@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -26,6 +26,7 @@ import java.awt.Graphics;
 import java.awt.Insets;
 
 import javax.swing.ImageIcon;
+import javax.swing.plaf.basic.BasicPanelUI;
 
 import sun.swing.plaf.synth.Paint9Painter;
 
@@ -100,4 +101,7 @@ public class PixmapPane extends javax.swing.JPanel {
 	setPixmapInsets(Insets insets) {
 		pixmapInsets = insets;
 	}
+	
+	public void
+	updateUI() { setUI(new BasicPanelUI()); }
 }

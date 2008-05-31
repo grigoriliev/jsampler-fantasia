@@ -35,6 +35,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.jvnet.substance.SubstanceLookAndFeel;
+
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jsampler.view.fantasia.FantasiaPrefs.preferences;
 
@@ -70,6 +72,9 @@ public class RightSidePane extends PixmapPane {
 		
 		final String s = "rightSidePane.showInstrumentsDb";
 		setTabbedView(preferences().getBoolProperty(s));
+		
+		tabbedPane.setBackground(new java.awt.Color(0x828282));
+		tabbedPane.putClientProperty(SubstanceLookAndFeel.COLORIZATION_FACTOR, 1.0);
 		
 		preferences().addPropertyChangeListener(s, getHandler());
 	}

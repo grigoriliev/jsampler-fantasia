@@ -34,8 +34,8 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
 import org.jvnet.substance.SubstanceLookAndFeel;
-import org.jvnet.substance.button.ClassicButtonShaper;
-import org.jvnet.substance.utils.SubstanceConstants.FocusKind;
+import org.jvnet.substance.api.SubstanceConstants.FocusKind;
+import org.jvnet.substance.shaper.ClassicButtonShaper;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jsampler.view.fantasia.FantasiaPrefs.*;

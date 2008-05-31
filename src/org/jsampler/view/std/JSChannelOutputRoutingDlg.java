@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -77,8 +77,8 @@ public class JSChannelOutputRoutingDlg extends InformationDialog {
 	
 	class ChannelRoutingTable extends JTable {
 		private String[] columnToolTips = {
-			i18n.getLabel("JSChannelOutputRoutingDlg.ttAudioOut", channel.getChannelId()),
-			i18n.getLabel("JSChannelOutputRoutingDlg.ttAudioIn"),
+			i18n.getLabel("JSChannelOutputRoutingDlg.ttAudioIn", channel.getChannelId()),
+			i18n.getLabel("JSChannelOutputRoutingDlg.ttAudioOut"),
 		};
 		
 		ChannelRoutingTable() {
@@ -114,8 +114,8 @@ public class JSChannelOutputRoutingDlg extends InformationDialog {
 	
 	class ChannelRoutingTableModel extends AbstractTableModel {
 		private String[] columnNames = {
-			i18n.getLabel("JSChannelOutputRoutingDlg.audioOut"),
-			i18n.getLabel("JSChannelOutputRoutingDlg.audioIn")
+			i18n.getLabel("JSChannelOutputRoutingDlg.audioIn"),
+			i18n.getLabel("JSChannelOutputRoutingDlg.audioOut")
 		};
 		
 		ChannelRoutingTableModel() {

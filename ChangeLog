@@ -17,6 +17,12 @@ CVS HEAD
 
   * Added new menu item in the Instruments Database window: Edit/Find
 
+  * Remember the last used tab in the Preferences dialog
+
+  * Renamed the column labels in the Channel Routing dialog: The column
+    representing the sampler channel's audio channels is "Audio In" and
+    the column representing the audio device's channels is "Audio Out"
+
   * Fantasia:
     - Major memory optimizations when too many sampler channels are present
     - Added option to show the Instruments Database on
@@ -31,6 +37,12 @@ CVS HEAD
     - Implemented option to show different channel view when
       the mouse pointer is over sampler channel
       (choose Edit/Preferences, then click the `Defaults' tab)
+    - The sampler channels are now referenced by their position
+      in the list, not by their ID
+    - Implemented options to show the channel number and/or the MIDI
+      input port/channel on the sampler channel screen when using Small View
+      (choose Edit/Preferences, then click the `Channels' tab)
+    - Migrated to substance 5
 
   * Bug fixes:
     - bugfix: JSampler took forever to load a configuration with

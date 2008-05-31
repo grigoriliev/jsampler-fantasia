@@ -90,6 +90,7 @@ public class JSOrchestraPane extends JPanel {
 	public
 	JSOrchestraPane(OrchestraModel orchestra) {
 		instrumentTable = new InstrumentTable();
+		instrumentTable.setFillsViewportHeight(true);
 		setOrchestra(orchestra);
 		
 		setLayout(new BorderLayout());
@@ -284,7 +285,8 @@ public class JSOrchestraPane extends JPanel {
 		
 		LoadInstrumentAction(SamplerChannelModel model) {
 			String s = "instrumentsdb.actions.loadInstrument.onChannel";
-			putValue(Action.NAME, i18n.getMenuLabel(s, model.getChannelId()));
+			int i = CC.getSamplerModel().getChannelIndex(model) + 1;
+			putValue(Action.NAME, i18n.getMenuLabel(s, i));
 			channelModel = model;
 		}
 		

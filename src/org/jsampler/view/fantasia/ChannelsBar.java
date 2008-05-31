@@ -105,7 +105,7 @@ public class ChannelsBar extends PixmapPane {
 		PixmapPane p = new PixmapPane(Res.gfxTextField);
 		p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
 		p.setPixmapInsets(new Insets(5, 5, 4, 5));
-		p.setBorder(BorderFactory.createEmptyBorder(1, 8, 1, 5));
+		p.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 5));
 		
 		lStreams.setFont(Res.fontScreenMono);
 		lStreams.setHorizontalAlignment(JLabel.RIGHT);

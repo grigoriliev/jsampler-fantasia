@@ -96,6 +96,7 @@ public class FantasiaPrefs extends StdPrefs {
 		if("leftSidePane.visible".equals(name)) return true;
 		if("rightSidePane.visible".equals(name)) return true;
 		if("rightSidePane.showInstrumentsDb".equals(name)) return true;
+		if("channel.smallView.showChannelNumbering".equals(name)) return true;
 		
 		return super.getDefaultBoolValue(name);
 	}

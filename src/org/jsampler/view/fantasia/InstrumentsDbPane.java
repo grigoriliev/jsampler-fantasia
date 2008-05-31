@@ -27,6 +27,7 @@ import java.awt.Dimension;
 
 import java.util.List;
 
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -40,7 +41,8 @@ import org.jsampler.CC;
 
 import org.jsampler.view.InstrumentsDbTreeModel;
 import org.jsampler.view.std.JSInstrumentsDbTable;
-import org.jsampler.view.std.JSInstrumentsDbTree;
+
+import org.jvnet.substance.SubstanceLookAndFeel;
 
 import static org.jsampler.view.fantasia.FantasiaPrefs.preferences;
 
@@ -50,7 +52,7 @@ import static org.jsampler.view.fantasia.FantasiaPrefs.preferences;
  * @author Grigor Iliev
  */
 public class InstrumentsDbPane extends JPanel {
-	private final JSInstrumentsDbTree instrumentsDbTree;
+	private final FantasiaInstrumentsDbTree instrumentsDbTree;
 	private final JSInstrumentsDbTable instrumentsTable;
 	private final JSplitPane splitPane;
 	
@@ -59,9 +61,9 @@ public class InstrumentsDbPane extends JPanel {
 	InstrumentsDbPane() {
 		setLayout(new BorderLayout());
 		if(CC.getInstrumentsDbTreeModel() != null) {
-			instrumentsDbTree = new JSInstrumentsDbTree(CC.getInstrumentsDbTreeModel());
+			instrumentsDbTree = new FantasiaInstrumentsDbTree(CC.getInstrumentsDbTreeModel());
 		} else {
-			instrumentsDbTree = new JSInstrumentsDbTree(new InstrumentsDbTreeModel(true));
+			instrumentsDbTree = new FantasiaInstrumentsDbTree(new InstrumentsDbTreeModel(true));
 		}
 		
 		instrumentsTable = new JSInstrumentsDbTable(instrumentsDbTree);
@@ -90,6 +92,8 @@ public class InstrumentsDbPane extends JPanel {
 		sp1.setPreferredSize(new Dimension(200, 200));
 		JScrollPane sp2 = new JScrollPane(instrumentsTable);
 		sp2.setPreferredSize(new Dimension(200, 200));
+		sp2.setOpaque(false);
+		sp2.getViewport().setOpaque(false);
 		
 		splitPane = new JSplitPane (
 			JSplitPane.VERTICAL_SPLIT,

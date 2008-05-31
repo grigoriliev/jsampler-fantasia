@@ -118,14 +118,14 @@ public class NormalChannelOptionsView extends JPanel implements ChannelOptionsVi
 		bgp.setMinimumSize(getPreferredSize());
 		bgp.setMaximumSize(getPreferredSize());
 		
-		JPanel p = new JPanel();
+		JPanel p = new FantasiaPanel();
 		p.setBorder(BorderFactory.createEmptyBorder(3, 4, 3, 4));
 		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
 		JLabel l = new JLabel(Res.gfxMidiInputTitle);
 		l.setAlignmentX(LEFT_ALIGNMENT);
 		p.add(l);
 		
-		JPanel p2 = new JPanel();
+		JPanel p2 = new FantasiaPanel();
 		p2.setBorder(BorderFactory.createEmptyBorder(3, 0, 0, 0));
 		p2.setLayout(new BoxLayout(p2, BoxLayout.X_AXIS));
 		
@@ -168,7 +168,7 @@ public class NormalChannelOptionsView extends JPanel implements ChannelOptionsVi
 		
 		bgp.add(Box.createRigidArea(new Dimension(4, 0)));
 		
-		p = new JPanel();
+		p = new FantasiaPanel();
 		p.setOpaque(true);
 		p.setBorder(BorderFactory.createEmptyBorder(3, 4, 3, 4));
 		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
@@ -192,7 +192,7 @@ public class NormalChannelOptionsView extends JPanel implements ChannelOptionsVi
 		
 		bgp.add(Box.createRigidArea(new Dimension(4, 0)));
 		
-		p = new JPanel();
+		p = new FantasiaPanel();
 		p.setOpaque(true);
 		p.setBorder(BorderFactory.createEmptyBorder(3, 4, 3, 4));
 		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
@@ -202,7 +202,7 @@ public class NormalChannelOptionsView extends JPanel implements ChannelOptionsVi
 		
 		//p.add(Box.createRigidArea(new Dimension(0, 3)));
 		
-		p2 = new JPanel();
+		p2 = new FantasiaPanel();
 		p2.setBorder(BorderFactory.createEmptyBorder(3, 0, 0, 0));
 		p2.setLayout(new BoxLayout(p2, BoxLayout.X_AXIS));
 		p2.setOpaque(false);
@@ -235,7 +235,7 @@ public class NormalChannelOptionsView extends JPanel implements ChannelOptionsVi
 		
 		p.add(p2);
 		p.setBackground(new java.awt.Color(0x818181));
-		p2 = new JPanel();
+		p2 = new FantasiaPanel();
 		p2.setLayout(new java.awt.BorderLayout());
 		p.add(p2);
 		bgp.add(p);

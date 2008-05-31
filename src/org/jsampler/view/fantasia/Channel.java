@@ -71,6 +71,7 @@ import org.jsampler.view.JSChannel;
 import org.jsampler.view.JSChannelsPane;
 
 import org.jsampler.view.std.JSChannelOutputRoutingDlg;
+import org.jsampler.view.std.JSFxSendsDlg;
 import org.jsampler.view.std.JSFxSendsPane;
 import org.jsampler.view.std.JSInstrumentChooser;
 import org.jsampler.view.std.JSVolumeEditorPopup;
@@ -93,7 +94,7 @@ public class Channel extends JSChannel {
 	
 	private final ViewTracker viewTracker;
 	
-	private InformationDialog fxSendsDlg = null;
+	private JSFxSendsDlg fxSendsDlg = null;
 	
 	private final ContextMenu contextMenu;
 	
@@ -346,7 +347,7 @@ public class Channel extends JSChannel {
 	onDestroy() {
 		CC.getSamplerModel().removeSamplerChannelListListener(getHandler());
 		preferences().removePropertyChangeListener(ANIMATED, animatedPorpetyListener);
-		
+		if(fxSendsDlg != null) fxSendsDlg.dispose();
 		viewTracker.onDestroy();
 	}
 		
@@ -371,12 +372,8 @@ public class Channel extends JSChannel {
 			fxSendsDlg.toFront();
 			return;
 		}
-		FxSendsPane p = new FxSendsPane(getModel());
-		int id = getModel().getChannelId();
-		fxSendsDlg = new InformationDialog(CC.getMainFrame(), p);
-		fxSendsDlg.setTitle(i18n.getLabel("FxSendsDlg.title", id));
-		fxSendsDlg.setModal(false);
-		fxSendsDlg.showCloseButton(false);
+		
+		fxSendsDlg = new JSFxSendsDlg(new FxSendsPane(getModel()));
 		fxSendsDlg.setVisible(true);
 	}
 	

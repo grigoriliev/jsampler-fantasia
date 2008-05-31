@@ -47,7 +47,7 @@ import org.jsampler.CC;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jvnet.substance.SubstanceLookAndFeel.SCROLL_PANE_BUTTONS_POLICY;
-import static org.jvnet.substance.utils.SubstanceConstants.ScrollPaneButtonPolicyKind;
+import static org.jvnet.substance.api.SubstanceConstants.ScrollPaneButtonPolicyKind;
 
 
 /**

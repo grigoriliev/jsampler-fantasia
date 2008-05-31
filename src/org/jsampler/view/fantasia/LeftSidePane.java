@@ -25,8 +25,11 @@ package org.jsampler.view.fantasia;
 import java.awt.BorderLayout;
 
 import javax.swing.BorderFactory;
+import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+
+import org.jvnet.substance.SubstanceLookAndFeel;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jsampler.view.fantasia.FantasiaPrefs.preferences;
@@ -52,6 +55,8 @@ public class LeftSidePane extends PixmapPane {
 		JTabbedPane tp = tabbedPane;
 		tp.addTab(i18n.getLabel("LeftSidePane.tabOrchestras"), orchestraPane);
 		tp.addTab(i18n.getLabel("LeftSidePane.tabMidiInstruments"), midiInstrumentsPane);
+		tp.setBackground(new java.awt.Color(0x828282));
+		tp.putClientProperty(SubstanceLookAndFeel.COLORIZATION_FACTOR, 1.0);
 		add(tp);
 		setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
 		

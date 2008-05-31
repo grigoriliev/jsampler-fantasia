@@ -532,6 +532,8 @@ class ChannelScreen extends PixmapPane {
 		components.add(instrumentPane);
 		add(instrumentPane);
 		
+		add(Box.createRigidArea(new Dimension(0, 3)));
+		
 		JPanel p = new JPanel();
 		components.add(p);
 		p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
@@ -660,22 +662,29 @@ class ChannelScreen extends PixmapPane {
 	
 	protected void
 	updateScreenInfo(SamplerChannel sc) {
+		String s = btnInstr.getToolTipText();
+		
 		int status = sc.getInstrumentStatus();
 		if(status >= 0 && status < 100) {
 			btnInstr.setText(i18n.getLabel("ChannelScreen.loadingInstrument", status));
+			if(s != null) btnInstr.setToolTipText(null);
 		} else if(status == -1) {
 			btnInstr.setText(i18n.getButtonLabel("ChannelScreen.btnInstr"));
+			if(s != null) btnInstr.setToolTipText(null);
 		} else if(status < -1) {
 			 btnInstr.setText(i18n.getLabel("ChannelScreen.errorLoadingInstrument"));
+			 if(s != null) btnInstr.setToolTipText(null);
 		} else {
 			if(sc.getInstrumentName() != null) btnInstr.setText(sc.getInstrumentName());
 			else btnInstr.setText(i18n.getButtonLabel("ChannelScreen.btnInstr"));
+			
+			btnInstr.setToolTipText(sc.getInstrumentName());
 		}
 		
 		instrumentPane.update();
 	
 		if(sc.getEngine() != null) {
-			String s = sc.getEngine().getName();
+			s = sc.getEngine().getName();
 			s += " engine";
 			if(!s.equals(btnEngine.getText())) {
 				btnEngine.setText(s);

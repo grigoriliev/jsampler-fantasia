@@ -60,8 +60,11 @@ import static org.jsampler.view.fantasia.FantasiaPrefs.*;
  * @author Grigor Iliev
  */
 public class PrefsDlg extends EnhancedDialog {
+	private final JTabbedPane tabbedPane = new JTabbedPane();
+	
 	private final GeneralPane genPane = new GeneralPane();
 	private final ViewPane viewPane = new ViewPane();
+	private final ChannelsPropsPane channelsPane = new ChannelsPropsPane();
 	private final ConsolePane consolePane = new ConsolePane();
 	private final JSConnectionPropsPane connectionPane = new JSConnectionPropsPane();
 	private final JSDefaultsPropsPane defaultsPane;
@@ -77,9 +80,12 @@ public class PrefsDlg extends EnhancedDialog {
 		
 		defaultsPane = new JSDefaultsPropsPane(this, Res.iconEdit16, true);
 		
-		JTabbedPane tp = new JTabbedPane();
+		JTabbedPane tp = tabbedPane;
+		tp.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+		
 		tp.addTab(i18n.getLabel("PrefsDlg.tabGeneral"), genPane);
 		tp.addTab(i18n.getLabel("PrefsDlg.tabView"), viewPane);
+		tp.addTab(i18n.getLabel("PrefsDlg.tabChannels"), channelsPane);
 		tp.addTab(i18n.getLabel("PrefsDlg.tabConsole"), consolePane);
 		
 		JPanel p = new JPanel();
@@ -117,6 +123,10 @@ public class PrefsDlg extends EnhancedDialog {
 		setLocation(JuifeUtils.centerLocation(this, owner));
 		
 		installListeners();
+		
+		int i = preferences().getIntProperty("PrefsDlg.tabIndex");
+		
+		if(i >= 0 && i < tp.getTabCount()) tp.setSelectedIndex(i);
 	}
 	
 	private void
@@ -142,9 +152,12 @@ public class PrefsDlg extends EnhancedDialog {
 	onApply() {
 		genPane.apply();
 		viewPane.apply();
+		channelsPane.apply();
 		consolePane.apply();
 		connectionPane.apply();
 		defaultsPane.apply();
+		
+		preferences().setIntProperty("PrefsDlg.tabIndex", tabbedPane.getSelectedIndex());
 		
 		setVisible(false);
 	}
@@ -290,6 +303,54 @@ class ViewPane extends JPanel {
 		midiDevsPane.apply();
 		audioDevsPane.apply();
 		confirmationMessagesPane.apply();
+	}
+}
+
+class ChannelsPropsPane extends JPanel {
+	private final JCheckBox checkShowChannelNumbering =
+		new JCheckBox(i18n.getLabel("ChannelsPropsPane.checkShowChannelNumbering"));
+	
+	private final JCheckBox checkShowMidiInfo =
+		new JCheckBox(i18n.getLabel("ChannelsPropsPane.checkShowMidiInfo"));
+	
+	ChannelsPropsPane() {
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		
+		add(createSmallViewPane());
+		JPanel p = new JPanel();
+		p.setLayout(new BorderLayout());
+		add(p);
+	}
+	
+	protected void
+	apply() {
+		boolean b = checkShowChannelNumbering.isSelected();
+		preferences().setBoolProperty("channel.smallView.showChannelNumbering", b);
+		
+		b = checkShowMidiInfo.isSelected();
+		preferences().setBoolProperty("channel.smallView.showMidiInfo", b);
+	}
+	
+	private JPanel
+	createSmallViewPane() {
+		JPanel p = new JPanel();
+		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+		
+		boolean b = preferences().getBoolProperty("channel.smallView.showChannelNumbering");
+		checkShowChannelNumbering.setSelected(b);
+		checkShowChannelNumbering.setAlignmentX(LEFT_ALIGNMENT);
+		p.add(checkShowChannelNumbering);
+		
+		b = preferences().getBoolProperty("channel.smallView.showMidiInfo");
+		checkShowMidiInfo.setSelected(b);
+		checkShowMidiInfo.setAlignmentX(LEFT_ALIGNMENT);
+		p.add(checkShowMidiInfo);
+		
+		String s = i18n.getLabel("ChannelsPropsPane.smallView");
+		p.setBorder(BorderFactory.createTitledBorder(s));
+		p.setMaximumSize(new Dimension(Short.MAX_VALUE, p.getPreferredSize().height));
+		
+		return p;
 	}
 }
 

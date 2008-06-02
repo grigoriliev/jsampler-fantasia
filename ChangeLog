@@ -23,6 +23,9 @@ CVS HEAD
     representing the sampler channel's audio channels is "Audio In" and
     the column representing the audio device's channels is "Audio Out"
 
+  * Orchestras, orchestra instruments, MIDI maps and MIDI instruments
+    can now be removed using the `Delete' key from the keyboard
+
   * Fantasia:
     - Major memory optimizations when too many sampler channels are present
     - Added option to show the Instruments Database on

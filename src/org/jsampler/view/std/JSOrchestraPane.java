@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -29,16 +29,19 @@ import java.awt.Window;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.KeyStroke;
 
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -128,6 +131,10 @@ public class JSOrchestraPane extends JPanel {
 		
 		ContextMenu contextMenu = new ContextMenu();
 		instrumentTable.addMouseListener(contextMenu);
+		
+		KeyStroke k = KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0);
+		instrumentTable.getInputMap(JComponent.WHEN_FOCUSED).put(k, "deleteInstrument");
+		instrumentTable.getActionMap().put("deleteInstrument", actionDeleteInstrument);
 	}
 	
 	public void

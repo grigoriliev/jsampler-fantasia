@@ -26,13 +26,16 @@ import java.awt.BorderLayout;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.KeyStroke;
 
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -84,6 +87,10 @@ public class JSManageOrchestrasPane extends JPanel {
 				editOrchestra(orchestraTable.getSelectedOrchestra());
 			}
 		});
+		
+		KeyStroke k = KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0);
+		orchestraTable.getInputMap(JComponent.WHEN_FOCUSED).put(k, "deleteOrchestra");
+		orchestraTable.getActionMap().put("deleteOrchestra", actionDeleteOrchestra);
 	}
 	
 	/**

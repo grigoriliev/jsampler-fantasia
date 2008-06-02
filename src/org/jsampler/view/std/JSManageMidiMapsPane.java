@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -25,13 +25,16 @@ package org.jsampler.view.std;
 import java.awt.BorderLayout;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.KeyStroke;
 
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -77,6 +80,10 @@ public class JSManageMidiMapsPane extends JPanel implements ListSelectionListene
 				editMidiInstrumentMap(midiMapTable.getSelectedMidiInstrumentMap());
 			}
 		});
+		
+		KeyStroke k = KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0);
+		midiMapTable.getInputMap(JComponent.WHEN_FOCUSED).put(k, "removeMidiMap");
+		midiMapTable.getActionMap().put("removeMidiMap", actionRemoveMap);
 	}
 	
 	public void

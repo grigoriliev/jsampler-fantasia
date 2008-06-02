@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -24,12 +24,17 @@ package org.jsampler.view.std;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTree;
+import javax.swing.KeyStroke;
 
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -91,6 +96,17 @@ public class JSMidiInstrumentTree extends JTree {
 		ContextMenu contextMenu = new ContextMenu();
 		addMouseListener(contextMenu);
 		addTreeSelectionListener(contextMenu);
+		
+		Action a = new AbstractAction() {
+			public void
+			actionPerformed(ActionEvent e) {
+				removeSelectedInstrumentOrBank();
+			}
+		};
+		
+		KeyStroke k = KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0);
+		getInputMap(JComponent.WHEN_FOCUSED).put(k, "removeSelectedInstrumentOrBank");
+		getActionMap().put("removeSelectedInstrumentOrBank", a);
 	}
 	
 	/**

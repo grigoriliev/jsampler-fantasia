@@ -582,7 +582,7 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 			StringBuffer sb = new StringBuffer();
 			
 			if(getShowNumbering()) {
-				if(channelIndex < 10) sb.append(" ");
+				if(channelIndex < 9) sb.append(" ");
 				sb.append(channelIndex + 1).append(": ");
 			}
 			

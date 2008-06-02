@@ -566,6 +566,7 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 			
 			int l = 0;
 			if(getShowNumbering()) l += 4;
+			if(channelIndex > 98) l++;
 			if(getShowMidiInfo()) l += 6;
 			
 			StringBuffer sb = new StringBuffer();
@@ -604,7 +605,14 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 		protected void
 		updateChannelIndex() {
 			int i = CC.getSamplerModel().getChannelIndex(channel.getModel());
+			
+			boolean b = false;
+			if(i > 98 && channelIndex <= 98) b = true;
+			if(i < 99 && channelIndex >= 99) b = true;
+			
 			channelIndex = i;
+			if(b) updateLabelLength();
+			
 			if(!getShowNumbering()) return;
 			
 			updateChannelInfo();

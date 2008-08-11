@@ -25,21 +25,24 @@ package org.jsampler.view.fantasia;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import java.util.List;
 
+import javax.swing.Action;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.RowSorter.SortKey;
-import javax.swing.SortOrder;
-
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import javax.swing.JToolBar;
 
 import org.jsampler.CC;
 
 import org.jsampler.view.InstrumentsDbTreeModel;
+
+import org.jsampler.view.std.JSInstrumentsDbColumnPreferencesDlg;
 import org.jsampler.view.std.JSInstrumentsDbTable;
 
 import org.jvnet.substance.SubstanceLookAndFeel;
@@ -66,25 +69,11 @@ public class InstrumentsDbPane extends JPanel {
 			instrumentsDbTree = new FantasiaInstrumentsDbTree(new InstrumentsDbTreeModel(true));
 		}
 		
-		instrumentsTable = new JSInstrumentsDbTable(instrumentsDbTree);
-		instrumentsTable.getModel().showNameColumnOnly();
+		instrumentsTable = new JSInstrumentsDbTable(instrumentsDbTree, "InstrumentsDbPane.");
 		instrumentsTable.getModel().setShowDummyColumn(true);
-		instrumentsTable.loadColumnWidths("InstrumentsDbPane.");
-		instrumentsTable.getRowSorter().toggleSortOrder(0);
-		boolean b = preferences().getBoolProperty("InstrumentsDbPane.reverseSortOrder");
-		if(b) instrumentsTable.getRowSorter().toggleSortOrder(0);
-		
-		CC.addInstrumentsDbChangeListener(new ChangeListener() {
-			public void
-			stateChanged(ChangeEvent e) {
-				instrumentsDbTree.setModel(CC.getInstrumentsDbTreeModel());
-				
-				CC.scheduleInTaskQueue(new Runnable() {
-					public void
-					run() { instrumentsDbTree.setSelectedDirectory("/"); }
-				});
-			}
-		});
+		instrumentsTable.loadColumnsVisibleState();
+		instrumentsTable.loadColumnWidths();
+		instrumentsTable.loadSortOrder();
 		
 		instrumentsDbTree.setSelectedDirectory("/");
 		
@@ -103,17 +92,50 @@ public class InstrumentsDbPane extends JPanel {
 		);
 		
 		add(splitPane);
+		add(new ToolBar(), BorderLayout.NORTH);
 	}
 	
 	protected void
 	savePreferences() {
-		instrumentsTable.saveColumnWidths("InstrumentsDbPane.");
+		instrumentsTable.saveColumnsVisibleState();
+		instrumentsTable.saveColumnWidths();
+	}
+	
+	class ToolBar extends JToolBar {
+		protected final JButton btnGoUp = new ToolbarButton(instrumentsDbTree.actionGoUp);
+		protected final JButton btnGoBack = new ToolbarButton(instrumentsDbTree.actionGoBack);
+		protected final JButton btnGoForward = new ToolbarButton(instrumentsDbTree.actionGoForward);
+		protected final JButton btnReload = new ToolbarButton(instrumentsTable.reloadAction);
+		protected final JButton btnPreferences = new ToolbarButton(null);
 		
-		List<? extends SortKey> list = instrumentsTable.getRowSorter().getSortKeys();
-		if(list.isEmpty()) return;
-		SortKey k = list.get(0);
-		if(k.getColumn() != 0) return;
-		boolean b = k.getSortOrder() == SortOrder.DESCENDING;
-		preferences().setBoolProperty("InstrumentsDbPane.reverseSortOrder", b);
+		public ToolBar() {
+			super("");
+			setFloatable(false);
+			
+			add(btnGoBack);
+			add(btnGoForward);
+			add(btnGoUp);
+			
+			instrumentsTable.reloadAction.putValue(Action.SMALL_ICON, Res.iconReload16);
+			add(btnReload);
+			
+			addSeparator();
+			
+			btnPreferences.setIcon(Res.iconPreferences16);
+			add(btnPreferences);
+			
+			btnPreferences.addActionListener(new ActionListener() {
+				public void
+				actionPerformed(ActionEvent e) {
+					new PreferencesDlg().setVisible(true);
+				}
+			});
+		}
+	}
+	
+	class PreferencesDlg extends JSInstrumentsDbColumnPreferencesDlg {
+		PreferencesDlg() {
+			super(CC.getMainFrame(), instrumentsTable);
+		}
 	}
 }

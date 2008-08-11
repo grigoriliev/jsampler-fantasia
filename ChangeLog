@@ -26,6 +26,11 @@ CVS HEAD
   * Orchestras, orchestra instruments, MIDI maps and MIDI instruments
     can now be removed using the `Delete' key from the keyboard
 
+  * Added toolbar to the Database Instrument Chooser dialog
+
+  * Instrument Chooser and Database Instrument Chooser dialogs
+    are now resizable
+
   * Fantasia:
     - Major memory optimizations when too many sampler channels are present
     - Added option to show the Instruments Database on
@@ -45,6 +50,7 @@ CVS HEAD
     - Implemented options to show the channel number and/or the MIDI
       input port/channel on the sampler channel screen when using Small View
       (choose Edit/Preferences, then click the `Channels' tab)
+    - Added toolbar to the Right-Side Pane's Instruments Database
     - Migrated to substance 5
 
   * Bug fixes:

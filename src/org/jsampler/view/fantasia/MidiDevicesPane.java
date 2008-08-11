@@ -97,6 +97,12 @@ public class MidiDevicesPane extends JPanel {
 		}
 	}
 	
+	public int
+	getDevicePaneCount() { return listModel.size(); }
+	
+	public MidiDevicePane
+	getDevicePaneAt(int index) { return listModel.get(index); }
+	
 	private void
 	addDevice(MidiDeviceModel model) {
 		for(int i = 0; i < listModel.getSize(); i++) {

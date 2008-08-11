@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -28,6 +28,7 @@ import org.jsampler.JSPrefs;
 
 import org.jsampler.view.InstrumentsDbTableView;
 import org.jsampler.view.InstrumentsDbTreeView;
+import org.jsampler.view.BasicIconSet;
 import org.jsampler.view.JSViewConfig;
 
 /**
@@ -37,6 +38,7 @@ import org.jsampler.view.JSViewConfig;
 public class ViewConfig extends JSViewConfig {
 	private InstrumentsDbTreeView instrumentsDbTreeView = new TreeView();
 	private InstrumentsDbTableView instrumentsDbTableView = new TableView();
+	private IconSet basicIconSet = new IconSet();
 	
 	/** Creates a new instance of <code>ViewConfig</code> */
 	public
@@ -52,6 +54,9 @@ public class ViewConfig extends JSViewConfig {
 	
 	public InstrumentsDbTableView
 	getInstrumentsDbTableView() { return instrumentsDbTableView; }
+	
+	public BasicIconSet
+	getBasicIconSet() { return basicIconSet; }
 	
 	private class TreeView implements InstrumentsDbTreeView {
 		public Icon
@@ -79,6 +84,23 @@ public class ViewConfig extends JSViewConfig {
 	
 		public Icon
 		getGigInstrumentIcon() { return Res.iconInstrument16; }
+	}
+	
+	private class IconSet implements BasicIconSet {
+		public Icon
+		getBack16Icon() { return Res.iconBack16; }
+	
+		public Icon
+		getUp16Icon() { return Res.iconUp16; }
+	
+		public Icon
+		getForward16Icon() { return Res.iconForward16; }
+		
+		public Icon
+		getReload16Icon() { return Res.iconReload16; }
+		
+		public Icon
+		getPreferences16Icon() { return Res.iconPreferences16; }
 	}
 	
 	public boolean

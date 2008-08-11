@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -62,6 +62,8 @@ public abstract class JSViewConfig {
 	 */
 	public abstract InstrumentsDbTableView getInstrumentsDbTableView();
 	
+	public abstract BasicIconSet getBasicIconSet();
+	
 	public abstract JSPrefs preferences();
 	
 	/**
@@ -76,4 +78,8 @@ public abstract class JSViewConfig {
 	 */
 	public boolean
 	isMeasurementUnitDecibel() { return measurementUnitDecibel; }
+	
+	/** Exports the view configuration of the current session. */
+	public String
+	exportSessionViewConfig() { return ""; }
 }

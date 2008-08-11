@@ -33,7 +33,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import java.util.List;
 import java.util.logging.Level;
 
 import javax.swing.AbstractAction;
@@ -54,17 +53,9 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
-import javax.swing.RowSorter.SortKey;
-import javax.swing.SortOrder;
 
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.event.RowSorterEvent;
-import javax.swing.event.RowSorterListener;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 
 import javax.swing.plaf.ToolBarUI;
 
@@ -72,7 +63,6 @@ import net.sf.juife.InformationDialog;
 import net.sf.juife.NavigationPage;
 import net.sf.juife.NavigationPane;
 
-import net.sf.juife.DefaultNavigationHistoryModel;
 import net.sf.juife.Task;
 
 import net.sf.juife.event.TaskEvent;
@@ -87,6 +77,8 @@ import org.jsampler.task.InstrumentsDb;
 import org.jsampler.view.DbDirectoryTreeNode;
 import org.jsampler.view.InstrumentsDbTableModel;
 import org.jsampler.view.InstrumentsDbTableView;
+
+import org.jsampler.view.std.JSInstrumentsDbColumnPreferencesDlg;
 import org.jsampler.view.std.JSInstrumentsDbTable;
 import org.jsampler.view.std.JSInstrumentsDbTree;
 import org.jsampler.view.std.JSLostFilesDlg;
@@ -95,7 +87,6 @@ import org.linuxsampler.lscp.DbDirectoryInfo;
 import org.linuxsampler.lscp.DbInstrumentInfo;
 import org.linuxsampler.lscp.DbSearchQuery;
 
-import static javax.swing.event.RowSorterEvent.Type.SORT_ORDER_CHANGED;
 import static org.jsampler.view.classic.ClassicI18n.i18n;
 import static org.jsampler.view.classic.ClassicPrefs.preferences;
 import static org.jsampler.view.fantasia.FantasiaPrefs.INSTRUMENTS_DB_FRAME_SORT_ORDER;
@@ -112,12 +103,6 @@ public class InstrumentsDbFrame extends JFrame {
 	private final JSplitPane splitPane;
 	private final MainPane mainPane;
 	
-	private final GoUp goUp = new GoUp();
-	private final GoBack goBack = new GoBack();
-	private final GoForward goForward = new GoForward();
-	
-	private final NavigationHistoryModel navigationHistoryModel = new NavigationHistoryModel();
-	
 	private JMenu loadInstrumentMenu;
 	private JMenu addToMidiMapMenu;
 	private JMenu addToOrchestraMenu;
@@ -131,20 +116,6 @@ public class InstrumentsDbFrame extends JFrame {
 		if(Res.appIcon != null) setIconImage(Res.appIcon.getImage());
 		
 		instrumentsDbTree = new JSInstrumentsDbTree(CC.getInstrumentsDbTreeModel());
-		CC.addInstrumentsDbChangeListener(new ChangeListener() {
-			public void
-			stateChanged(ChangeEvent e) {
-				instrumentsDbTree.setModel(CC.getInstrumentsDbTreeModel());
-				
-				CC.scheduleInTaskQueue(new Runnable() {
-					public void
-					run() {
-						instrumentsDbTree.setSelectedDirectory("/");
-						navigationHistoryModel.clearHistory();
-					}
-				});
-			}
-		});
 		
 		sidePane = new SidePane();
 		mainPane = new MainPane();
@@ -177,8 +148,6 @@ public class InstrumentsDbFrame extends JFrame {
 			windowClosing(WindowEvent we) { onWindowClose(); }
 		});
 		
-		instrumentsDbTree.addTreeSelectionListener(goUp);
-		instrumentsDbTree.addTreeSelectionListener(navigationHistoryModel);
 		installKeyboardListeners();
 	}
 	
@@ -314,17 +283,20 @@ public class InstrumentsDbFrame extends JFrame {
 		m = new JMenu(i18n.getMenuLabel("instrumentsdb.go"));
 		menuBar.add(m);
 		
-		mi = new JMenuItem(goUp);
+		instrumentsDbTree.actionGoUp.putValue(Action.SMALL_ICON, Res.iconGoUp22);
+		mi = new JMenuItem(instrumentsDbTree.actionGoUp);
 		mi.setIcon(null);
 		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_UP, KeyEvent.ALT_MASK));
 		m.add(mi);
 		
-		mi = new JMenuItem(goBack);
+		instrumentsDbTree.actionGoBack.putValue(Action.SMALL_ICON, Res.iconGoBack22);
+		mi = new JMenuItem(instrumentsDbTree.actionGoBack);
 		mi.setIcon(null);
 		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_MASK));
 		m.add(mi);
 		
-		mi = new JMenuItem(goForward);
+		instrumentsDbTree.actionGoForward.putValue(Action.SMALL_ICON, Res.iconGoForward22);
+		mi = new JMenuItem(instrumentsDbTree.actionGoForward);
 		mi.setIcon(null);
 		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_MASK));
 		m.add(mi);
@@ -340,8 +312,8 @@ public class InstrumentsDbFrame extends JFrame {
 		getRootPane().getActionMap().put ("goUp", new AbstractAction() {
 			public void
 			actionPerformed(ActionEvent e) {
-				if(!goUp.isEnabled()) return;
-				goUp.actionPerformed(null);
+				if(!instrumentsDbTree.actionGoUp.isEnabled()) return;
+				instrumentsDbTree.actionGoUp.actionPerformed(null);
 			}
 		});
 	}
@@ -429,76 +401,14 @@ public class InstrumentsDbFrame extends JFrame {
 		getContentPane().add(mainPane);
 	}
 	
-	private class GoUp extends AbstractAction implements TreeSelectionListener {
-		GoUp() {
-			super(i18n.getMenuLabel("instrumentsdb.go.up"));
-			
-			String s = i18n.getMenuLabel("instrumentsdb.go.up.tt");
-			putValue(SHORT_DESCRIPTION, s);
-			putValue(Action.SMALL_ICON, Res.iconGoUp22);
-			setEnabled(false);
-		}
-		
-		public void
-		actionPerformed(ActionEvent e) {
-			DbDirectoryTreeNode node = instrumentsDbTree.getSelectedDirectoryNode();
-			if(node == null) return;
-			instrumentsDbTree.setSelectedDirectoryNode(node.getParent());
-		}
-		
-		public void
-		valueChanged(TreeSelectionEvent e) {
-			DbDirectoryTreeNode n = instrumentsDbTree.getSelectedDirectoryNode();
-			if(n == null) {
-				setEnabled(false);
-				return;
-			}
-			
-			setEnabled(n.getParent() != null);
-		}
-	}
-	
-	private class GoBack extends AbstractAction {
-		GoBack() {
-			super(i18n.getMenuLabel("instrumentsdb.go.back"));
-			
-			String s = i18n.getMenuLabel("instrumentsdb.go.back.tt");
-			putValue(SHORT_DESCRIPTION, s);
-			putValue(Action.SMALL_ICON, Res.iconGoBack22);
-			setEnabled(false);
-		}
-		
-		public void
-		actionPerformed(ActionEvent e) {
-			navigationHistoryModel.goBack();
-		}
-	}
-	
-	private class GoForward extends AbstractAction {
-		GoForward() {
-			super(i18n.getMenuLabel("instrumentsdb.go.forward"));
-			
-			String s = i18n.getMenuLabel("instrumentsdb.go.forward.tt");
-			putValue(SHORT_DESCRIPTION, s);
-			putValue(Action.SMALL_ICON, Res.iconGoForward22);
-			setEnabled(false);
-		}
-		
-		public void
-		actionPerformed(ActionEvent e) {
-			navigationHistoryModel.goForward();
-		}
-	}
-	
 	class ToolBar extends JToolBar {
 		private final ToggleButton btnFolders = new ToggleButton();
 		private final ToggleButton btnFind = new ToggleButton();
 		
-		private final ToolbarButton btnGoUp = new ToolbarButton(goUp);
-		private final ToolbarButton btnGoBack = new ToolbarButton(goBack);
-		private final ToolbarButton btnGoForward = new ToolbarButton(goForward);
-		private final ToolbarButton btnReload =
-			new ToolbarButton(mainPane.getInstrumentsTable().reloadAction);
+		private final ToolbarButton btnGoUp = new ToolbarButton(instrumentsDbTree.actionGoUp);
+		private final ToolbarButton btnGoBack = new ToolbarButton(instrumentsDbTree.actionGoBack);
+		private final ToolbarButton btnGoForward = new ToolbarButton(instrumentsDbTree.actionGoForward);
+		private final ToolbarButton btnReload = new ToolbarButton(mainPane.getInstrumentsTable().reloadAction);
 		
 		private final ToolbarButton btnPreferences = new ToolbarButton();
 		
@@ -578,73 +488,6 @@ public class InstrumentsDbFrame extends JFrame {
 		}
 	}
 	
-	private class NavigationHistoryModel
-		extends DefaultNavigationHistoryModel<DbDirectoryTreeNode>
-		implements TreeSelectionListener, ActionListener {
-		
-		private boolean lock = false;
-		
-		NavigationHistoryModel() {
-			addActionListener(this);
-		}
-		
-		public DbDirectoryTreeNode
-		goBack() {
-			lock = true;
-			DbDirectoryTreeNode node = selectDirectory(super.goBack());
-			lock = false;
-			return node;
-		}
-		
-		public DbDirectoryTreeNode
-		goForward() {
-			lock = true;
-			DbDirectoryTreeNode node = selectDirectory(super.goForward());
-			lock = false;
-			return node;
-		}
-		
-		private DbDirectoryTreeNode
-		selectDirectory(DbDirectoryTreeNode node) {
-			if(node == null) return null;
-			
-			if(node == mainPane.getSearchResultsNode()) {
-				mainPane.showSearchResultsNode();
-				return node;
-			}
-			
-			String path = node.getInfo().getDirectoryPath();
-			if(CC.getInstrumentsDbTreeModel().getNodeByPath(path) != null) {
-				getInstrumentsDbTree().setSelectedDirectory(path);
-				return node;
-			}
-			
-			removePage();
-			fireActionPerformed();
-			String s = i18n.getMessage("InstrumentsDbFrame.unknownDirectory!", path);
-			HF.showErrorMessage(s, InstrumentsDbFrame.this);
-			return node;
-		}
-		
-		public void
-		addPage(DbDirectoryTreeNode node) {
-			if(lock) return;
-			if(node == null) return;
-			super.addPage(node);
-		}
-		
-		public void
-		valueChanged(TreeSelectionEvent e) {
-			addPage(instrumentsDbTree.getSelectedDirectoryNode());
-		}
-		
-		public void
-		actionPerformed(ActionEvent e) {
-			goBack.setEnabled(hasBack());
-			goForward.setEnabled(hasForward());
-		}
-	}
-	
 	public JSInstrumentsDbTree
 	getInstrumentsDbTree() { return instrumentsDbTree; }
 	
@@ -686,7 +529,7 @@ public class InstrumentsDbFrame extends JFrame {
 	
 	class MainPane extends JPanel {
 		private final JSInstrumentsDbTable instrumentsTable =
-			new JSInstrumentsDbTable(instrumentsDbTree);
+			new JSInstrumentsDbTable(instrumentsDbTree, "InstrumentsDbFrame.");
 		
 		private final DbDirectoryTreeNode searchResultsNode = new DbDirectoryTreeNode(null);
 		
@@ -702,41 +545,7 @@ public class InstrumentsDbFrame extends JFrame {
 			
 			instrumentsTable.getParent().setBackground(instrumentsTable.getBackground());
 			
-			int i = preferences().getIntProperty(INSTRUMENTS_DB_FRAME_SORT_ORDER);
-			boolean descending = i < 0;
-			if(i < 0) i *= -1;
-			i--;
-			
-			if(i < 0 || i >= instrumentsTable.getModel().getColumnCount()) {
-				instrumentsTable.getRowSorter().toggleSortOrder(0);
-				CC.getLogger().warning("Unknown table column: " + i);
-			} else {
-				instrumentsTable.getRowSorter().toggleSortOrder(i);
-				if(descending) instrumentsTable.getRowSorter().toggleSortOrder(i);
-			}
-			
 			searchResultsNode.setDetached(true);
-			
-			RowSorterListener l = new RowSorterListener() {
-				public void
-				sorterChanged(RowSorterEvent e) {
-					if(e.getType() != SORT_ORDER_CHANGED) return;
-					rowSorterChanged();
-				}
-			};
-			
-			instrumentsTable.getRowSorter().addRowSorterListener(l);
-		}
-		
-		private void
-		rowSorterChanged() {
-			List<? extends SortKey> list = instrumentsTable.getRowSorter().getSortKeys();
-			if(list.isEmpty()) return;
-			SortKey k = list.get(0);
-			int i = k.getColumn() + 1;
-			if(k.getSortOrder() == SortOrder.UNSORTED) return;
-			if(k.getSortOrder() == SortOrder.DESCENDING) i *= -1;
-			preferences().setIntProperty(INSTRUMENTS_DB_FRAME_SORT_ORDER, i);
 		}
 		
 		public JSInstrumentsDbTable
@@ -749,7 +558,6 @@ public class InstrumentsDbFrame extends JFrame {
 		showSearchResultsNode() {
 			instrumentsDbTree.clearSelection();
 			instrumentsTable.setParentDirectoryNode(searchResultsNode);
-			navigationHistoryModel.addPage(searchResultsNode);
 		}
 	}
 	
@@ -791,124 +599,9 @@ public class InstrumentsDbFrame extends JFrame {
 		}
 	}
 	
-	class PreferencesDlg extends InformationDialog implements ItemListener {
-		private final JCheckBox checkShowSizeColumn =
-			new JCheckBox(JSI18n.i18n.getLabel("InstrumentsDbTableModel.SIZE"));
-		
-		private final JCheckBox checkShowFormatFamilyColumn =
-			new JCheckBox(JSI18n.i18n.getLabel("InstrumentsDbTableModel.FORMAT_FAMILY"));
-		
-		private final JCheckBox checkShowFormatVersionColumn =
-			new JCheckBox(JSI18n.i18n.getLabel("InstrumentsDbTableModel.FORMAT_VERSION"));
-		
-		private final JCheckBox checkShowIsDrumColumn =
-			new JCheckBox(JSI18n.i18n.getLabel("InstrumentsDbTableModel.IS_DRUM"));
-		
-		private final JCheckBox checkShowCreatedColumn =
-			new JCheckBox(JSI18n.i18n.getLabel("InstrumentsDbTableModel.CREATED"));
-		
-		private final JCheckBox checkShowModifiedColumn =
-			new JCheckBox(JSI18n.i18n.getLabel("InstrumentsDbTableModel.MODIFIED"));
-		
-		private final JCheckBox checkShowProductColumn =
-			new JCheckBox(JSI18n.i18n.getLabel("InstrumentsDbTableModel.PRODUCT"));
-		
-		private final JCheckBox checkShowArtistsColumn =
-			new JCheckBox(JSI18n.i18n.getLabel("InstrumentsDbTableModel.ARTISTS"));
-		
-		private final JCheckBox checkShowInstrumentFileColumn
-			= new JCheckBox(JSI18n.i18n.getLabel("InstrumentsDbTableModel.INSTRUMENT_FILE"));
-		
-		private final JCheckBox checkShowInstrumentNrColumn =
-			new JCheckBox(JSI18n.i18n.getLabel("InstrumentsDbTableModel.INSTRUMENT_NR"));
-		
-		private final JCheckBox checkShowKeywordsColumn =
-			new JCheckBox(JSI18n.i18n.getLabel("InstrumentsDbTableModel.KEYWORDS"));
-		
+	class PreferencesDlg extends JSInstrumentsDbColumnPreferencesDlg {
 		PreferencesDlg() {
-			super(InstrumentsDbFrame.this);
-			InstrumentsDbTableModel m = mainPane.instrumentsTable.getModel();
-			
-			checkShowSizeColumn.setSelected(m.getShowSizeColumn());
-			checkShowFormatFamilyColumn.setSelected(m.getShowFormatFamilyColumn());
-			checkShowFormatVersionColumn.setSelected(m.getShowFormatVersionColumn());
-			checkShowIsDrumColumn.setSelected(m.getShowIsDrumColumn());
-			checkShowCreatedColumn.setSelected(m.getShowCreatedColumn());
-			checkShowModifiedColumn.setSelected(m.getShowModifiedColumn());
-			checkShowProductColumn.setSelected(m.getShowProductColumn());
-			checkShowArtistsColumn.setSelected(m.getShowArtistsColumn());
-			checkShowInstrumentFileColumn.setSelected(m.getShowInstrumentFileColumn());
-			checkShowInstrumentNrColumn.setSelected(m.getShowInstrumentNrColumn());
-			checkShowKeywordsColumn.setSelected(m.getShowKeywordsColumn());
-			
-			checkShowSizeColumn.addItemListener(this);
-			checkShowFormatFamilyColumn.addItemListener(this);
-			checkShowFormatVersionColumn.addItemListener(this);
-			checkShowIsDrumColumn.addItemListener(this);
-			checkShowCreatedColumn.addItemListener(this);
-			checkShowModifiedColumn.addItemListener(this);
-			checkShowProductColumn.addItemListener(this);
-			checkShowArtistsColumn.addItemListener(this);
-			checkShowInstrumentFileColumn.addItemListener(this);
-			checkShowInstrumentNrColumn.addItemListener(this);
-			checkShowKeywordsColumn.addItemListener(this);
-			
-			JPanel p = new JPanel();
-			p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
-			p.add(checkShowSizeColumn);
-			p.add(checkShowFormatFamilyColumn);
-			p.add(checkShowFormatVersionColumn);
-			p.add(checkShowIsDrumColumn);
-			p.add(checkShowCreatedColumn);
-			p.add(checkShowModifiedColumn);
-			p.add(checkShowProductColumn);
-			p.add(checkShowArtistsColumn);
-			p.add(checkShowInstrumentFileColumn);
-			p.add(checkShowInstrumentNrColumn);
-			p.add(checkShowKeywordsColumn);
-			String s = i18n.getLabel("InstrumentsDbFrame.columns");
-			p.setBorder(BorderFactory.createTitledBorder(s));
-		
-			setMainPane(p);
-		}
-		
-		public void
-		itemStateChanged(ItemEvent e) {
-			mainPane.getInstrumentsTable().saveColumnWidths();
-			
-			InstrumentsDbTableModel m = mainPane.instrumentsTable.getModel();
-			
-			Object source = e.getItemSelectable();
-			if(source == checkShowSizeColumn) {
-				m.setShowSizeColumn(checkShowSizeColumn.isSelected());
-			} else if(source == checkShowFormatFamilyColumn) {
-				boolean b = checkShowFormatFamilyColumn.isSelected();
-				m.setShowFormatFamilyColumn(b);
-			} else if(source == checkShowFormatVersionColumn) {
-				boolean b = checkShowFormatVersionColumn.isSelected();
-				m.setShowFormatVersionColumn(b);
-			} else if(source == checkShowIsDrumColumn) {
-				m.setShowIsDrumColumn(checkShowIsDrumColumn.isSelected());
-			} else if(source == checkShowCreatedColumn) {
-				m.setShowCreatedColumn(checkShowCreatedColumn.isSelected());
-			} else if(source == checkShowModifiedColumn) {
-				m.setShowModifiedColumn(checkShowModifiedColumn.isSelected());
-			} else if(source == checkShowProductColumn) {
-				m.setShowProductColumn(checkShowProductColumn.isSelected());
-			} else if(source == checkShowArtistsColumn) {
-				m.setShowArtistsColumn(checkShowArtistsColumn.isSelected());
-			} else if(source == checkShowInstrumentFileColumn) {
-				boolean b = checkShowInstrumentFileColumn.isSelected();
-				m.setShowInstrumentFileColumn(b);
-			} else if(source == checkShowInstrumentNrColumn) {
-				boolean b = checkShowInstrumentNrColumn.isSelected();
-				m.setShowInstrumentNrColumn(b);
-			} else if(source == checkShowKeywordsColumn) {
-				m.setShowKeywordsColumn(checkShowKeywordsColumn.isSelected());
-			}
-			
-			mainPane.getInstrumentsTable().loadColumnWidths();
-			mainPane.getInstrumentsTable().getRowSorter().toggleSortOrder(0);
+			super(InstrumentsDbFrame.this, mainPane.instrumentsTable);
 		}
 	}
 }

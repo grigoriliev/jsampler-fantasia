@@ -877,7 +877,7 @@ public class Channel extends org.jsampler.view.JSChannel {
 	
 	private void
 	loadInstrument() {
-		JSInstrumentChooser dlg = new JSInstrumentChooser(CC.getMainFrame());
+		JSInstrumentChooser dlg = ClassicUtils.createInstrumentChooser(CC.getMainFrame());
 		dlg.setVisible(true);
 		
 		if(dlg.isCancelled()) return;

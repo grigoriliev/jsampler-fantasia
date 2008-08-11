@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -30,15 +30,20 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import java.util.Comparator;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JViewport;
+import javax.swing.RowSorter.SortKey;
+import javax.swing.SortOrder;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.RowSorterEvent;
+import javax.swing.event.RowSorterListener;
 import javax.swing.event.TableColumnModelEvent;
 import javax.swing.event.TableColumnModelListener;
 
@@ -56,6 +61,8 @@ import org.linuxsampler.lscp.DbInstrumentInfo;
 import org.linuxsampler.lscp.event.InstrumentsDbAdapter;
 import org.linuxsampler.lscp.event.InstrumentsDbEvent;
 
+import static javax.swing.event.RowSorterEvent.Type.SORT_ORDER_CHANGED;
+
 
 /**
  *
@@ -72,57 +79,61 @@ public abstract class AbstractInstrumentsDbTable extends JTable {
 	
 	private InstrumentsDbTableView view = null;
 	
+	private final String tablePrefix;
+	
 	/**
 	 * Creates a new instance of <code>AbstractInstrumentsDbTable</code>
 	 */
-	public AbstractInstrumentsDbTable() {
-		this(new InstrumentsDbTableModel());
+	public
+	AbstractInstrumentsDbTable() {
+		this("");
+	}
+	
+	/**
+	 * Creates a new instance of <code>AbstractInstrumentsDbTable</code>
+	 * @param tablePrefix Used to create unique property names for storing
+	 * the column preferences for different tables e.g. for DbInstrumentChooser,
+	 * InstrumentsDbFrame.
+	 */
+	public
+	AbstractInstrumentsDbTable(String tablePrefix) {
+		this(new InstrumentsDbTableModel(), tablePrefix);
 	}
 	
 	/**
 	 * Creates a new instance of <code>AbstractInstrumentsDbTable</code>
 	 */
-	public AbstractInstrumentsDbTable(InstrumentsDbTableModel model) {
+	public AbstractInstrumentsDbTable(InstrumentsDbTableModel model, String tablePrefix) {
 		super(model);
 		setView(CC.getViewConfig().getInstrumentsDbTableView());
 		
-		String s;
-		InstrumentsDbTableModel m = getModel();
-		
-		s = "DbInstrumentsTable.ShowSizeColumn";
-		m.setShowSizeColumn(preferences().getBoolProperty(s));
-		s = "DbInstrumentsTable.ShowFormatFamilyColumn";
-		m.setShowFormatFamilyColumn(preferences().getBoolProperty(s));
-		s = "DbInstrumentsTable.ShowFormatVersionColumn";
-		m.setShowFormatVersionColumn(preferences().getBoolProperty(s));
-		s = "DbInstrumentsTable.ShowIsDrumColumn";
-		m.setShowIsDrumColumn(preferences().getBoolProperty(s));
-		s = "DbInstrumentsTable.ShowCreatedColumn";
-		m.setShowCreatedColumn(preferences().getBoolProperty(s));
-		s = "DbInstrumentsTable.ShowModifiedColumn";
-		m.setShowModifiedColumn(preferences().getBoolProperty(s));
-		s = "DbInstrumentsTable.ShowProductColumn";
-		m.setShowProductColumn(preferences().getBoolProperty(s));
-		s = "DbInstrumentsTable.ShowArtistsColumn";
-		m.setShowArtistsColumn(preferences().getBoolProperty(s));
-		s = "DbInstrumentsTable.ShowInstrumentFileColumn";
-		m.setShowInstrumentFileColumn(preferences().getBoolProperty(s));
-		s = "DbInstrumentsTable.ShowInstrumentNrColumn";
-		m.setShowInstrumentNrColumn(preferences().getBoolProperty(s));
-		s = "DbInstrumentsTable.ShowKeywordsColumn";
-		m.setShowKeywordsColumn(preferences().getBoolProperty(s));
+		this.tablePrefix = tablePrefix;
+		loadColumnsVisibleState();
+		loadColumnWidths();
 		
 		setAutoResizeMode(AUTO_RESIZE_OFF);
 		
 		rowSorter = new InstrumentsDbTableRowSorter(getModel());
 		setRowSorter(rowSorter);
 		
+		loadSortOrder();
+		
+		RowSorterListener l = new RowSorterListener() {
+			public void
+			sorterChanged(RowSorterEvent e) {
+				if(e.getType() != SORT_ORDER_CHANGED) return;
+				rowSorterChanged();
+			}
+		};
+		
+		getRowSorter().addRowSorterListener(l);
+		
 		putClientProperty("JTable.autoStartsEdit", false);
 		
 		nameEditor = new DefaultCellEditor(tfEditor);
 		nameEditor.setClickCountToStart(5);
 		
-		if(m.getShowDummyColumn()) {
+		if( getModel().getShowDummyColumn()) {
 			TableColumn dummy;
 			dummy = getColumnModel().getColumn(getModel().getDummyColumnIndex());
 			dummy.setPreferredWidth(10);
@@ -282,7 +293,7 @@ public abstract class AbstractInstrumentsDbTable extends JTable {
 		
 	public void
 	loadColumnWidths() {
-		loadColumnWidths("");
+		loadColumnWidths(tablePrefix);
 	}
 		
 	public void
@@ -361,7 +372,7 @@ public abstract class AbstractInstrumentsDbTable extends JTable {
 	
 	public void
 	saveColumnWidths() {
-		saveColumnWidths("");
+		saveColumnWidths(tablePrefix);
 	}
 	
 	public void
@@ -424,31 +435,102 @@ public abstract class AbstractInstrumentsDbTable extends JTable {
 	}
 	
 	public void
-	saveColumnsVisibleState() {
+	loadColumnsVisibleState() {
+		loadColumnsVisibleState(tablePrefix);
+	}
+	
+	public void
+	loadColumnsVisibleState(String prefix) {
+		String s;
 		InstrumentsDbTableModel m = getModel();
 		
-		String s = "DbInstrumentsTable.ShowSizeColumn";
+		s = prefix + "DbInstrumentsTable.ShowSizeColumn";
+		m.setShowSizeColumn(preferences().getBoolProperty(s));
+		s = prefix + "DbInstrumentsTable.ShowFormatFamilyColumn";
+		m.setShowFormatFamilyColumn(preferences().getBoolProperty(s));
+		s = prefix + "DbInstrumentsTable.ShowFormatVersionColumn";
+		m.setShowFormatVersionColumn(preferences().getBoolProperty(s));
+		s = prefix + "DbInstrumentsTable.ShowIsDrumColumn";
+		m.setShowIsDrumColumn(preferences().getBoolProperty(s));
+		s = prefix + "DbInstrumentsTable.ShowCreatedColumn";
+		m.setShowCreatedColumn(preferences().getBoolProperty(s));
+		s = prefix + "DbInstrumentsTable.ShowModifiedColumn";
+		m.setShowModifiedColumn(preferences().getBoolProperty(s));
+		s = prefix + "DbInstrumentsTable.ShowProductColumn";
+		m.setShowProductColumn(preferences().getBoolProperty(s));
+		s = prefix + "DbInstrumentsTable.ShowArtistsColumn";
+		m.setShowArtistsColumn(preferences().getBoolProperty(s));
+		s = prefix + "DbInstrumentsTable.ShowInstrumentFileColumn";
+		m.setShowInstrumentFileColumn(preferences().getBoolProperty(s));
+		s = prefix + "DbInstrumentsTable.ShowInstrumentNrColumn";
+		m.setShowInstrumentNrColumn(preferences().getBoolProperty(s));
+		s = prefix + "DbInstrumentsTable.ShowKeywordsColumn";
+		m.setShowKeywordsColumn(preferences().getBoolProperty(s));
+	}
+	
+	public void
+	saveColumnsVisibleState() {
+		saveColumnsVisibleState(tablePrefix);
+	}
+	
+	public void
+	saveColumnsVisibleState(String prefix) {
+		InstrumentsDbTableModel m = getModel();
+		
+		String s = prefix + "DbInstrumentsTable.ShowSizeColumn";
 		preferences().setBoolProperty(s, m.getShowSizeColumn());
-		s = "DbInstrumentsTable.ShowFormatFamilyColumn";
+		s = prefix + "DbInstrumentsTable.ShowFormatFamilyColumn";
 		preferences().setBoolProperty(s, m.getShowFormatFamilyColumn());
-		s = "DbInstrumentsTable.ShowFormatVersionColumn";
+		s = prefix + "DbInstrumentsTable.ShowFormatVersionColumn";
 		preferences().setBoolProperty(s, m.getShowFormatVersionColumn());
-		s = "DbInstrumentsTable.ShowIsDrumColumn";
+		s = prefix + "DbInstrumentsTable.ShowIsDrumColumn";
 		preferences().setBoolProperty(s, m.getShowIsDrumColumn());
-		s = "DbInstrumentsTable.ShowCreatedColumn";
+		s = prefix + "DbInstrumentsTable.ShowCreatedColumn";
 		preferences().setBoolProperty(s, m.getShowCreatedColumn());
-		s = "DbInstrumentsTable.ShowModifiedColumn";
+		s = prefix + "DbInstrumentsTable.ShowModifiedColumn";
 		preferences().setBoolProperty(s, m.getShowModifiedColumn());
-		s = "DbInstrumentsTable.ShowProductColumn";
+		s = prefix + "DbInstrumentsTable.ShowProductColumn";
 		preferences().setBoolProperty(s, m.getShowProductColumn());
-		s = "DbInstrumentsTable.ShowArtistsColumn";
+		s = prefix + "DbInstrumentsTable.ShowArtistsColumn";
 		preferences().setBoolProperty(s, m.getShowArtistsColumn());
-		s = "DbInstrumentsTable.ShowInstrumentFileColumn";
+		s = prefix + "DbInstrumentsTable.ShowInstrumentFileColumn";
 		preferences().setBoolProperty(s, m.getShowInstrumentFileColumn());
-		s = "DbInstrumentsTable.ShowInstrumentNrColumn";
+		s = prefix + "DbInstrumentsTable.ShowInstrumentNrColumn";
 		preferences().setBoolProperty(s, m.getShowInstrumentNrColumn());
-		s = "DbInstrumentsTable.ShowKeywordsColumn";
+		s = prefix + "DbInstrumentsTable.ShowKeywordsColumn";
 		preferences().setBoolProperty(s, m.getShowKeywordsColumn());
+	}
+		
+	public void
+	loadSortOrder() {
+		loadSortOrder(tablePrefix);
+	}
+		
+	public void
+	loadSortOrder(String prefix) {
+		int i = preferences().getIntProperty(tablePrefix + "sortOrder");
+		boolean descending = i < 0;
+		if(i < 0) i *= -1;
+		i--;
+		
+		if(i < 0 || i >= getModel().getColumnCount()) {
+			getRowSorter().toggleSortOrder(0);
+			CC.getLogger().warning("Unknown table column: " + i);
+		} else {
+			getRowSorter().toggleSortOrder(i);
+			if(descending) getRowSorter().toggleSortOrder(i);
+		}
+	}
+	
+	private void
+	rowSorterChanged() {
+		List<? extends SortKey> list = getRowSorter().getSortKeys();
+		if(list.isEmpty()) return;
+		SortKey k = list.get(0);
+		int i = k.getColumn() + 1;
+		if(k.getSortOrder() == SortOrder.UNSORTED) return;
+		if(k.getSortOrder() == SortOrder.DESCENDING) i *= -1;
+		preferences().setIntProperty(tablePrefix + "sortOrder", i);
 	}
 	
 	/*public void

@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -76,27 +76,13 @@ public class HF {
 	
 	/**
 	 * Shows a dialog with the specified error message.
-	 * @param frame The parent <code>Frame</code> for the dialog.
+	 * @param parentComponent determines the Frame in which the dialog is displayed
 	 * @param msg The error message to be shown.
 	 */
 	public static void
-	showErrorMessage(String msg, Frame frame) {
+	showErrorMessage(String msg, Component parentComponent) {
 		JOptionPane.showMessageDialog (
-			frame, msg,
-			i18n.getError("error"),
-			JOptionPane.ERROR_MESSAGE
-		);
-	}
-	
-	/**
-	 * Shows a dialog with the specified error message.
-	 * @param dlg The parent <code>Dialog</code> from which the dialog is displayed.
-	 * @param msg The error message to be shown.
-	 */
-	public static void
-	showErrorMessage(String msg, Dialog dlg) {
-		JOptionPane.showMessageDialog (
-			dlg, msg,
+			parentComponent, msg,
 			i18n.getError("error"),
 			JOptionPane.ERROR_MESSAGE
 		);

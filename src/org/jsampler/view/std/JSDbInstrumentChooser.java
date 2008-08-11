@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -22,18 +22,24 @@
 
 package org.jsampler.view.std;
 
+import java.awt.BorderLayout;
 import java.awt.Dialog;
 import java.awt.Frame;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.Action;
 import javax.swing.AbstractAction;
+import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 
@@ -58,8 +64,14 @@ import static org.jsampler.view.std.StdI18n.i18n;
  * @author Grigor Iliev
  */
 public class JSDbInstrumentChooser extends OkCancelDialog implements ListSelectionListener {
-	protected JSInstrumentsDbTree instrumentsDbTree;
-	protected JSInstrumentsDbTable instrumentsDbTable;
+	protected JSInstrumentsDbTree instrumentsDbTree =
+		createInstrumentsDbTree(CC.getInstrumentsDbTreeModel());
+	
+	protected JSInstrumentsDbTable instrumentsDbTable =
+		new JSInstrumentsDbTable(instrumentsDbTree, "DbInstrumentChooser.");
+	
+	protected final ToolBar toolBar = new ToolBar();
+	
 	
 	/**
 	 * Creates a new instance of <code>JSDbInstrumentChooser</code>
@@ -80,13 +92,10 @@ public class JSDbInstrumentChooser extends OkCancelDialog implements ListSelecti
 	private void
 	initDbInstrumentChooser() {
 		btnOk.setEnabled(false);
-		instrumentsDbTree = new JSInstrumentsDbTree(CC.getInstrumentsDbTreeModel());
 		JScrollPane sp = new JScrollPane(instrumentsDbTree);
 		
-		instrumentsDbTable = new JSInstrumentsDbTable(instrumentsDbTree);
 		instrumentsDbTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		instrumentsDbTable.getSelectionModel().addListSelectionListener(this);
-		instrumentsDbTable.loadColumnWidths();
 		JScrollPane sp2 = new JScrollPane(instrumentsDbTable);
 		
 		JSplitPane splitPane = new JSplitPane (
@@ -99,7 +108,12 @@ public class JSDbInstrumentChooser extends OkCancelDialog implements ListSelecti
 		splitPane.setDividerSize(3);
 		splitPane.setDividerLocation(200);
 		
-		setMainPane(splitPane);
+		JPanel p = new JPanel();
+		p.setLayout(new BorderLayout());
+		p.add(new ToolBar(), BorderLayout.NORTH);
+		p.add(splitPane);
+		
+		setMainPane(p);
 		
 		instrumentsDbTable.addMouseListener(new MouseAdapter() {
 			public void
@@ -113,6 +127,9 @@ public class JSDbInstrumentChooser extends OkCancelDialog implements ListSelecti
 		});
 		
 		installKeyboardListeners();
+		
+		setMinimumSize(getPreferredSize());
+		setResizable(true);
 	}
 	
 	private void
@@ -122,7 +139,7 @@ public class JSDbInstrumentChooser extends OkCancelDialog implements ListSelecti
 			"goUp"
 		);
 		
-		getRootPane().getActionMap().put ("goUp", new GoUp());
+		getRootPane().getActionMap().put ("goUp", instrumentsDbTree.actionGoUp);
 		
 		instrumentsDbTable.getInputMap().put (
 			KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
@@ -146,6 +163,9 @@ public class JSDbInstrumentChooser extends OkCancelDialog implements ListSelecti
 			}
 		});
 	}
+	
+	protected JSInstrumentsDbTree
+	createInstrumentsDbTree(InstrumentsDbTreeModel m) { return new JSInstrumentsDbTree(m); }
 	
 	public String
 	getSelectedInstrument() {
@@ -173,6 +193,10 @@ public class JSDbInstrumentChooser extends OkCancelDialog implements ListSelecti
 	protected void
 	onOk() {
 		if(!btnOk.isEnabled()) return;
+		
+		instrumentsDbTable.saveColumnsVisibleState();
+		instrumentsDbTable.saveColumnWidths();
+		
 		setCancelled(false);
 		setVisible(false);
 	}
@@ -186,15 +210,46 @@ public class JSDbInstrumentChooser extends OkCancelDialog implements ListSelecti
 		btnOk.setEnabled(b);
 	}
 	
-	private class GoUp extends AbstractAction {
-		GoUp() { }
+	protected JButton
+	createToolbarButton(Action a) { return new JButton(a); }
+	
+	class ToolBar extends JToolBar {
+		protected final JButton btnGoUp = createToolbarButton(instrumentsDbTree.actionGoUp);
+		protected final JButton btnGoBack = createToolbarButton(instrumentsDbTree.actionGoBack);
+		protected final JButton btnGoForward = createToolbarButton(instrumentsDbTree.actionGoForward);
+		protected final JButton btnReload = createToolbarButton(instrumentsDbTable.reloadAction);
+		protected final JButton btnPreferences = createToolbarButton(null);
 		
-		public void
-		actionPerformed(ActionEvent e) {
-			DbDirectoryTreeNode node = instrumentsDbTree.getSelectedDirectoryNode();
-			if(node == null) return;
-			if(node.getParent() == null) return;
-			instrumentsDbTree.setSelectedDirectoryNode(node.getParent());
+		public ToolBar() {
+			super("");
+			setFloatable(false);
+			
+			add(btnGoBack);
+			add(btnGoForward);
+			add(btnGoUp);
+			
+			javax.swing.Icon i = CC.getViewConfig().getBasicIconSet().getReload16Icon();
+			instrumentsDbTable.reloadAction.putValue(Action.SMALL_ICON, i);
+			add(btnReload);
+			
+			addSeparator();
+			
+			i = CC.getViewConfig().getBasicIconSet().getPreferences16Icon();
+			btnPreferences.setIcon(i);
+			add(btnPreferences);
+			
+			btnPreferences.addActionListener(new ActionListener() {
+				public void
+				actionPerformed(ActionEvent e) {
+					new PreferencesDlg().setVisible(true);
+				}
+			});
+		}
+	}
+	
+	class PreferencesDlg extends JSInstrumentsDbColumnPreferencesDlg {
+		PreferencesDlg() {
+			super(JSDbInstrumentChooser.this, instrumentsDbTable);
 		}
 	}
 }

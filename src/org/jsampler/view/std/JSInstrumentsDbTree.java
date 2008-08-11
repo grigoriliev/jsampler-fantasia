@@ -31,6 +31,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
@@ -38,8 +39,18 @@ import javax.swing.JPopupMenu;
 import javax.swing.JTree;
 import javax.swing.KeyStroke;
 
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeSelectionModel;
+
+import net.sf.juife.DefaultNavigationHistoryModel;
+
+import org.jsampler.CC;
+import org.jsampler.HF;
 
 import org.jsampler.view.DbDirectoryTreeNode;
 import org.jsampler.view.InstrumentsDbTreeModel;
@@ -51,6 +62,12 @@ import static org.jsampler.view.std.StdI18n.i18n;
  * @author Grigor Iliev
  */
 public class JSInstrumentsDbTree extends org.jsampler.view.AbstractInstrumentsDbTree {
+	public final AbstractAction actionGoUp = new GoUp();
+	public final AbstractAction actionGoBack = new GoBack();
+	public final AbstractAction actionGoForward = new GoForward();
+	
+	private final NavigationHistoryModel navigationHistoryModel = new NavigationHistoryModel();
+	
 	
 	/**
 	 * Creates a new instance of <code>JSInstrumentsDbTree</code>.
@@ -76,6 +93,24 @@ public class JSInstrumentsDbTree extends org.jsampler.view.AbstractInstrumentsDb
 		ContextMenu contextMenu = new ContextMenu();
 		//addMouseListener(contextMenu);
 		installKeyboardListeners();
+		
+		CC.addInstrumentsDbChangeListener(new ChangeListener() {
+			public void
+			stateChanged(ChangeEvent e) {
+				setModel(CC.getInstrumentsDbTreeModel());
+				
+				CC.scheduleInTaskQueue(new Runnable() {
+					public void
+					run() {
+						setSelectedDirectory("/");
+						navigationHistoryModel.clearHistory();
+					}
+				});
+			}
+		});
+		
+		addTreeSelectionListener((GoUp)actionGoUp);
+		addTreeSelectionListener(navigationHistoryModel);
 	}
 	
 	private void
@@ -102,6 +137,132 @@ public class JSInstrumentsDbTree extends org.jsampler.view.AbstractInstrumentsDb
 		getInputMap(JComponent.WHEN_FOCUSED).put (
 			KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_MASK), "none"
 		);
+	}
+	
+	public NavigationHistoryModel
+	getNavigationHistoryModel() { return navigationHistoryModel; }
+	
+	private class NavigationHistoryModel
+		extends DefaultNavigationHistoryModel<DbDirectoryTreeNode>
+		implements TreeSelectionListener, ActionListener {
+		
+		private boolean lock = false;
+		
+		NavigationHistoryModel() {
+			addActionListener(this);
+		}
+		
+		public DbDirectoryTreeNode
+		goBack() {
+			lock = true;
+			DbDirectoryTreeNode node = selectDirectory(super.goBack());
+			lock = false;
+			return node;
+		}
+		
+		public DbDirectoryTreeNode
+		goForward() {
+			lock = true;
+			DbDirectoryTreeNode node = selectDirectory(super.goForward());
+			lock = false;
+			return node;
+		}
+		
+		private DbDirectoryTreeNode
+		selectDirectory(DbDirectoryTreeNode node) {
+			if(node == null) return null;
+			
+			String path = node.getInfo().getDirectoryPath();
+			if(CC.getInstrumentsDbTreeModel().getNodeByPath(path) != null) {
+				setSelectedDirectory(path);
+				return node;
+			}
+			
+			removePage();
+			fireActionPerformed();
+			String s = i18n.getMessage("JSInstrumentsDbTree.unknownDirectory!", path);
+			HF.showErrorMessage(s, JSInstrumentsDbTree.this);
+			return node;
+		}
+		
+		public void
+		addPage(DbDirectoryTreeNode node) {
+			if(lock) return;
+			if(node == null) return;
+			super.addPage(node);
+		}
+		
+		public void
+		valueChanged(TreeSelectionEvent e) {
+			addPage(getSelectedDirectoryNode());
+		}
+		
+		public void
+		actionPerformed(ActionEvent e) {
+			actionGoBack.setEnabled(hasBack());
+			actionGoForward.setEnabled(hasForward());
+		}
+	}
+	
+	private class GoUp extends AbstractAction implements TreeSelectionListener {
+		GoUp() {
+			super(i18n.getMenuLabel("instrumentsdb.go.up"));
+			
+			String s = i18n.getMenuLabel("instrumentsdb.go.up.tt");
+			putValue(SHORT_DESCRIPTION, s);
+			putValue(Action.SMALL_ICON, CC.getViewConfig().getBasicIconSet().getUp16Icon());
+			setEnabled(false);
+		}
+		
+		public void
+		actionPerformed(ActionEvent e) {
+			DbDirectoryTreeNode node = getSelectedDirectoryNode();
+			if(node == null) return;
+			setSelectedDirectoryNode(node.getParent());
+		}
+		
+		public void
+		valueChanged(TreeSelectionEvent e) {
+			DbDirectoryTreeNode n = getSelectedDirectoryNode();
+			if(n == null) {
+				setEnabled(false);
+				return;
+			}
+			
+			setEnabled(n.getParent() != null);
+		}
+	}
+	
+	private class GoBack extends AbstractAction {
+		GoBack() {
+			super(i18n.getMenuLabel("instrumentsdb.go.back"));
+			
+			String s = i18n.getMenuLabel("instrumentsdb.go.back.tt");
+			putValue(SHORT_DESCRIPTION, s);
+			putValue(Action.SMALL_ICON, CC.getViewConfig().getBasicIconSet().getBack16Icon());
+			setEnabled(false);
+		}
+		
+		public void
+		actionPerformed(ActionEvent e) {
+			navigationHistoryModel.goBack();
+		}
+	}
+	
+	private class GoForward extends AbstractAction {
+		GoForward() {
+			super(i18n.getMenuLabel("instrumentsdb.go.forward"));
+			
+			String s = i18n.getMenuLabel("instrumentsdb.go.forward.tt");
+			putValue(SHORT_DESCRIPTION, s);
+			putValue(Action.SMALL_ICON, CC.getViewConfig().getBasicIconSet().getForward16Icon());
+			setEnabled(false);
+		}
+		
+		public void
+		actionPerformed(ActionEvent e) {
+			navigationHistoryModel.goForward();
+		}
 	}
 	
 	private class CellRenderer extends DefaultTreeCellRenderer {

@@ -79,6 +79,9 @@ public class RightSidePane extends PixmapPane {
 		preferences().addPropertyChangeListener(s, getHandler());
 	}
 	
+	public DevicesPane
+	getDevicesPane() { return devicesPane; }
+	
 	private void
 	setTabbedView(boolean b) {
 		remove(spDevicesPane);

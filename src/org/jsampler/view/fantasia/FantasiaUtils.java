@@ -24,11 +24,13 @@ package org.jsampler.view.fantasia;
 
 import java.awt.Container;
 import java.awt.Cursor;
+import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -41,7 +43,11 @@ import javax.swing.plaf.basic.BasicButtonUI;
 import javax.swing.plaf.basic.BasicLabelUI;
 import javax.swing.plaf.basic.ComboPopup;
 
+import org.jsampler.view.InstrumentsDbTreeModel;
+
+import org.jsampler.view.std.JSDbInstrumentChooser;
 import org.jsampler.view.std.JSInstrumentChooser;
+import org.jsampler.view.std.JSInstrumentsDbTree;
 
 import org.jvnet.lafwidget.animation.FadeConfigurationManager;
 import org.jvnet.lafwidget.animation.FadeKind;
@@ -83,6 +89,25 @@ public class FantasiaUtils {
 		
 		protected JComboBox
 		createComboBox() { return createEnhancedComboBox(); }
+	
+		protected JSDbInstrumentChooser
+		createDbInstrumentChooser(Dialog owner) {
+			return new DbInstrumentChooser(owner);
+		}
+	}
+	
+	private static class DbInstrumentChooser extends JSDbInstrumentChooser {
+		DbInstrumentChooser(Dialog owner) {
+			super(owner);
+		}
+		
+		protected JButton
+		createToolbarButton(Action a) { return new ToolbarButton(a); }
+		
+		protected JSInstrumentsDbTree
+		createInstrumentsDbTree(InstrumentsDbTreeModel m) {
+			return new FantasiaInstrumentsDbTree(m);
+		}
 	}
 	
 	private static class ScreenLabel extends JLabel {

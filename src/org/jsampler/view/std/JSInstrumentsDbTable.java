@@ -119,7 +119,21 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 	/**
 	 * Creates a new instance of <code>JSInstrumentsDbTable</code>
 	 */
-	public JSInstrumentsDbTable(JSInstrumentsDbTree tree) {
+	public
+	JSInstrumentsDbTable(JSInstrumentsDbTree tree) {
+		this(tree, "");
+	}
+	
+	/**
+	 * Creates a new instance of <code>JSInstrumentsDbTable</code>
+	 * @param columnPrefix Used to create unique property names for storing
+	 * the column preferences for different tables e.g. for DbInstrumentChooser,
+	 * InstrumentsDbFrame.
+	 */
+	public
+	JSInstrumentsDbTable(JSInstrumentsDbTree tree, String columnPrefix) {
+		super(columnPrefix);
+		
 		instrumentsDbTree = tree;
 		
 		/*for(int i = 0; i < getColumnModel().getColumnCount(); i++) {

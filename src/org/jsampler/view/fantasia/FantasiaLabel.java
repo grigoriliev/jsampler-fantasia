@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -29,6 +29,7 @@ import java.awt.Insets;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 
+import javax.swing.plaf.basic.BasicLabelUI;
 
 /**
  *
@@ -69,6 +70,9 @@ public class FantasiaLabel extends JLabel {
 		PixmapPane.paintComponent(this, g, Res.gfxTextField, pixmapInsets);
 		super.paintComponent(g);
 	}
+		
+	public void
+	updateUI() { setUI(new BasicLabelUI()); }
 	
 	public java.awt.Color
 	getForeground() { return textColor; }

@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -64,6 +64,9 @@ public class Res {
 	protected final static ImageIcon iconBack16
 		= new ImageIcon(Res.class.getResource("res/icons/Back16.gif"));
 	
+	protected final static ImageIcon iconForward16
+		= new ImageIcon(Res.class.getResource("res/icons/Forward16.gif"));
+	
 	protected final static ImageIcon iconAudioProps16
 		= new ImageIcon(Res.class.getResource("res/icons/Import16.gif"));
 	
@@ -84,6 +87,12 @@ public class Res {
 	
 	protected final static ImageIcon iconDb16
 		= new ImageIcon(Res.class.getResource("res/icons/collection16.png"));
+	
+	protected final static ImageIcon iconReload16
+		= new ImageIcon(Res.class.getResource("res/icons/reload16.png"));
+	
+	protected final static ImageIcon iconPreferences16
+		= new ImageIcon(Res.class.getResource("res/icons/preferences16.png"));
 	
 	protected final static ImageIcon iconTabNew22
 		= new ImageIcon(Res.class.getResource("res/icons/tab_new22.png"));

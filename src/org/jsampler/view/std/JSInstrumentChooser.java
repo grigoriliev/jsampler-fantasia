@@ -225,6 +225,9 @@ public class JSInstrumentChooser extends OkCancelDialog {
 		}
 		
 		updateState();
+		
+		setMinimumSize(getPreferredSize());
+		setResizable(true);
 	}
 	
 	private JPanel
@@ -400,6 +403,11 @@ public class JSInstrumentChooser extends OkCancelDialog {
 		return filePane;
 	}
 	
+	protected JSDbInstrumentChooser
+	createDbInstrumentChooser(java.awt.Dialog owner) {
+		return new JSDbInstrumentChooser(owner);
+	}
+	
 	protected void
 	onOk() {
 		if(!btnOk.isEnabled()) return;
@@ -489,7 +497,7 @@ public class JSInstrumentChooser extends OkCancelDialog {
 	onBrowseDb() {
 		if(!rbSelectFromDb.isSelected()) rbSelectFromDb.doClick(0);
 		JSDbInstrumentChooser dlg;
-		dlg = new JSDbInstrumentChooser(JSInstrumentChooser.this);
+		dlg = createDbInstrumentChooser(JSInstrumentChooser.this);
 		Object o = cbDbInstrument.getSelectedItem();
 		if(o != null && o.toString().length() > 0) dlg.setSelectedInstrument(o.toString());
 		else {

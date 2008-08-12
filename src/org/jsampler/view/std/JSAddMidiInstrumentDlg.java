@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -101,7 +101,7 @@ public class JSAddMidiInstrumentDlg extends OkCancelDialog {
 	}
 	
 	private void
-	initAddMidiInstrumentDlg(MidiInstrumentMap map, Instrument instr) {
+	initAddMidiInstrumentDlg(final MidiInstrumentMap map, Instrument instr) {
 		this.map = map;
 		this.instr = instr;
 		
@@ -198,7 +198,12 @@ public class JSAddMidiInstrumentDlg extends OkCancelDialog {
 		tfName.getDocument().addDocumentListener(getHandler());
 		
 		setInstrumentName(instr.getName());
-		setMidiInstrumentEntry(map.getAvailableEntry());
+		
+		CC.scheduleInTaskQueue(new Runnable() {
+			public void
+			run() { setMidiInstrumentEntry(map.getAvailableEntry()); }
+		});
+		
 	}
 	
 	protected JSPrefs

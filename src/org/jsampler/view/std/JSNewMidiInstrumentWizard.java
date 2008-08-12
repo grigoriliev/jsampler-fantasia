@@ -890,6 +890,7 @@ class InstrumentMappingWizardPage extends WizardPage  {
 	mayFinish() {
 		((NewMidiInstrumentWizardModel)getWizardModel()).mapInstrument();
 		preferences().setIntProperty("lastUsedMidiBank", getMidiBank());
+		preferences().setIntProperty("lastUsedMidiProgram", getMidiProgram());
 		return true;
 	}
 	

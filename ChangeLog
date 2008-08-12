@@ -31,6 +31,8 @@ CVS HEAD
   * Instrument Chooser and Database Instrument Chooser dialogs
     are now resizable
 
+  * Reimplemented the MIDI bank/program assignment algorithm
+
   * Fantasia:
     - Major memory optimizations when too many sampler channels are present
     - Added option to show the Instruments Database on

@@ -278,6 +278,7 @@ public class JSAddMidiInstrumentDlg extends OkCancelDialog {
 		
 		btnOk.setEnabled(false);
 		preferences().setIntProperty("lastUsedMidiBank", getMidiBank());
+		preferences().setIntProperty("lastUsedMidiProgram", getMidiProgram());
 		
 		MidiInstrumentInfo instrInfo = new MidiInstrumentInfo();
 		instrInfo.setName(getInstrumentName());

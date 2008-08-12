@@ -212,52 +212,67 @@ public class MidiInstrumentMap {
 	 */
 	public MidiInstrumentEntry
 	getAvailableEntry() {
-		int i = CC.getViewConfig().preferences().getIntProperty("lastUsedMidiBank", 0);
-		int firstFreePgm = -1, bank = -1, tmpBank = -1, tmpPgm = -1;
+		int lb = CC.getViewConfig().preferences().getIntProperty("lastUsedMidiBank", 0);
+		int lp = CC.getViewConfig().preferences().getIntProperty("lastUsedMidiProgram", 0);
+		
+		MidiInstrumentEntry e = getAvailableEntry(lb, lp + 1);
+		if(e != null) return e;
+		
+		for(int i = lb; i <= 16129; i++) {
+			e = getAvailableEntry(i);
+			if(e != null) return e;
+		}
+		
+		for(int i = 0; i < lb; i++) {
+			e = getAvailableEntry(i);
+			if(e != null) return e;
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Gets a free entry.
+	 * @param bank The bank number in which to search for available entry.
+	 */
+	public MidiInstrumentEntry
+	getAvailableEntry(int bank) { return getAvailableEntry(bank, 0); }
+	
+	/**
+	 * Gets a free entry.
+	 * @param bank The bank number in which to search for available entry.
+	 * @param fromProgram the program number to start the search from.
+	 */
+	public MidiInstrumentEntry
+	getAvailableEntry(int bank, int fromProgram) {
+		if(fromProgram > 127) return null;
+		
+		Vector<MidiInstrument> instruments = new Vector<MidiInstrument>();
 		
 		for(MidiInstrument instr : instrMap.values()) {
 			int p = instr.getInfo().getMidiProgram();
 			int b = instr.getInfo().getMidiBank();
-			if(b < i) continue;
-			
-			if(firstFreePgm != -1) {
-				if(b > bank) {
-					if(tmpPgm < 127) {
-						return new MidiInstrumentEntry(bank, tmpPgm + 1);
-					} else {
-						return new MidiInstrumentEntry(bank, firstFreePgm);
-					}
-				}
-				
-				tmpPgm = p;
-			} else {
-				if(tmpBank != b) {
-					if(tmpBank != -1 && tmpPgm < 127) {
-						return new MidiInstrumentEntry(tmpBank, tmpPgm + 1);
-					}
-					tmpPgm = -1;
-					tmpBank = b;
-				}
-				
-				if(p - tmpPgm > 1) {
-					firstFreePgm = tmpPgm + 1;
-					bank = b;
-				}
-				tmpPgm = p;
-			}
+			if(b == bank && p >= fromProgram) instruments.add(instr);
+			if(b > bank) break;
 		}
 		
-		if(tmpBank == -1) return new MidiInstrumentEntry(i, 0);
-		
-		if(firstFreePgm != -1) {
-			if(tmpPgm < 127) return new MidiInstrumentEntry(bank, tmpPgm + 1);
-			else return new MidiInstrumentEntry(bank, firstFreePgm);
+		if(instruments.isEmpty()) {
+			if(fromProgram < 128) return new MidiInstrumentEntry(bank, fromProgram);
+			else return new MidiInstrumentEntry(bank, 127);
 		}
 		
-		if(tmpBank == 16129 && tmpPgm == 127) return null;
+		int prevPrg = instruments.get(0).getInfo().getMidiProgram();
+		if(fromProgram < prevPrg) return new MidiInstrumentEntry(bank, fromProgram);
 		
-		if(tmpPgm < 127) return new MidiInstrumentEntry(tmpBank, tmpPgm + 1);
-		else return new MidiInstrumentEntry(tmpBank + 1, 0);
+		for(int i = 1; i < instruments.size(); i++) {
+			int prg = instruments.get(i).getInfo().getMidiProgram();
+			if(prg - prevPrg > 1) return new MidiInstrumentEntry(bank, prevPrg + 1);
+			prevPrg = prg;
+		}
+		
+		if(prevPrg < 127)  return new MidiInstrumentEntry(bank, prevPrg + 1);
+		
+		return null;
 	}
 	
 	/**

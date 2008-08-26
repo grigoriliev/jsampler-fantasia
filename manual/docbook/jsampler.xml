@@ -499,8 +499,8 @@ cp ../juife-0.4a/lib/juife.jar lib/required/juife.jar</command></literallayout><
     are gone forever, so it is crucial to export the MIDI instrument maps
     before quiting your session to be able to load them again next time you
     start LinuxSampler. This can be done by choosing
-    <guimenu>Actions</guimenu> <guisubmenu>Export</guisubmenu>
-    <guimenuitem>MIDI Instrument Maps</guimenuitem>.</para>
+    <guimenu>Actions</guimenu>/<guimenu>Export</guimenu>/<guimenu>MIDI
+    Instrument Maps</guimenu>.</para>
 
     <section>
       <title>Managing MIDI Instrument Maps</title>
@@ -628,13 +628,14 @@ cp ../juife-0.4a/lib/juife.jar lib/required/juife.jar</command></literallayout><
       instruments to them.</para>
 
       <para>To create a new directory, select the directory, in which the new
-      directory should be created and choose <guimenu>Actions</guimenu>
-      <guimenuitem>Create Directory</guimenuitem>, or right-click a blank area
-      and choose <guimenuitem>Create Directory</guimenuitem>.</para>
+      directory should be created and choose
+      <guimenu>Actions</guimenu>/<guimenu>Create Directory</guimenu>, or
+      right-click a blank area and choose <guimenuitem>Create
+      Directory</guimenuitem>.</para>
 
       <para>To add instruments to specific instruments database directory, go
-      to that directory and select <guimenu>Actions</guimenu> <guisubmenu>Add
-      Instruments</guisubmenu> submenu, where you have two options - to scan a
+      to that directory and select <guimenu>Actions</guimenu>/<guimenu>Add
+      Instruments</guimenu> submenu, where you have two options - to scan a
       specific instrument file and add the instruments in that file to the
       instruments database or scan a file system directory for instrument
       files and add the instruments to the instruments database.</para>
@@ -645,27 +646,29 @@ cp ../juife-0.4a/lib/juife.jar lib/required/juife.jar</command></literallayout><
 
       <para>Basic commands:</para>
 
-      <para><command>Cut</command> - <guimenu>Edit</guimenu>
-      <guimenuitem>Cut</guimenuitem>, or right-click on a selected file or
-      directory and choose <guibutton>Cut,</guibutton> or Ctrl+X</para>
+      <para><command>Cut</command> -
+      <guimenu>Edit</guimenu>/<guimenu>Cut</guimenu>, or right-click on a
+      selected file or directory and choose <guibutton>Cut,</guibutton> or
+      Ctrl+X</para>
 
-      <para><command>Copy</command> - <guimenu>Edit</guimenu>
-      <guimenuitem>Copy</guimenuitem>, or right-click on a selected file or
-      directory and choose <guibutton>Copy,</guibutton> or Ctrl+C</para>
+      <para><command>Copy</command> -
+      <guimenu>Edit</guimenu>/<guimenu>Copy</guimenu>, or right-click on a
+      selected file or directory and choose <guibutton>Copy,</guibutton> or
+      Ctrl+C</para>
 
-      <para><command>Paste</command> - <guimenu>Edit</guimenu>
-      <guimenuitem>Paste</guimenuitem>, or right-click a blank area and choose
-      <guibutton>Paste,</guibutton> or Ctrl+V</para>
+      <para><command>Paste</command> -
+      <guimenu>Edit</guimenu>/<guimenu>Paste</guimenu>, or right-click a blank
+      area and choose <guibutton>Paste,</guibutton> or Ctrl+V</para>
 
-      <para><command>Rename</command> - <guimenu>Edit</guimenu>
-      <guimenuitem>Rename</guimenuitem>, or right-click on a selected file or
-      directory and choose <guibutton>Rename,</guibutton> or press
-      <command>F2</command></para>
+      <para><command>Rename</command> -
+      <guimenu>Edit</guimenu>/<guimenu>Rename</guimenu>, or right-click on a
+      selected file or directory and choose <guibutton>Rename,</guibutton> or
+      press <command>F2</command></para>
 
-      <para><command>Delete</command> - <guimenu>Actions</guimenu>
-      <guimenuitem>Delete</guimenuitem>, or right-click on a selected file or
-      directory and choose <guibutton>Delete,</guibutton> or press the
-      <command>Delete</command> key from the keyboard</para>
+      <para><command>Delete</command> -
+      <guimenu>Actions</guimenu>/<guimenu>Delete</guimenu>, or right-click on
+      a selected file or directory and choose <guibutton>Delete,</guibutton>
+      or press the <command>Delete</command> key from the keyboard</para>
 
       <para><tip>
           <para>This commands also work on a multiple selection.</para>
@@ -719,8 +722,8 @@ cp ../juife-0.4a/lib/juife.jar lib/required/juife.jar</command></literallayout><
     <section>
       <title>Finding Instruments</title>
 
-      <para>To start a search, choose <guimenu>Edit</guimenu>
-      <guimenuitem>Find</guimenuitem>, or Ctrl+F.</para>
+      <para>To start a search, choose
+      <guimenu>Edit</guimenu>/<guimenu>Find</guimenu>, or Ctrl+F.</para>
     </section>
   </chapter>
 </book>

@@ -484,8 +484,8 @@ cp ../juife-0.4a/lib/juife.jar lib/required/juife.jar</command></literallayout><
     </section>
   </chapter>
 
-  <chapter>
-    <title id="MIDI_INSTRUMENTS">MIDI Instruments</title>
+  <chapter id="MIDI_INSTRUMENTS">
+    <title>MIDI Instruments</title>
 
     <para>The sole purpose of the MIDI instrument mapping is to provide a way
     to change the loaded instrument on a specific sampler channel through the

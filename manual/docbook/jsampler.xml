@@ -621,8 +621,8 @@ cp ../juife-0.4a/lib/juife.jar lib/required/juife.jar</command></literallayout><
     <section>
       <title>Adding Instruments To The Instruments Database</title>
 
-      <para>Choose <guimenu>Window</guimenu> <guimenuitem>Instruments
-      Database</guimenuitem> to bring up the Instruments Database window, or
+      <para>Choose <guimenu>Window</guimenu>/<guimenu>Instruments
+      Database</guimenu> to bring up the Instruments Database window, or
       click the corresponding tool button. Initialy, the instruments database
       is empty, so you should manually create the desired directories and add
       instruments to them.</para>

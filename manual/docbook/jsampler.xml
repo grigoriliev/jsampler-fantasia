@@ -12,7 +12,7 @@
     </author>
 
     <copyright>
-      <year>2007</year>
+      <year>2008</year>
 
       <holder>Grigor Iliev &lt;grigor@grigoriliev.com&gt;</holder>
     </copyright>
@@ -22,7 +22,7 @@
       url="gfdl.html">GNU Free Documentation License</ulink>.</para>
     </legalnotice>
 
-    <pubdate>Updated: Sat, 8 December 2007</pubdate>
+    <pubdate>Updated: Tue, 26 August 2008</pubdate>
   </bookinfo>
 
   <chapter id="INTRODUCTION">
@@ -302,6 +302,13 @@ mkdirhier lib/required
 cp ../jlscp-0.5a/lib/jlscp.jar lib/required/jlscp.jar
 cp ../juife-0.4a/lib/juife.jar lib/required/juife.jar</command></literallayout></para>
 
+      <tip>
+        <para>In most cases it is sufficient just to copy the
+        <command>lib</command> directory from the last release, but first
+        check if there are some significant recent changes to those
+        libraries.</para>
+      </tip>
+
       <para>Then follow the steps in the next section.</para>
     </section>
 
@@ -386,7 +393,7 @@ cp ../juife-0.4a/lib/juife.jar lib/required/juife.jar</command></literallayout><
     <section id="MANAGING_ORCHESTRAS">
       <title>Managing Orchestras</title>
 
-      <para>Tool buttons:</para>
+      <para><guilabel>Manage Orchestras</guilabel> tool buttons:</para>
 
       <para><inlinegraphic fileref="images/new16.png" /> <guilabel>Create new
       orchestra</guilabel></para>
@@ -404,7 +411,7 @@ cp ../juife-0.4a/lib/juife.jar lib/required/juife.jar</command></literallayout><
 
       <para><graphic align="center" fileref="images/new-orchestra.png" />Then
       choose orchestra name and description and click
-      <guibutton>OK</guibutton> button. </para>
+      <guibutton>OK</guibutton> button.</para>
 
       <para>To remove an orchestra, select the orchestra and click the
       <guibutton>Remove selected orchestra</guibutton> button. To edit an
@@ -425,7 +432,7 @@ cp ../juife-0.4a/lib/juife.jar lib/required/juife.jar</command></literallayout><
     <section id="MANAGING_INSTRUMENTS">
       <title>Managing Instruments</title>
 
-      <para>Tool buttons:</para>
+      <para><guilabel>Managing Instruments</guilabel> tool buttons:</para>
 
       <para><inlinegraphic fileref="images/new16.png" /> <guilabel>Add new
       instrument</guilabel></para>
@@ -473,7 +480,247 @@ cp ../juife-0.4a/lib/juife.jar lib/required/juife.jar</command></literallayout><
       channel using the instrument chooser of the sampler channel - click
       <guilabel>Select instrument from orchestra</guilabel> radio button,
       choose orchestra and isntrument from the comboboxes and click
-      <guibutton>OK</guibutton> button.</para>
+      <guibutton>OK</guibutton> button</para>
+    </section>
+  </chapter>
+
+  <chapter>
+    <title id="MIDI_INSTRUMENTS">MIDI Instruments</title>
+
+    <para>The sole purpose of the MIDI instrument mapping is to provide a way
+    to change the loaded instrument on a specific sampler channel through the
+    MIDI keyboard by switching to different MIDI bank/program. To do that you
+    need at least one MIDI instrument map with MIDI instruments mapped for the
+    desired MIDI banks/programs and to assign that map to the sampler channels
+    which instruments should be switched using MIDI bank/program
+    changes.</para>
+
+    <para>Note that when stopping LinuxSampler all MIDI instrument mappings
+    are gone forever, so it is crucial to export the MIDI instrument maps
+    before quiting your session to be able to load them again next time you
+    start LinuxSampler. This can be done by choosing
+    <guimenu>Actions</guimenu> <guisubmenu>Export</guisubmenu>
+    <guimenuitem>MIDI Instrument Maps</guimenuitem>.</para>
+
+    <section>
+      <title>Managing MIDI Instrument Maps</title>
+
+      <para><guilabel>MIDI Instrument Maps</guilabel> tool buttons:</para>
+
+      <para><inlinegraphic fileref="images/new16.png" /> <guilabel>Add MIDI
+      instrument map</guilabel></para>
+
+      <para><inlinegraphic fileref="images/edit16.png" /> <guilabel>Edit
+      selected MIDI instrument map</guilabel></para>
+
+      <para><inlinegraphic fileref="images/delete16.png" /> <guilabel>Remove
+      selected MIDI instrument map</guilabel></para>
+
+      <para>To create a new MIDI instrument map, click the <guilabel>MIDI
+      Instruments</guilabel> tab in the Left-Side pane then click the
+      <guibutton>Add MIDI instrument map</guibutton> button.</para>
+
+      <para><graphic fileref="images/add-midi-map.png" /></para>
+
+      <para>Then choose map name and click <guibutton>OK</guibutton>
+      button.</para>
+
+      <para>To remove a map, select the map and click the <guibutton>Remove
+      selected MIDI instrument map</guibutton> button. To edit a map, select
+      the map and click the <guibutton>Edit selected MIDI instrument
+      map</guibutton> button, or just double-click the map to edit.</para>
+    </section>
+
+    <section>
+      <title>Managing MIDI Instruments</title>
+
+      <para><guilabel>Managing MIDI Instruments</guilabel> tool
+      buttons:</para>
+
+      <para><inlinegraphic fileref="images/new16.png" /> <guilabel>Add new
+      MIDI instrument</guilabel></para>
+
+      <para><inlinegraphic fileref="images/edit16.png" /> <guilabel>Edit
+      selected MIDI instrument</guilabel></para>
+
+      <para><inlinegraphic fileref="images/delete16.png" /> <guilabel>Remove
+      selected MIDI instrument or bank</guilabel></para>
+
+      <para>To map a MIDI instrument, first select the desired MIDI instrument
+      map from the combobox then click the <guilabel>Add new MIDI
+      instrument</guilabel> button:</para>
+
+      <para><graphic align="center"
+      fileref="images/map-midi-instrument.png" /><tip>
+          <para>The <link linkend="INSTRUMENTS_DB_ADD_TO_MAP">easiest way to
+          map a MIDI instrument</link> is from the <link
+          linkend="INSTRUMENTS_DATABASE">Instruments Database</link>.</para>
+        </tip>To remove a MIDI bank/instrument, select the MIDI
+      bank/instrument and click the <guibutton>Remove selected MIDI instrument
+      or bank</guibutton> button. To edit a MIDI instrument, select the MIDI
+      instrument and click the <guibutton>Edit selected MIDI
+      instrument</guibutton> button, or just double-click the MIDI instrument
+      to edit.</para>
+    </section>
+
+    <section>
+      <title>Assigning MIDI Instrument Map To Sampler Channel</title>
+
+      <para>To assign MIDI instrument map to specific sampler channel, click
+      the <guibutton>Options</guibutton> button to expand the channel options
+      pane then select the desired map from the <guilabel>MIDI Instrument
+      Map</guilabel> combobox:</para>
+
+      <para><graphic fileref="images/assign-midi-map.png" /></para>
+    </section>
+  </chapter>
+
+  <chapter id="INSTRUMENTS_DATABASE">
+    <title>Instruments Database</title>
+
+    <para>The communication between LinuxSampler and its front-ends is TCP/IP
+    based, which provides an option the sampler to be controlled from another
+    computer or device, and while instrument loading is a regular task in the
+    sampler, there should also be a convenient way to browse and load
+    instruments (located on the sampler box) from a front-end launched on a
+    remote host. This need is well covered by the <guilabel>Instruments
+    Database</guilabel>. However, this is not the only purpose of the
+    Instruments Database. It is a great tool that helps you to not get lost in
+    your instrument collection, providing you a flexible way to create your
+    own tree structure and to organize your instruments in more than one way,
+    without moving or altering the instrument files located all over your hard
+    drives. Another great feature is the search engine with enhanced search
+    capabilities providing you fast and easy way of finding instruments by
+    various criteria.</para>
+
+    <para>It is crucial to understand that, unlike <link
+    linkend="USING_ORCHESTRAS">Orchestras</link>, the Instruments Database is
+    handled by LinuxSampler, not by JSampler, and by default the database file
+    is located in <command>/var/lib/linuxsampler/instruments.db</command> on
+    the host where the back-end is started.</para>
+
+    <para>Note that you can have more than one instruments database and you
+    can specify which one to be used on LinuxSampler startup. To create a new
+    database file issue the following command:</para>
+
+    <para><command>linuxsampler --create-instruments-db
+    my_instruments.db</command></para>
+
+    <para>which will create a new database file called
+    <command>my_instruments.db</command> in the current directory.</para>
+
+    <para>To start LinuxSampler using the newly created instruments database
+    use the <command>--instruments-db-location</command> option:</para>
+
+    <para><command>linuxsampler --instruments-db-location
+    my_instruments.db</command></para>
+
+    <para>To backup the instruments database just copy the database
+    file.</para>
+
+    <section>
+      <title>Adding Instruments To The Instruments Database</title>
+
+      <para>Choose <guimenu>Window</guimenu> <guimenuitem>Instruments
+      Database</guimenuitem> to bring up the Instruments Database window, or
+      click the corresponding tool button. Initialy, the instruments database
+      is empty, so you should manually create the desired directories and add
+      instruments to them.</para>
+
+      <para>To create a new directory, select the directory, in which the new
+      directory should be created and choose <guimenu>Actions</guimenu>
+      <guimenuitem>Create Directory</guimenuitem>, or right-click a blank area
+      and choose <guimenuitem>Create Directory</guimenuitem>.</para>
+
+      <para>To add instruments to specific instruments database directory, go
+      to that directory and select <guimenu>Actions</guimenu> <guisubmenu>Add
+      Instruments</guisubmenu> submenu, where you have two options - to scan a
+      specific instrument file and add the instruments in that file to the
+      instruments database or scan a file system directory for instrument
+      files and add the instruments to the instruments database.</para>
+    </section>
+
+    <section>
+      <title>Manging Instruments And Directories</title>
+
+      <para>Basic commands:</para>
+
+      <para><command>Cut</command> - <guimenu>Edit</guimenu>
+      <guimenuitem>Cut</guimenuitem>, or right-click on a selected file or
+      directory and choose <guibutton>Cut,</guibutton> or Ctrl+X</para>
+
+      <para><command>Copy</command> - <guimenu>Edit</guimenu>
+      <guimenuitem>Copy</guimenuitem>, or right-click on a selected file or
+      directory and choose <guibutton>Copy,</guibutton> or Ctrl+C</para>
+
+      <para><command>Paste</command> - <guimenu>Edit</guimenu>
+      <guimenuitem>Paste</guimenuitem>, or right-click a blank area and choose
+      <guibutton>Paste,</guibutton> or Ctrl+V</para>
+
+      <para><command>Rename</command> - <guimenu>Edit</guimenu>
+      <guimenuitem>Rename</guimenuitem>, or right-click on a selected file or
+      directory and choose <guibutton>Rename,</guibutton> or press
+      <command>F2</command></para>
+
+      <para><command>Delete</command> - <guimenu>Actions</guimenu>
+      <guimenuitem>Delete</guimenuitem>, or right-click on a selected file or
+      directory and choose <guibutton>Delete,</guibutton> or press the
+      <command>Delete</command> key from the keyboard</para>
+
+      <para><tip>
+          <para>This commands also work on a multiple selection.</para>
+        </tip></para>
+    </section>
+
+    <section>
+      <title>Loading Instruments From The Instruments Database</title>
+
+      <para>To load an instrument to a sampler channel from the Instruments
+      Database, right-click on the instrument and choose <guimenu>Load
+      Instrument</guimenu>, then choose the sampler channel where the
+      instrument should be loaded to. Note that you need to have at least one
+      sampler channel created, otherwise the <guimenu>Load
+      Instrument</guimenu> submenu is disabled.</para>
+    </section>
+
+    <section id="INSTRUMENTS_DB_ADD_TO_MAP">
+      <title>Adding Instruments To MIDI Instrument Map</title>
+
+      <para>To add an instrument to MIDI instrument map from the Instruments
+      Database, right-click on the instrument and choose <guimenu>Add To MIDI
+      Map</guimenu>, then choose the MIDI instrument map to which to add the
+      selected instrument. Note that you need to have at least one MIDI
+      instrument map, otherwise the <guimenu>Add To MIDI Map</guimenu> submenu
+      is disabled. For more info read <link linkend="MIDI_INSTRUMENTS">MIDI
+      Instruments</link>.<tip>
+          <para>To add more than one instrument from an instrument directory
+          at a time, select the instruments and right-click on one of the
+          selected instruments.</para>
+        </tip></para>
+    </section>
+
+    <section>
+      <title>Adding Instruments To Orchestra From The Instruments
+      Database</title>
+
+      <para>To add an instrument to orchestra from the Instruments Database,
+      right-click on the instrument and choose <guimenu>Add To
+      Orchestra</guimenu>, then choose the orchestra to which to add the
+      selected instrument. Note that you need to have at least one orchestra,
+      otherwise the <guimenu>Add To Orchestra</guimenu> submenu is disabled.
+      For more info read <link linkend="USING_ORCHESTRAS">Using
+      Orchestras</link>.<tip>
+          <para>To add more than one instrument from an instrument directory
+          at a time, select the instruments and right-click on one of the
+          selected instruments.</para>
+        </tip></para>
+    </section>
+
+    <section>
+      <title>Finding Instruments</title>
+
+      <para>To start a search, choose <guimenu>Edit</guimenu>
+      <guimenuitem>Find</guimenuitem>, or Ctrl+F.</para>
     </section>
   </chapter>
 </book>

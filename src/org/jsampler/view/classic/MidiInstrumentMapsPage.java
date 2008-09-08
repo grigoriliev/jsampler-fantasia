@@ -44,7 +44,6 @@ import net.sf.juife.LinkButton;
 import net.sf.juife.NavigationPage;
 
 import org.jsampler.CC;
-import org.jsampler.MidiInstrument;
 import org.jsampler.MidiInstrumentMap;
 
 import org.jsampler.event.ListEvent;

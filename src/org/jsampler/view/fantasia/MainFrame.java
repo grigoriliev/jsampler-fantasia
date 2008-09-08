@@ -109,6 +109,8 @@ public class MainFrame extends JSMainFrame {
 	private final RightSidePane rightSidePane = new RightSidePane();
 	private final JPanel rightPane;
 	
+	//private final StatusBar statusBar = new StatusBar();
+	
 	private final LSConsoleFrame lsConsoleFrame = new LSConsoleFrame();
 	private final Vector<String> recentScripts = new Vector<String>();
 		
@@ -132,6 +134,7 @@ public class MainFrame extends JSMainFrame {
 		if(Res.iconAppIcon != null) setIconImage(Res.iconAppIcon.getImage());
 		
 		getContentPane().add(standardBar, BorderLayout.NORTH);
+		//getContentPane().add(statusBar, BorderLayout.SOUTH);
 		
 		rightPane = createRightPane();
 		
@@ -457,6 +460,9 @@ public class MainFrame extends JSMainFrame {
 		
 		menuBar.add(m);
 	}
+	
+	public RightSidePane
+	getRightSidePane() { return rightSidePane; }
 	
 	/**
 	 * This method does nothing, because <b>Fantasia</b> has exactly

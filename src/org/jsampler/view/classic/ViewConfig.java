@@ -101,6 +101,12 @@ public class ViewConfig extends JSViewConfig {
 		
 		public Icon
 		getPreferences16Icon() { return Res.iconPreferences16; }
+		
+		public Icon
+		getWarning32Icon() { return Res.iconWarning32; }
+		
+		public Icon
+		getQuestion32Icon() { return Res.iconQuestion32; }
 	}
 	
 	public boolean

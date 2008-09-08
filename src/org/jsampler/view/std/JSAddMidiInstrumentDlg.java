@@ -74,13 +74,16 @@ public class JSAddMidiInstrumentDlg extends OkCancelDialog {
 		new JLabel(i18n.getLabel("JSAddMidiInstrumentDlg.lLoadMode"));
 	
 	private final JTextField tfName = new JTextField();
-	private final JSpinner spinnerBank = new JSpinner(new SpinnerNumberModel(0, 0, 16383, 1));
+	private JSpinner spinnerBank;
 	private final JComboBox cbProgram = new JComboBox();
 	private final JSlider slVolume = new JSlider(0, 100, 100);
 	private final JComboBox cbLoadMode = new JComboBox();
 	
 	private MidiInstrumentMap map;
 	private Instrument instr;
+	
+	private int mbBase;
+	private int mpBase;
 	
 	/**
 	 * Creates a new instance of <code>JSAddMidiInstrumentDlg</code>
@@ -102,6 +105,11 @@ public class JSAddMidiInstrumentDlg extends OkCancelDialog {
 	
 	private void
 	initAddMidiInstrumentDlg(final MidiInstrumentMap map, Instrument instr) {
+		mbBase = CC.getViewConfig().getFirstMidiBankNumber();
+		mpBase = CC.getViewConfig().getFirstMidiProgramNumber();
+		
+		spinnerBank = new JSpinner(new SpinnerNumberModel(mbBase, mbBase, 16383 + mbBase, 1));
+		
 		this.map = map;
 		this.instr = instr;
 		
@@ -176,7 +184,7 @@ public class JSAddMidiInstrumentDlg extends OkCancelDialog {
 		setResizable(true);
 		setMinimumSize(getPreferredSize());
 		
-		for(int i = 0; i < 128; i++) cbProgram.addItem(new Integer(i));
+		for(int i = 0; i < 128; i++) cbProgram.addItem(new Integer(i + mpBase));
 		
 		cbLoadMode.addItem(MidiInstrumentInfo.LoadMode.DEFAULT);
 		cbLoadMode.addItem(MidiInstrumentInfo.LoadMode.ON_DEMAND);
@@ -220,25 +228,25 @@ public class JSAddMidiInstrumentDlg extends OkCancelDialog {
 	}
 	
 	/**
-	 * Gets the selected MIDI bank.
+	 * Gets the selected MIDI bank (always zero-based).
 	 */
 	public int
-	getMidiBank() { return Integer.parseInt(spinnerBank.getValue().toString()); }
+	getMidiBank() { return Integer.parseInt(spinnerBank.getValue().toString()) - mbBase; }
 	
 	/**
-	 * Sets the selected MIDI bank.
+	 * Sets the selected MIDI bank (always zero-based).
 	 */
 	public void
-	setMidiBank(int bank) { spinnerBank.setValue(bank); }
+	setMidiBank(int bank) { spinnerBank.setValue(mbBase + bank); }
 	
 	/**
-	 * Gets the selected MIDI program.
+	 * Gets the selected MIDI program (always zero-based).
 	 */
 	public int
 	getMidiProgram() { return cbProgram.getSelectedIndex(); }
 	
 	/**
-	 * Sets the selected MIDI program.
+	 * Sets the selected MIDI program (always zero-based).
 	 */
 	public void
 	setMidiProgram(int program) { cbProgram.setSelectedIndex(program); }

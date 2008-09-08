@@ -26,8 +26,9 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import org.jsampler.JSPrefs;
+import org.jsampler.MidiInstrument;
 
-import static org.jsampler.JSPrefs.VOL_MEASUREMENT_UNIT_DECIBEL;
+import static org.jsampler.JSPrefs.*;
 
 /**
  * Provides the view configuration.
@@ -35,6 +36,9 @@ import static org.jsampler.JSPrefs.VOL_MEASUREMENT_UNIT_DECIBEL;
  */
 public abstract class JSViewConfig {
 	private boolean measurementUnitDecibel;
+	
+	private int firstMidiBankNumber;
+	private int firstMidiProgramNumber;
 	
 	/** Creates a new instance of <code>JSViewConfig</code> */
 	public
@@ -48,6 +52,28 @@ public abstract class JSViewConfig {
 				boolean b;
 				b = preferences().getBoolProperty(VOL_MEASUREMENT_UNIT_DECIBEL);
 				measurementUnitDecibel = b;
+			}
+		});
+		
+		firstMidiBankNumber = preferences().getIntProperty(FIRST_MIDI_BANK_NUMBER);
+		firstMidiProgramNumber = preferences().getIntProperty(FIRST_MIDI_PROGRAM_NUMBER);
+		
+		MidiInstrument.setFirstProgramNumber(firstMidiProgramNumber);
+		
+		s = FIRST_MIDI_BANK_NUMBER;
+		preferences().addPropertyChangeListener(s, new PropertyChangeListener() {
+			public void
+			propertyChange(PropertyChangeEvent e) {
+				firstMidiBankNumber = preferences().getIntProperty(FIRST_MIDI_BANK_NUMBER);
+			}
+		});
+		
+		s = FIRST_MIDI_PROGRAM_NUMBER;
+		preferences().addPropertyChangeListener(s, new PropertyChangeListener() {
+			public void
+			propertyChange(PropertyChangeEvent e) {
+				firstMidiProgramNumber = preferences().getIntProperty(FIRST_MIDI_PROGRAM_NUMBER);
+				MidiInstrument.setFirstProgramNumber(firstMidiProgramNumber);
 			}
 		});
 	}
@@ -82,4 +108,10 @@ public abstract class JSViewConfig {
 	/** Exports the view configuration of the current session. */
 	public String
 	exportSessionViewConfig() { return ""; }
+	
+	public int
+	getFirstMidiBankNumber() { return firstMidiBankNumber; }
+	
+	public int
+	getFirstMidiProgramNumber() { return firstMidiProgramNumber; }
 }

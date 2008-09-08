@@ -27,8 +27,6 @@ import javax.swing.JButton;
 
 import javax.swing.plaf.basic.ComboPopup;
 
-import org.jvnet.substance.SubstanceImageCreator;
-
 
 /**
  *

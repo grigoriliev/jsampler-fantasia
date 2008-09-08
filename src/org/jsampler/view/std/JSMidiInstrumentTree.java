@@ -22,17 +22,31 @@
 
 package org.jsampler.view.std;
 
+import java.awt.Dimension;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import java.util.Vector;
+
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.KeyStroke;
 
@@ -56,6 +70,10 @@ import org.jsampler.event.MidiInstrumentMapListener;
 import org.linuxsampler.lscp.MidiInstrumentInfo;
 import org.linuxsampler.lscp.MidiInstrumentMapInfo;
 
+import net.sf.juife.OkCancelDialog;
+
+import static org.jsampler.JSPrefs.FIRST_MIDI_BANK_NUMBER;
+import static org.jsampler.JSPrefs.FIRST_MIDI_PROGRAM_NUMBER;
 import static org.jsampler.view.std.StdI18n.i18n;
 
 
@@ -66,6 +84,7 @@ import static org.jsampler.view.std.StdI18n.i18n;
 public class JSMidiInstrumentTree extends JTree {
 	private DefaultTreeModel model;
 	private MidiInstrumentMap midiInstrumentMap;
+	private final ContextMenu contextMenu;
 	
 	/**
 	 * Creates a new instance of <code>JSMidiInstrumentTree</code>
@@ -93,9 +112,10 @@ public class JSMidiInstrumentTree extends JTree {
 		setMidiInstrumentMap(null);
 		
 		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-		ContextMenu contextMenu = new ContextMenu();
+		contextMenu = new ContextMenu();
 		addMouseListener(contextMenu);
-		addTreeSelectionListener(contextMenu);
+		
+		addTreeSelectionListener(getHandler());
 		
 		Action a = new AbstractAction() {
 			public void
@@ -107,6 +127,23 @@ public class JSMidiInstrumentTree extends JTree {
 		KeyStroke k = KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0);
 		getInputMap(JComponent.WHEN_FOCUSED).put(k, "removeSelectedInstrumentOrBank");
 		getActionMap().put("removeSelectedInstrumentOrBank", a);
+		
+		String s = FIRST_MIDI_BANK_NUMBER;
+		CC.preferences().addPropertyChangeListener(s, new PropertyChangeListener() {
+			public void
+			propertyChange(PropertyChangeEvent e) {
+				model.reload();
+			}
+		});
+		
+		s = FIRST_MIDI_PROGRAM_NUMBER;
+		CC.preferences().addPropertyChangeListener(s, new PropertyChangeListener() {
+			public void
+			propertyChange(PropertyChangeEvent e) {
+				model.reload();
+				contextMenu.updateChangeProgramMenu();
+			}
+		});
 	}
 	
 	/**
@@ -171,7 +208,7 @@ public class JSMidiInstrumentTree extends JTree {
 			model.insertNodeInto (
 				bankNode,
 				(DefaultMutableTreeNode)model.getRoot(),
-				findBankPosition(bank.getID())
+				findBankPosition(bank.getId())
 			);
 		}
 		
@@ -193,7 +230,7 @@ public class JSMidiInstrumentTree extends JTree {
 		DefaultMutableTreeNode bankNode = findBank(bank);
 		
 		if(bankNode == null)
-			throw new IllegalArgumentException("Missing MIDI bank: " + bank.getID());
+			throw new IllegalArgumentException("Missing MIDI bank: " + bank.getId());
 		
 		removeProgram(bankNode, instr.getInfo().getMidiProgram());
 		if(bankNode.getChildCount() == 0) model.removeNodeFromParent(bankNode);
@@ -211,6 +248,22 @@ public class JSMidiInstrumentTree extends JTree {
 		if(!(obj instanceof InstrTreeNode)) return null;
 		obj = ((InstrTreeNode)obj).getUserObject();
 		return (MidiInstrument)obj;
+	}
+	
+	/**
+	 * Gets the selected MIDI bank.
+	 * @return The selected MIDI bank, or
+	 * <code>null</code> if there is no MIDI bank selected.
+	 */
+	public MidiBank
+	getSelectedMidiBank() {
+		if(getSelectionCount() == 0) return null;
+		
+		Object obj = getSelectionPath().getLastPathComponent();
+		if(!(obj instanceof BankTreeNode)) return null;
+		
+		BankTreeNode n = (BankTreeNode)obj;
+		return (MidiBank)n.getUserObject();
 	}
 	
 	/**
@@ -261,7 +314,7 @@ public class JSMidiInstrumentTree extends JTree {
 		for(int i = 0; i < root.getChildCount(); i++) {
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode)root.getChildAt(i);
 			MidiBank bank = (MidiBank)node.getUserObject();
-			if(bank.getID() > bankID) return i;
+			if(bank.getId() > bankID) return i;
 		}
 		
 		return root.getChildCount();
@@ -316,25 +369,28 @@ public class JSMidiInstrumentTree extends JTree {
 	
 	
 	private class MidiBank {
-		int id;
+		private int id;
 		
 		MidiBank(int id) {
 			this.id = id;
 		}
 		
 		public int
-		getID() { return id; }
+		getId() { return id; }
 		
 		public boolean
 		equals(Object obj) {
 			if(obj == null) return false;
 			if(!(obj instanceof MidiBank)) return false;
-			if(getID() == ((MidiBank)obj).getID()) return true;
+			if(getId() == ((MidiBank)obj).getId()) return true;
 			return false;
 		}
 		
 		public String
-		toString() { return i18n.getLabel("JSMidiInstrumentTree.MidiBank.name", id); }
+		toString() {
+			int i = CC.getViewConfig().getFirstMidiBankNumber();
+			return i18n.getLabel("JSMidiInstrumentTree.MidiBank.name", i + id);
+		}
 	}
 	
 	protected class BankTreeNode extends DefaultMutableTreeNode {
@@ -392,12 +448,183 @@ public class JSMidiInstrumentTree extends JTree {
 		);
 	}
 	
+	private void
+	copyMidiBankTo() { copyOrMoveMidiBankTo(true); }
+	
+	private void
+	moveMidiBankTo() { copyOrMoveMidiBankTo(false); }
+	
+	private void
+	copyOrMoveMidiBankTo(boolean copy) {
+		MidiBank bank = getSelectedMidiBank();
+		if(bank == null) return;
+		
+		JSMidiBankChooser dlg = new JSMidiBankChooser();
+		
+		if(copy) dlg.setTitle(i18n.getLabel("JSMidiInstrumentTree.copyTo"));
+		else dlg.setTitle(i18n.getLabel("JSMidiInstrumentTree.moveTo"));
+		
+		dlg.setSelectedMidiInstrumentMap(getMidiInstrumentMap());
+		dlg.setVisible(true);
+		if(dlg.isCancelled()) return;
+		
+		MidiInstrumentMap smap = dlg.getSelectedMidiInstrumentMap();
+		
+		if(smap == null) {
+			HF.showErrorMessage(i18n.getMessage("JSMidiInstrumentTree.noMap!"), this);
+			return;
+		}
+		
+		if(dlg.getMidiBank() == bank.getId() && smap.getMapId() == getMidiInstrumentMap().getMapId()) {
+			String s = "JSMidiInstrumentTree.sameSourceAndDestination!";
+			HF.showErrorMessage(i18n.getMessage(s), this);
+			return;
+		}
+		
+		MidiInstrument[] instrs = getMidiInstrumentMap().getMidiInstruments(bank.getId());
+		int mapId = smap.getMapId();
+		int bnkId = dlg.getMidiBank();
+		
+		Vector<MidiInstrument> v = new Vector<MidiInstrument>();
+		for(MidiInstrument i : instrs) {
+			MidiInstrument instr;
+			instr = smap.getMidiInstrument(bnkId, i.getInfo().getMidiProgram());
+			if(instr != null) v.add(instr);
+		}
+		
+		if(!v.isEmpty()) {
+			String[] instrumentNames = new String[v.size()];
+			for(int i = 0; i < v.size(); i++) {
+				int base = CC.getViewConfig().getFirstMidiProgramNumber();
+				int p = v.get(i).getInfo().getMidiProgram();
+				instrumentNames[i] = (base + p) + ". " + v.get(i).getName();
+			}
+			JSOverrideInstrumentsConfirmDlg dlg2;
+			dlg2 = new JSOverrideInstrumentsConfirmDlg(instrumentNames);
+			dlg2.setVisible(true);
+			if(dlg2.isCancelled()) return;
+		}
+		
+		for(MidiInstrument i : instrs) {
+			int p = i.getInfo().getMidiProgram();
+			CC.getSamplerModel().mapBackendMidiInstrument(mapId, bnkId, p, i.getInfo());
+		}
+		
+		if(copy) return;
+		
+		mapId = getMidiInstrumentMap().getMapId();
+		bnkId = bank.getId();
+		
+		for(MidiInstrument i : instrs) {
+			int p = i.getInfo().getMidiProgram();
+			CC.getSamplerModel().unmapBackendMidiInstrument(mapId, bnkId, p);
+		}
+	}
+	
+	private void
+	copyMidiInstrumentTo() { copyOrMoveMidiInstrumentTo(true); }
+	
+	private void
+	moveMidiInstrumentTo() { copyOrMoveMidiInstrumentTo(false); }
+	
+	private void
+	copyOrMoveMidiInstrumentTo(boolean copy) {
+		MidiInstrument instr = getSelectedInstrument();
+		if(instr == null) return;
+		
+		JSMidiBankChooser dlg = new JSMidiBankChooser();
+		
+		if(copy) dlg.setTitle(i18n.getLabel("JSMidiInstrumentTree.copyTo"));
+		else dlg.setTitle(i18n.getLabel("JSMidiInstrumentTree.moveTo"));
+		
+		dlg.setSelectedMidiInstrumentMap(getMidiInstrumentMap());
+		dlg.setVisible(true);
+		if(dlg.isCancelled()) return;
+		
+		MidiInstrumentMap smap = dlg.getSelectedMidiInstrumentMap();
+		
+		if(smap == null) {
+			HF.showErrorMessage(i18n.getMessage("JSMidiInstrumentTree.noMap!"), this);
+			return;
+		}
+		
+		int bank = instr.getInfo().getMidiBank();
+		if(dlg.getMidiBank() == bank && smap.getMapId() == getMidiInstrumentMap().getMapId()) {
+			String s = "JSMidiInstrumentTree.sameSourceAndDestination!";
+			HF.showErrorMessage(i18n.getMessage(s), this);
+			return;
+		}
+		
+		int mapId = smap.getMapId();
+		int bnkId = dlg.getMidiBank();
+		int prgId = instr.getInfo().getMidiProgram();
+		MidiInstrument oldInstr = smap.getMidiInstrument(bnkId, prgId);
+		
+		if(oldInstr != null) {
+			String[] iS = new String [1];
+			int base = CC.getViewConfig().getFirstMidiProgramNumber();
+			iS[0] = (base + prgId) + ". " + oldInstr.getName();
+			JSOverrideInstrumentsConfirmDlg dlg2;
+			dlg2 = new JSOverrideInstrumentsConfirmDlg(iS);
+			dlg2.setVisible(true);
+			if(dlg2.isCancelled()) return;
+		}
+		
+		CC.getSamplerModel().mapBackendMidiInstrument(mapId, bnkId, prgId, instr.getInfo());
+		
+		if(copy) return;
+		
+		mapId = getMidiInstrumentMap().getMapId();
+		
+		CC.getSamplerModel().unmapBackendMidiInstrument(mapId, bank, prgId);
+	}
+	
+	private void
+	moveSelectedInstrumentUp() {
+		MidiInstrument instr = getSelectedInstrument();
+		if(instr == null) return;
+		moveSelectedInstrument(instr.getInfo().getMidiProgram() - 1);
+	}
+	
+	private void
+	moveSelectedInstrumentDown() {
+		MidiInstrument instr = getSelectedInstrument();
+		if(instr == null) return;
+		moveSelectedInstrument(instr.getInfo().getMidiProgram() + 1);
+	}
+	
+	private void
+	moveSelectedInstrument(int newProgram) {
+		if(newProgram < 0 || newProgram > 127) return;
+		MidiInstrument instr = getSelectedInstrument();
+		if(instr == null) return;
+		
+		int bnk = instr.getInfo().getMidiBank();
+		int prg = instr.getInfo().getMidiProgram();
+		
+		MidiInstrument oldInstr = getMidiInstrumentMap().getMidiInstrument(bnk, newProgram);
+		if(oldInstr != null) {
+			String[] iS = new String [1];
+			int base = CC.getViewConfig().getFirstMidiProgramNumber();
+			iS[0] = (base + prg) + ". " + oldInstr.getName();
+			JSOverrideInstrumentsConfirmDlg dlg;
+			dlg = new JSOverrideInstrumentsConfirmDlg(iS);
+			dlg.setVisible(true);
+			if(dlg.isCancelled()) return;
+		}
+		
+		int map = this.getMidiInstrumentMap().getMapId();
+		CC.getSamplerModel().mapBackendMidiInstrument(map, bnk, newProgram, instr.getInfo());
+		CC.getSamplerModel().unmapBackendMidiInstrument(map, bnk, prg);
+	}
+	
 	private final EventHandler eventHandler = new EventHandler();
 	
 	private EventHandler
 	getHandler() { return eventHandler; }
 	
-	private class EventHandler implements MidiInstrumentListener, MidiInstrumentMapListener {
+	private class EventHandler implements MidiInstrumentListener, MidiInstrumentMapListener,
+					      TreeSelectionListener {
 		
 		/** Invoked when a MIDI instrument in a MIDI instrument map is changed. */
 		public void
@@ -423,23 +650,145 @@ public class JSMidiInstrumentTree extends JTree {
 			unmapInstrument(e.getInstrument());
 			e.getInstrument().removeMidiInstrumentListener(getHandler());
 		}
+		
+		public void
+		valueChanged(TreeSelectionEvent e) {
+			MidiInstrument instr = getSelectedInstrument();
+			if(instr != null) {
+				int p = instr.getInfo().getMidiProgram();
+				contextMenu.miMoveInstrumentDown.setEnabled(p < 127);
+				contextMenu.miMoveInstrumentUp.setEnabled(p > 0);
+			}
+		}
 	}
 	
-	class ContextMenu extends MouseAdapter implements TreeSelectionListener {
-		private final JPopupMenu cmenu = new JPopupMenu();
-		JMenuItem miEdit = new JMenuItem(i18n.getMenuLabel("ContextMenu.edit"));
+	class ContextMenu extends MouseAdapter {
+		private final JPopupMenu bankMenu = new JPopupMenu();
+		
+		private final JPopupMenu instrumentMenu = new JPopupMenu();
+		
+		private final JMenu changeProgramMenu =
+			new JMenu(i18n.getMenuLabel("JSMidiInstrumentTree.ContextMenu.changeProgram"));
+		
+		private final JMenuItem miMoveInstrumentUp =
+			new JMenuItem(i18n.getMenuLabel("JSMidiInstrumentTree.ContextMenu.moveUp"));
+		
+		private final JMenuItem miMoveInstrumentDown =
+			new JMenuItem(i18n.getMenuLabel("JSMidiInstrumentTree.ContextMenu.moveDown"));
+		
+		private final JMenu programGroup1Menu = new JMenu();
+		private final JMenu programGroup2Menu = new JMenu();
+		private final JMenu programGroup3Menu = new JMenu();
+		private final JMenu programGroup4Menu = new JMenu();
+		private final JMenu programGroup5Menu = new JMenu();
+		private final JMenu programGroup6Menu = new JMenu();
+		private final JMenu programGroup7Menu = new JMenu();
+		private final JMenu programGroup8Menu = new JMenu();
+		
 		
 		ContextMenu() {
-			cmenu.add(miEdit);
-			miEdit.addActionListener(new ActionListener() {
+			JMenuItem mi = new JMenuItem(i18n.getMenuLabel("JSMidiInstrumentTree.ContextMenu.moveTo"));
+			bankMenu.add(mi);
+			mi.addActionListener(new ActionListener() {
+				public void
+				actionPerformed(ActionEvent e) {
+					moveMidiBankTo();
+				}
+			});
+			
+			mi = new JMenuItem(i18n.getMenuLabel("JSMidiInstrumentTree.ContextMenu.copyTo"));
+			bankMenu.add(mi);
+			mi.addActionListener(new ActionListener() {
+				public void
+				actionPerformed(ActionEvent e) {
+					copyMidiBankTo();
+				}
+			});
+			
+			bankMenu.addSeparator();
+			
+			mi = new JMenuItem(i18n.getMenuLabel("ContextMenu.delete"));
+			bankMenu.add(mi);
+			mi.addActionListener(new ActionListener() {
+				public void
+				actionPerformed(ActionEvent e) {
+					removeSelectedInstrumentOrBank();
+				}
+			});
+			
+			// MIDI Instrument Menu
+			
+			mi = new JMenuItem(i18n.getMenuLabel("ContextMenu.edit"));
+			instrumentMenu.add(mi);
+			mi.addActionListener(new ActionListener() {
 				public void
 				actionPerformed(ActionEvent e) {
 					editSelectedInstrument();
 				}
 			});
 			
-			JMenuItem mi = new JMenuItem(i18n.getMenuLabel("ContextMenu.delete"));
-			cmenu.add(mi);
+			instrumentMenu.addSeparator();
+			
+			mi = new JMenuItem(i18n.getMenuLabel("JSMidiInstrumentTree.ContextMenu.moveTo"));
+			instrumentMenu.add(mi);
+			mi.addActionListener(new ActionListener() {
+				public void
+				actionPerformed(ActionEvent e) {
+					moveMidiInstrumentTo();
+				}
+			});
+			
+			mi = new JMenuItem(i18n.getMenuLabel("JSMidiInstrumentTree.ContextMenu.copyTo"));
+			instrumentMenu.add(mi);
+			mi.addActionListener(new ActionListener() {
+				public void
+				actionPerformed(ActionEvent e) {
+					copyMidiInstrumentTo();
+				}
+			});
+			
+			instrumentMenu.add(changeProgramMenu);
+			
+			changeProgramMenu.add(miMoveInstrumentUp);
+			miMoveInstrumentUp.addActionListener(new ActionListener() {
+				public void
+				actionPerformed(ActionEvent e) {
+					moveSelectedInstrumentUp();
+				}
+			});
+			
+			changeProgramMenu.add(miMoveInstrumentDown);
+			miMoveInstrumentDown.addActionListener(new ActionListener() {
+				public void
+				actionPerformed(ActionEvent e) {
+					moveSelectedInstrumentDown();
+				}
+			});
+			
+			changeProgramMenu.addSeparator();
+			
+			changeProgramMenu.add(programGroup1Menu);
+			addProgramMenuItems(programGroup1Menu, 0, 15);
+			changeProgramMenu.add(programGroup2Menu);
+			addProgramMenuItems(programGroup2Menu, 16, 31);
+			changeProgramMenu.add(programGroup3Menu);
+			addProgramMenuItems(programGroup3Menu, 32, 47);
+			changeProgramMenu.add(programGroup4Menu);
+			addProgramMenuItems(programGroup4Menu, 48, 63);
+			changeProgramMenu.add(programGroup5Menu);
+			addProgramMenuItems(programGroup5Menu, 64, 79);
+			changeProgramMenu.add(programGroup6Menu);
+			addProgramMenuItems(programGroup6Menu, 80, 95);
+			changeProgramMenu.add(programGroup7Menu);
+			addProgramMenuItems(programGroup7Menu, 96, 111);
+			changeProgramMenu.add(programGroup8Menu);
+			addProgramMenuItems(programGroup8Menu, 112, 127);
+			
+			instrumentMenu.addSeparator();
+			updateChangeProgramMenu();
+			
+			mi = new JMenuItem(i18n.getMenuLabel("ContextMenu.delete"));
+			instrumentMenu.add(mi);
 			mi.addActionListener(new ActionListener() {
 				public void
 				actionPerformed(ActionEvent e) {
@@ -449,25 +798,131 @@ public class JSMidiInstrumentTree extends JTree {
 			
 		}
 		
+		private void
+		addProgramMenuItems(JMenu menu, int prgStart, int prgEnd) {
+			for(int i = prgStart; i <= prgEnd; i++) {
+				menu.add(new ProgramMenuItem(i));
+			}
+		}
+		
+		private void
+		updateChangeProgramMenu() {
+			updateProgramGroupMenu(programGroup1Menu, 0, 15);
+			updateProgramGroupMenu(programGroup2Menu, 16, 31);
+			updateProgramGroupMenu(programGroup3Menu, 32, 47);
+			updateProgramGroupMenu(programGroup4Menu, 48, 63);
+			updateProgramGroupMenu(programGroup5Menu, 64, 79);
+			updateProgramGroupMenu(programGroup6Menu, 80, 95);
+			updateProgramGroupMenu(programGroup7Menu, 96, 111);
+			updateProgramGroupMenu(programGroup8Menu, 112, 127);
+		}
+		
+		private void
+		updateProgramGroupMenu(JMenu menu, int prgStart, int prgEnd) {
+			int base = CC.getViewConfig().getFirstMidiProgramNumber();
+			String s = "JSMidiInstrumentTree.ContextMenu.programGroup";
+			String grp = "(" + (base + prgStart) + "-" + (base + prgEnd) + ")";
+			menu.setText(i18n.getMenuLabel(s, grp));
+			
+			updateProgramGroupMenuItems(menu);
+		}
+		
+		private void
+		updateProgramGroupMenuItems(JMenu menu) {
+			for(int i = 0; i < menu.getItemCount(); i++) {
+				((ProgramMenuItem)menu.getItem(i)).updateProgramNumber();
+			}
+		}
+		
 		public void
 		mousePressed(MouseEvent e) {
 			if(e.isPopupTrigger()) show(e);
 		}
-	
+		
 		public void
 		mouseReleased(MouseEvent e) {
 			if(e.isPopupTrigger()) show(e);
 		}
-	
+		
 		void
 		show(MouseEvent e) {
 			if(getSelectionCount() == 0) return;
-			cmenu.show(e.getComponent(), e.getX(), e.getY());
+			
+			if(getSelectedInstrument() != null) {
+				instrumentMenu.show(e.getComponent(), e.getX(), e.getY());
+			} else {
+				bankMenu.show(e.getComponent(), e.getX(), e.getY());
+			}
 		}
 		
-		public void
-		valueChanged(TreeSelectionEvent e) {
-			miEdit.setVisible(getSelectedInstrument() != null);
+		private class ProgramMenuItem extends JMenuItem implements ActionListener {
+			int program;
+			
+			ProgramMenuItem(int program) {
+				this.program = program;
+				updateProgramNumber();
+				addActionListener(this);
+			}
+			
+			public void
+			updateProgramNumber() {
+				int base = CC.getViewConfig().getFirstMidiProgramNumber();
+				setText(String.valueOf(base + program));
+			}
+			
+			public void
+			actionPerformed(ActionEvent e) {
+				moveSelectedInstrument(program);
+			}
 		}
 	}
+}
+	
+class JSOverrideInstrumentsConfirmDlg extends OkCancelDialog {
+	private final JLabel lMsg = new JLabel(i18n.getMessage("JSOverrideInstrumentsConfirmDlg.lMsg"));
+	private final JTable table;
+	
+	JSOverrideInstrumentsConfirmDlg(String[] instrumentNames) {
+		super(CC.getMainFrame());
+		
+		JPanel mainPane = new JPanel();
+		mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.Y_AXIS));
+		
+		lMsg.setIcon(CC.getViewConfig().getBasicIconSet().getWarning32Icon());
+		lMsg.setAlignmentX(LEFT_ALIGNMENT);
+		mainPane.add(lMsg);
+		
+		mainPane.add(Box.createRigidArea(new Dimension(0, 12)));
+		
+		String[][] instrs = new String[instrumentNames.length][1];
+		for(int i = 0; i < instrumentNames.length; i++) {
+			instrs[i][0] = instrumentNames[i];
+		}
+		
+		String[] columns = new String[1];
+		columns[0] = "";
+		
+		table = new JTable(instrs, columns);
+		JScrollPane sp = new JScrollPane(table);
+		Dimension d = new Dimension(200, 200);
+		sp.setMinimumSize(d);
+		sp.setPreferredSize(d);
+		sp.setAlignmentX(LEFT_ALIGNMENT);
+		mainPane.add(sp);
+		
+		setMainPane(mainPane);
+		setMinimumSize(getPreferredSize());
+		setResizable(true);
+	}
+	
+	protected void
+	onOk() {
+		if(!btnOk.isEnabled()) return;
+		
+		setVisible(false);
+		setCancelled(false);
+	}
+	
+	protected void
+	onCancel() { setVisible(false); }
 }

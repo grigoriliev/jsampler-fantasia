@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -92,6 +92,18 @@ public class JSPrefs extends PropertyChangeSupport {
 	public final static String VOL_MEASUREMENT_UNIT_DECIBEL = "volMeasurementUnitDecibel";
 	
 	/**
+	 * Property which specifies whether the MIDI instrument maps
+	 * should be included in the session script.
+	 */
+	public final static String EXPORT_MIDI_MAPS_TO_SESSION_SCRIPT = "exportMidiMapsToSessionScript";
+	
+	/**
+	 * Property which specifies whether to set the MIDI instrument loading
+	 * in background when exporting MIDI instrument maps to LSCP script.
+	 */
+	public final static String LOAD_MIDI_INSTRUMENTS_IN_BACKGROUND = "loadMidiInstrumentsInBackground";
+	
+	/**
 	 * Property which specifies whether the user should manually select a server to connect on startup.
 	 */
 	public final static String MANUAL_SERVER_SELECT_ON_STARTUP = "manualServerSelectOnStartup";
@@ -100,6 +112,21 @@ public class JSPrefs extends PropertyChangeSupport {
 	 * Integer property which provides the index of the server to connect on startup.
 	 */
 	public final static String SERVER_INDEX = "serverIndex";
+	
+	/**
+	 * Property specifying the MIDI bank numbering, whether
+	 * the index of the first MIDI bank is 0 or 1 (zero-based or one-based).
+	 */
+	public final static String FIRST_MIDI_BANK_NUMBER = "firstMidiBankNumber";
+	
+	/**
+	 * Property specifying the MIDI program numbering, whether
+	 * the index of the first MIDI program is 0 or 1 (zero-based or one-based).
+	 */
+	public final static String FIRST_MIDI_PROGRAM_NUMBER = "firstMidiProgramNumber";
+	
+	/** Property representing the socket read timeout (in seconds). */
+	public final static String SOCKET_READ_TIMEOUT = "socketReadTimeout";
 	
 	
 	private final String pathName;
@@ -271,7 +298,12 @@ public class JSPrefs extends PropertyChangeSupport {
 	 * @see #getIntProperty(String name)
 	 */
 	public int
-	getDefaultIntValue(String name) { return 0; }
+	getDefaultIntValue(String name) {
+		if(name == SOCKET_READ_TIMEOUT) return 90;
+		if(name == FIRST_MIDI_BANK_NUMBER) return 1;
+		if(name == FIRST_MIDI_PROGRAM_NUMBER) return 1;
+		return 0;
+	}
 	
 	/**
 	 * Sets an integer property.
@@ -329,6 +361,8 @@ public class JSPrefs extends PropertyChangeSupport {
 	public boolean
 	getDefaultBoolValue(String name) {
 		if(name == VOL_MEASUREMENT_UNIT_DECIBEL) return true;
+		if(name == EXPORT_MIDI_MAPS_TO_SESSION_SCRIPT) return true;
+		if(name == LOAD_MIDI_INSTRUMENTS_IN_BACKGROUND) return true;
 		return false;
 	}
 }

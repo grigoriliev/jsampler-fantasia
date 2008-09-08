@@ -46,7 +46,7 @@ import org.jsampler.CC;
 import org.jsampler.event.SamplerChannelListEvent;
 import org.jsampler.event.SamplerChannelListListener;
 
-import org.jvnet.substance.SubstanceImageCreator;
+import org.jvnet.substance.utils.SubstanceImageCreator;
 
 import org.linuxsampler.lscp.SamplerChannel;
 
@@ -370,6 +370,7 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 		
 		private final PropertyChangeListener chnNumberingListener;
 		private final PropertyChangeListener showMidiInfoListener;
+		private final PropertyChangeListener showStreamVoiceCountListener;
 		
 		private boolean bShowNumbering;
 		private boolean bShowMidiInfo;
@@ -411,16 +412,15 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 			components.add(btnInstr);
 			
 			p.add(btnInstr);
+			p.add(streamVoiceCountPane);
 			
 			h = p.getPreferredSize().height;
-			p.setPreferredSize(new Dimension(159, h));
+			p.setPreferredSize(new Dimension(201, h));
 			p.setMinimumSize(p.getPreferredSize());
 			p.setMaximumSize(p.getPreferredSize());
 			
 			add(p);
-			
 			add(Box.createRigidArea(new Dimension(3, 0)));
-			add(streamVoiceCountPane);
 			add(volumePane);
 			
 			setPreferredSize(new Dimension(270, getPreferredSize().height));
@@ -448,7 +448,6 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 			channelInfoPane.setShowNumbering(bShowNumbering);
 			
 			
-			
 			final String s2 = "channel.smallView.showMidiInfo";
 			
 			showMidiInfoListener = new PropertyChangeListener() {
@@ -463,6 +462,22 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 			
 			bShowMidiInfo = preferences().getBoolProperty(s2);
 			channelInfoPane.setShowMidiInfo(bShowMidiInfo);
+			
+			
+			final String s3 = "channel.smallView.showStreamVoiceCount";
+			
+			showStreamVoiceCountListener = new PropertyChangeListener() {
+				public void
+				propertyChange(PropertyChangeEvent e) {
+					boolean b = preferences().getBoolProperty(s3);
+					streamVoiceCountPane.setVisible(b);
+				}
+			};
+						
+			preferences().addPropertyChangeListener(s3, showStreamVoiceCountListener);
+			
+			boolean b = preferences().getBoolProperty(s3);
+			streamVoiceCountPane.setVisible(b);
 		}
 		
 		public void
@@ -531,6 +546,9 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 			
 			s = "channel.smallView.showMidiInfo";
 			preferences().removePropertyChangeListener(s, showMidiInfoListener);
+			
+			s = "channel.smallView.showStreamVoiceCount";
+			preferences().removePropertyChangeListener(s, showStreamVoiceCountListener);
 		}
 	}
 	
@@ -551,7 +569,6 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 			
 			lInfo = createScreenLabel("");
 			lInfo.setFont(Res.fontScreenMono);
-			lInfo.setToolTipText(i18n.getLabel("SmallChannelView.ttMidiPortChannel"));
 			
 			updateChannelIndex();
 			
@@ -637,6 +654,9 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 		setShowMidiInfo(boolean b) {
 			if(b == showMidiInfo) return;
 			showMidiInfo = b;
+			
+			String s = b ? i18n.getLabel("SmallChannelView.ttMidiPortChannel") : null;
+			lInfo.setToolTipText(s);
 			
 			updateLabelLength();
 			updateChannelInfo();

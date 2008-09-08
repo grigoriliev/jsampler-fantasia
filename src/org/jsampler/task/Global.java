@@ -139,6 +139,36 @@ public class Global {
 			}
 		}
 	}
+
+	
+	/**
+	 * This task sets the LSCP client's read timeout.
+	 */
+	public static class SetClientReadTimeout extends EnhancedTask {
+		private int timeout;
+	
+		/**
+		 * Creates new instance of <code>SetClientReadTimeout</code>.
+		 * @param timeout The new timeout value (in seconds).
+		 */
+		public
+		SetClientReadTimeout(int timeout) {
+			setTitle("Global.SetClientReadTimeout_task");
+			setDescription(i18n.getMessage("Global.SetClientReadTimeout.desc"));
+			this.timeout = timeout;
+		}
+	
+		/** The entry point of the task. */
+		public void
+		run() {
+			try {
+				CC.getClient().setSoTimeout(timeout * 1000);
+			} catch(Exception x) {
+				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
+				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
+			}
+		}
+	}
 	
 	/**
 	 * This task gets the list of instruments in the specified instrument file.

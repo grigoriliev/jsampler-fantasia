@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -154,7 +154,7 @@ public class CC {
 	public static JSViewConfig
 	getViewConfig() { return viewConfig; }
 	
-	private static JSPrefs
+	public static JSPrefs
 	preferences() { return getViewConfig().preferences(); }
 	
 	/**
@@ -241,7 +241,7 @@ public class CC {
 			run() { if(handler != null) handler.flush(); }
 		}, 1000, 1000);
 		
-		CC.getLogger().fine("CC.jsStarted");
+		getLogger().fine("CC.jsStarted");
 		
 		HF.setUIDefaultFont(Prefs.getInterfaceFont());
 		
@@ -324,7 +324,7 @@ public class CC {
 			}
 		}
 		
-		CC.getMainFrame().installJSamplerHome();
+		getMainFrame().installJSamplerHome();
 	}
 	
 	/**
@@ -409,8 +409,8 @@ public class CC {
 	 */
 	public static InstrumentsDbTreeModel
 	getInstrumentsDbTreeModel() {
-		if(CC.getSamplerModel().getServerInfo() == null) return null;
-		if(!CC.getSamplerModel().getServerInfo().hasInstrumentsDbSupport()) return null;
+		if(getSamplerModel().getServerInfo() == null) return null;
+		if(!getSamplerModel().getServerInfo().hasInstrumentsDbSupport()) return null;
 		
 		if(instrumentsDbTreeModel == null) {
 			instrumentsDbTreeModel = new InstrumentsDbTreeModel();
@@ -605,7 +605,7 @@ public class CC {
 	 */
 	public static void
 	cleanExit(int i) {
-		CC.getLogger().fine("CC.jsEnded");
+		getLogger().fine("CC.jsEnded");
 		System.exit(i);
 	}
 	
@@ -673,6 +673,15 @@ public class CC {
 	 */
 	public static void
 	setCurrentServer(Server server) { currentServer = server; }
+	
+	/**
+	 * Sets the LSCP client's read timeout.
+	 * @param timeout The new timeout value (in seconds).
+	 */
+	public static void
+	setClientReadTimeout(int timeout) {
+		getTaskQueue().add(new Global.SetClientReadTimeout(timeout));
+	}
 	
 	/**
 	 * This method updates the information about the backend state.
@@ -800,6 +809,8 @@ public class CC {
 		ssa.addTaskListener(new TaskListener() {
 			public void
 			taskPerformed(TaskEvent e) {
+				int t = preferences().getIntProperty(JSPrefs.SOCKET_READ_TIMEOUT);
+				CC.setClientReadTimeout(t * 1000);
 				CC.getTaskQueue().add(cnt);
 			}
 		});
@@ -864,13 +875,13 @@ public class CC {
 	exportInstrMapsToLscpScript(Client lscpClient) {
 		try {
 			lscpClient.removeAllMidiInstrumentMaps();
-			MidiInstrumentMap[] maps = CC.getSamplerModel().getMidiInstrumentMaps();
+			MidiInstrumentMap[] maps = getSamplerModel().getMidiInstrumentMaps();
 			for(int i = 0; i < maps.length; i++) {
 				lscpClient.addMidiInstrumentMap(maps[i].getName());
 				exportInstrumentsToLscpScript(i, maps[i], lscpClient);
 			}
 		} catch(Exception e) {
-			CC.getLogger().log(Level.FINE, HF.getErrorMessage(e), e);
+			getLogger().log(Level.FINE, HF.getErrorMessage(e), e);
 			HF.showErrorMessage(e);
 		}
 	}
@@ -879,14 +890,16 @@ public class CC {
 	exportInstrumentsToLscpScript(int mapId, MidiInstrumentMap map, Client lscpClient)
 										throws Exception {
 	
+		boolean b = preferences().getBoolProperty(JSPrefs.LOAD_MIDI_INSTRUMENTS_IN_BACKGROUND);
+		
 		for(MidiInstrument i : map.getAllMidiInstruments()) {
-			lscpClient.mapMidiInstrument(mapId, i.getInfo().getEntry(), i.getInfo());
+			lscpClient.mapMidiInstrument(mapId, i.getInfo().getEntry(), i.getInfo(), b);
 		}
 	}
 	
 	public static String
 	exportSessionToLscpScript() {
-		CC.getSamplerModel().setModified(false);
+		getSamplerModel().setModified(false);
 		
 		StringBuffer sb = new StringBuffer("# Exported by: ");
 		sb.append("JSampler - a java front-end for LinuxSampler\r\n# Version: ");
@@ -902,11 +915,11 @@ public class CC {
 			sb.append(out.toString());
 			out.reset();
 			sb.append("\r\n");
-			lscpClient.setVolume(CC.getSamplerModel().getVolume());
+			lscpClient.setVolume(getSamplerModel().getVolume());
 			sb.append(out.toString());
 			out.reset();
 			sb.append("\r\n");
-		} catch(Exception e) { CC.getLogger().log(Level.FINE, HF.getErrorMessage(e), e); }
+		} catch(Exception e) { getLogger().log(Level.FINE, HF.getErrorMessage(e), e); }
 				
 		MidiDeviceModel[] mDevs = getSamplerModel().getMidiDevices();
 		for(int i = 0; i < mDevs.length; i++) {
@@ -924,10 +937,13 @@ public class CC {
 			sb.append("\r\n");
 		}
 		
-		exportInstrMapsToLscpScript(lscpClient);
-		sb.append(out.toString());
-		out.reset();
-		sb.append("\r\n");
+		boolean b = preferences().getBoolProperty(JSPrefs.EXPORT_MIDI_MAPS_TO_SESSION_SCRIPT);
+		if(b) {
+			exportInstrMapsToLscpScript(lscpClient);
+			sb.append(out.toString());
+			out.reset();
+			sb.append("\r\n");
+		}
 		
 		SamplerChannelModel[] channels = getSamplerModel().getChannels();
 		
@@ -945,6 +961,8 @@ public class CC {
 			
 			sb.append("\r\n");
 		}
+		
+		//sb.append(getViewConfig().exportSessionViewConfig());
 		
 		return sb.toString();
 	}
@@ -967,7 +985,7 @@ public class CC {
 				}
 			}
 		} catch(Exception e) {
-			CC.getLogger().log(Level.FINE, HF.getErrorMessage(e), e);
+			getLogger().log(Level.FINE, HF.getErrorMessage(e), e);
 		}
 	}
 	
@@ -987,7 +1005,7 @@ public class CC {
 				}
 			}
 		} catch(Exception e) {
-			CC.getLogger().log(Level.FINE, HF.getErrorMessage(e), e);
+			getLogger().log(Level.FINE, HF.getErrorMessage(e), e);
 		}
 	}
 	
@@ -996,7 +1014,7 @@ public class CC {
 		try {
 			lscpCLient.addSamplerChannel();
 			
-			SamplerModel sm = CC.getSamplerModel();
+			SamplerModel sm = getSamplerModel();
 			int id = chn.getMidiInputDevice();
 			if(id != -1) {
 				for(int i = 0; i < sm.getMidiDeviceCount(); i++) {
@@ -1042,7 +1060,7 @@ public class CC {
 			if(chn.isMuted()) lscpCLient.setChannelMute(chnId, true);
 			if(chn.isSoloChannel()) lscpCLient.setChannelSolo(chnId, true);
 		} catch(Exception e) {
-			CC.getLogger().log(Level.FINE, HF.getErrorMessage(e), e);
+			getLogger().log(Level.FINE, HF.getErrorMessage(e), e);
 		}
 	}
 	
@@ -1061,7 +1079,7 @@ public class CC {
 				}
 			}
 		} catch(Exception e) {
-			CC.getLogger().log(Level.FINE, HF.getErrorMessage(e), e);
+			getLogger().log(Level.FINE, HF.getErrorMessage(e), e);
 		}
 	}
 	
@@ -1075,7 +1093,7 @@ public class CC {
 			}
 		});
 		
-		CC.getTaskQueue().add(dummy);
+		getTaskQueue().add(dummy);
 	}
 	
 	public static boolean

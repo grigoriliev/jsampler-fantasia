@@ -133,6 +133,14 @@ public class DevicePane extends JPanel {
 		});
 	}
 	
+	public void
+	showOptionsPane(boolean show) {
+		btnOptions.showOptionsPane(show);
+	}
+	
+	public boolean
+	isOptionsPaneExpanded() { return btnOptions.isSelected(); }
+	
 	protected void
 	setDeviceName(String s) {
 		lDevName.setText(s);
@@ -215,17 +223,17 @@ public class DevicePane extends JPanel {
 		public void
 		actionPerformed(ActionEvent e) {
 			showOptionsPane(isSelected());
+		}
+		
+		private void
+		showOptionsPane(boolean show) {
+			optionsPane.setCollapsed(!show);
 			
 			String s;
 			if(isSelected()) s = i18n.getButtonLabel("DevicePane.ttHideOptions");
 			else s = i18n.getButtonLabel("DevicePane.ttShowOptions");
 			
 			setToolTipText(s);
-		}
-		
-		private void
-		showOptionsPane(boolean show) {
-			optionsPane.setCollapsed(!show);
 		}
 		
 		public boolean

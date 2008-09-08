@@ -40,6 +40,8 @@ public class MidiInstrument {
 	private final Vector<MidiInstrumentListener> listeners =
 		new Vector<MidiInstrumentListener>();
 	
+	private static int firstProgramNumber = 0;
+	
 	
 	/** Creates a new instance of MidiInstrument */
 	public
@@ -106,6 +108,20 @@ public class MidiInstrument {
 	}
 	
 	/**
+	 * Gets the MIDI program numbering, whether
+	 * the index of the first MIDI program is 0 or 1.
+	 */
+	public static int
+	getFirstProgramNumber() { return firstProgramNumber; }
+	
+	/**
+	 * Sets the MIDI program numbering, whether
+	 * the index of the first MIDI program is 0 or 1.
+	 */
+	public static void
+	setFirstProgramNumber(int idx) { firstProgramNumber = idx; }
+	
+	/**
 	 * Determines whether the specified object is of type
 	 * <code>MidiInstrument</code> and has equal map ID, MIDI bank and MIDI program.
 	 * @param obj The reference object with which to compare.
@@ -125,7 +141,10 @@ public class MidiInstrument {
 	 * @return The program number and name of this instrument.
 	 */
 	public String
-	toString() { return String.valueOf(getInfo().getMidiProgram()) + ". " + getName(); }
+	toString() {
+		int i = getFirstProgramNumber() + getInfo().getMidiProgram();
+		return String.valueOf(i) + ". " + getName();
+	}
 	
 	/**
 	 * Notifies listeners that the the MIDI instrument settings are changed.

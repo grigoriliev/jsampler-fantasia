@@ -41,4 +41,8 @@ public interface BasicIconSet {
 	public Icon getReload16Icon();
 	
 	public Icon getPreferences16Icon();
+	
+	public Icon getWarning32Icon();
+	
+	public Icon getQuestion32Icon();
 }

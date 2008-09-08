@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -97,6 +97,7 @@ public class FantasiaPrefs extends StdPrefs {
 		if("rightSidePane.visible".equals(name)) return true;
 		if("rightSidePane.showInstrumentsDb".equals(name)) return true;
 		if("channel.smallView.showChannelNumbering".equals(name)) return true;
+		if("channel.smallView.showStreamVoiceCount".equals(name)) return true;
 		
 		return super.getDefaultBoolValue(name);
 	}

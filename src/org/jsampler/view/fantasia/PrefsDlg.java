@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -24,6 +24,7 @@ package org.jsampler.view.fantasia;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
 
@@ -45,6 +46,7 @@ import org.jsampler.CC;
 import org.jsampler.LSConsoleModel;
 import org.jsampler.Prefs;
 
+import org.jsampler.view.std.JSAdvancedGeneralPropsDlg;
 import org.jsampler.view.std.JSConnectionPropsPane;
 import org.jsampler.view.std.JSDefaultsPropsPane;
 import org.jsampler.view.std.JSGeneralProps;
@@ -62,7 +64,7 @@ import static org.jsampler.view.fantasia.FantasiaPrefs.*;
 public class PrefsDlg extends EnhancedDialog {
 	private final JTabbedPane tabbedPane = new JTabbedPane();
 	
-	private final GeneralPane genPane = new GeneralPane();
+	private final GeneralPane genPane = new GeneralPane(this);
 	private final ViewPane viewPane = new ViewPane();
 	private final ChannelsPropsPane channelsPane = new ChannelsPropsPane();
 	private final ConsolePane consolePane = new ConsolePane();
@@ -167,9 +169,6 @@ public class PrefsDlg extends EnhancedDialog {
 }
 
 class GeneralPane extends JPanel {
-	private final JCheckBox checkTurnOffAnimationEffects =
-		new JCheckBox(i18n.getLabel("GeneralPane.checkTurnOffAnimationEffects"));
-	
 	private final JCheckBox checkShowLSConsoleWhenRunScript =
 		new JCheckBox(i18n.getLabel("GeneralPane.checkShowLSConsoleWhenRunScript"));
 	
@@ -183,22 +182,19 @@ class GeneralPane extends JPanel {
 	
 	private final RecentScriptsPane recentScriptsPane = new RecentScriptsPane();
 	
+	private final JButton btnAdvanced = new JButton(i18n.getButtonLabel("GeneralPane.btnAdvanced"));
+	
+	private final Dialog owner;
+	
 	public
-	GeneralPane() {
+	GeneralPane(Dialog owner) {
+		this.owner = owner;
+		
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		
-		checkTurnOffAnimationEffects.setAlignmentX(JPanel.LEFT_ALIGNMENT);
-		
-		boolean b = !preferences().getBoolProperty(ANIMATED);
-		checkTurnOffAnimationEffects.setSelected(b);
-		
-		add(checkTurnOffAnimationEffects);
-		
-		add(Box.createRigidArea(new Dimension(0, 6)));
 		
 		checkShowLSConsoleWhenRunScript.setAlignmentX(JPanel.LEFT_ALIGNMENT);
 		
-		b = preferences().getBoolProperty(SHOW_LS_CONSOLE_WHEN_RUN_SCRIPT);
+		boolean b = preferences().getBoolProperty(SHOW_LS_CONSOLE_WHEN_RUN_SCRIPT);
 		checkShowLSConsoleWhenRunScript.setSelected(b);
 		
 		add(checkShowLSConsoleWhenRunScript);
@@ -221,21 +217,39 @@ class GeneralPane extends JPanel {
 		add(Box.createRigidArea(new Dimension(0, 6)));
 		
 		add(recentScriptsPane);
+		
+		add(Box.createRigidArea(new Dimension(0, 6)));
+		
+		JPanel p = new JPanel();
+		p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
+		
+		JPanel p2 = new JPanel();
+		p2.setLayout(new BorderLayout());
+		p.add(p2);
+		p.add(btnAdvanced);
+		p.setAlignmentX(JPanel.LEFT_ALIGNMENT);
+		add(p);
+		
 		add(Box.createGlue());
 		
 		setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
 		
-		
+		btnAdvanced.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) { showAdvancedProperties(); }
+		});
+	}
+	
+	private void
+	showAdvancedProperties() {
+		new JSAdvancedGeneralPropsDlg(owner).setVisible(true);
 	}
 	
 	protected void
 	apply() {
 		maxVolPane.apply();
 		
-		boolean b = !checkTurnOffAnimationEffects.isSelected();
-		preferences().setBoolProperty(ANIMATED, b);
-		
-		b = checkShowLSConsoleWhenRunScript.isSelected();
+		boolean b = checkShowLSConsoleWhenRunScript.isSelected();
 		preferences().setBoolProperty(SHOW_LS_CONSOLE_WHEN_RUN_SCRIPT, b);
 		
 		b = checkShowVolumesInDecibels.isSelected();
@@ -260,6 +274,9 @@ class GeneralPane extends JPanel {
 }
 
 class ViewPane extends JPanel {
+	private final JCheckBox checkTurnOffAnimationEffects =
+		new JCheckBox(i18n.getLabel("GeneralPane.checkTurnOffAnimationEffects"));
+	
 	private final JCheckBox checkTurnOffCustomWindowDecoration =
 		new JCheckBox(i18n.getLabel("ViewPane.checkTurnOffCustomWindowDecoration"));
 	
@@ -275,7 +292,16 @@ class ViewPane extends JPanel {
 	ViewPane() {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
-		boolean b = preferences().getBoolProperty("TurnOffCustomWindowDecoration");
+		checkTurnOffAnimationEffects.setAlignmentX(JPanel.LEFT_ALIGNMENT);
+		
+		boolean b = !preferences().getBoolProperty(ANIMATED);
+		checkTurnOffAnimationEffects.setSelected(b);
+		
+		add(checkTurnOffAnimationEffects);
+		
+		add(Box.createRigidArea(new Dimension(0, 6)));
+		
+		b = preferences().getBoolProperty("TurnOffCustomWindowDecoration");
 		checkTurnOffCustomWindowDecoration.setSelected(b);
 		checkTurnOffCustomWindowDecoration.setAlignmentX(JPanel.LEFT_ALIGNMENT);
 		add(checkTurnOffCustomWindowDecoration);
@@ -294,6 +320,9 @@ class ViewPane extends JPanel {
 	
 	protected void
 	apply() {
+		boolean b = !checkTurnOffAnimationEffects.isSelected();
+		preferences().setBoolProperty(ANIMATED, b);
+		
 		String s = "TurnOffCustomWindowDecoration";
 		preferences().setBoolProperty(s, checkTurnOffCustomWindowDecoration.isSelected());
 		
@@ -313,6 +342,9 @@ class ChannelsPropsPane extends JPanel {
 	private final JCheckBox checkShowMidiInfo =
 		new JCheckBox(i18n.getLabel("ChannelsPropsPane.checkShowMidiInfo"));
 	
+	private final JCheckBox checkShowStreamVoiceCount =
+		new JCheckBox(i18n.getLabel("ChannelsPropsPane.checkShowStreamVoiceCount"));
+	
 	ChannelsPropsPane() {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
@@ -329,6 +361,9 @@ class ChannelsPropsPane extends JPanel {
 		
 		b = checkShowMidiInfo.isSelected();
 		preferences().setBoolProperty("channel.smallView.showMidiInfo", b);
+		
+		b = checkShowStreamVoiceCount.isSelected();
+		preferences().setBoolProperty("channel.smallView.showStreamVoiceCount", b);
 	}
 	
 	private JPanel
@@ -345,6 +380,11 @@ class ChannelsPropsPane extends JPanel {
 		checkShowMidiInfo.setSelected(b);
 		checkShowMidiInfo.setAlignmentX(LEFT_ALIGNMENT);
 		p.add(checkShowMidiInfo);
+		
+		b = preferences().getBoolProperty("channel.smallView.showStreamVoiceCount");
+		checkShowStreamVoiceCount.setSelected(b);
+		checkShowStreamVoiceCount.setAlignmentX(LEFT_ALIGNMENT);
+		p.add(checkShowStreamVoiceCount);
 		
 		String s = i18n.getLabel("ChannelsPropsPane.smallView");
 		p.setBorder(BorderFactory.createTitledBorder(s));

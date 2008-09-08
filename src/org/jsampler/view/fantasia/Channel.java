@@ -441,7 +441,8 @@ public class Channel extends JSChannel {
 		}
 	}
 	
-	
+	public ViewTracker
+	getViewTracker() { return viewTracker; }
 	
 	class ViewTracker extends MouseAdapter implements PropertyChangeListener {
 		private ChannelView originalView;

@@ -731,17 +731,25 @@ class InstrumentMappingWizardPage extends WizardPage  {
 	
 	private final JTextField tfName = new JTextField();
 	private final JComboBox cbMap = new JComboBox();
-	private final JSpinner spinnerBank = new JSpinner(new SpinnerNumberModel(0, 0, 16383, 1));
+	private final JSpinner spinnerBank;
 	private final JComboBox cbProgram = new JComboBox();
 	private final JSlider slVolume = StdUtils.createVolumeSlider();
 	
 	private final NewMidiInstrumentWizardModel wizardModel;
+	
+	private int mbBase;
+	private int mpBase;
 	
 	InstrumentMappingWizardPage(NewMidiInstrumentWizardModel wizardModel) {
 		super(i18n.getLabel("InstrumentMappingWizardPage.subtitle"));
 		this.wizardModel = wizardModel;
 		
 		setPageType(Type.CONFIRMATION_PAGE);
+		
+		mbBase = CC.getViewConfig().getFirstMidiBankNumber();
+		mpBase = CC.getViewConfig().getFirstMidiProgramNumber();
+		
+		spinnerBank = new JSpinner(new SpinnerNumberModel(mbBase, mbBase, 16383 + mbBase, 1));
 		
 		GridBagLayout gridbag = new GridBagLayout();
 		GridBagConstraints c = new GridBagConstraints();
@@ -835,7 +843,7 @@ class InstrumentMappingWizardPage extends WizardPage  {
 		cbMap.setEnabled(cbMap.getItemCount() > 0);
 		
 		
-		for(int i = 0; i < 128; i++) cbProgram.addItem(new Integer(i));
+		for(int i = 0; i < 128; i++) cbProgram.addItem(new Integer(i) + mpBase);
 		
 		cbMap.addActionListener(new ActionListener() {
 			public void
@@ -866,7 +874,7 @@ class InstrumentMappingWizardPage extends WizardPage  {
 		MidiInstrumentMap map = (MidiInstrumentMap)cbMap.getSelectedItem();
 		MidiInstrumentEntry entry = map.getAvailableEntry();
 		if(entry == null) return;
-		spinnerBank.setValue(entry.getMidiBank());
+		setMidiBank(entry.getMidiBank());
 		cbProgram.setSelectedIndex(entry.getMidiProgram());
 	}
 	
@@ -901,13 +909,19 @@ class InstrumentMappingWizardPage extends WizardPage  {
 	getMapId() { return ((MidiInstrumentMap)cbMap.getSelectedItem()).getMapId(); }
 	
 	/**
-	 * Gets the selected MIDI bank.
+	 * Gets the selected MIDI bank (always zero-based).
 	 */
 	public int
-	getMidiBank() { return Integer.parseInt(spinnerBank.getValue().toString()); }
+	getMidiBank() { return Integer.parseInt(spinnerBank.getValue().toString()) - mbBase; }
 	
 	/**
-	 * Gets the selected MIDI program.
+	 * Sets the selected MIDI bank (always zero-based).
+	 */
+	public void
+	setMidiBank(int bank) { spinnerBank.setValue(mbBase + bank); }
+	
+	/**
+	 * Gets the selected MIDI program (always zero-based).
 	 */
 	public int
 	getMidiProgram() { return cbProgram.getSelectedIndex(); }

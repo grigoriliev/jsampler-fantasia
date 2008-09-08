@@ -33,6 +33,30 @@ CVS HEAD
 
   * Reimplemented the MIDI bank/program assignment algorithm
 
+  * Added `Copy To' and `Move To' commands to the MIDI bank context menu
+    and to the MIDI instrument context menu
+
+  * Added commands to the MIDI instrument context menu for moving
+    a MIDI instrument to another program
+    (right-click on a MIDI instrument and choose `Change Program')
+
+  * Added option to choose between zero-based and one-based
+    MIDI bank/program numbering
+    (choose Edit/Preferences, then click the `Advanced' button)
+
+  * Added option to choose whether to include MIDI instrument
+    mappings when exporting a sampler configuration to LSCP script.
+    (choose Edit/Preferences, then click the `Advanced' button)
+
+  * Added option to set the MIDI instrument loading in background
+    when exporting MIDI instrument mappings to LSCP script.
+    (choose Edit/Preferences, then click the `Advanced' button)
+
+  * Implemented an option to change the socket read timeout
+    (choose Edit/Preferences, then click the `Backend' tab)
+
+  * Updated LscpTree
+
   * Fantasia:
     - Major memory optimizations when too many sampler channels are present
     - Added option to show the Instruments Database on
@@ -53,6 +77,10 @@ CVS HEAD
       input port/channel on the sampler channel screen when using Small View
       (choose Edit/Preferences, then click the `Channels' tab)
     - Added toolbar to the Right-Side Pane's Instruments Database
+    - Added option to hide the active stream/voice count statistic in
+      the sampler channel's small view
+      (choose Edit/Preferences, then click the `Channels' tab)
+    - `Turn off animation effects' checkbox moved to the `View' tab
     - Migrated to substance 5
 
   * Bug fixes:

@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -49,6 +49,9 @@ public class DevicesPane extends JPanel {
 	private final TaskPane midiDevicesTaskPane = new TaskPane();
 	private final TaskPane audioDevicesTaskPane = new TaskPane();
 	
+	private final MidiDevicesPane midiDevicesPane = new MidiDevicesPane();
+	private final AudioDevicesPane audioDevicesPane = new AudioDevicesPane();
+	
 	/** Creates a new instance of <code>DevicesPane</code> */
 	public
 	DevicesPane() {
@@ -89,9 +92,15 @@ public class DevicesPane extends JPanel {
 		taskPaneContainer.setBorder(BorderFactory.createEmptyBorder());
 		add(taskPaneContainer);
 		
-		midiDevicesTaskPane.add(new MidiDevicesPane());
-		audioDevicesTaskPane.add(new AudioDevicesPane());
+		midiDevicesTaskPane.add(midiDevicesPane);
+		audioDevicesTaskPane.add(audioDevicesPane);
 		
 		taskPaneContainer.setOpaque(false);
 	}
+	
+	public MidiDevicesPane
+	getMidiDevicesPane() { return midiDevicesPane; }
+	
+	public AudioDevicesPane
+	getAudioDevicesPane() { return audioDevicesPane; }
 }

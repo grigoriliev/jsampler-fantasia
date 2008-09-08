@@ -74,6 +74,47 @@ public class ViewConfig extends JSViewConfig {
 	public JSPrefs
 	preferences() { return FantasiaPrefs.preferences(); }
 	
+	/** Exports the view configuration of the current session. */
+	public String
+	exportSessionViewConfig() {
+		StringBuffer sb = new StringBuffer();
+		MainFrame frame = (MainFrame)CC.getMainFrame();
+		
+		for(int i = 0; i < frame.getChannelsPane(0).getChannelCount(); i++) {
+			Channel c = (Channel)frame.getChannelsPane(0).getChannel(i);
+			
+			sb.append("#jsampler.fantasia: [channel]\r\n");
+			
+			switch(c.getViewTracker().getOriginalView().getType()) {
+				case SMALL:
+					sb.append("#jsampler.fantasia: viewType = SMALL\r\n");
+					break;
+					
+				case NORMAL:
+					sb.append("#jsampler.fantasia: viewType = NORMAL\r\n");
+					break;
+			}
+			
+			sb.append("#jsampler.fantasia: \r\n");
+		}
+		
+		MidiDevicesPane midi = frame.getRightSidePane().getDevicesPane().getMidiDevicesPane();
+		
+		for(int i = 0; i < midi.getDevicePaneCount(); i++) {
+			sb.append("#jsampler.fantasia: [MIDI device]\r\n");
+			
+			if(midi.getDevicePaneAt(i).isOptionsPaneExpanded()) {
+				sb.append("#jsampler.fantasia: expanded = true\r\n");
+			} else {
+				sb.append("#jsampler.fantasia: expanded = false\r\n");
+			}
+			
+			sb.append("#jsampler.fantasia: \r\n");
+		}
+		
+		return sb.toString();
+	}
+	
 	public InstrumentsDbTreeView
 	getInstrumentsDbTreeView() { return instrumentsDbTreeView; }
 	
@@ -126,6 +167,12 @@ public class ViewConfig extends JSViewConfig {
 		
 		public Icon
 		getPreferences16Icon() { return Res.iconPreferences16; }
+		
+		public Icon
+		getWarning32Icon() { return Res.iconWarning32; }
+		
+		public Icon
+		getQuestion32Icon() { return Res.iconQuestion32; }
 	}
 	
 	public boolean

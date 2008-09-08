@@ -42,7 +42,9 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
 
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -71,6 +73,11 @@ public class JSConnectionPropsPane extends JPanel {
 	private final JCheckBox checkManualSelect =
 		new JCheckBox(i18n.getLabel("JSConnectionPropsPane.checkManualSelect"));
 	
+	private final JLabel lReadTimeout =
+		new JLabel(i18n.getLabel("JSConnectionPropsPane.lReadTimeout"));
+	
+	private final JSpinner spinnerTimeout = new JSpinner(new SpinnerNumberModel(0, 0, 2000, 1));
+	
 	private final ServerListPane serverListPane;
 	
 	
@@ -85,6 +92,22 @@ public class JSConnectionPropsPane extends JPanel {
 		checkManualSelect.setAlignmentX(LEFT_ALIGNMENT);
 		add(checkManualSelect);
 		add(Box.createRigidArea(new Dimension(0, 6)));
+		
+		JPanel p = new JPanel();
+		p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
+		
+		p.add(lReadTimeout);
+		p.add(Box.createRigidArea(new Dimension(6, 0)));
+		
+		int i = preferences().getIntProperty(SOCKET_READ_TIMEOUT);
+		spinnerTimeout.setValue(i);
+		p.add(spinnerTimeout);
+		
+		p.setAlignmentX(LEFT_ALIGNMENT);
+		p.setMaximumSize(new Dimension(Short.MAX_VALUE, p.getPreferredSize().height));
+		add(p);
+		add(Box.createRigidArea(new Dimension(0, 6)));
+		
 		serverListPane = createServerListPane();
 		add(serverListPane);
 		setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
@@ -106,10 +129,20 @@ public class JSConnectionPropsPane extends JPanel {
 	private static JSPrefs
 	preferences() { return CC.getViewConfig().preferences(); }
 	
+	/**
+	 * Gets the read timeout in seconds.
+	 */
+	public int
+	getReadTimeout() { return Integer.parseInt(spinnerTimeout.getValue().toString()); }
+	
 	public void
 	apply() {
 		boolean b = checkManualSelect.isSelected();
 		preferences().setBoolProperty(MANUAL_SERVER_SELECT_ON_STARTUP, b);
+		
+		preferences().setIntProperty(SOCKET_READ_TIMEOUT, getReadTimeout());
+		
+		CC.setClientReadTimeout(getReadTimeout());
 		
 		int i = serverListPane.serverTable.getSelectedRow();
 		if(i != -1) preferences().setIntProperty(SERVER_INDEX, i);

@@ -25,6 +25,7 @@ package org.jsampler.view.classic;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.GraphicsEnvironment;
 import java.awt.Font;
@@ -64,6 +65,7 @@ import org.jsampler.JSampler;
 import org.jsampler.LSConsoleModel;
 import org.jsampler.Prefs;
 
+import org.jsampler.view.std.JSAdvancedGeneralPropsDlg;
 import org.jsampler.view.std.JSColorButton;
 import org.jsampler.view.std.JSConnectionPropsPane;
 import org.jsampler.view.std.JSDefaultsPropsPane;
@@ -82,7 +84,7 @@ import static org.jsampler.view.std.StdPrefs.*;
 public class PrefsDlg extends EnhancedDialog {
 	private final JTabbedPane tabbedPane = new JTabbedPane();
 	
-	private final GeneralPane genPane = new GeneralPane();
+	private final GeneralPane genPane = new GeneralPane(this);
 	private final ViewPane viewPane = new ViewPane();
 	private final ConsolePane consolePane = new ConsolePane();
 	private final JSConnectionPropsPane connectionPane = new JSConnectionPropsPane();
@@ -207,9 +209,14 @@ class GeneralPane extends JPanel {
 	
 	private final RecentScriptsPane recentScriptsPane = new RecentScriptsPane();
 	
+	private final JButton btnAdvanced = new JButton(i18n.getButtonLabel("GeneralPane.btnAdvanced"));
+	
+	private final Dialog owner;
 	
 	public
-	GeneralPane() {
+	GeneralPane(Dialog owner) {
+		this.owner = owner;
+		
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
 		checkWindowSizeAndLocation.setAlignmentX(JPanel.LEFT_ALIGNMENT);
@@ -252,9 +259,32 @@ class GeneralPane extends JPanel {
 		add(Box.createRigidArea(new Dimension(0, 6)));
 		
 		add(recentScriptsPane);
+		
+		add(Box.createRigidArea(new Dimension(0, 6)));
+		
+		JPanel p = new JPanel();
+		p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
+		
+		JPanel p2 = new JPanel();
+		p2.setLayout(new BorderLayout());
+		p.add(p2);
+		p.add(btnAdvanced);
+		p.setAlignmentX(JPanel.LEFT_ALIGNMENT);
+		add(p);
+		
 		add(Box.createGlue());
 		
 		setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+		
+		btnAdvanced.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) { showAdvancedProperties(); }
+		});
+	}
+	
+	private void
+	showAdvancedProperties() {
+		new JSAdvancedGeneralPropsDlg(owner).setVisible(true);
 	}
 	
 	protected void

@@ -53,13 +53,10 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import net.sf.juife.Dial;
-import net.sf.juife.JuifeUtils;
 
 import org.jsampler.CC;
-import org.jsampler.HF;
-import org.jsampler.SamplerChannelModel;
 
-import org.jvnet.substance.SubstanceImageCreator;
+import org.jvnet.substance.utils.SubstanceImageCreator;
 
 import org.linuxsampler.lscp.SamplerChannel;
 import org.linuxsampler.lscp.SamplerEngine;

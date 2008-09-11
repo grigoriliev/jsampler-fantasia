@@ -190,7 +190,34 @@ public class Global {
 			try { setResult(CC.getClient().getFileInstruments(filename)); }
 			catch(Exception x) {
 				String s = getDescription() + ": " + HF.getErrorMessage(x);
-				CC.getLogger().log(Level.FINER, s, x);
+				CC.getLogger().log(Level.FINE, s, x);
+			}
+		}
+	}
+	
+	/**
+	 * This task gets information about the specified instrument.
+	 */
+	public static class GetFileInstrument extends EnhancedTask<Instrument> {
+		private final String filename;
+		private final int instrIdx;
+		
+		/** Creates a new instance of <code>GetFileInstrument</code>. */
+		public
+		GetFileInstrument(String filename, int instrIdx) {
+			this.filename = filename;
+			this.instrIdx = instrIdx;
+			setTitle("Global.GetFileInstrument_task");
+			setDescription(i18n.getMessage("Global.GetFileInstrument.desc"));
+		}
+	
+		/** The entry point of the task. */
+		public void
+		run() {
+			try { setResult(CC.getClient().getFileInstrumentInfo(filename, instrIdx)); }
+			catch(Exception x) {
+				String s = getDescription() + ": " + HF.getErrorMessage(x);
+				CC.getLogger().log(Level.FINE, s, x);
 			}
 		}
 	}

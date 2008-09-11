@@ -97,7 +97,7 @@ public class JSAdvancedGeneralPropsDlg extends OkCancelDialog {
 	
 	public static class MidiBankProgramNumberingPane extends JPanel {
 		private final JLabel lFirstBank =
-		new JLabel(i18n.getLabel("JSAdvancedGeneralPropsDlg.lFirstBank"));
+			new JLabel(i18n.getLabel("JSAdvancedGeneralPropsDlg.lFirstBank"));
 		
 		private final JLabel lFirstProgram =
 			new JLabel(i18n.getLabel("JSAdvancedGeneralPropsDlg.lFirstProgram"));

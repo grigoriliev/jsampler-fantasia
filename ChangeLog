@@ -59,6 +59,7 @@ CVS HEAD
 
   * Fantasia:
     - Major memory optimizations when too many sampler channels are present
+    - Implemented virtual MIDI keyboard
     - Added option to show the Instruments Database on
       the Right-Side Pane of the Fantasia's main window
       (choose Edit/Preferences, then click the `View' tab)

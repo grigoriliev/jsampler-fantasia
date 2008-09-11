@@ -27,6 +27,8 @@ import java.awt.Insets;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import java.beans.PropertyChangeEvent;
@@ -152,6 +154,7 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 		
 		addEnhancedMouseListener(channel.getContextMenu());
 		CC.getSamplerModel().addSamplerChannelListListener(getHandler());
+		addEnhancedMouseListener(getHandler());
 	}
 	
 	public void
@@ -161,6 +164,7 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 		screen.onDestroy();
 		btnOptions.onDestroy();
 		uninstallChannelOptionsView();
+		removeEnhancedMouseListener(getHandler());
 	}
 	
 	public void
@@ -266,7 +270,7 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 	private EventHandler
 	getHandler() { return eventHandler; }
 	
-	private class EventHandler implements SamplerChannelListListener {
+	private class EventHandler extends MouseAdapter implements SamplerChannelListListener {
 		public void
 		channelAdded(SamplerChannelListEvent e) {
 			if(CC.getSamplerModel().getChannelListIsAdjusting()) return;
@@ -278,6 +282,14 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 			//if(CC.getSamplerModel().getChannelListIsAdjusting()) return; //TODO: 
 			
 			screen.channelInfoPane.updateChannelIndex();
+		}
+		
+		public void
+		mouseClicked(MouseEvent e) {
+			if(e.getButton() != e.BUTTON1) return;
+			// TAG: channel selection system
+			CC.getMainFrame().getChannelsPane(0).setSelectedChannel(channel);
+			///////
 		}
 	}
 	

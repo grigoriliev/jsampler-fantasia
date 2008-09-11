@@ -68,7 +68,6 @@ import org.jsampler.event.MidiInstrumentMapEvent;
 import org.jsampler.event.MidiInstrumentMapListener;
 
 import org.linuxsampler.lscp.MidiInstrumentInfo;
-import org.linuxsampler.lscp.MidiInstrumentMapInfo;
 
 import net.sf.juife.OkCancelDialog;
 

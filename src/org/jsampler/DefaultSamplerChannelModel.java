@@ -50,6 +50,9 @@ import org.jsampler.task.DuplicateChannels;
 import org.linuxsampler.lscp.FxSend;
 import org.linuxsampler.lscp.SamplerChannel;
 
+import org.linuxsampler.lscp.event.MidiDataEvent;
+import org.linuxsampler.lscp.event.MidiDataListener;
+
 
 /**
  * This class provides default implementation of the <code>SamplerChannelModel</code> interface.
@@ -68,6 +71,8 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	private final Vector<EffectSendsListener> fxListeners = new Vector<EffectSendsListener>();
 	
 	private final Vector<FxSend> fxSends = new Vector<FxSend>();
+	
+	private final Vector<MidiDataListener> midiListeners = new Vector<MidiDataListener>();
 	
 	/**
 	 * Creates a new instance of <code>DefaultSamplerChannelModel</code> using the
@@ -108,6 +113,21 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 */
 	public void
 	removeEffectSendsListener(EffectSendsListener l) { fxListeners.remove(l); }
+	
+	/**
+	 * Registers the specified listener to be notified when
+	 * MIDI events are sent to the channel.
+	 * @param l The <code>MidiDataListener</code> to register.
+	 */
+	public void
+	addMidiDataListener(MidiDataListener l) { midiListeners.add(l); }
+	
+	/**
+	 * Removes the specified listener.
+	 * @param l The <code>MidiDataListener</code> to remove.
+	 */
+	public void
+	removeMidiDataListener(MidiDataListener l) { midiListeners.remove(l); }
 	
 	/**
 	 * Gets the sampler channel number.
@@ -677,6 +697,25 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 		CC.getTaskQueue().add(new Channel.SetFxSendLevel(getChannelId(), fxSend, level));
 	}
 	
+	/**
+	 * Sends a MIDI data message to this sampler channel.
+	 */
+	public void
+	sendBackendMidiData(MidiDataEvent e) {
+		sendBackendMidiData(e.getType(), e.getNote(), e.getVelocity());
+	}
+	
+	/**
+	 * Sends a MIDI data message to this sampler channel.
+	 * @param type The type of MIDI message to send.
+	 * @param arg1 Depends on the message type.
+	 * @param arg2 Depends on the message type.
+	 */
+	public void
+	sendBackendMidiData(MidiDataEvent.Type type, int arg1, int arg2) {
+		CC.getTaskQueue().add(new Channel.SendMidiMsg(getChannelId(), type, arg1, arg2));
+	}
+	
 	/** Notifies listeners that the sampler channel settings has changed. */
 	protected void
 	fireSamplerChannelChanged() {
@@ -801,5 +840,14 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	fireFxSendUpdated(EffectSendsEvent e) {
 		CC.getSamplerModel().setModified(true);
 		for(EffectSendsListener l : fxListeners) l.effectSendChanged(e);
+	}
+	
+	/** 
+	 * Notifies listeners that the specified effect send has been updated.
+	 * This method should be invoked from the event-dispatching thread.
+	 */
+	protected void
+	fireMidiDataEvent(MidiDataEvent e) {
+		for(MidiDataListener l : midiListeners) l.midiDataArrived(e);
 	}
 }

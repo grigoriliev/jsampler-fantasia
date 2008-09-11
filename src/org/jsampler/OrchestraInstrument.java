@@ -97,6 +97,12 @@ public class OrchestraInstrument extends Resource implements org.linuxsampler.ls
 	public String
 	getFormatVersion() { return null; }
 	
+	public Integer[]
+	getKeyMapping() { return null; }
+	
+	public Integer[]
+	getKeyswitchMapping() { return null; }
+	
 	/**
 	 * Returns the name of this instrument.
 	 * @return The name of this instrument.

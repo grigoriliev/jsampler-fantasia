@@ -97,6 +97,11 @@ public class ChannelsPane extends JSChannelsPane implements ListSelectionListene
 		
 	}
 	
+	public void
+	setSelectedChannel(JSChannel channel) {
+		chnList.setSelectedComponent(channel, true);
+	}
+	
 	/**
 	 * Adds new channel to this channels pane.
 	 * @param channelModel The sampler channel model to be used by the new channel.

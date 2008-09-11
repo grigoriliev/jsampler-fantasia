@@ -306,6 +306,9 @@ public class CC {
 		
 		getClient().removeGlobalInfoListener(getHandler());
 		getClient().addGlobalInfoListener(getHandler());
+		
+		getClient().removeChannelMidiDataListener(getHandler());
+		getClient().addChannelMidiDataListener(getHandler());
 	}
 	
 	/**
@@ -1116,7 +1119,7 @@ public class CC {
 		FxSendCountListener, FxSendInfoListener, StreamCountListener, VoiceCountListener,
 		TotalStreamCountListener, TotalVoiceCountListener, TaskQueueListener,
 		OrchestraListener, ListListener<OrchestraModel>, MidiInstrumentCountListener,
-		MidiInstrumentInfoListener, GlobalInfoListener {
+		MidiInstrumentInfoListener, GlobalInfoListener, ChannelMidiDataListener {
 		
 		/** Invoked when the number of channels has changed. */
 		public void
@@ -1333,6 +1336,32 @@ public class CC {
 			e.getEntry().removeOrchestraListener(getHandler());
 			saveOrchestras();
 		}
+		
+		/**
+		 * Invoked when MIDI data arrives.
+		 */
+		public void
+		midiDataArrived(final ChannelMidiDataEvent e) {
+			try {
+				javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
+					public void
+					run() { fireChannelMidiDataEvent(e); }
+				});
+			} catch(Exception x) {
+				CC.getLogger().log(Level.INFO, "Failed!", x);
+			}
+		}
+	}
+	
+	private static void
+	fireChannelMidiDataEvent(ChannelMidiDataEvent e) {
+		SamplerChannelModel chn;
+		chn = CC.getSamplerModel().getChannelById(e.getChannelId());
+		if(chn == null) {
+			CC.getLogger().info("Unknown channel ID: " + e.getChannelId());
+		}
+		
+		((DefaultSamplerChannelModel)chn).fireMidiDataEvent(e);
 	}
 	
 	private static final AudioDeviceCountListener audioDeviceCountListener = 

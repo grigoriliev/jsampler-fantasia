@@ -46,8 +46,6 @@ import javax.swing.JScrollPane;
 import org.jsampler.CC;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
-import static org.jvnet.substance.SubstanceLookAndFeel.SCROLL_PANE_BUTTONS_POLICY;
-import static org.jvnet.substance.api.SubstanceConstants.ScrollPaneButtonPolicyKind;
 
 
 /**
@@ -86,7 +84,7 @@ public class MainPane extends JPanel {
 		add(p);
 		
 		p = createChannelsPane();
-		p.setAlignmentX(LEFT_ALIGNMENT);
+		p.addMouseListener(getHandler());
 		
 		scrollPane = new JScrollPane(p);
 		JScrollPane sp = scrollPane;
@@ -138,6 +136,7 @@ public class MainPane extends JPanel {
 		p.setOpaque(false);
 		p.setBorder(BorderFactory.createEmptyBorder(7, 0, 0, 0));
 		p.setMinimumSize(new Dimension(420, p.getMinimumSize().height));
+		p.setAlignmentX(LEFT_ALIGNMENT);
 		return p;
 	}
 	
@@ -182,6 +181,21 @@ public class MainPane extends JPanel {
 		while(i < getHeight()) {
 			Res.gfxChannelsBg.paintIcon(this, g, 0, i);
 			i += h;
+		}
+	}
+	
+	private final EventHandler eventHandler = new EventHandler();
+	
+	private EventHandler
+	getHandler() { return eventHandler; }
+	
+	private class EventHandler extends MouseAdapter {
+		public void
+		mouseClicked(MouseEvent e) {
+			if(e.getButton() != e.BUTTON1) return;
+			// TAG: channel selection system
+			CC.getMainFrame().getChannelsPane(0).setSelectedChannel(null);
+			///////
 		}
 	}
 	

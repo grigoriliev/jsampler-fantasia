@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -28,6 +28,8 @@ import org.jsampler.event.SamplerChannelListener;
 import org.linuxsampler.lscp.FxSend;
 import org.linuxsampler.lscp.SamplerChannel;
 
+import org.linuxsampler.lscp.event.MidiDataEvent;
+import org.linuxsampler.lscp.event.MidiDataListener;
 
 /**
  * A data model representing a sampler channel.
@@ -59,6 +61,19 @@ public interface SamplerChannelModel {
 	 * @param l The <code>EffectSendsListener</code> to remove.
 	 */
 	public void removeEffectSendsListener(EffectSendsListener l);
+	
+	/**
+	 * Registers the specified listener to be notified when
+	 * MIDI events are sent to the channel.
+	 * @param l The <code>MidiDataListener</code> to register.
+	 */
+	public void addMidiDataListener(MidiDataListener l);
+	
+	/**
+	 * Removes the specified listener.
+	 * @param l The <code>MidiDataListener</code> to remove.
+	 */
+	public void removeMidiDataListener(MidiDataListener l);
 	
 	/**
 	 * Gets the sampler channel number.
@@ -312,4 +327,17 @@ public interface SamplerChannelModel {
 	 * @param level The new volume value.
 	 */
 	public void setBackendFxSendLevel(int fxSend, float level);
+	
+	/**
+	 * Sends a MIDI data message to this sampler channel.
+	 */
+	public void sendBackendMidiData(MidiDataEvent e);
+	
+	/**
+	 * Sends a MIDI data message to this sampler channel.
+	 * @param type The type of MIDI message to send.
+	 * @param arg1 Depends on the message type.
+	 * @param arg2 Depends on the message type.
+	 */
+	public void sendBackendMidiData(MidiDataEvent.Type type, int arg1, int arg2);
 }

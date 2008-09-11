@@ -79,6 +79,9 @@ public class FantasiaPrefs extends StdPrefs {
 		if(name == LS_CONSOLE_WARNING_COLOR) return 0xf19e0e;
 		if(name == LS_CONSOLE_ERROR_COLOR) return 0xfa4a1f;
 		
+		if("midiKeyboard.firstKey".equals(name)) return 0;
+		if("midiKeyboard.lastKey".equals(name)) return 127;
+		
 		return super.getDefaultIntValue(name);
 	}
 	
@@ -95,6 +98,7 @@ public class FantasiaPrefs extends StdPrefs {
 		if("toolBar.visible".equals(name)) return true;
 		if("leftSidePane.visible".equals(name)) return true;
 		if("rightSidePane.visible".equals(name)) return true;
+		if("midiKeyboard.visible".equals(name)) return true;
 		if("rightSidePane.showInstrumentsDb".equals(name)) return true;
 		if("channel.smallView.showChannelNumbering".equals(name)) return true;
 		if("channel.smallView.showStreamVoiceCount".equals(name)) return true;

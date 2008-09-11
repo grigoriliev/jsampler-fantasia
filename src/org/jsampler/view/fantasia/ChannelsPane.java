@@ -91,6 +91,11 @@ public class ChannelsPane extends JSChannelsPane {
 		getMaximumSize() { return getPreferredSize(); }
 	}
 	
+	public void
+	setSelectedChannel(JSChannel channel) {
+		chnList.setSelectedComponent(channel, true);
+	}
+	
 	/**
 	 * Adds new channel to this channels pane.
 	 * @param channelModel The sampler channel model to be used by the new channel.
@@ -224,7 +229,8 @@ public class ChannelsPane extends JSChannelsPane {
 	 */
 	public void
 	addListSelectionListener(ListSelectionListener listener) {
-		listenerList.add(ListSelectionListener.class, listener);
+		listenerList.add(ListSelectionListener.class, listener); //TODO: Remove this?
+		chnList.addListSelectionListener(listener);
 	}
 	
 	/**
@@ -233,7 +239,8 @@ public class ChannelsPane extends JSChannelsPane {
 	 */
 	public void
 	removeListSelectionListener(ListSelectionListener listener) {
-		listenerList.remove(ListSelectionListener.class, listener);
+		listenerList.remove(ListSelectionListener.class, listener); //TODO: Remove this?
+		chnList.removeListSelectionListener(listener);
 	}
 	
 	/**

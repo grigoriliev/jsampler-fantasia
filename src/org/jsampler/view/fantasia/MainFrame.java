@@ -30,13 +30,10 @@ import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.Point;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -47,34 +44,22 @@ import java.util.Vector;
 import java.util.logging.Level;
 
 import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
-import javax.swing.UIManager;
-
-import net.sf.juife.TitleBar;
 
 import org.jsampler.CC;
 import org.jsampler.HF;
 import org.jsampler.LSConsoleModel;
 import org.jsampler.Server;
 
-import org.jsampler.view.JSChannel;
 import org.jsampler.view.JSChannelsPane;
 import org.jsampler.view.JSMainFrame;
 import org.jsampler.view.LscpFileFilter;
@@ -99,11 +84,13 @@ public class MainFrame extends JSMainFrame {
 	private final FantasiaMenuBar menuBar = new FantasiaMenuBar();
 	private final JPanel rootPane = new JPanel();
 	private final MainPane mainPane = new MainPane();
+	private final PianoKeyboardPane pianoKeyboardPane;
 	
 	private final JMenu recentScriptsMenu =
 		new JMenu(i18n.getMenuLabel("actions.recentScripts"));
 	
 	private final JSplitPane hSplitPane;
+	private final JSplitPane pianoRollSplitPane;
 	
 	private final LeftSidePane leftSidePane = new LeftSidePane();
 	private final RightSidePane rightSidePane = new RightSidePane();
@@ -123,6 +110,9 @@ public class MainFrame extends JSMainFrame {
 	
 	private final JCheckBoxMenuItem cbmiRightSidePaneVisible =
 			new JCheckBoxMenuItem(i18n.getMenuLabel("view.rightSidePane"));
+	
+	private final JCheckBoxMenuItem cbmiMidiKeyboardVisible =
+			new JCheckBoxMenuItem(i18n.getMenuLabel("view.midiKeyboard"));
 	
 	private final Timer guiTimer = new Timer(1000, null);
 	
@@ -145,6 +135,19 @@ public class MainFrame extends JSMainFrame {
 		);
 		hSplitPane.setResizeWeight(0.5);
 		
+		addChannelsPane(mainPane.getChannelsPane());
+		
+		pianoKeyboardPane = new PianoKeyboardPane();
+		getChannelsPane(0).addListSelectionListener(pianoKeyboardPane);
+		
+		pianoRollSplitPane = new JSplitPane (
+			JSplitPane.VERTICAL_SPLIT,
+			true,	// continuousLayout 
+			rootPane, pianoKeyboardPane
+		);
+		
+		pianoRollSplitPane.setResizeWeight(0.5);
+		
 		rootPane.setLayout(new BorderLayout());
 		rootPane.setBorder(BorderFactory.createEmptyBorder(6, 0, 0, 0));
 		rootPane.setOpaque(false);
@@ -152,9 +155,7 @@ public class MainFrame extends JSMainFrame {
 		
 		addMenu();
 		
-		addChannelsPane(mainPane.getChannelsPane());
-		
-		getContentPane().add(rootPane);
+		getContentPane().add(pianoRollSplitPane);
 		
 		int i = preferences().getIntProperty("MainFrame.hSplitDividerLocation", 220);
 		hSplitPane.setDividerLocation(i);
@@ -430,6 +431,21 @@ public class MainFrame extends JSMainFrame {
 		b = preferences().getBoolProperty("rightSidePane.visible");
 		cbmiRightSidePaneVisible.setSelected(b);
 		showDevicesPane(b);
+		
+		m.addSeparator();
+		
+		m.add(cbmiMidiKeyboardVisible);
+		
+		cbmiMidiKeyboardVisible.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) {
+				showMidiKeyboard(cbmiMidiKeyboardVisible.getState());
+			}
+		});
+		
+		b = preferences().getBoolProperty("midiKeyboard.visible");
+		cbmiMidiKeyboardVisible.setSelected(b);
+		showMidiKeyboard(b);
 		
 		
 		// Window
@@ -707,6 +723,23 @@ public class MainFrame extends JSMainFrame {
 	}
 	
 	private void
+	showMidiKeyboard(boolean b) {
+		preferences().setBoolProperty("midiKeyboard.visible", b);
+		if(b) {
+			getContentPane().remove(rootPane);
+			pianoRollSplitPane.setTopComponent(rootPane);
+			getContentPane().add(pianoRollSplitPane);
+		} else {
+			getContentPane().remove(pianoRollSplitPane);
+			pianoRollSplitPane.remove(rootPane);
+			getContentPane().add(rootPane);
+		}
+		
+		getContentPane().validate();
+		getContentPane().repaint();
+	}
+	
+	private void
 	sidePanesVisibilityChanged() {
 		boolean leftSidePaneVisible = cbmiLeftSidePaneVisible.isSelected();
 		boolean rightSidePaneVisible = cbmiRightSidePaneVisible.isSelected();
@@ -745,6 +778,7 @@ public class MainFrame extends JSMainFrame {
 			super(s);
 			setFont(getFont().deriveFont(java.awt.Font.BOLD));
 			setOpaque(false);
+			setContentAreaFilled(false);
 		}
 	}
 

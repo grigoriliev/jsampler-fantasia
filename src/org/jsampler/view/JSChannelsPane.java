@@ -142,6 +142,11 @@ public abstract class JSChannelsPane extends JPanel {
 	public abstract int getSelectedChannelCount();
 	
 	/**
+	 * Selects the specified channel.
+	 */
+	public abstract void setSelectedChannel(JSChannel channel);
+	
+	/**
 	 * Removes all selected channels in this channels pane.
 	 * Notice that this method does not remove any channels in the back-end.
 	 * It is invoked after the channels are already removed in the back-end.

@@ -38,7 +38,6 @@ import java.beans.PropertyChangeListener;
 
 import java.util.Vector;
 
-import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -231,6 +230,7 @@ public class NormalChannelView extends PixmapPane implements ChannelView {
 		screen.installListeners();
 		
 		addEnhancedMouseListener(channel.getContextMenu());
+		addEnhancedMouseListener(getHandler());
 	}
 	
 	public void
@@ -239,6 +239,7 @@ public class NormalChannelView extends PixmapPane implements ChannelView {
 		btnOptions.onDestroy();
 		uninstallChannelOptionsView();
 		//removeEnhancedMouseListener(channel.getContextMenu());
+		removeEnhancedMouseListener(getHandler());
 	}
 	
 	public void
@@ -469,6 +470,21 @@ public class NormalChannelView extends PixmapPane implements ChannelView {
 		
 		public boolean
 		contains(int x, int y) { return (x > 5 && x < 23) && (y > 5 && y < 16); }
+	}
+	
+	private final EventHandler eventHandler = new EventHandler();
+	
+	private EventHandler
+	getHandler() { return eventHandler; }
+	
+	private class EventHandler extends MouseAdapter {
+		public void
+		mouseClicked(MouseEvent e) {
+			if(e.getButton() != e.BUTTON1) return;
+			// TAG: channel selection system
+			CC.getMainFrame().getChannelsPane(0).setSelectedChannel(channel);
+			///////
+		}
 	}
 }
 

@@ -33,6 +33,7 @@ import org.jsampler.SamplerChannelModel;
 import org.jsampler.SamplerModel;
 
 import org.linuxsampler.lscp.FxSend;
+import org.linuxsampler.lscp.event.MidiDataEvent;
 
 import static org.jsampler.JSI18n.i18n;
 import static org.jsampler.JSPrefs.*;
@@ -1084,6 +1085,44 @@ public class Channel {
 			try { CC.getClient().editChannelInstrument(chn); }
 			catch(Exception x) {
 				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
+				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
+			}
+		}
+	}
+
+	/**
+	 * This task starts an instrument editor for editing the loaded instrument
+	 * on the specified sampler channel.
+	 */
+	public static class SendMidiMsg extends EnhancedTask {
+		private int chn;
+		private MidiDataEvent.Type type;
+		private int arg1;
+		private int arg2;
+		
+		/**
+		 * Creates new instance of <code>SendMidiMsg</code>.
+		 * @param channel The sampler channel number.
+		 */
+		public
+		SendMidiMsg(int channel, MidiDataEvent.Type type, int arg1, int arg2) {
+			this.chn = channel;
+			this.type = type;
+			this.arg1 = arg1;
+			this.arg2 = arg2;
+			
+			setTitle("Channel.SendMidiMsg_task");
+			String s = i18n.getMessage("Channel.SendMidiMsg.desc", channel);
+			setDescription(s);
+			
+			
+		}
+	
+		/** The entry point of the task. */
+		public void
+		run() {
+			try { CC.getClient().sendChannelMidiData(chn, type, arg1, arg2); }
+			catch(Exception x) {
 				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
 			}
 		}

@@ -25,8 +25,6 @@ package org.jsampler.view.fantasia;
 import java.awt.BorderLayout;
 
 import javax.swing.BorderFactory;
-import javax.swing.JComponent;
-import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
 import org.jvnet.substance.SubstanceLookAndFeel;

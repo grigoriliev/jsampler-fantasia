@@ -33,11 +33,6 @@ import javax.swing.JButton;
 
 import javax.swing.plaf.basic.BasicButtonUI;
 
-import org.jvnet.lafwidget.animation.FadeConfigurationManager;
-import org.jvnet.lafwidget.animation.FadeKind;
-
-import org.jvnet.substance.SubstanceLookAndFeel;
-
 
 /**
  *

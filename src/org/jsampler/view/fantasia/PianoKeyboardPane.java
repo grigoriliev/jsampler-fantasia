@@ -22,13 +22,39 @@
 
 package org.jsampler.view.fantasia;
 
-import java.awt.BorderLayout;
+import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Composite;
+import java.awt.Dimension;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Paint;
+import java.awt.RenderingHints;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseAdapter;
+
+import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JToggleButton;
 
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -48,19 +74,24 @@ import org.jsampler.view.JSChannel;
 import org.jsampler.view.std.JSPianoRoll;
 
 import org.linuxsampler.lscp.Instrument;
+import org.linuxsampler.lscp.SamplerChannel;
 
 import org.linuxsampler.lscp.event.MidiDataEvent;
 import org.linuxsampler.lscp.event.MidiDataListener;
 
+import static javax.swing.Action.SMALL_ICON;
 import static org.jsampler.task.Global.GetFileInstrument;
+import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 
 /**
  *
  * @author Grigor Iliev
  */
-public class PianoKeyboardPane extends PixmapPane
+public class PianoKeyboardPane extends FantasiaPanel
 			       implements ListSelectionListener, SamplerChannelListListener {
 	
+	protected final JToggleButton btnPower = new PowerButton();
+	private final FantasiaLabel lDisplay = new FantasiaLabel(" ", true);
 	private final JSPianoRoll pianoRoll = new JSPianoRoll();
 	private SamplerChannelModel channel = null;
 	
@@ -69,23 +100,102 @@ public class PianoKeyboardPane extends PixmapPane
 	
 	public
 	PianoKeyboardPane() {
-		super(Res.gfxDeviceBg);
-		setPixmapInsets(new java.awt.Insets(1, 1, 1, 1));
+		pianoRoll.actionDecreaseKeyNumber.putValue(SMALL_ICON, Res.gfxBtnDecrease);
+		pianoRoll.actionIncreaseKeyNumber.putValue(SMALL_ICON, Res.gfxBtnIncrease);
+		pianoRoll.actionScrollLeft.putValue(SMALL_ICON, Res.gfxBtnScrollLeft);
+		pianoRoll.actionScrollRight.putValue(SMALL_ICON, Res.gfxBtnScrollRight);
+		
 		setOpaque(false);
 		
-		setLayout(new BorderLayout());
-		setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
+		GridBagLayout gridbag = new GridBagLayout();
+		GridBagConstraints c = new GridBagConstraints();
 		
-		PixmapPane p2 = new PixmapPane(Res.gfxBorder);
-		p2.setPixmapInsets(new Insets(1, 1, 1, 1));
-		p2.setLayout(new BorderLayout());
-		p2.setBorder(BorderFactory.createEmptyBorder(0, 1, 0, 1));
-		p2.add(pianoRoll);
-		add(p2);
+		setLayout(gridbag);
 		
-		pianoRoll.setOpaque(false);
+		setBorder(BorderFactory.createEmptyBorder(0, 3, 5, 3));
+		
+		c.fill = GridBagConstraints.NONE;
+		
+		c.gridx = 0;
+		c.gridy = 0;
+		c.anchor = GridBagConstraints.NORTHWEST;
+		c.insets = new Insets(3, 3, 3, 3);
+		gridbag.setConstraints(btnPower, c);
+		add(btnPower);
+		
+		JPanel p = createVSeparator();
+		c.gridx = 1;
+		c.gridy = 0;
+		c.gridheight = 2;
+		c.insets = new Insets(3, 0, 5, 3);
+		c.fill = GridBagConstraints.VERTICAL;
+		c.weighty = 1.0;
+		gridbag.setConstraints(p, c);
+		add(p);
+		
+		p = new KeyRangePropsPane();
+		
+		c.gridx = 2;
+		c.gridy = 0;
+		c.gridheight = 1;
+		c.insets = new Insets(0, 0, 0, 0);
+		c.fill = GridBagConstraints.NONE;
+		c.weighty = 0.0;
+		c.anchor = GridBagConstraints.WEST;
+		gridbag.setConstraints(p, c);
+		add(p);
+		
+		p = new KeyRangePropsPane();
+		
+		c.gridx = 6;
+		c.gridy = 0;
+		c.anchor = GridBagConstraints.EAST;
+		c.insets = new Insets(0, 0, 0, 10);
+		gridbag.setConstraints(p, c);
+		add(p);
+		
+		lDisplay.setPreferredSize(new Dimension(300, lDisplay.getPreferredSize().height));
+		
+		c.gridx = 4;
+		c.gridy = 0;
+		c.insets = new Insets(3, 3, 3, 12);
+		c.fill = GridBagConstraints.NONE;
+		c.weightx = 0.0;
+		gridbag.setConstraints(lDisplay, c);
+		add(lDisplay);
+		
+		p = new JPanel();
+		p.setOpaque(false);
+		c.gridx = 3;
+		c.gridy = 0;
+		c.insets = new Insets(0, 0, 0, 0);
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.weightx = 1.0;
+		gridbag.setConstraints(p, c);
+		add(p);
+		
+		p = new JPanel();
+		p.setOpaque(false);
+		c.gridx = 5;
+		c.gridy = 0;
+		gridbag.setConstraints(p, c);
+		add(p);
+		
+		pianoRoll.setFocusable(false);
+		pianoRoll.setBackground(new Color(0x2e2e2e));
+		//pianoRoll.setOpaque(false);
+		
 		disablePianoRoll();
-		add(p2);
+		
+		c.gridx = 2;
+		c.gridy = 1;
+		c.gridwidth = 5;
+		c.insets = new Insets(0, 3, 0, 12);
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = 1.0;
+		c.weighty = 1.0;
+		gridbag.setConstraints(pianoRoll, c);
+		add(pianoRoll);
 		
 		CC.getSamplerModel().addSamplerChannelListListener(this);
 		pianoRoll.addMidiDataListener(getHandler());
@@ -101,6 +211,20 @@ public class PianoKeyboardPane extends PixmapPane
 		
 		CC.preferences().addPropertyChangeListener("midiKeyboard.firstKey", l);
 		CC.preferences().addPropertyChangeListener("midiKeyboard.lastKey", l);
+		
+		addFocusListener(getHandler());
+		
+		MouseAdapter l2 = new MouseAdapter() {
+			public void
+			mouseClicked(MouseEvent e) { requestFocusInWindow(); }
+		};
+		
+		addKeyListener(pianoRoll.getKeyListener());
+		pianoRoll.registerKeys(this);
+		
+		addMouseListener(l2);
+		pianoRoll.addMouseListener(l2);
+		lDisplay.addMouseListener(l2);
 	}
 	
 	public JSPianoRoll
@@ -111,8 +235,6 @@ public class PianoKeyboardPane extends PixmapPane
 		int firstKey = CC.preferences().getIntProperty("midiKeyboard.firstKey");
 		int lastKey = CC.preferences().getIntProperty("midiKeyboard.lastKey");
 		pianoRoll.setKeyRange(firstKey, lastKey);
-		pianoRoll.setAllKeysDisabled(true);
-		updateInstrumentInfo();
 	}
 	
 	@Override public void
@@ -176,6 +298,8 @@ public class PianoKeyboardPane extends PixmapPane
 		channel.addMidiDataListener(pianoRoll);
 		channel.addSamplerChannelListener(getHandler());
 		
+		updateDisplay();
+		
 		file = channel.getChannelInfo().getInstrumentFile();
 		if(file == null) {
 			disablePianoRoll();
@@ -195,16 +319,251 @@ public class PianoKeyboardPane extends PixmapPane
 			index = -1;
 			disablePianoRoll();
 		}
+		
+		updateDisplay();
 	}
 	
 	@Override public void
-	channelAdded(SamplerChannelListEvent e) { }
+	channelAdded(SamplerChannelListEvent e) {
+		updateDisplay();
+	}
 	
 	@Override public void
 	channelRemoved(SamplerChannelListEvent e) {
 		if(e.getChannelModel() == channel) {
 			disconnectChannel();
 		}
+		
+		updateDisplay();
+	}
+	
+	private JPanel
+	createVSeparator() {
+		PixmapPane p = new PixmapPane(Res.gfxVLine);
+		p.setAlignmentY(JPanel.TOP_ALIGNMENT);
+		p.setPreferredSize(new Dimension(2, 60));
+		p.setMaximumSize(new Dimension(2, Short.MAX_VALUE));
+		return p;
+	}
+	
+	private Color color1 = new Color(0x7a7a7a);
+	private Color color2 = new Color(0x5e5e5e);
+	private Color color3 = new Color(0x2e2e2e);
+	
+	@Override
+	public void
+	paintComponent(Graphics g) {
+		Graphics2D g2 = (Graphics2D)g;
+		
+		Paint oldPaint = g2.getPaint();
+		Composite oldComposite = g2.getComposite();
+		
+		Insets insets = this.getInsets();
+		double x1 = insets.left;
+		double y1 = insets.top;
+		
+		double w = getSize().getWidth();
+		double x2 = w - insets.right - 1;
+		double h = getSize().getHeight();
+		double y2 = h - insets.bottom - 1;
+		
+		FantasiaPainter.paintGradient(g2, x1, y1, x2, y2 - 10, color1, color2);
+		
+		g2.setRenderingHint (
+			RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF
+		);
+		
+		double y3 = y2 - 10;
+		if(y3 < 0) y3 = 0;
+		
+		Rectangle2D.Double rect = new Rectangle2D.Double(x1, y3, x2 - x1 + 1, 11);
+		
+		GradientPaint gr = new GradientPaint (
+			0.0f, (float)y3, color2,
+			0.0f, (float)h, color3
+		);
+		
+		g2.setPaint(gr);
+		g2.fill(rect);
+		
+		drawOutBorder(g2, x1, y1, x2, y2);
+		
+		double prX = pianoRoll.getLocation().getX();
+		double prY = pianoRoll.getLocation().getY();
+		drawInBorder (
+			g2, prX - 2, prY - 2,
+			prX + pianoRoll.getSize().getWidth() + 1, prY + pianoRoll.getSize().getHeight() - 3
+		);
+		
+		g2.setPaint(oldPaint);
+		g2.setComposite(oldComposite);
+	}
+	
+	private void
+	drawOutBorder(Graphics2D g2, double x1, double y1, double x2, double y2) {
+		AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.40f);
+		g2.setComposite(ac);
+		
+		g2.setPaint(Color.WHITE);
+		Line2D.Double l = new Line2D.Double(x1, y1, x2, y1);
+		g2.draw(l);
+		
+		g2.setComposite(ac.derive(0.20f));
+		l = new Line2D.Double(x1, y1 + 1, x2, y1 + 1);
+		g2.draw(l);
+		
+		g2.setComposite(ac.derive(0.255f));
+		
+		l = new Line2D.Double(x1, y1, x1, y2);
+		g2.draw(l);
+		
+		g2.setComposite(ac.derive(0.40f));
+		g2.setPaint(Color.BLACK);
+		
+		//l = new Line2D.Double(x1, y2, x2, y2);
+		//g2.draw(l);
+		
+		g2.setComposite(ac.derive(0.20f));
+		
+		l = new Line2D.Double(x2, y1, x2, y2);
+		g2.draw(l);
+	}
+	
+	private void
+	drawInBorder(Graphics2D g2, double x1, double y1, double x2, double y2) {
+		AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.40f);
+		g2.setComposite(ac);
+		
+		g2.setPaint(Color.WHITE);
+		Line2D.Double l = new Line2D.Double(x1, y2, x2, y2);
+		//g2.draw(l);
+		
+		g2.setComposite(ac.derive(0.255f));
+		
+		l = new Line2D.Double(x2 - 1, y1 + 1, x2 - 1, y2 + 1);
+		g2.draw(l);
+		
+		g2.setComposite(ac.derive(0.13f));
+		
+		l = new Line2D.Double(x2, y1, x2, y2);
+		g2.draw(l);
+		
+		g2.setComposite(ac.derive(0.20f));
+		g2.setPaint(Color.BLACK);
+		
+		l = new Line2D.Double(x1, y1, x2, y1);
+		g2.draw(l);
+		
+		g2.setComposite(ac.derive(0.40f));
+		g2.setPaint(Color.BLACK);
+		
+		l = new Line2D.Double(x1 + 1, y1 + 1, x2 - 1, y1 + 1);
+		g2.draw(l);
+		
+		g2.setComposite(ac.derive(0.20f));
+		
+		l = new Line2D.Double(x1, y1, x1, y2);
+		g2.draw(l);
+		
+		g2.setComposite(ac.derive(0.40f));
+		
+		l = new Line2D.Double(x1 + 1, y1 + 1, x1 + 1, y2 + 1);
+		g2.draw(l);
+	}
+	
+	private void
+	updateDisplay() {
+		// TODO: called too often?
+		if(channel == null) {
+			lDisplay.setText(i18n.getLabel("PianoKeyboardPane.noChannel"));
+			return;
+		}
+		
+		SamplerChannel sc = channel.getChannelInfo();
+		int i = CC.getSamplerModel().getChannelIndex(channel) + 1;
+		
+		StringBuffer sb = new StringBuffer();
+		sb.append(i18n.getLabel("PianoKeyboardPane.channel", i)).append(" - ");
+		
+		int status = sc.getInstrumentStatus();
+		if(status >= 0 && status < 100) {
+			sb.append(i18n.getLabel("ChannelScreen.loadingInstrument", status));
+		} else if(status == -1) {
+			sb.append(i18n.getLabel("PianoKeyboardPane.noInstrument"));
+		} else if(status < -1) {
+			 sb.append(i18n.getLabel("ChannelScreen.errorLoadingInstrument"));
+		} else {
+			if(sc.getInstrumentName() != null) sb.append(sc.getInstrumentName());
+		}
+		
+		lDisplay.setText(sb.toString());
+	}
+	
+	
+	class KeyRangePropsPane extends JPanel {
+		private final JButton btnIncrease =
+			new PixmapButton(pianoRoll.actionIncreaseKeyNumber, Res.gfxBtnIncrease);
+		
+		private final JButton btnDecrease =
+			new PixmapButton(pianoRoll.actionDecreaseKeyNumber, Res.gfxBtnDecrease);
+		
+		private final JButton btnScrollLeft =
+			new PixmapButton(pianoRoll.actionScrollLeft, Res.gfxBtnScrollLeft);
+		
+		private final JButton btnScrollRight =
+			new PixmapButton(pianoRoll.actionScrollRight, Res.gfxBtnScrollRight);
+		
+		KeyRangePropsPane() {
+			setOpaque(false);
+			setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+			
+			btnIncrease.setFocusable(false);
+			btnDecrease.setFocusable(false);
+			btnScrollLeft.setFocusable(false);
+			btnScrollRight.setFocusable(false);
+			
+			
+			btnDecrease.setPressedIcon(Res.gfxBtnDecreaseRO);
+			add(btnDecrease);
+			
+			btnIncrease.setPressedIcon(Res.gfxBtnIncreaseRO);
+			add(btnIncrease);
+			
+			add(Box.createRigidArea(new Dimension(6, 0)));
+			
+			btnScrollLeft.setPressedIcon(Res.gfxBtnScrollLeftRO);
+			add(btnScrollLeft);
+			
+			btnScrollRight.setPressedIcon(Res.gfxBtnScrollRightRO);
+			add(btnScrollRight);
+		}
+	}
+	
+	
+	public static class PowerButton extends PixmapToggleButton implements ActionListener {
+		PowerButton() {
+			this(Res.gfxPowerOff, Res.gfxPowerOn);
+		}
+		
+		PowerButton(ImageIcon defaultIcon, ImageIcon selectedIcon) {
+			super(defaultIcon, selectedIcon);
+			
+			setSelected(true);
+			addActionListener(this);
+		}
+		
+		@Override
+		public void
+		actionPerformed(ActionEvent e) {
+			boolean b = isSelected();
+			MainFrame frm = (MainFrame)CC.getMainFrame();
+			if(frm == null) return;
+			frm.setMidiKeyboardVisible(b);
+		}
+		
+		@Override
+		public boolean
+		contains(int x, int y) { return (x - 11)*(x - 11) + (y - 11)*(y - 11) < 71; }
 	}
 	
 	private final Handler handler = new Handler();
@@ -212,15 +571,19 @@ public class PianoKeyboardPane extends PixmapPane
 	private Handler
 	getHandler() { return handler; }
 	
-	private class Handler extends SamplerChannelAdapter implements MidiDataListener {
+	private class Handler extends SamplerChannelAdapter implements FocusListener, MidiDataListener {
+		@Override
 		public void
 		midiDataArrived(MidiDataEvent e) {
 			if(channel == null) return;
 			channel.sendBackendMidiData(e);
 		}
 		
+		@Override
 		public void
 		channelChanged(SamplerChannelEvent e) {
+			updateDisplay();
+			
 			String newFile = channel.getChannelInfo().getInstrumentFile();
 			int newIndex = channel.getChannelInfo().getInstrumentIndex();
 			
@@ -245,6 +608,18 @@ public class PianoKeyboardPane extends PixmapPane
 			file = newFile;
 			index = newIndex;
 			updateInstrumentInfo();
+		}
+		
+		@Override
+		public void
+		focusGained(FocusEvent e) {
+			
+		}
+		
+		@Override
+		public void
+		focusLost(FocusEvent e) {
+			
 		}
 	}
 }

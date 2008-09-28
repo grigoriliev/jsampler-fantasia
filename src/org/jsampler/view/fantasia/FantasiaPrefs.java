@@ -79,6 +79,7 @@ public class FantasiaPrefs extends StdPrefs {
 		if(name == LS_CONSOLE_WARNING_COLOR) return 0xf19e0e;
 		if(name == LS_CONSOLE_ERROR_COLOR) return 0xfa4a1f;
 		
+		if("midiKeyboard.height".equals(name)) return 85;
 		if("midiKeyboard.firstKey".equals(name)) return 0;
 		if("midiKeyboard.lastKey".equals(name)) return 127;
 		

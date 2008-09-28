@@ -28,11 +28,8 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import java.util.List;
-
 import javax.swing.Action;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -42,12 +39,9 @@ import org.jsampler.CC;
 
 import org.jsampler.view.InstrumentsDbTreeModel;
 
+import static org.jsampler.view.fantasia.FantasiaPrefs.preferences;
 import org.jsampler.view.std.JSInstrumentsDbColumnPreferencesDlg;
 import org.jsampler.view.std.JSInstrumentsDbTable;
-
-import org.jvnet.substance.SubstanceLookAndFeel;
-
-import static org.jsampler.view.fantasia.FantasiaPrefs.preferences;
 
 
 /**
@@ -91,14 +85,22 @@ public class InstrumentsDbPane extends JPanel {
 			sp2
 		);
 		
+		splitPane.setResizeWeight(0.4);
+		
 		add(splitPane);
 		add(new ToolBar(), BorderLayout.NORTH);
+		
+		int i = preferences().getIntProperty("InstrumentsDbPane.splitDividerLocation", 160);
+		splitPane.setDividerLocation(i);
 	}
 	
 	protected void
 	savePreferences() {
 		instrumentsTable.saveColumnsVisibleState();
 		instrumentsTable.saveColumnWidths();
+		
+		int i = splitPane.getDividerLocation();
+		preferences().setIntProperty("InstrumentsDbPane.splitDividerLocation", i);
 	}
 	
 	class ToolBar extends JToolBar {

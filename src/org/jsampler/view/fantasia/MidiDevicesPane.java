@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -23,9 +23,12 @@
 package org.jsampler.view.fantasia;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Rectangle;
 
@@ -45,7 +48,6 @@ import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 
 import net.sf.juife.ComponentList;
-import net.sf.juife.ComponentListModel;
 import net.sf.juife.DefaultComponentListModel;
 
 import net.sf.juife.event.TaskEvent;
@@ -65,7 +67,6 @@ import org.jsampler.view.std.JSNewMidiDeviceDlg;
 
 import org.linuxsampler.lscp.MidiInputDriver;
 
-import static org.jsampler.view.fantasia.A4n.a4n;
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jsampler.view.fantasia.FantasiaPrefs.*;
 
@@ -130,6 +131,7 @@ public class MidiDevicesPane extends JPanel {
 	class DeviceListPane extends ComponentList {
 		private Dimension maxSize = new Dimension();
 		
+		@Override
 		public Dimension
 		getMaximumSize() {
 			maxSize.width = Short.MAX_VALUE;
@@ -139,7 +141,7 @@ public class MidiDevicesPane extends JPanel {
 	}
 	
 	
-	class NewDevicePane extends JPanel {
+	class NewDevicePane extends FantasiaPanel {
 		private final PixmapButton btnNew = new PixmapButton(Res.gfxPowerOff18);
 		private JXCollapsiblePane createDevicePane = null;
 		private boolean createDevice = false;
@@ -191,6 +193,25 @@ public class MidiDevicesPane extends JPanel {
 			add(p, BorderLayout.NORTH);
 			setAlignmentX(LEFT_ALIGNMENT);
 		}
+		
+		/*private Color c1 = new Color(0x888888);
+		private Color c2 = new Color(0x707070);
+		
+		@Override
+		protected void
+		paintComponent(Graphics g) {
+			super.paintComponent(g);
+			
+			double h = getSize().getHeight();
+			double w = getSize().getWidth();
+			
+			FantasiaPainter.paintGradient((Graphics2D)g, 0, 0, w - 1, h - 1, c1, c2);
+			
+			FantasiaPainter.RoundCorners rc =
+				new FantasiaPainter.RoundCorners(true);
+			
+			FantasiaPainter.paintOuterBorder((Graphics2D)g, 0, 0, w - 1, h - 1, rc);
+		}*/
 		
 		private JPanel
 		createVSeparator() {
@@ -332,11 +353,13 @@ public class MidiDevicesPane extends JPanel {
 	getHandler() { return eventHandler; }
 	
 	private class EventHandler implements MidiDeviceListListener {
+		@Override
 		public void
 		deviceAdded(MidiDeviceListEvent e) {
 			addDevice(e.getMidiDeviceModel());
 		}
 		
+		@Override
 		public void
 		deviceRemoved(MidiDeviceListEvent e) {
 			removeDevice(e.getMidiDeviceModel());

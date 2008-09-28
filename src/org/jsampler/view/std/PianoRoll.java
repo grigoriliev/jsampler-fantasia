@@ -22,27 +22,33 @@
 
 package org.jsampler.view.std;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
 
-import java.awt.geom.RoundRectangle2D;
-
+import java.util.HashMap;
 import java.util.Vector;
 
+import javax.swing.Action;
+import javax.swing.AbstractAction;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
+
+import org.jsampler.CC;
 
 import org.linuxsampler.lscp.event.MidiDataEvent;
 import org.linuxsampler.lscp.event.MidiDataListener;
+
+import static org.jsampler.view.std.StdI18n.i18n;
 
 /**
  *
@@ -91,16 +97,25 @@ public class PianoRoll extends JPanel implements MidiDataListener {
 	private int lastKey = -1;
 	private int whiteKeyCount = 68;
 	
-	private Color borderColor = Color.BLACK;
-	private Color keyColor = Color.WHITE;
-	private Color disabledKeyColor = Color.GRAY;
-	private Color pressedKeyColor = Color.GREEN;
-	private Color keySwitchColor = Color.PINK;
-	private Color blackKeyColor = Color.BLACK;
+	private Integer[] enabledKeys = null;
+	private Integer[] disabledKeys = null;
+	private Integer[] keyswitches = null;
+	private Integer[] notKeyswitches = null;
+	
+	private int currentOctave = 3;
+	private int constantVelocity = 80;
+	private HashMap<Integer, Integer> keyMap = new HashMap<Integer, Integer>();
 	
 	private final Vector<MidiDataListener> listeners = new Vector<MidiDataListener>();
 	
-	private boolean shouldRepaint = false;
+	private boolean shouldRepaint = true;
+	
+	private PianoRollPainter painter;
+	
+	public final Action actionScrollLeft = new ActionScrollLeft();
+	public final Action actionScrollRight = new ActionScrollRight();
+	public final Action actionIncreaseKeyNumber = new ActionIncreaseKeyNumber();
+	public final Action actionDecreaseKeyNumber = new ActionDecreaseKeyNumber();
 	
 	/**
 	 * Creates a new horizontal, not mirrored <code>PianoRoll</code>.
@@ -127,8 +142,85 @@ public class PianoRoll extends JPanel implements MidiDataListener {
 		this.vertical = vertical;
 		this.mirror = mirror;
 		
-		this.addMouseListener(getHandler());
+		setPainter(new BasicPianoRollPainter(this));
+		
 		setKeyRange(0, 127);
+		
+		installListeneres();
+	}
+	
+	private void
+	installListeneres() {
+		addMouseListener(getHandler());
+		addMouseMotionListener(getHandler());
+		addKeyListener(getHandler());
+		
+		registerKeys(this);
+		
+		
+	}
+	
+	public KeyListener
+	getKeyListener() { return getHandler(); }
+	
+	public void
+	registerKeys(JComponent c) {
+		KeyStroke k = KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.CTRL_MASK);
+		c.getInputMap(JComponent.WHEN_FOCUSED).put(k, "scrollLeft");
+		c.getActionMap().put("scrollLeft", actionScrollLeft);
+		
+		k = KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.CTRL_MASK);
+		c.getInputMap(JComponent.WHEN_FOCUSED).put(k, "scrollRight");
+		c.getActionMap().put("scrollRight", actionScrollRight);
+		
+		k = KeyStroke.getKeyStroke(KeyEvent.VK_UP, KeyEvent.CTRL_MASK);
+		c.getInputMap(JComponent.WHEN_FOCUSED).put(k, "increaseKeyRange");
+		c.getActionMap().put("increaseKeyRange", actionIncreaseKeyNumber);
+		
+		k = KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, KeyEvent.CTRL_MASK);
+		c.getInputMap(JComponent.WHEN_FOCUSED).put(k, "decreaseKeyRange");
+		c.getActionMap().put("decreaseKeyRange", actionDecreaseKeyNumber);
+		
+		k = KeyStroke.getKeyStroke(KeyEvent.VK_0, 0);
+		c.getInputMap(JComponent.WHEN_FOCUSED).put(k, "changeCurrentOctave0");
+		c.getActionMap().put("changeCurrentOctave0", new ActionChangeCurrentOctave(0));
+		
+		k = KeyStroke.getKeyStroke(KeyEvent.VK_1, 0);
+		c.getInputMap(JComponent.WHEN_FOCUSED).put(k, "changeCurrentOctave1");
+		c.getActionMap().put("changeCurrentOctave1", new ActionChangeCurrentOctave(1));
+		
+		k = KeyStroke.getKeyStroke(KeyEvent.VK_2, 0);
+		c.getInputMap(JComponent.WHEN_FOCUSED).put(k, "changeCurrentOctave2");
+		c.getActionMap().put("changeCurrentOctave2", new ActionChangeCurrentOctave(2));
+		
+		k = KeyStroke.getKeyStroke(KeyEvent.VK_3, 0);
+		c.getInputMap(JComponent.WHEN_FOCUSED).put(k, "changeCurrentOctave3");
+		c.getActionMap().put("changeCurrentOctave3", new ActionChangeCurrentOctave(3));
+		
+		k = KeyStroke.getKeyStroke(KeyEvent.VK_4, 0);
+		c.getInputMap(JComponent.WHEN_FOCUSED).put(k, "changeCurrentOctave4");
+		c.getActionMap().put("changeCurrentOctave4", new ActionChangeCurrentOctave(4));
+		
+		k = KeyStroke.getKeyStroke(KeyEvent.VK_5, 0);
+		c.getInputMap(JComponent.WHEN_FOCUSED).put(k, "changeCurrentOctave5");
+		c.getActionMap().put("changeCurrentOctave5", new ActionChangeCurrentOctave(5));
+		
+		k = KeyStroke.getKeyStroke(KeyEvent.VK_6, 0);
+		c.getInputMap(JComponent.WHEN_FOCUSED).put(k, "changeCurrentOctave6");
+		c.getActionMap().put("changeCurrentOctave6", new ActionChangeCurrentOctave(6));
+		
+		k = KeyStroke.getKeyStroke(KeyEvent.VK_7, 0);
+		c.getInputMap(JComponent.WHEN_FOCUSED).put(k, "changeCurrentOctave7");
+		c.getActionMap().put("changeCurrentOctave7", new ActionChangeCurrentOctave(7));
+	}
+	
+	public PianoRollPainter
+	getPainter() { return painter; }
+	
+	public void
+	setPainter(PianoRollPainter painter) {
+		if(painter == null) painter = new BasicPianoRollPainter(this);
+		this.painter = painter;
 	}
 	
 	/**
@@ -150,6 +242,45 @@ public class PianoRoll extends JPanel implements MidiDataListener {
 	fireMidiDataEvent(MidiDataEvent e) {
 		for(MidiDataListener l : listeners) l.midiDataArrived(e);
 	}
+	
+	private void
+	fireNoteOn(int key, int velocity) {
+		MidiDataEvent evt = new MidiDataEvent (
+			PianoRoll.this, MidiDataEvent.Type.NOTE_ON, key, velocity
+		);
+		
+		fireMidiDataEvent(evt);
+	}
+	
+	private void
+	fireNoteOff(int key, int velocity) {
+		MidiDataEvent evt = new MidiDataEvent (
+			PianoRoll.this, MidiDataEvent.Type.NOTE_OFF, key, velocity
+		);
+		
+		fireMidiDataEvent(evt);
+	}
+	
+	/**
+	 * Used to determine which note to play when using
+	 * the computer keyboard's key bindings.
+	 * @return
+	 */
+	public int
+	getCurrentOctave() { return currentOctave; }
+	
+	/**
+	 * @see #getCurrentOctave
+	 * @param octave Specifies the octave to be used as current.
+	 */
+	public void
+	setCurrentOctave(int octave) { currentOctave = octave; }
+	
+	public int
+	getConstantVelocity() { return constantVelocity; }
+	
+	public void
+	setConstantVelocity(int velocity) { constantVelocity = velocity; }
 	
 	/**
 	 * Determines whether the user input is processed
@@ -200,7 +331,7 @@ public class PianoRoll extends JPanel implements MidiDataListener {
 		if(k.isPressed() == press) return;
 		
 		getKey(key).setPressed(press);
-		if(getShouldRepaint()) repaint(getKeyRectangle(key));
+		if(getShouldRepaint()) repaint(painter.getKeyRectangle(key));
 	}
 	
 	public boolean
@@ -214,7 +345,7 @@ public class PianoRoll extends JPanel implements MidiDataListener {
 		if(k.isKeyswitch() == keyswitch) return;
 		
 		getKey(key).setKeyswitch(keyswitch);
-		if(getShouldRepaint()) repaint(getKeyRectangle(key));
+		if(getShouldRepaint()) repaint(painter.getKeyRectangle(key));
 	}
 	
 	public void
@@ -254,16 +385,21 @@ public class PianoRoll extends JPanel implements MidiDataListener {
 	}
 	
 	/**
-	 * Keys outside the keyboard range are ignored.
+	 * Keys outside the keyboard range are remembered and
+	 * applied if needed when the key range is changed.
 	 * @param keys List of keys
 	 */
 	public void
-	setKeyswitches(Integer[] keys, boolean keyswitches) {
+	setKeyswitches(Integer[] keys, boolean b) {
+		if(b) keyswitches = keys;
+		else notKeyswitches = keys;
+		if(keys == null) return;
+		
 		boolean changed = false;
 		for(int k : keys) {
 			if(!hasKey(k)) continue;
-			if(getKey(k).isKeyswitch() != keyswitches) {
-				getKey(k).setKeyswitch(keyswitches);
+			if(getKey(k).isKeyswitch() != b) {
+				getKey(k).setKeyswitch(b);
 				changed = true;
 			}
 		}
@@ -282,11 +418,17 @@ public class PianoRoll extends JPanel implements MidiDataListener {
 	
 	/**
 	 * Enables or disables the specified list of keys.
-	 * Keys outside the keyboard range are ignored.
+	 * Disabled keys outside the keyboard range are remembered and
+	 * applied if needed when the key range is changed.
 	 * @param keys List of keys
 	 */
 	public void
 	setDisabled(Integer[] keys, boolean disable) {
+		if(disable) disabledKeys = keys;
+		else enabledKeys = keys;
+		
+		if(keys == null) return;
+		
 		boolean changed = false;
 		for(int k : keys) {
 			if(!hasKey(k)) continue;
@@ -340,12 +482,24 @@ public class PianoRoll extends JPanel implements MidiDataListener {
 		
 		whiteKeyCount = getWhiteKeyCount(firstKey, lastKey);
 		
-		/*setAllKeysDisabled(true);
-		setDisabled(enabledKeys, false);
-		setKeyswitches(keyswitches, true);*/
+		boolean b = getShouldRepaint();
+		setShouldRepaint(false);
 		
+		reset(true, false);
+		setDisabled(enabledKeys, false);
+		setDisabled(disabledKeys, true);
+		setKeyswitches(keyswitches, true);
+		setKeyswitches(notKeyswitches, false);
+		
+		setShouldRepaint(b);
 		if(getShouldRepaint()) repaint();
 	}
+	
+	public int
+	getFirstKey() { return firstKey; }
+	
+	public int
+	getLastKey() { return lastKey; }
 	
 	public boolean
 	getOctaveLabelsVisible() {
@@ -361,7 +515,7 @@ public class PianoRoll extends JPanel implements MidiDataListener {
 	 * Gets the number of white keys int the specified range (inclusive).
 	 * @see #setKeyRange
 	 */
-	private static int
+	public static int
 	getWhiteKeyCount(int firstKey, int lastKey) {
 		int count = 0;
 		for(int j = firstKey; j <= lastKey; j++) { // FIXME: Stupid but works
@@ -371,7 +525,12 @@ public class PianoRoll extends JPanel implements MidiDataListener {
 		return count;
 	}
 	
-	private int
+	/**
+	 * Gets the MIDI note number of the specified white key position.
+	 * @param whiteKey The white key position on the keyboard (zero-based)
+	 * @return The MIDI number of the note
+	 */
+	public int
 	getWhiteKeyByNumber(int whiteKey) {
 		int count = 0;
 		for(int j = firstKey; j <= lastKey; j++) { // FIXME: Stupid but works
@@ -384,10 +543,9 @@ public class PianoRoll extends JPanel implements MidiDataListener {
 		return -1;
 	}
 	
-	private int
-	getWhiteKeyCount() {
-		return whiteKeyCount;
-	}
+	/** Gets the number of white keys in the piano roll. */
+	public int
+	getWhiteKeyCount() { return whiteKeyCount; }
 	
 	/**
 	 * Determines whether the specified key is a white key.
@@ -423,20 +581,6 @@ public class PianoRoll extends JPanel implements MidiDataListener {
 		return getWhiteKeyCount(0, k) - 1;
 	}
 	
-	private Color
-	getKeyColor(int key) {
-		Key k = getKey(key);
-		if(isWhiteKey(key)) {
-			if(k.isPressed()) return pressedKeyColor;
-			if(k.isKeyswitch()) return keySwitchColor;
-			if(k.isDisabled()) return disabledKeyColor;
-			return keyColor;
-		} else {
-			if(k.isPressed()) return Color.GREEN;
-			return blackKeyColor;
-		}
-	}
-	
 	/**
 	 * Releases all pressed keys, enables all keys and removes all keyswitches.
 	 */
@@ -449,6 +593,18 @@ public class PianoRoll extends JPanel implements MidiDataListener {
 	 */
 	public void
 	reset(boolean dissableAllKeys) {
+		reset(dissableAllKeys, true);
+	}
+	
+	private void
+	reset(boolean dissableAllKeys, boolean clear) {
+		if(clear) {
+			enabledKeys = null;
+			disabledKeys = null;
+			keyswitches = null;
+			notKeyswitches = null;
+		}
+		
 		boolean b = getShouldRepaint();
 		setShouldRepaint(false);
 		setAllKeysPressed(false);
@@ -464,223 +620,10 @@ public class PianoRoll extends JPanel implements MidiDataListener {
 	public void
 	setShouldRepaint(boolean b) { shouldRepaint = b; }
 	
-	private int
-	getKey(Point p) {
-		double w = getWhiteKeyWidth() + /* space between keys */ 1.0d;
-		if(w == 0) return -1;
-		int whiteKeyNumber = (int) (p.getX() / w);
-		double leftBorder = whiteKeyNumber * w;
-		int key = getWhiteKeyByNumber(whiteKeyNumber);
-		if(key == -1) return -1;
-		
-		double bh = getBlackKeyHeight();
-		double blackKeyOffset = w / 4.0d;
-		if(p.getY() > bh) return key;
-		if(key != firstKey && !isWhiteKey(key - 1)) {
-			if(p.getX() <= leftBorder + blackKeyOffset) return key - 1;
-		}
-		if(key != lastKey && !isWhiteKey(key + 1)) {
-			if(p.getX() >= leftBorder + 3 * blackKeyOffset - 3) return key + 1;
-		}
-		
-		return key;
-	}
-	
-	private int
-	getVelocity(Point p, boolean whiteKey) {
-		double h = whiteKey ? getWhiteKeyHeight() : getBlackKeyHeight();
-		int velocity = (int) ((p.getY() / h) * 127.0d + 1);
-		if(velocity < 0) velocity = 0;
-		if(velocity > 127) velocity = 127;
-		return velocity;
-	}
-	
-	private double
-	getWhiteKeyWidth() {
-		double w = getSize().getWidth();
-		return (w - getWhiteKeyCount()) / getWhiteKeyCount();
-	}
-	
-	private double
-	getWhiteKeyHeight() {
-		return getSize().getHeight() - 3.0d;
-	}
-	
-	private double
-	getBlackKeyWidth() {
-		return getWhiteKeyWidth() / 2.0d;
-	}
-	
-	private double
-	getBlackKeyHeight() {
-		return getWhiteKeyHeight() / 1.5d;
-	}
-	
-	protected void
-	paintOctaveLabel(Graphics2D g, int octave, int whiteKeyIndex) {
-		double h = getSize().getHeight();
-		double whiteKeyWidth = getWhiteKeyWidth();
-		g.setPaint(Color.BLACK);
-		int fsize = (int) (whiteKeyWidth / (1.5 + whiteKeyWidth / 50));
-		if(fsize < 8) fsize = 8;
-		g.setFont(g.getFont().deriveFont(Font.BOLD, fsize));
-		
-		float x = (float) (whiteKeyWidth * whiteKeyIndex + whiteKeyIndex);
-		float y = (float) (h - 1);
-		
-		String s = String.valueOf(octave);
-		FontMetrics fm = g.getFontMetrics();
-		
-		// center text
-		int i = fm.stringWidth(s);
-		if(i < whiteKeyWidth) {
-			x += (whiteKeyWidth - i) / 2;
-		} else {
-			x += 2;
-		}
-		
-		y -= (h / 12);
-		
-		g.drawString(s, x, y);
-	}
-	
-	/**
-	 * Gets the rectangle in which the key is drawn and empty rectangle
-	 * if the specified key is not shown on the piano roll or is invalid.
-	 */
-	public Rectangle
-	getKeyRectangle(int key) {
-		Rectangle r = new Rectangle();
-		if(!hasKey(key)) return r;
-		
-		int whiteKeyIndex = getWhiteKeyCount(firstKey, key) - 1;
-		
-		if(isWhiteKey(key)) {
-			double whiteKeyWidth = getWhiteKeyWidth();
-			double whiteKeyHeight = getWhiteKeyHeight();
-			double x = whiteKeyWidth * whiteKeyIndex + whiteKeyIndex;
-			r.setRect(x, 0, whiteKeyWidth, whiteKeyHeight);
-		} else {
-			double blackKeyWidth = getBlackKeyWidth();
-			double blackKeyHeight = getBlackKeyHeight();
-			int i = whiteKeyIndex;
-			double x = blackKeyWidth * (2*(i + 1)) - blackKeyWidth * 0.5d + i;
-			r.setRect(x, 0, blackKeyWidth, blackKeyHeight);
-		}
-		
-		return r;
-	}
-	
 	@Override public void
 	paint(Graphics g) {
 		super.paint(g);
-		Graphics2D g2 = (Graphics2D) g;
-		
-		double whiteKeyWidth = getWhiteKeyWidth();
-		double whiteKeyHeight = getWhiteKeyHeight();
-		double arcw = whiteKeyWidth/4.0d;
-		double arch = whiteKeyHeight/14.0d;
-		
-		g2.setPaint(keyColor);
-		
-		RoundRectangle2D.Double rect;
-		
-		g2.setRenderingHint (
-			RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF
-		);
-		
-		int i = 0;
-		for(int j = firstKey; j <= lastKey; j++) {
-			if(!isWhiteKey(j)) continue;
-			
-			Color c = getKeyColor(j);
-			if(g2.getPaint() != c) g2.setPaint(c);
-			
-			rect = new RoundRectangle2D.Double (
-				// If you change this you should also change getKeyRectangle()
-				whiteKeyWidth * i + i, 0,
-				whiteKeyWidth, whiteKeyHeight,
-				arcw, arch
-			);
-			
-			g2.fill(rect);
-			i++;
-		}
-		
-		g2.setRenderingHint (
-			RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON
-		);
-		
-		g2.setStroke(new java.awt.BasicStroke(1.5f));
-		g2.setPaint(borderColor);
-		
-		i = 0;
-		for(int j = firstKey; j <= lastKey; j++) {
-			if(!isWhiteKey(j)) continue;
-			
-			rect = new RoundRectangle2D.Double (
-				whiteKeyWidth * i + i, 0,
-				whiteKeyWidth, whiteKeyHeight,
-				arcw, arch
-			);
-		
-			g2.draw(rect);
-			i++;
-		}
-		
-		
-		g2.setStroke(new java.awt.BasicStroke(2.5f));
-		double blackKeyWidth = getBlackKeyWidth();
-		double blackKeyHeight = getBlackKeyHeight();
-		
-		i = 0;
-		for(int j = firstKey; j <= lastKey; j++) {
-			if(getOctaveLabelsVisible() && j % 12 == 0) {
-				int octave = j / 12 - 2;
-				paintOctaveLabel(g2, octave, i);
-			}
-			if(!isWhiteKey(j)) continue;
-			
-			int k = (i + getKeyOctaveIndex(firstKey)) % 7;
-			if(k == 2 || k == 6) { i++; continue; }
-			
-			Color c = (j == lastKey) ? blackKeyColor : getKeyColor(j + 1);
-			if(g2.getPaint() != c) g2.setPaint(c);
-			
-			// If you change this you should also change getKeyRectangle()
-			double x = blackKeyWidth * (2*(i + 1)) - blackKeyWidth * 0.5d + i;
-			rect = new RoundRectangle2D.Double (
-				// If you change this you should also change getKeyRectangle()
-				x, 0,
-				blackKeyWidth, blackKeyHeight,
-				arcw, arch
-			);
-			///////
-			
-			boolean pressed = (j == lastKey) ? false : getKey(j + 1).isPressed();
-			if(!pressed) g2.fill(rect);
-			
-			RoundRectangle2D.Double rect2;
-			rect2 = new RoundRectangle2D.Double (
-				x, 0,
-				blackKeyWidth, arch,
-				arcw, arch / 1.8d
-			);
-			
-			g2.fill(rect2);
-			g2.setPaint(borderColor);
-			g2.draw(rect);
-			
-			if(pressed) {
-			GradientPaint gr = new GradientPaint (
-				(float)(x + blackKeyWidth/2), (float)(blackKeyHeight/4), Color.BLACK,
-				(float)(x + blackKeyWidth/2), (float)blackKeyHeight, new Color(0x058a02)
-			);
-			g2.setPaint(gr);
-			g2.fill(rect);
-			}
-			i++;
-		}
+		painter.paint(this, (Graphics2D)g);
 	}
 	
 	@Override public void
@@ -694,33 +637,224 @@ public class PianoRoll extends JPanel implements MidiDataListener {
 		}
 	}
 	
+	
+	private class ActionScrollLeft extends AbstractAction {
+		ActionScrollLeft() {
+			super(i18n.getLabel("PianoRoll.scrollLeft"));
+			
+			String s = i18n.getLabel("PianoRoll.scrollLeft");
+			putValue(SHORT_DESCRIPTION, s);
+		}
+		
+		public void
+		actionPerformed(ActionEvent e) {
+			if(getFirstKey() == 0) return;
+			int k = getFirstKey() - 1;
+			if(!isWhiteKey(k)) k--;
+			int k2 = getLastKey() - 1;
+			if(!isWhiteKey(k2)) k2--;
+			
+			setKeyRange(k, k2);
+			CC.preferences().setIntProperty("midiKeyboard.firstKey", k);
+			CC.preferences().setIntProperty("midiKeyboard.lastKey", k2);
+			
+		}
+	}
+	
+	
+	private class ActionScrollRight extends AbstractAction {
+		ActionScrollRight() {
+			super(i18n.getLabel("PianoRoll.scrollRight"));
+			
+			String s = i18n.getLabel("PianoRoll.scrollRight");
+			putValue(SHORT_DESCRIPTION, s);
+		}
+		
+		public void
+		actionPerformed(ActionEvent e) {
+			if(getLastKey() == 127) return;
+			int k = getFirstKey() + 1;
+			if(!isWhiteKey(k)) k++;
+			int k2 = getLastKey() + 1;
+			if(!isWhiteKey(k2)) k2++;
+			
+			setKeyRange(k, k2);
+			CC.preferences().setIntProperty("midiKeyboard.firstKey", k);
+			CC.preferences().setIntProperty("midiKeyboard.lastKey", k2);
+			
+		}
+	}
+	
+	private class ActionIncreaseKeyNumber extends AbstractAction {
+		ActionIncreaseKeyNumber() {
+			super(i18n.getLabel("PianoRoll.increaseKeyNumber"));
+			
+			String s = i18n.getLabel("PianoRoll.increaseKeyNumber");
+			putValue(SHORT_DESCRIPTION, s);
+		}
+		
+		public void
+		actionPerformed(ActionEvent e) {
+			if(getFirstKey() == 0 && getLastKey() == 127) return;
+			int k = getFirstKey() == 0 ? 0 : getFirstKey() - 1;
+			if(!isWhiteKey(k)) k--;
+			int k2 = getLastKey() == 127 ? 127 : getLastKey() + 1;
+			if(!isWhiteKey(k2)) k2++;
+			
+			setKeyRange(k, k2);
+			CC.preferences().setIntProperty("midiKeyboard.firstKey", k);
+			CC.preferences().setIntProperty("midiKeyboard.lastKey", k2);
+			
+		}
+	}
+	
+	private class ActionDecreaseKeyNumber extends AbstractAction {
+		ActionDecreaseKeyNumber() {
+			super(i18n.getLabel("PianoRoll.decreaseKeyNumber"));
+			
+			String s = i18n.getLabel("PianoRoll.decreaseKeyNumber");
+			putValue(SHORT_DESCRIPTION, s);
+		}
+		
+		public void
+		actionPerformed(ActionEvent e) {
+			if(getLastKey() - getFirstKey() < 31) return;
+			int k = getFirstKey() + 1;
+			if(!isWhiteKey(k)) k++;
+			int k2 = getLastKey() - 1;
+			if(!isWhiteKey(k2)) k2--;
+			
+			setKeyRange(k, k2);
+			CC.preferences().setIntProperty("midiKeyboard.firstKey", k);
+			CC.preferences().setIntProperty("midiKeyboard.lastKey", k2);
+			
+		}
+	}
+	
+	private class ActionChangeCurrentOctave extends AbstractAction {
+		private int octave;
+		
+		ActionChangeCurrentOctave(int octave) {
+			super("");
+			this.octave = octave;
+		}
+		
+		public void
+		actionPerformed(ActionEvent e) {
+			setCurrentOctave(octave);
+		}
+	}
+	
+	private void
+	keyPressed(int keyCode, int note) {
+		fireNoteOn(note, getConstantVelocity());
+		keyMap.put(keyCode, note);
+	}
+	
+	private void
+	keyPressed(int keyCode) {
+		if(!isPlayingEnabled()) return;
+		
+		int offset = (getCurrentOctave() + 2) * 12;
+		
+		switch(keyCode) {
+			case KeyEvent.VK_A:
+				keyPressed(keyCode, offset); break;
+			case KeyEvent.VK_W:
+				keyPressed(keyCode, offset + 1); break;
+			case KeyEvent.VK_S:
+				keyPressed(keyCode, offset + 2); break;
+			case KeyEvent.VK_E:
+				keyPressed(keyCode, offset + 3); break;
+			case KeyEvent.VK_D:
+				keyPressed(keyCode, offset + 4); break;
+			case KeyEvent.VK_F:
+				keyPressed(keyCode, offset + 5); break;
+			case KeyEvent.VK_T:
+				keyPressed(keyCode, offset + 6); break;
+			case KeyEvent.VK_G:
+				keyPressed(keyCode, offset + 7); break;
+			case KeyEvent.VK_Y:
+				keyPressed(keyCode, offset + 8); break;
+			case KeyEvent.VK_H:
+				keyPressed(keyCode, offset + 9); break;
+			case KeyEvent.VK_U:
+				keyPressed(keyCode, offset + 10); break;
+			case KeyEvent.VK_J:
+				keyPressed(keyCode, offset + 11); break;
+			case KeyEvent.VK_K:
+				keyPressed(keyCode, offset + 12); break;
+			case KeyEvent.VK_O:
+				keyPressed(keyCode, offset + 13); break;
+			case KeyEvent.VK_L:
+				keyPressed(keyCode, offset + 14); break;
+			case KeyEvent.VK_P:
+				keyPressed(keyCode, offset + 15); break;
+			case KeyEvent.VK_SEMICOLON:
+				keyPressed(keyCode, offset + 16); break;
+			case KeyEvent.VK_QUOTE:
+				keyPressed(keyCode, offset + 17); break;
+		}
+	}
+	
+	public void
+	keyReleased(int keyCode) {
+		if(!isPlayingEnabled()) return;
+		
+		switch(keyCode) {
+			case KeyEvent.VK_A:
+			case KeyEvent.VK_W:
+			case KeyEvent.VK_S:
+			case KeyEvent.VK_E:
+			case KeyEvent.VK_D:
+			case KeyEvent.VK_F:
+			case KeyEvent.VK_T:
+			case KeyEvent.VK_G:
+			case KeyEvent.VK_Y:
+			case KeyEvent.VK_H:
+			case KeyEvent.VK_U:
+			case KeyEvent.VK_J:
+			case KeyEvent.VK_K:
+			case KeyEvent.VK_O:
+			case KeyEvent.VK_L:
+			case KeyEvent.VK_P:
+			case KeyEvent.VK_SEMICOLON:
+			case KeyEvent.VK_QUOTE:
+				if(keyMap.get(keyCode) == null) return;
+				fireNoteOff(keyMap.get(keyCode), getConstantVelocity());
+				keyMap.remove(keyCode);
+		}
+	}
+	
 	private final Handler handler = new Handler();
 	
 	private Handler
 	getHandler() { return handler; }
 	
-	private class Handler extends MouseAdapter {
+	private class Handler extends MouseAdapter implements KeyListener {
+		@Override
+		public void
+		mouseClicked(MouseEvent e) { requestFocusInWindow(); }
+		
 		private int pressedKey = -1;
 		
-		@Override public void
+		@Override
+		public void
 		mousePressed(MouseEvent e) {
 			if(!isPlayingEnabled()) return;
 			if(e.getButton() != MouseEvent.BUTTON1) return;
 			
-			int key = getKey(e.getPoint());
+			int key = painter.getKeyByPoint(e.getPoint());
 			if(key == -1) return;
 			pressedKey = key;
 			setKeyPressed(key, true);
-			int velocity = getVelocity(e.getPoint(), isWhiteKey(key));
+			int velocity = painter.getVelocity(e.getPoint(), key);
 			
-			MidiDataEvent evt = new MidiDataEvent (
-				PianoRoll.this, MidiDataEvent.Type.NOTE_ON, key, velocity
-			);
-			
-			fireMidiDataEvent(evt);
+			fireNoteOn(key, velocity);
 		}
 		
-		@Override public void
+		@Override
+		public void
 		mouseReleased(MouseEvent e) {
 			if(!isPlayingEnabled()) return;
 			if(e.getButton() != MouseEvent.BUTTON1) return;
@@ -728,7 +862,7 @@ public class PianoRoll extends JPanel implements MidiDataListener {
 			if(pressedKey == -1) return;
 			setKeyPressed(pressedKey, false);
 			
-			int velocity = getVelocity(e.getPoint(), isWhiteKey(pressedKey));
+			int velocity = painter.getVelocity(e.getPoint(), pressedKey);
 			MidiDataEvent evt = new MidiDataEvent (
 				PianoRoll.this, MidiDataEvent.Type.NOTE_OFF, pressedKey, velocity
 			);
@@ -736,6 +870,103 @@ public class PianoRoll extends JPanel implements MidiDataListener {
 			pressedKey = -1;
 			
 			fireMidiDataEvent(evt);
+		}
+		
+		@Override
+		public void
+		mouseDragged(MouseEvent e) {
+			if(!isPlayingEnabled()) return;
+			//if(e.getButton() != MouseEvent.BUTTON1) return;
+			
+			if(pressedKey == -1) return;
+			int key = painter.getKeyByPoint(e.getPoint());
+			if(key == pressedKey) return;
+			setKeyPressed(pressedKey, false);
+			
+			int velocity = painter.getVelocity(e.getPoint(), pressedKey);
+			fireNoteOff(pressedKey, velocity);
+			
+			pressedKey = key;
+			if(pressedKey == -1) return;
+			
+			setKeyPressed(key, true);
+			velocity = painter.getVelocity(e.getPoint(), key);
+			
+			fireNoteOn(key, velocity);
+		}
+		
+		private HashMap<Integer, Long> pressedKeysMap = new HashMap<Integer, Long>();
+		
+		public void
+		keyPressed(KeyEvent e) {
+			// Ugly fix for bug 4153069
+			if(pressedKeysMap.get(e.getKeyCode()) == null) {
+				keyPressedNoAutoRepeat(e);
+			}
+			
+			pressedKeysMap.put(e.getKeyCode(), e.getWhen());
+		}
+		
+		public void
+		keyPressedNoAutoRepeat(KeyEvent e) {
+			//System.out.println("Pressed: " + e.getKeyCode() + " " + e.getWhen());
+			if(e.isControlDown() || e.isAltDown() || e.isShiftDown() || e.isMetaDown());
+			else PianoRoll.this.keyPressed(e.getKeyCode());
+		}
+		
+		public void
+		keyReleased(final KeyEvent e) {
+			// Ugly fix for bug 4153069
+			SwingUtilities.invokeLater(new Fix4153069(e));
+		}
+		
+		public void
+		keyReleasedNoAutoRepeat(KeyEvent e) {
+			//System.out.println("Released: " + e.getKeyCode() + " " + e.getWhen());
+			PianoRoll.this.keyReleased(e.getKeyCode());
+		}
+		
+		public void
+		keyTyped(KeyEvent e) { }
+	}
+	
+	class Fix4153069 implements Runnable, ActionListener {
+		KeyEvent e;
+		int count = 0;
+		
+		Fix4153069(KeyEvent e) {
+			this.e = e;
+		}
+		
+		public void
+		actionPerformed(ActionEvent e) { run(); }
+		
+		public void
+		run() {
+			Long l = getHandler().pressedKeysMap.get(e.getKeyCode());
+			if(l == null || l.longValue() < e.getWhen()) {
+				if(l != null) {
+					if(delay()) return;
+				}
+				getHandler().pressedKeysMap.remove(e.getKeyCode());
+				getHandler().keyReleasedNoAutoRepeat(e);
+			} 
+			
+		}
+		
+		private boolean
+		delay() {
+			if(count < 1) {
+				//System.out.println("Delaying...");
+				count++;
+				
+				Timer t = new Timer(4, this);
+				t.setRepeats(false);
+				t.start();
+				return true;
+			}
+			
+			return false;
 		}
 	}
 }

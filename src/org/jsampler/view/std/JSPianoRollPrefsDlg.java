@@ -76,13 +76,19 @@ public class JSPianoRollPrefsDlg extends OkCancelDialog {
 		private final JLabel lToKey =
 			new JLabel(i18n.getLabel("JSPianoRollPrefsDlg.lToKey"));
 		
+		private final JLabel lHeight =
+			new JLabel(i18n.getLabel("JSPianoRollPrefsDlg.lHeight"));
+		
 		private final JSpinner spinnerFirstKey;
 		private final JSpinner spinnerLastKey;
+		
+		private final JSpinner spinnerHeight;
 		
 		public
 		MainPane() {
 			spinnerFirstKey = new JSpinner(new SpinnerNumberModel(0, 0, 127, 1));
 			spinnerLastKey = new JSpinner(new SpinnerNumberModel(0, 0, 127, 1));
+			spinnerHeight = new JSpinner(new SpinnerNumberModel(80, 80, 300, 1));
 			
 			int i = CC.preferences().getIntProperty("midiKeyboard.firstKey");
 			spinnerFirstKey.setValue(i);
@@ -90,17 +96,36 @@ public class JSPianoRollPrefsDlg extends OkCancelDialog {
 			i = CC.preferences().getIntProperty("midiKeyboard.lastKey");
 			spinnerLastKey.setValue(i);
 			
-			setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-			add(lFromKey);
-			add(Box.createRigidArea(new Dimension(6, 0)));
-			add(spinnerFirstKey);
-			add(Box.createRigidArea(new Dimension(6, 0)));
-			add(lToKey);
-			add(Box.createRigidArea(new Dimension(6, 0)));
-			add(spinnerLastKey);
+			i = CC.preferences().getIntProperty("midiKeyboard.height");
+			spinnerHeight.setValue(i);
+			
+			setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+			
+			JPanel p = new JPanel();
+			p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
+			p.add(lFromKey);
+			p.add(Box.createRigidArea(new Dimension(6, 0)));
+			p.add(spinnerFirstKey);
+			p.add(Box.createRigidArea(new Dimension(6, 0)));
+			p.add(lToKey);
+			p.add(Box.createRigidArea(new Dimension(6, 0)));
+			p.add(spinnerLastKey);
+			p.setAlignmentX(LEFT_ALIGNMENT);
+			add(p);
 			
 			String s = i18n.getLabel("JSPianoRollPrefsDlg.keyRange");
-			setBorder(BorderFactory.createTitledBorder(s));
+			p.setBorder(BorderFactory.createTitledBorder(s));
+			p.setMaximumSize(new Dimension(Short.MAX_VALUE, p.getPreferredSize().height));
+			
+			add(Box.createRigidArea(new Dimension(0, 6)));
+			
+			p = new JPanel();
+			p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
+			p.add(lHeight);
+			p.add(Box.createRigidArea(new Dimension(6, 0)));
+			p.add(spinnerHeight);
+			p.setAlignmentX(LEFT_ALIGNMENT);
+			add(p);
 		}
 		
 		public void
@@ -121,6 +146,9 @@ public class JSPianoRollPrefsDlg extends OkCancelDialog {
 			
 			CC.preferences().setIntProperty("midiKeyboard.firstKey", i);
 			CC.preferences().setIntProperty("midiKeyboard.lastKey", j);
+			
+			i = Integer.parseInt(spinnerHeight.getValue().toString());
+			CC.preferences().setIntProperty("midiKeyboard.height", i);
 		}
 	}
 }

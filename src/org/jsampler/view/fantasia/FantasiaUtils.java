@@ -22,9 +22,9 @@
 
 package org.jsampler.view.fantasia;
 
-import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dialog;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -34,14 +34,12 @@ import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
+import javax.swing.JPanel;
+import javax.swing.JToolBar;
 
 import javax.swing.plaf.basic.BasicButtonUI;
 import javax.swing.plaf.basic.BasicLabelUI;
-import javax.swing.plaf.basic.ComboPopup;
 
 import org.jsampler.view.InstrumentsDbTreeModel;
 
@@ -49,11 +47,6 @@ import org.jsampler.view.std.JSDbInstrumentChooser;
 import org.jsampler.view.std.JSInstrumentChooser;
 import org.jsampler.view.std.JSInstrumentsDbTree;
 
-import org.jvnet.lafwidget.animation.FadeConfigurationManager;
-import org.jvnet.lafwidget.animation.FadeKind;
-
-import org.jvnet.substance.SubstanceComboBoxUI;
-import org.jvnet.substance.SubstanceLookAndFeel;
 
 /**
  *
@@ -81,6 +74,12 @@ public class FantasiaUtils {
 	public static JButton
 	createScreenButton(String s) { return new ScreenButton(s); }
 	
+	public static JToolBar
+	createSubToolBar() { return new ToolBar(); }
+	
+	public static JPanel
+	createBottomSubPane() { return new BottomSubPane(); }
+	
 	
 	private static class InstrumentChooser extends JSInstrumentChooser {
 		InstrumentChooser(Frame owner) {
@@ -90,6 +89,7 @@ public class FantasiaUtils {
 		protected JComboBox
 		createComboBox() { return createEnhancedComboBox(); }
 	
+		@Override
 		protected JSDbInstrumentChooser
 		createDbInstrumentChooser(Dialog owner) {
 			return new DbInstrumentChooser(owner);
@@ -101,9 +101,11 @@ public class FantasiaUtils {
 			super(owner);
 		}
 		
+		@Override
 		protected JButton
 		createToolbarButton(Action a) { return new ToolbarButton(a); }
 		
+		@Override
 		protected JSInstrumentsDbTree
 		createInstrumentsDbTree(InstrumentsDbTreeModel m) {
 			return new FantasiaInstrumentsDbTree(m);
@@ -119,6 +121,7 @@ public class FantasiaUtils {
 			setForeground(new java.awt.Color(0xFFA300));
 		}
 		
+		@Override
 		protected void
 		paintComponent(Graphics g) {
 			Graphics2D g2d = (Graphics2D)g;
@@ -131,6 +134,7 @@ public class FantasiaUtils {
 			super.paintComponent(g2d);
 		}
 		
+		@Override
 		public void
 		updateUI() { setUI(new BasicLabelUI()); }
 	}
@@ -149,6 +153,7 @@ public class FantasiaUtils {
 			setForeground(new java.awt.Color(0xFFA300));
 		}
 		
+		@Override
 		protected void
 		paintComponent(Graphics g) {
 			Graphics2D g2d = (Graphics2D)g;
@@ -161,7 +166,62 @@ public class FantasiaUtils {
 			super.paintComponent(g2d);
 		}
 		
+		@Override
 		public void
 		updateUI() { setUI(new BasicButtonUI()); }
+	}
+	
+	
+	
+	private static class ToolBar extends JToolBar {
+		ToolBar() {
+			setFloatable(false);
+			setOpaque(false);
+			setPreferredSize(new Dimension(77, 29));
+			setMinimumSize(getPreferredSize());
+			//setBackground(Color.BLACK);
+		}
+		
+		@Override
+		protected void
+		paintComponent(Graphics g) {
+			super.paintComponent(g);
+			
+			double h = getSize().getHeight();
+			double w = getSize().getWidth();
+			
+			FantasiaPainter.paintGradient((Graphics2D)g, 0, 0, w - 1, h - 1);
+			
+			FantasiaPainter.RoundCorners rc =
+				new FantasiaPainter.RoundCorners(true, false, false, true);
+			
+			FantasiaPainter.paintOuterBorder((Graphics2D)g, 0, 0, w - 1, h - 1, rc);
+		}
+	}
+	
+	private static class BottomSubPane extends JPanel {
+		BottomSubPane() {
+			setLayout(new java.awt.BorderLayout());
+			setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+		}
+		
+		@Override
+		protected void
+		paintComponent(Graphics g) {
+			super.paintComponent(g);
+			
+			Graphics2D g2 = (Graphics2D)g;
+			double h = getSize().getHeight();
+			double w = getSize().getWidth();
+			
+			FantasiaPainter.paintGradient(g2, 0, 0, w - 1, h - 1);
+			
+			FantasiaPainter.RoundCorners rc =
+				new FantasiaPainter.RoundCorners(false, true, true, false);
+			
+			FantasiaPainter.paintOuterBorder(g2, 0, 0, w - 1, h - 1, rc);
+			
+			FantasiaPainter.paintInnerBorder(g2, 4, 4, w - 5, h - 5, true);
+		}
 	}
 }

@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -23,18 +23,26 @@
 package org.jsampler.view.fantasia;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Insets;
+import java.awt.Graphics2D;
+import java.awt.Paint;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
+
+import org.jsampler.CC;
 
 import static org.jsampler.view.fantasia.A4n.a4n;
 
@@ -42,9 +50,9 @@ import static org.jsampler.view.fantasia.A4n.a4n;
  *
  * @author Grigor Iliev
  */
-public class StandardBar extends PixmapPane {
+public class StandardBar extends JPanel {
 	private final JToolBar toolbar = new JToolBar();
-	private final PixmapPane mainPane;
+	private final JPanel mainPane;
 	
 	private final ToolbarButton btnSamplerInfo = new ToolbarButton(a4n.samplerInfo);
 	private final ToolbarButton btnLoadSession = new ToolbarButton(a4n.loadScript);
@@ -52,6 +60,7 @@ public class StandardBar extends PixmapPane {
 	private final ToolbarButton btnRefresh = new ToolbarButton(a4n.refresh);
 	private final ToolbarButton btnResetSampler = new ToolbarButton(a4n.resetSampler);
 	
+	protected final ToggleButton btnMidiKeyboard = new ToggleButton();
 	private final ToolbarButton btnLSConsole = new ToolbarButton(a4n.windowLSConsole);
 	private final ToolbarButton btnInstrumentsDb = new ToolbarButton(a4n.windowInstrumentsDb);
 	
@@ -62,22 +71,24 @@ public class StandardBar extends PixmapPane {
 	/** Creates a new instance of <code>StandardBar</code> */
 	public
 	StandardBar() {
-		super(Res.gfxToolBarBg);
-		setPixmapInsets(new Insets(0, 6, 6, 6));
+		//super(Res.gfxToolBarBg);
+		//setPixmapInsets(new Insets(0, 6, 6, 6));
 		
 		setLayout(new BorderLayout());
 		setOpaque(false);
 		
-		Dimension d = new Dimension(60, 60);
+		Dimension d = new Dimension(60, 51);
 		setMinimumSize(d);
 		setPreferredSize(d);
-		d = new Dimension(Short.MAX_VALUE, 60);
+		d = new Dimension(Short.MAX_VALUE, 51);
 		setMaximumSize(d);
-		setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 5));
+		setBorder(BorderFactory.createEmptyBorder(0, 5, 2, 5));
 		
 		
-		mainPane = new PixmapPane(Res.gfxToolBar);
-		mainPane.setPixmapInsets(Res.insetsToolBar);
+		//mainPane = new PixmapPane(Res.gfxToolBar);
+		//mainPane.setPixmapInsets(Res.insetsToolBar);
+		mainPane = new MainPane();
+		mainPane.setOpaque(false);
 		mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.X_AXIS));
 		
 		toolbar.setOpaque(false);
@@ -90,6 +101,17 @@ public class StandardBar extends PixmapPane {
 		toolbar.add(btnRefresh);
 		toolbar.add(btnResetSampler);
 		toolbar.addSeparator();
+		btnMidiKeyboard.setIcon(Res.iconMidiKeyboard32);
+		btnMidiKeyboard.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) {
+				boolean b = btnMidiKeyboard.isSelected();
+				MainFrame frm = (MainFrame)CC.getMainFrame();
+				if(frm == null) return;
+				frm.setMidiKeyboardVisible(b);
+			}
+		});
+		toolbar.add(btnMidiKeyboard);
 		toolbar.add(btnLSConsole);
 		toolbar.add(btnInstrumentsDb);
 		toolbar.addSeparator();
@@ -100,9 +122,76 @@ public class StandardBar extends PixmapPane {
 		
 		mainPane.add(lLogo);
 		mainPane.add(Box.createRigidArea(new Dimension(17, 0)));
-		add(mainPane);
+		FantasiaSubPanel fsp = new FantasiaSubPanel(true, false, false);
+		fsp.add(mainPane);
+		add(fsp);
 	}
 	
 	public void
 	showFantasiaLogo(boolean b) { lLogo.setVisible(b); }
+	
+	private Color midColor = new Color(0x797979);
+	
+	@Override
+	public void
+	paintComponent(Graphics g) {
+		Graphics2D g2 = (Graphics2D)g;
+		
+		Paint oldPaint = g2.getPaint();
+		Composite oldComposite = g2.getComposite();
+		
+		double h = getSize().getHeight();
+		double w = getSize().getWidth();
+		
+		FantasiaPainter.paintGradient(g2, 0.0, 0.0, w - 1, h - 1, FantasiaPainter.color5, midColor);
+		
+		FantasiaPainter.Border b = new FantasiaPainter.Border(false, true, false, true);
+		FantasiaPainter.paintBoldOuterBorder(g2, 0, 0, w - 1, h + 2, b);
+		
+		g2.setPaint(oldPaint);
+		g2.setComposite(oldComposite);
+	}
+	
+	class ToggleButton extends JToggleButton {
+		/** Creates a new instance of <code>ToolbarButton</code>. */
+		ToggleButton() {
+			setFocusable(false);
+		}
+		
+		/** Creates a new instance of <code>ToolbarButton</code>. */
+		public
+		ToggleButton(Action a) {
+			super(a);
+			setFocusable(false);
+		}
+		
+		/** This method does nothing. */
+		@Override
+		public void
+		setText(String text) { /* We don't want any text in toolbar buttons */ }
+	}
+	
+	class MainPane extends JPanel {
+		private final Color color1 = new Color(0x505050);
+		private final Color color2 = new Color(0x3e3e3e);
+	
+		@Override
+		public void
+		paintComponent(Graphics g) {
+			Graphics2D g2 = (Graphics2D)g;
+			
+			Paint oldPaint = g2.getPaint();
+			Composite oldComposite = g2.getComposite();
+			
+			double h = getSize().getHeight();
+			double w = getSize().getWidth();
+			
+			FantasiaPainter.paintGradient(g2, 0.0, 0.0, w - 1, h - 1, color1, color2);
+			
+			FantasiaPainter.paintOuterBorder(g2, 0, 0, w - 1, h - 1, true, 0.5f, 0.3f);
+			
+			g2.setPaint(oldPaint);
+			g2.setComposite(oldComposite);
+		}
+	}
 }

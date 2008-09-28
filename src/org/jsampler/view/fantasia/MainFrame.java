@@ -23,17 +23,24 @@
 package org.jsampler.view.fantasia;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Paint;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -44,6 +51,7 @@ import java.util.Vector;
 import java.util.logging.Level;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
@@ -82,7 +90,8 @@ import static org.jsampler.view.std.StdPrefs.*;
 public class MainFrame extends JSMainFrame {
 	private final StandardBar standardBar = new StandardBar();
 	private final FantasiaMenuBar menuBar = new FantasiaMenuBar();
-	private final JPanel rootPane = new JPanel();
+	private final JPanel rootPane = new RootPane();
+	private final BottomPane bottomPane;
 	private final MainPane mainPane = new MainPane();
 	private final PianoKeyboardPane pianoKeyboardPane;
 	
@@ -90,7 +99,6 @@ public class MainFrame extends JSMainFrame {
 		new JMenu(i18n.getMenuLabel("actions.recentScripts"));
 	
 	private final JSplitPane hSplitPane;
-	private final JSplitPane pianoRollSplitPane;
 	
 	private final LeftSidePane leftSidePane = new LeftSidePane();
 	private final RightSidePane rightSidePane = new RightSidePane();
@@ -120,11 +128,10 @@ public class MainFrame extends JSMainFrame {
 	public
 	MainFrame() {
 		setTitle(i18n.getLabel("MainFrame.title"));
-		
+		//setUndecorated(true);
 		if(Res.iconAppIcon != null) setIconImage(Res.iconAppIcon.getImage());
 		
 		getContentPane().add(standardBar, BorderLayout.NORTH);
-		//getContentPane().add(statusBar, BorderLayout.SOUTH);
 		
 		rightPane = createRightPane();
 		
@@ -139,23 +146,27 @@ public class MainFrame extends JSMainFrame {
 		
 		pianoKeyboardPane = new PianoKeyboardPane();
 		getChannelsPane(0).addListSelectionListener(pianoKeyboardPane);
+		int h = preferences().getIntProperty("midiKeyboard.height");
+		setMidiKeyboardHeight(h);
 		
-		pianoRollSplitPane = new JSplitPane (
-			JSplitPane.VERTICAL_SPLIT,
-			true,	// continuousLayout 
-			rootPane, pianoKeyboardPane
-		);
+		PropertyChangeListener l = new PropertyChangeListener() {
+			public void
+			propertyChange(PropertyChangeEvent e) {
+				int h = preferences().getIntProperty("midiKeyboard.height");
+				setMidiKeyboardHeight(h);
+			}
+		};
 		
-		pianoRollSplitPane.setResizeWeight(0.5);
+		CC.preferences().addPropertyChangeListener("midiKeyboard.height", l);
 		
-		rootPane.setLayout(new BorderLayout());
-		rootPane.setBorder(BorderFactory.createEmptyBorder(6, 0, 0, 0));
-		rootPane.setOpaque(false);
+		bottomPane = new BottomPane();
+		
+		hSplitPane.setOpaque(false);
 		rootPane.add(hSplitPane);
+		rootPane.add(bottomPane, BorderLayout.SOUTH);
+		add(rootPane);
 		
 		addMenu();
-		
-		getContentPane().add(pianoRollSplitPane);
 		
 		int i = preferences().getIntProperty("MainFrame.hSplitDividerLocation", 220);
 		hSplitPane.setDividerLocation(i);
@@ -167,7 +178,9 @@ public class MainFrame extends JSMainFrame {
 	
 	private JPanel
 	createRightPane() {
-		JPanel p = new JPanel();
+		JPanel p = new FantasiaPanel();
+		p.setOpaque(false);
+		
 		GridBagLayout gridbag = new GridBagLayout();
 		GridBagConstraints c = new GridBagConstraints();
 		
@@ -187,7 +200,7 @@ public class MainFrame extends JSMainFrame {
 		c.gridy = 0;
 		c.weightx = 0.0;
 		c.weighty = 1.0;
-		c.insets = new Insets(0, 3, 0, 3);
+		c.insets = new Insets(0, 0, 0, 3);
 		c.fill = GridBagConstraints.VERTICAL;
 		gridbag.setConstraints(mainPane, c);
 		p.add(mainPane);
@@ -239,6 +252,7 @@ public class MainFrame extends JSMainFrame {
 	
 	
 	/** Invoked when this window is about to close. */
+	@Override
 	protected void
 	onWindowClose() {
 		boolean b = preferences().getBoolProperty(CONFIRM_APP_QUIT);
@@ -439,13 +453,13 @@ public class MainFrame extends JSMainFrame {
 		cbmiMidiKeyboardVisible.addActionListener(new ActionListener() {
 			public void
 			actionPerformed(ActionEvent e) {
-				showMidiKeyboard(cbmiMidiKeyboardVisible.getState());
+				setMidiKeyboardVisible(cbmiMidiKeyboardVisible.getState());
 			}
 		});
 		
 		b = preferences().getBoolProperty("midiKeyboard.visible");
 		cbmiMidiKeyboardVisible.setSelected(b);
-		showMidiKeyboard(b);
+		setMidiKeyboardVisible(b);
 		
 		
 		// Window
@@ -484,6 +498,7 @@ public class MainFrame extends JSMainFrame {
 	 * This method does nothing, because <b>Fantasia</b> has exactly
 	 * one pane containing sampler channels, which can not be changed.
 	 */
+	@Override
 	public void
 	insertChannelsPane(JSChannelsPane pane, int idx) {
 		
@@ -494,6 +509,7 @@ public class MainFrame extends JSMainFrame {
 	 * because the <b>Fantasia</b> view has exactly one pane containing sampler channels.
 	 * @return The <code>JSChannelsPane</code> at index 0.
 	 */
+	@Override
 	public JSChannelsPane
 	getSelectedChannelsPane() { return getChannelsPane(0); }
 	
@@ -501,9 +517,11 @@ public class MainFrame extends JSMainFrame {
 	 * This method does nothing because the <b>Fantasia</b> view has
 	 * exactly one pane containing sampler channels which is always shown. 
 	 */
+	@Override
 	public void
 	setSelectedChannelsPane(JSChannelsPane pane) { }
 	
+	@Override
 	public void
 	installJSamplerHome() {
 		JSamplerHomeChooser chooser = new JSamplerHomeChooser(this);
@@ -513,6 +531,7 @@ public class MainFrame extends JSMainFrame {
 		CC.changeJSamplerHome(chooser.getJSamplerHome());
 	}
 	
+	@Override
 	public void
 	showDetailedErrorMessage(Frame owner, String err, String details) {
 		JSDetailedErrorDlg dlg = new JSDetailedErrorDlg (
@@ -521,6 +540,7 @@ public class MainFrame extends JSMainFrame {
 		dlg.setVisible(true);
 	}
 	
+	@Override
 	public void
 	showDetailedErrorMessage(Dialog owner, String err, String details) {
 		JSDetailedErrorDlg dlg = new JSDetailedErrorDlg (
@@ -533,6 +553,7 @@ public class MainFrame extends JSMainFrame {
 	 * Gets the server address to which to connect. If the server should be
 	 * manually selected, a dialog asking the user to choose a server is displayed.
 	 */
+	@Override
 	public Server
 	getServer() {
 		boolean b = preferences().getBoolProperty(MANUAL_SERVER_SELECT_ON_STARTUP);
@@ -544,6 +565,7 @@ public class MainFrame extends JSMainFrame {
 	 * manually selected, a dialog asking the user to choose a server is displayed.
 	 * @param manualSelect Determines whether the server should be manually selected.
 	 */
+	@Override
 	public Server
 	getServer(boolean manualSelect) {
 		if(manualSelect) {
@@ -722,21 +744,35 @@ public class MainFrame extends JSMainFrame {
 		});
 	}
 	
-	private void
-	showMidiKeyboard(boolean b) {
+	public void
+	setMidiKeyboardVisible(boolean b) {
 		preferences().setBoolProperty("midiKeyboard.visible", b);
-		if(b) {
-			getContentPane().remove(rootPane);
-			pianoRollSplitPane.setTopComponent(rootPane);
-			getContentPane().add(pianoRollSplitPane);
-		} else {
-			getContentPane().remove(pianoRollSplitPane);
-			pianoRollSplitPane.remove(rootPane);
-			getContentPane().add(rootPane);
+		pianoKeyboardPane.setVisible(b);
+		
+		if(cbmiMidiKeyboardVisible.isSelected() != b) {
+			cbmiMidiKeyboardVisible.setSelected(b);
 		}
 		
-		getContentPane().validate();
-		getContentPane().repaint();
+		if(standardBar.btnMidiKeyboard.isSelected() != b) {
+			standardBar.btnMidiKeyboard.setSelected(b);
+		}
+		
+		if(pianoKeyboardPane.btnPower.isSelected() != b) {
+			pianoKeyboardPane.btnPower.setSelected(b);
+		}
+		
+		rootPane.validate();
+		rootPane.repaint();
+	}
+	
+	public void
+	setMidiKeyboardHeight(int height) {
+		Dimension d = pianoKeyboardPane.getPreferredSize();
+		d = new Dimension(d.width, height);
+		pianoKeyboardPane.setPreferredSize(d);
+		pianoKeyboardPane.setMinimumSize(d);
+		pianoKeyboardPane.revalidate();
+		pianoKeyboardPane.repaint();
 	}
 	
 	private void
@@ -764,6 +800,7 @@ public class MainFrame extends JSMainFrame {
 		
 		RecentScriptHandler(String script) { this.script = script; }
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			runScript(script);
@@ -783,21 +820,77 @@ public class MainFrame extends JSMainFrame {
 	}
 
 	private class FantasiaMenuBar extends JMenuBar {
-		private Insets pixmapInsets = new Insets(6, 6, 0, 6);
-		private Insets pixmapInsets2 = new Insets(6, 6, 6, 6);
-		
 		FantasiaMenuBar() {
 			setOpaque(false);
+			setBorder(BorderFactory.createEmptyBorder(2, 6, 0, 0));
 		}
 		
+		@Override
 		protected void
 		paintComponent(Graphics g) {
-			super.paintComponent(g);
+			//super.paintComponent(g);
+			Graphics2D g2 = (Graphics2D)g;
+			
+			Paint oldPaint = g2.getPaint();
+			Composite oldComposite = g2.getComposite();
+			
+			double h = getSize().getHeight();
+			double w = getSize().getWidth();
+			
+			FantasiaPainter.paintGradient(g2, 0.0, 0.0, w - 1, h - 1, FantasiaPainter.color6, FantasiaPainter.color5);
+			
+			FantasiaPainter.Border b;
+			
+			
 			if(standardBar.isVisible()) {
-				PixmapPane.paintComponent(this, g, Res.gfxMenuBarBg, pixmapInsets);
+				b = new FantasiaPainter.Border(true, true, false, true);
+				FantasiaPainter.paintBoldOuterBorder(g2, 0, 0, w - 1, h + 1, b);
 			} else {
-				PixmapPane.paintComponent(this, g, Res.gfxRoundBg14, pixmapInsets2);
+				b = new FantasiaPainter.Border(true, true, true, true);
+				FantasiaPainter.paintBoldOuterBorder(g2, 0, 0, w - 1, h - 1, b);
 			}
+			
+			g2.setPaint(oldPaint);
+			g2.setComposite(oldComposite);
+		}
+	}
+	
+	class RootPane extends FantasiaSubPanel {
+		private final Color color1 = new Color(0x454545);
+		private final Color color2 = new Color(0x2e2e2e);
+		
+		RootPane() {
+			setLayout(new BorderLayout());
+			setBorder(BorderFactory.createEmptyBorder(9, 10, 6, 10));
+			setOpaque(false);
+		
+		}
+	
+		@Override
+		public void
+		paintComponent(Graphics g) {
+			Graphics2D g2 = (Graphics2D)g;
+			
+			Paint oldPaint = g2.getPaint();
+			Composite oldComposite = g2.getComposite();
+			
+			double h = getSize().getHeight();
+			double w = getSize().getWidth();
+			
+			FantasiaPainter.paintBorder(g2, 0, -3, w - 1, h - 1, 6, false);
+			paintComponent(g2, 5, 1, w - 10, h - 6, color1, color2);
+			
+			g2.setPaint(oldPaint);
+			g2.setComposite(oldComposite);
+		}
+	}
+	
+	class BottomPane extends FantasiaPanel {
+		BottomPane() {
+			setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+			setOpaque(false);
+			add(pianoKeyboardPane);
+			
 		}
 	}
 }

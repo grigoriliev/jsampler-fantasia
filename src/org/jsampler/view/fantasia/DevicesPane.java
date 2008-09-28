@@ -33,6 +33,8 @@ import java.beans.PropertyChangeListener;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
+import org.jdesktop.swingx.JXTaskPane;
+
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.api.SubstanceConstants.FocusKind;
 import org.jvnet.substance.shaper.ClassicButtonShaper;
@@ -44,10 +46,10 @@ import static org.jsampler.view.fantasia.FantasiaPrefs.*;
  *
  * @author Grigor Iliev
  */
-public class DevicesPane extends JPanel {
+public class DevicesPane extends FantasiaPanel {
 	private final TaskPaneContainer taskPaneContainer = new TaskPaneContainer();
-	private final TaskPane midiDevicesTaskPane = new TaskPane();
-	private final TaskPane audioDevicesTaskPane = new TaskPane();
+	private final JXTaskPane midiDevicesTaskPane = new FantasiaTaskPane();
+	private final JXTaskPane audioDevicesTaskPane = new FantasiaTaskPane();
 	
 	private final MidiDevicesPane midiDevicesPane = new MidiDevicesPane();
 	private final AudioDevicesPane audioDevicesPane = new AudioDevicesPane();
@@ -92,8 +94,13 @@ public class DevicesPane extends JPanel {
 		taskPaneContainer.setBorder(BorderFactory.createEmptyBorder());
 		add(taskPaneContainer);
 		
-		midiDevicesTaskPane.add(midiDevicesPane);
-		audioDevicesTaskPane.add(audioDevicesPane);
+		FantasiaSubPanel fsp = new FantasiaSubPanel(false, true, false);
+		fsp.add(midiDevicesPane);
+		midiDevicesTaskPane.add(fsp);
+		
+		fsp = new FantasiaSubPanel(false, true, false);
+		fsp.add(audioDevicesPane);
+		audioDevicesTaskPane.add(fsp);
 		
 		taskPaneContainer.setOpaque(false);
 	}

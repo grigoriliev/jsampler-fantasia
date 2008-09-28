@@ -52,7 +52,7 @@ import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
  *
  * @author Grigor Iliev
  */
-public class MainPane extends JPanel {
+public class MainPane extends FantasiaPanel {
 	private final ChannelsBar channelsBar = new ChannelsBar();
 	private final ChannelsPane channelsPane;
 	
@@ -60,6 +60,7 @@ public class MainPane extends JPanel {
 	
 	/** Creates a new instance of <code>MainPane</code> */
 	public MainPane() {
+		setOpaque(false);
 		channelsPane = new ChannelsPane("", new ActionListener() {
 			public void
 			actionPerformed(ActionEvent e) { scrollToBottom(); }
@@ -70,7 +71,8 @@ public class MainPane extends JPanel {
 		
 		setLayout(gridbag);
 		
-		JPanel p = new JPanel();
+		JPanel p = new FantasiaPanel();
+		p.setOpaque(false);
 		p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
 		p.add(channelsBar);
 		p.add(Box.createGlue());
@@ -125,7 +127,7 @@ public class MainPane extends JPanel {
 	
 	private JPanel
 	createChannelsPane() {
-		JPanel p = new JPanel();
+		JPanel p = new FantasiaPanel();
 		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
 		channelsPane.setAlignmentX(LEFT_ALIGNMENT);
 		p.add(channelsPane);

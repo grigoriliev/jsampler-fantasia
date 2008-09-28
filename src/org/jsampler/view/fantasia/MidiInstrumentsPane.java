@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -26,6 +26,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Insets;
 
 import java.awt.event.ActionEvent;
@@ -38,7 +39,6 @@ import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -65,7 +65,7 @@ import static org.jsampler.view.fantasia.FantasiaPrefs.*;
  */
 public class MidiInstrumentsPane extends JPanel {
 	private final JPanel taskPaneContainer = new JPanel();
-	private final TaskPane mapsTaskPane = new TaskPane();
+	private final FantasiaTaskPane mapsTaskPane = new FantasiaTaskPane();
 	
 	private ManageMapsPane manageMapsPane = new ManageMapsPane();
 	private final InstrumentsPane instrumentsPane = new InstrumentsPane();
@@ -80,7 +80,10 @@ public class MidiInstrumentsPane extends JPanel {
 		setOpaque(false);
 		
 		mapsTaskPane.setTitle(i18n.getLabel("MidiInstrumentsPane.mapsTaskPane"));
-		mapsTaskPane.add(manageMapsPane);
+		
+		FantasiaSubPanel fsp = new FantasiaSubPanel(false, true, false);
+		fsp.add(manageMapsPane);
+		mapsTaskPane.add(fsp);
 		boolean b;
 		mapsTaskPane.setAnimated(preferences().getBoolProperty(ANIMATED));
 		b = preferences().getBoolProperty("MidiInstrumentsPane.mapsTaskPane.expanded");
@@ -126,24 +129,6 @@ public class MidiInstrumentsPane extends JPanel {
 		preferences().setBoolProperty("MidiInstrumentsPane.mapsTaskPane.expanded", b);
 	}
 	
-	static class ToolBar extends JToolBar {
-		private static Insets pixmapInsets = new Insets(1, 1, 1, 1);
-		
-		ToolBar() {
-			setFloatable(false);
-			setOpaque(false);
-			setPreferredSize(new Dimension(77, 29));
-			setMinimumSize(getPreferredSize());
-		}
-		
-		protected void
-		paintComponent(Graphics g) {
-			super.paintComponent(g);
-			
-			PixmapPane.paintComponent(this, g, Res.gfxCreateChannel, pixmapInsets);
-		}
-	}
-	
 	class ManageMapsPane extends JSManageMidiMapsPane {
 		ManageMapsPane() {
 			actionAddMap.putValue(Action.SMALL_ICON, Res.iconNew16);
@@ -152,7 +137,7 @@ public class MidiInstrumentsPane extends JPanel {
 			
 			removeAll();
 			
-			ToolBar toolBar = new ToolBar();
+			JToolBar toolBar = FantasiaUtils.createSubToolBar();
 			toolBar.add(new ToolbarButton(actionAddMap));
 			toolBar.add(new ToolbarButton(actionEditMap));
 			toolBar.add(new ToolbarButton(actionRemoveMap));
@@ -161,19 +146,25 @@ public class MidiInstrumentsPane extends JPanel {
 			JScrollPane sp = new JScrollPane(midiMapTable);
 			sp.setPreferredSize(new Dimension(120, 130));
 			
-			PixmapPane p = new PixmapPane(Res.gfxChannelOptions);
-			p.setPixmapInsets(new Insets(1, 1, 1, 1));
-			p.setLayout(new BorderLayout());
-			p.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
-			
-			PixmapPane p2 = new PixmapPane(Res.gfxBorder);
-			p2.setPixmapInsets(new Insets(1, 1, 1, 1));
-			p2.setLayout(new BorderLayout());
-			p2.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-			p2.add(sp);
-			p.add(p2);
-			
+			JPanel p = FantasiaUtils.createBottomSubPane();
+			p.add(sp);
 			add(p);
+		}
+		
+		@Override
+		protected void
+		paintComponent(Graphics g) {
+			super.paintComponent(g);
+			
+			double h = getSize().getHeight();
+			double w = getSize().getWidth();
+			
+			FantasiaPainter.paintGradient((Graphics2D)g, 0, 0, w - 1, h - 1);
+			
+			FantasiaPainter.RoundCorners rc =
+				new FantasiaPainter.RoundCorners(true, false, false, true);
+			
+			FantasiaPainter.paintOuterBorder((Graphics2D)g, 0, 0, w - 1, h - 1, rc);
 		}
 	}
 	
@@ -181,20 +172,23 @@ public class MidiInstrumentsPane extends JPanel {
 		MapsPane() {
 			setOpaque(false);
 			setLayout(new BorderLayout());
-			setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+			setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 5));
 			
-			PixmapPane p = new PixmapPane(Res.gfxChannelOptions);
-			p.setPixmapInsets(new Insets(1, 1, 1, 1));
-			p.setLayout(new BorderLayout());
-			p.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-			
-			PixmapPane p2 = new PixmapPane(Res.gfxRoundBg7);
-			p2.setPixmapInsets(new Insets(3, 3, 3, 3));
-			p2.setLayout(new BoxLayout(p2, BoxLayout.Y_AXIS));
+			FantasiaSubPanel p2 = new FantasiaSubPanel(true, false);
 			p2.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-			p2.add(cbMaps);
-			p2.add(Box.createRigidArea(new Dimension(0, 5)));
-			p2.add(instrumentsPane);
+			p2.setLayout(new BoxLayout(p2, BoxLayout.Y_AXIS));
+			
+			JPanel p = new FantasiaPanel();
+			p.setOpaque(false);
+			p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
+			p.add(cbMaps);
+			p.setBorder(BorderFactory.createEmptyBorder(3, 1, 5, 1));
+			p2.add(p);
+			
+			FantasiaSubPanel fsp = new FantasiaSubPanel(false, true, false);
+			fsp.add(instrumentsPane);
+			
+			p2.add(fsp);
 			
 			add(p2);
 		}
@@ -208,12 +202,11 @@ public class MidiInstrumentsPane extends JPanel {
 			
 			removeAll();
 			
-			ToolBar toolBar = new ToolBar();
+			JToolBar toolBar = FantasiaUtils.createSubToolBar();
 			toolBar.add(new ToolbarButton(actionAddInstrument));
 			toolBar.add(new ToolbarButton(actionEditInstrument));
 			toolBar.add(new ToolbarButton(actionRemove));
 			
-			toolBar.setFloatable(false);
 			add(toolBar, java.awt.BorderLayout.NORTH);
 			
 			JScrollPane sp = new JScrollPane(midiInstrumentTree);
@@ -221,21 +214,13 @@ public class MidiInstrumentsPane extends JPanel {
 			d = new Dimension(sp.getMinimumSize().width, sp.getPreferredSize().height);
 			sp.setPreferredSize(d);
 			
-			PixmapPane p = new PixmapPane(Res.gfxChannelOptions);
-			p.setPixmapInsets(new Insets(1, 1, 1, 1));
-			p.setLayout(new BorderLayout());
-			p.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
-			
-			PixmapPane p2 = new PixmapPane(Res.gfxBorder);
-			p2.setPixmapInsets(new Insets(1, 1, 1, 1));
-			p2.setLayout(new BorderLayout());
-			p2.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-			p2.add(sp);
-			p.add(p2);
+			JPanel p = FantasiaUtils.createBottomSubPane();
+			p.add(sp);
 			
 			add(p);
 		}
 		
+		@Override
 		public void
 		addInstrument() {
 			MidiInstrumentMap map = (MidiInstrumentMap)cbMaps.getSelectedItem();
@@ -268,6 +253,7 @@ public class MidiInstrumentsPane extends JPanel {
 	
 	private class Handler implements ListListener<MidiInstrumentMap> {
 		/** Invoked when an orchestra is added to the orchestra list. */
+		@Override
 		public void
 		entryAdded(ListEvent<MidiInstrumentMap> e) {
 			if(cbMaps.getItemCount() == 0) cbMaps.setEnabled(true);
@@ -275,6 +261,7 @@ public class MidiInstrumentsPane extends JPanel {
 		}
 	
 		/** Invoked when an orchestra is removed from the orchestra list. */
+		@Override
 		public void
 		entryRemoved(ListEvent<MidiInstrumentMap> e) {
 			cbMaps.removeItem(e.getEntry());

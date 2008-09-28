@@ -29,13 +29,13 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.jvnet.substance.SubstanceLookAndFeel;
+import net.sf.juife.JuifeUtils;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jsampler.view.fantasia.FantasiaPrefs.preferences;
@@ -45,23 +45,23 @@ import static org.jsampler.view.fantasia.FantasiaPrefs.preferences;
  *
  * @author Grigor Iliev
  */
-public class RightSidePane extends PixmapPane {
-	private JTabbedPane tabbedPane = new JTabbedPane();
+public class RightSidePane extends FantasiaPanel {
+	private FantasiaTabbedPane tabbedPane = new FantasiaTabbedPane();
 	private InstrumentsDbPane instrumentsDbPane = null;
 	private final DevicesPane devicesPane = new DevicesPane();
 	private final JScrollPane spDevicesPane = new JScrollPane();
 	
+	private final JPanel mainPane = new FantasiaSubPanel(false, true);
 	
 	/**
 	 * Creates a new instance of <code>RightSidePane</code>
 	 */
 	public
 	RightSidePane() {
-		super(Res.gfxRoundBg14);
 		setOpaque(false);
-		setPixmapInsets(new java.awt.Insets(6, 6, 6, 6));
-		setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
 		setLayout(new BorderLayout());
+		
+		tabbedPane.getMainPane().setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
 		
 		spDevicesPane.setOpaque(false);
 		spDevicesPane.getViewport().setOpaque(false);
@@ -73,10 +73,8 @@ public class RightSidePane extends PixmapPane {
 		final String s = "rightSidePane.showInstrumentsDb";
 		setTabbedView(preferences().getBoolProperty(s));
 		
-		tabbedPane.setBackground(new java.awt.Color(0x828282));
-		tabbedPane.putClientProperty(SubstanceLookAndFeel.COLORIZATION_FACTOR, 1.0);
-		
 		preferences().addPropertyChangeListener(s, getHandler());
+		setBorder(BorderFactory.createEmptyBorder(0, 0, 6, 3));
 	}
 	
 	public DevicesPane
@@ -84,7 +82,7 @@ public class RightSidePane extends PixmapPane {
 	
 	private void
 	setTabbedView(boolean b) {
-		remove(spDevicesPane);
+		remove(mainPane);
 		remove(tabbedPane);
 		
 		tabbedPane.removeChangeListener(getHandler());
@@ -92,15 +90,25 @@ public class RightSidePane extends PixmapPane {
 		
 		if(b) {
 			if(instrumentsDbPane == null) instrumentsDbPane = new InstrumentsDbPane();
-			tabbedPane.addTab(i18n.getLabel("RightSidePane.tabDevices"), spDevicesPane);
-			tabbedPane.addTab(i18n.getLabel("RightSidePane.tabInstrumentsDb"), instrumentsDbPane);
-			tabbedPane.addChangeListener(getHandler());
+			
+			FantasiaTabbedPane tp = tabbedPane;
+			tp.addTab(i18n.getLabel("RightSidePane.tabDevices"), spDevicesPane);
+			tp.addTab(i18n.getLabel("RightSidePane.tabInstrumentsDb"), instrumentsDbPane);
+			tp.addChangeListener(getHandler());
+			
+			Dimension d = JuifeUtils.getUnionSize(tp.getTabButton(0), tp.getTabButton(1));
+			tp.getTabButton(0).setPreferredSize(d);
+			tp.getTabButton(1).setPreferredSize(d);
+			tp.getTabButton(0).setMinimumSize(d);
+			tp.getTabButton(1).setMinimumSize(d);
+		
 			add(tabbedPane);
 			
 			int i = preferences().getIntProperty("rightSidePane.tabIndex", 0);
 			if(tabbedPane.getTabCount() > i) tabbedPane.setSelectedIndex(i);
 		} else {
-			add(spDevicesPane);
+			mainPane.add(spDevicesPane);
+			add(mainPane);
 		}
 		
 		validate();
@@ -117,6 +125,7 @@ public class RightSidePane extends PixmapPane {
 	getHandler() { return eventHandler; }
 	
 	private class EventHandler implements ChangeListener, PropertyChangeListener {
+		@Override
 		public void
 		stateChanged(ChangeEvent e) {
 			int idx = tabbedPane.getSelectedIndex();
@@ -124,6 +133,7 @@ public class RightSidePane extends PixmapPane {
 			preferences().setIntProperty("rightSidePane.tabIndex", idx);
 		}
 		
+		@Override
 		public void
 		propertyChange(PropertyChangeEvent e) {
 			setTabbedView(preferences().getBoolProperty("rightSidePane.showInstrumentsDb"));

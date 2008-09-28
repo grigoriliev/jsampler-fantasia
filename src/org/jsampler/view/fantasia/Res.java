@@ -180,9 +180,6 @@ public class Res {
 	protected final static ImageIcon gfxMenuBarBg
 		= new ImageIcon(Res.class.getResource("res/gfx/menubar_bg.png"));
 	
-	protected final static ImageIcon gfxToolBarBg
-		= new ImageIcon(Res.class.getResource("res/gfx/toolbar_bg.png"));
-	
 	protected final static ImageIcon gfxScreenBtnBg
 		= new ImageIcon(Res.class.getResource("res/gfx/screen_btn_bg.png"));
 	
@@ -202,9 +199,39 @@ public class Res {
 	protected final static ImageIcon gfxBtnCrRO
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_cr_ro.png"));
 	
+	protected final static ImageIcon gfxBtnDecrease
+		= new ImageIcon(Res.class.getResource("res/gfx/btn_decrease.png"));
+	
+	protected final static ImageIcon gfxBtnDecreaseRO
+		= new ImageIcon(Res.class.getResource("res/gfx/btn_decrease_ro.png"));
+	
+	protected final static ImageIcon gfxBtnIncrease
+		= new ImageIcon(Res.class.getResource("res/gfx/btn_increase.png"));
+	
+	protected final static ImageIcon gfxBtnIncreaseRO
+		= new ImageIcon(Res.class.getResource("res/gfx/btn_increase_ro.png"));
+	
+	protected final static ImageIcon gfxBtnScrollLeft
+		= new ImageIcon(Res.class.getResource("res/gfx/btn_scroll_left.png"));
+	
+	protected final static ImageIcon gfxBtnScrollLeftRO
+		= new ImageIcon(Res.class.getResource("res/gfx/btn_scroll_left_ro.png"));
+	
+	protected final static ImageIcon gfxBtnScrollRight
+		= new ImageIcon(Res.class.getResource("res/gfx/btn_scroll_right.png"));
+	
+	protected final static ImageIcon gfxBtnScrollRightRO
+		= new ImageIcon(Res.class.getResource("res/gfx/btn_scroll_right_ro.png"));
+	
 	
 	protected final static ImageIcon iconAppIcon
 		= new ImageIcon(Res.class.getResource("res/icons/app_icon.png"));
+	
+	protected final static ImageIcon iconArrowUp
+		= new ImageIcon(Res.class.getResource("res/icons/arrow_up.png"));
+	
+	protected final static ImageIcon iconArrowDown
+		= new ImageIcon(Res.class.getResource("res/icons/arrow_down.png"));
 	
 	protected final static ImageIcon iconEngine12
 		= new ImageIcon(Res.class.getResource("res/icons/engine12.png"));
@@ -292,6 +319,9 @@ public class Res {
 	
 	protected final static ImageIcon iconPreferences32
 		= new ImageIcon(Res.class.getResource("res/icons/preferences32.png"));
+	
+	protected final static ImageIcon iconMidiKeyboard32
+		= new ImageIcon(Res.class.getResource("res/icons/midi_keyboard32.png"));
 	
 	protected final static ImageIcon iconLSConsole32
 		= new ImageIcon(Res.class.getResource("res/icons/ls_console32.png"));

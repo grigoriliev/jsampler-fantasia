@@ -23,11 +23,12 @@
 package org.jsampler.view.fantasia;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 
 import javax.swing.BorderFactory;
-import javax.swing.JTabbedPane;
+import javax.swing.JPanel;
 
-import org.jvnet.substance.SubstanceLookAndFeel;
+import net.sf.juife.JuifeUtils;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jsampler.view.fantasia.FantasiaPrefs.preferences;
@@ -36,8 +37,8 @@ import static org.jsampler.view.fantasia.FantasiaPrefs.preferences;
  *
  * @author Grigor Iliev
  */
-public class LeftSidePane extends PixmapPane {
-	JTabbedPane tabbedPane = new JTabbedPane();
+public class LeftSidePane extends FantasiaPanel {
+	FantasiaTabbedPane tabbedPane = new FantasiaTabbedPane();
 	private final OrchestrasPane orchestraPane = new OrchestrasPane();
 	private final MidiInstrumentsPane midiInstrumentsPane = new MidiInstrumentsPane();
 	
@@ -46,20 +47,25 @@ public class LeftSidePane extends PixmapPane {
 	 */
 	public
 	LeftSidePane() {
-		super(Res.gfxRoundBg14);
 		setOpaque(false);
-		setPixmapInsets(new java.awt.Insets(6, 6, 6, 6));
 		setLayout(new BorderLayout());
-		JTabbedPane tp = tabbedPane;
+		FantasiaTabbedPane tp = tabbedPane;
+		tp.getMainPane().setBorder(BorderFactory.createEmptyBorder(0, 1,01, 1));
 		tp.addTab(i18n.getLabel("LeftSidePane.tabOrchestras"), orchestraPane);
 		tp.addTab(i18n.getLabel("LeftSidePane.tabMidiInstruments"), midiInstrumentsPane);
-		tp.setBackground(new java.awt.Color(0x828282));
-		tp.putClientProperty(SubstanceLookAndFeel.COLORIZATION_FACTOR, 1.0);
+		
+		Dimension d = JuifeUtils.getUnionSize(tp.getTabButton(0), tp.getTabButton(1));
+		tp.getTabButton(0).setPreferredSize(d);
+		tp.getTabButton(1).setPreferredSize(d);
+		tp.getTabButton(0).setMinimumSize(d);
+		tp.getTabButton(1).setMinimumSize(d);
+		
 		add(tp);
-		setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
 		
 		int i = preferences().getIntProperty("leftSidePane.tabIndex", 0);
 		if(tp.getTabCount() > i) tp.setSelectedIndex(i);
+		
+		setBorder(BorderFactory.createEmptyBorder(0, 3, 6, 0));
 	}
 	
 	public void

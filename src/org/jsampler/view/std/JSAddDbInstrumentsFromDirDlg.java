@@ -70,6 +70,8 @@ public class JSAddDbInstrumentsFromDirDlg extends OkCancelDialog {
 		new JCheckBox(i18n.getLabel("JSAddDbInstrumentsFromDirDlg.checkScanSubdirs"));
 	private final JCheckBox checkFlat =
 		new JCheckBox(i18n.getLabel("JSAddDbInstrumentsFromDirDlg.checkFlat"));
+	private final JCheckBox checkInstrDirs =
+		new JCheckBox(i18n.getLabel("JSAddDbInstrumentsFromDirDlg.checkInstrDirs"));
 	
 	private final JComboBox cbDest = StdUtils.createPathComboBox();
 	private JButton btnBrowseDb;
@@ -128,6 +130,13 @@ public class JSAddDbInstrumentsFromDirDlg extends OkCancelDialog {
 		p2.setBorder(BorderFactory.createEmptyBorder(0, 15, 3, 3));
 		p2.setAlignmentX(LEFT_ALIGNMENT);
 		
+		p.add(p2);
+
+		p2 = new JPanel();
+		p2.setLayout(new BoxLayout(p2, BoxLayout.X_AXIS));
+		p2.add(checkInstrDirs);
+		p2.setBorder(BorderFactory.createEmptyBorder(0, 3, 0, 3));
+		p2.setAlignmentX(LEFT_ALIGNMENT);
 		p.add(p2);
 		
 		String s = i18n.getLabel("JSAddDbInstrumentsFromDirDlg.source");
@@ -258,8 +267,9 @@ public class JSAddDbInstrumentsFromDirDlg extends OkCancelDialog {
 		String fsDir = cbSource.getSelectedItem().toString();
 		boolean recursive = checkScanSubdirs.isSelected();
 		boolean flat = !checkFlat.isSelected();
-		if(recursive) runTask(new InstrumentsDb.AddInstruments(dbDir, fsDir, flat));
-		else runTask(new InstrumentsDb.AddInstrumentsNonrecursive(dbDir, fsDir));
+		boolean insDir = checkInstrDirs.isSelected();
+		if(recursive) runTask(new InstrumentsDb.AddInstruments(dbDir, fsDir, flat, insDir));
+		else runTask(new InstrumentsDb.AddInstrumentsNonrecursive(dbDir, fsDir, insDir));
 		
 		StdUtils.updateRecentElements("recentDirectories", fsDir);
 		StdUtils.updateRecentElements("recentDbDirectories", dbDir);

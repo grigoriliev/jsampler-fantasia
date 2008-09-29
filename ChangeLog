@@ -55,6 +55,9 @@ CVS HEAD
   * Implemented an option to change the socket read timeout
     (choose Edit/Preferences, then click the `Backend' tab)
 
+  * Implemented option for adding instruments in separate directories in the
+    instruments DB (patch by Chris Cherrett & Andrew Williams, a bit adjusted)
+
   * Updated LscpTree
 
   * Fantasia:

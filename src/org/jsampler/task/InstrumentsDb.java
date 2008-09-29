@@ -639,6 +639,7 @@ public class InstrumentsDb {
 		private String dbDir;
 		private String fsDir;
 		private boolean flat;
+		private boolean insDir;
 		
 		/**
 		 * Creates a new instance of <code>AddInstruments</code>.
@@ -661,28 +662,38 @@ public class InstrumentsDb {
 		 */
 		public
 		AddInstruments(String dbDir, String fsDir, boolean flat) {
+			this(dbDir, fsDir, flat, false);
+		}
+	
+		/**
+		 * Creates a new instance of <code>AddInstruments</code>.
+		 * @param dbDir The absolute path name of the database directory
+		 * in which all instruments from the specified directory will be added.
+		 * @param fsDir The absolute path name of the file system directory.
+		 * @param flat If <code>true</code>, the respective subdirectory structure
+		 * will not be re-created in the supplied database directory.
+		 * @param insDir If <code>true</code>, a directory will be created for each 
+		 * instrument file
+		 */
+		public
+		AddInstruments(String dbDir, String fsDir, boolean flat, boolean insDir) {
 			setTitle("InstrumentsDb.AddInstruments_task");
 			String s = i18n.getMessage("InstrumentsDb.AddInstruments.desc");
 			setDescription(s);
 			this.dbDir = dbDir;
 			this.fsDir = fsDir;
 			this.flat = flat;
+			this.insDir = insDir;
 		}
 	
 		/** The entry point of the task. */
 		public void
 		run() {
 			try {
-				int i;
-				if(flat) {
-					i = CC.getClient().addDbInstruments (
-						ScanMode.FLAT, dbDir, fsDir, true
-					);
-				} else {
-					i = CC.getClient().addDbInstruments (
-						ScanMode.RECURSIVE, dbDir, fsDir, true
-					);
-				}
+				ScanMode scanMode = flat ? ScanMode.FLAT : ScanMode.RECURSIVE;
+				int i = CC.getClient().addDbInstruments (
+					scanMode, dbDir, fsDir, true, insDir
+				);
 				
 				setResult(i);
 			}
@@ -700,6 +711,7 @@ public class InstrumentsDb {
 	public static class AddInstrumentsNonrecursive extends EnhancedTask<Integer> {
 		private String dbDir;
 		private String fsDir;
+		private boolean insDir;
 		
 		/**
 		 * Creates a new instance of <code>AddInstrumentsNonrecursive</code>.
@@ -710,11 +722,26 @@ public class InstrumentsDb {
 		 */
 		public
 		AddInstrumentsNonrecursive(String dbDir, String fsDir) {
+			this(dbDir, fsDir, false);
+		}
+	
+		/**
+		 * Creates a new instance of <code>AddInstrumentsNonrecursive</code>.
+		 * @param dbDir The absolute path name of the database directory
+		 * in which the instruments from the specified directory (excluding 
+		 * the instruments in the subdirectories) will be added.
+		 * @param fsDir The absolute path name of the file system directory.
+		 * @param insDir If <code>true</code> a directory is add for each 
+		 * instrument file.
+		 */
+		public
+		AddInstrumentsNonrecursive(String dbDir, String fsDir, boolean insDir) {
 			setTitle("InstrumentsDb.AddInstrumentsNonrecursive_task");
 			String s = i18n.getMessage("InstrumentsDb.AddInstrumentsNonrecursive.desc");
 			setDescription(s);
 			this.dbDir = dbDir;
 			this.fsDir = fsDir;
+			this.insDir = insDir;
 		}
 	
 		/** The entry point of the task. */
@@ -722,9 +749,8 @@ public class InstrumentsDb {
 		run() {
 			try {
 				int i = CC.getClient().addDbInstruments (
-					ScanMode.NON_RECURSIVE, dbDir, fsDir, true
+					ScanMode.NON_RECURSIVE, dbDir, fsDir, true, insDir
 				);
-				
 				setResult(i);
 			}
 			catch(Exception x) {

@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -32,10 +32,15 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JFileChooser;
 
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.SwingUtilities;
 import org.jsampler.CC;
 import org.jsampler.HF;
 import org.jsampler.JSPrefs;
 
+import org.jsampler.SamplerChannelModel;
+import org.jsampler.view.JSChannelsPane;
 import org.jsampler.view.LscpFileFilter;
 
 import static org.jsampler.view.std.StdI18n.i18n;
@@ -91,7 +96,7 @@ public class StdA4n {
 		} catch(Exception x) {
 			CC.getLogger().log(Level.FINE, HF.getErrorMessage(x), x);
 			HF.showErrorMessage(x);
-		};
+		}
 	}
 	
 	public final Action connect = new Connect();
@@ -103,6 +108,7 @@ public class StdA4n {
 			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("actions.connect.tt"));
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) { CC.reconnect(); }
 	}
@@ -205,6 +211,65 @@ public class StdA4n {
 		public void
 		actionPerformed(ActionEvent e) {
 			StdUtils.browse("http://jsampler.sourceforge.net/");
+		}
+	}
+	
+	public static abstract class LoadInstrumentAction extends AbstractAction {
+		protected final SamplerChannelModel channelModel;
+		
+		LoadInstrumentAction(SamplerChannelModel model) { this(model, false); }
+		
+		LoadInstrumentAction(SamplerChannelModel model, boolean onPanel) {
+			String s = onPanel ? "instrumentsdb.actions.loadInstrument.onPanel.channel"
+					   : "instrumentsdb.actions.loadInstrument.onChannel";
+			int i = CC.getMainFrame().getChannelNumber(model) + 1;
+			putValue(Action.NAME, i18n.getMenuLabel(s, i));
+			channelModel = model;
+		}
+	}
+	
+	public static interface LoadInstrumentActionFactory {
+		public LoadInstrumentAction
+		createLoadInstrumentAction(SamplerChannelModel model, boolean onPanel);
+	}
+	
+	
+	
+	public static void
+	updateLoadInstrumentMenu(final JMenu menu, final LoadInstrumentActionFactory factory) {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void
+			run() { updateLoadInstrumentMenu0(menu, factory); }
+		});
+	}
+	
+	private static void
+	updateLoadInstrumentMenu0(JMenu menu, LoadInstrumentActionFactory factory) {
+		if(CC.getMainFrame() == null) return;
+		menu.removeAll();
+		int count = 0;
+		JSChannelsPane chnPane = null;
+		for(int i = 0; i < CC.getMainFrame().getChannelsPaneCount(); i++) {
+			if(CC.getMainFrame().getChannelsPane(i).getChannelCount() == 0) continue;
+			
+			chnPane = CC.getMainFrame().getChannelsPane(i);
+			count++;
+			String s = "instrumentsdb.actions.loadInstrument.onPanel";
+			JMenu m = new JMenu(i18n.getMenuLabel(s, i + 1));
+			for(int j = 0; j < chnPane.getChannelCount(); j++) {
+				SamplerChannelModel chn = chnPane.getChannel(j).getModel();
+				m.add(new JMenuItem(factory.createLoadInstrumentAction(chn, true)));
+			}
+			menu.add(m);
+		}
+		
+		if(count == 1 && CC.getMainFrame().getSelectedChannelsPane() == chnPane) {
+			menu.removeAll();
+			
+			for(int j = 0; j < chnPane.getChannelCount(); j++) {
+				SamplerChannelModel chn = chnPane.getChannel(j).getModel();
+				menu.add(new JMenuItem(factory.createLoadInstrumentAction(chn, false)));
+			}
 		}
 	}
 }

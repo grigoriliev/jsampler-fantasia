@@ -20,7 +20,7 @@
  *   MA  02111-1307  USA
  */
 
-package org.jsampler.view.fantasia;
+package org.jsampler.view.fantasia.basic;
 
 import java.awt.Graphics;
 import java.awt.Insets;
@@ -63,6 +63,7 @@ public class PixmapPane extends javax.swing.JPanel {
 		this.pixmap = pixmap;
 	}
 	
+	@Override
 	protected void
 	paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -102,6 +103,7 @@ public class PixmapPane extends javax.swing.JPanel {
 		pixmapInsets = insets;
 	}
 	
+	@Override
 	public void
 	updateUI() { setUI(new BasicPanelUI()); }
 }

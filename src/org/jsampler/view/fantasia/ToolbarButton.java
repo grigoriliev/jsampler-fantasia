@@ -32,6 +32,7 @@ import javax.swing.JButton;
  */
 public class ToolbarButton extends JButton {
 	/** Creates a new instance of <code>ToolbarButton</code>. */
+	public
 	ToolbarButton() {
 		setFocusable(false);
 	}

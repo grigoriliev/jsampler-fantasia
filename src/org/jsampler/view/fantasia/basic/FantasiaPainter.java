@@ -20,7 +20,7 @@
  *   MA  02111-1307  USA
  */
 
-package org.jsampler.view.fantasia;
+package org.jsampler.view.fantasia.basic;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -43,6 +43,7 @@ public class FantasiaPainter {
 	public static Color color4 = new Color(0x6e6e6e);
 	public static Color color5 = new Color(0x7a7a7a);
 	public static Color color6 = new Color(0x8a8a8a);
+	public static Color color7 = new Color(0x9a9a9a);
 	
 	public static class RoundCorners {
 		public boolean topLeft, bottomLeft, bottomRight, topRight;
@@ -632,6 +633,9 @@ public class FantasiaPainter {
 	
 	public static void
 	paintBoldInnerBorder(Graphics2D g2, double x1, double y1, double x2, double y2) {
+		Paint oldPaint = g2.getPaint();
+		Composite oldComposite = g2.getComposite();
+		
 		AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.40f);
 		g2.setComposite(ac);
 		
@@ -672,6 +676,9 @@ public class FantasiaPainter {
 		
 		l = new Line2D.Double(x1, y1, x1, y2);
 		g2.draw(l);
+		
+		g2.setComposite(oldComposite);
+		g2.setPaint(oldPaint);
 	}
 	
 	public static void

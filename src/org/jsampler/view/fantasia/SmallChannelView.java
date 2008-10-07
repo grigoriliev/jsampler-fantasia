@@ -48,6 +48,9 @@ import org.jsampler.CC;
 import org.jsampler.event.SamplerChannelListEvent;
 import org.jsampler.event.SamplerChannelListListener;
 
+import org.jsampler.view.fantasia.basic.PixmapButton;
+import org.jsampler.view.fantasia.basic.PixmapPane;
+
 import org.jvnet.substance.utils.SubstanceImageCreator;
 
 import org.linuxsampler.lscp.SamplerChannel;
@@ -134,12 +137,15 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 	// Implementation of the ChannelView interface
 	//////////////////////////////////////////////
 	
+	@Override
 	public Type
 	getType() { return Type.SMALL; }
 	
+	@Override
 	public JComponent
 	getComponent() { return this; }
 	
+	@Override
 	public void
 	installView() {
 		String vmud = VOL_MEASUREMENT_UNIT_DECIBEL;
@@ -157,6 +163,7 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 		addEnhancedMouseListener(getHandler());
 	}
 	
+	@Override
 	public void
 	uninstallView() {
 		//removeEnhancedMouseListener(channel.getContextMenu());
@@ -167,6 +174,7 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 		removeEnhancedMouseListener(getHandler());
 	}
 	
+	@Override
 	public void
 	installChannelOptionsView() {
 		if(channelOptionsView != null) return;
@@ -176,6 +184,7 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 		
 	}
 	
+	@Override
 	public void
 	uninstallChannelOptionsView() {
 		if(channelOptionsView == null) return;
@@ -183,9 +192,11 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 		channelOptionsView = null;
 	}
 	
+	@Override
 	public ChannelOptionsView
 	getChannelOptionsView() { return channelOptionsView; }
 	
+	@Override
 	public void
 	updateChannelInfo() {
 		SamplerChannel sc = channel.getChannelInfo();
@@ -204,26 +215,32 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 		if(getChannelOptionsView() != null) getChannelOptionsView().updateChannelInfo();
 	}
 	
+	@Override
 	public void
 	updateStreamCount(int count) { screen.updateStreamCount(count); }
 	
+	@Override
 	public void
 	updateVoiceCount(int count) { screen.updateVoiceCount(count); }
 	
+	@Override
 	public void
 	expandChannel() {
 		if(btnOptions.isSelected()) return;
 		btnOptions.doClick();
 	}
 	
+	@Override
 	public boolean
 	isOptionsButtonSelected() { return btnOptions.isSelected(); }
 	
+	@Override
 	public void
 	setOptionsButtonSelected(boolean b) {
 		btnOptions.setSelected(b);
 	}
 	
+	@Override
 	public void
 	addEnhancedMouseListener(MouseListener l) {
 		removeEnhancedMouseListener(l);
@@ -232,6 +249,7 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 		screen.addEnhancedMouseListener(l);
 	}
 	
+	@Override
 	public void
 	removeEnhancedMouseListener(MouseListener l) {
 		for(JComponent c : components) c.removeMouseListener(l);
@@ -271,12 +289,14 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 	getHandler() { return eventHandler; }
 	
 	private class EventHandler extends MouseAdapter implements SamplerChannelListListener {
+		@Override
 		public void
 		channelAdded(SamplerChannelListEvent e) {
 			if(CC.getSamplerModel().getChannelListIsAdjusting()) return;
 			screen.channelInfoPane.updateChannelIndex();
 		}
 	
+		@Override
 		public void
 		channelRemoved(SamplerChannelListEvent e) {
 			//if(CC.getSamplerModel().getChannelListIsAdjusting()) return; //TODO: 
@@ -284,11 +304,12 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 			screen.channelInfoPane.updateChannelIndex();
 		}
 		
+		@Override
 		public void
 		mouseClicked(MouseEvent e) {
 			if(e.getButton() != e.BUTTON1) return;
 			// TAG: channel selection system
-			CC.getMainFrame().getChannelsPane(0).setSelectedChannel(channel);
+			CC.getMainFrame().getSelectedChannelsPane().setSelectedChannel(channel);
 			///////
 		}
 	}
@@ -303,6 +324,7 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 			addActionListener(this);
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			SamplerChannel sc = channel.getChannelInfo();
@@ -337,6 +359,7 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 			addActionListener(this);
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			SamplerChannel sc = channel.getChannelInfo();
@@ -633,7 +656,7 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 		
 		protected void
 		updateChannelIndex() {
-			int i = CC.getSamplerModel().getChannelIndex(channel.getModel());
+			int i = CC.getMainFrame().getChannelNumber(channel.getModel());
 			
 			boolean b = false;
 			if(i > 98 && channelIndex <= 98) b = true;
@@ -684,9 +707,11 @@ public class SmallChannelView extends PixmapPane implements ChannelView {
 			addActionListener(this);
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) { channel.showFxSendsDialog(); }
 		
+		@Override
 		public boolean
 		contains(int x, int y) { return (x > 5 && x < 23) && (y > 5 && y < 16); }
 	}

@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -37,13 +37,19 @@ import java.awt.event.HierarchyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import java.util.Vector;
+
+import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JToggleButton;
 
 import org.jsampler.CC;
+import org.jsampler.view.JSChannelsPane;
+import org.jsampler.view.fantasia.basic.*;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 
@@ -53,19 +59,23 @@ import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
  * @author Grigor Iliev
  */
 public class MainPane extends FantasiaPanel {
-	private final ChannelsBar channelsBar = new ChannelsBar();
-	private final ChannelsPane channelsPane;
+	private final int CHANNELS_PANEL_NUMBER = 4;
+	private final ChannelsBar channelsBar;
+	private final ButtonsPanel buttonsPanel;
+	private final Vector<ChannelsPanel> channelsPanes = new Vector<ChannelsPanel>();
 	
-	final JScrollPane scrollPane;
+	final JScrollPane scrollPane = new JScrollPane();
 	
 	/** Creates a new instance of <code>MainPane</code> */
 	public MainPane() {
 		setOpaque(false);
-		channelsPane = new ChannelsPane("", new ActionListener() {
-			public void
-			actionPerformed(ActionEvent e) { scrollToBottom(); }
-		});
 		
+		for(int i = 0; i < CHANNELS_PANEL_NUMBER; i++) {
+			channelsPanes.add(new ChannelsPanel());
+		}
+		
+		buttonsPanel = new ButtonsPanel();
+		channelsBar = new ChannelsBar(buttonsPanel);
 		GridBagLayout gridbag = new GridBagLayout();
 		GridBagConstraints c = new GridBagConstraints();
 		
@@ -85,10 +95,6 @@ public class MainPane extends FantasiaPanel {
 		gridbag.setConstraints(p, c);
 		add(p);
 		
-		p = createChannelsPane();
-		p.addMouseListener(getHandler());
-		
-		scrollPane = new JScrollPane(p);
 		JScrollPane sp = scrollPane;
 		sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		//sp.putClientProperty(SCROLL_PANE_BUTTONS_POLICY, ScrollPaneButtonPolicyKind.NONE);
@@ -125,23 +131,6 @@ public class MainPane extends FantasiaPanel {
 		setMaximumSize(new Dimension(420, Short.MAX_VALUE));
 	}
 	
-	private JPanel
-	createChannelsPane() {
-		JPanel p = new FantasiaPanel();
-		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
-		channelsPane.setAlignmentX(LEFT_ALIGNMENT);
-		p.add(channelsPane);
-		JPanel p2 = new NewChannelPane();
-		p2.setAlignmentX(LEFT_ALIGNMENT);
-		p.add(p2);
-		p.add(Box.createGlue());
-		p.setOpaque(false);
-		p.setBorder(BorderFactory.createEmptyBorder(7, 0, 0, 0));
-		p.setMinimumSize(new Dimension(420, p.getMinimumSize().height));
-		p.setAlignmentX(LEFT_ALIGNMENT);
-		return p;
-	}
-	
 	private void
 	onScrollBarVisibilityChanged() {
 		int w = 420;
@@ -171,9 +160,48 @@ public class MainPane extends FantasiaPanel {
 		scrollPane.getViewport().scrollRectToVisible(new Rectangle(0, h - 2, 1, 1));
 	}
 	
-	public ChannelsPane
-	getChannelsPane() { return channelsPane; }
+	public JSChannelsPane
+	getChannelsPane(int index) { return channelsPanes.get(index).getChannelsPane(); }
 	
+	public int
+	getChannelsPaneCount() { return channelsPanes.size(); }
+	
+	public void
+	setSelectedChannelsPane(JSChannelsPane pane) {
+		ChannelsPanel chnPanel = null;
+		
+		for(int i = 0; i < getChannelsPaneCount(); i++) {
+			if(channelsPanes.get(i).getChannelsPane() == pane) {
+				chnPanel = channelsPanes.get(i);
+				
+				if(!buttonsPanel.buttons.get(i).isSelected()) {
+					buttonsPanel.buttons.get(i).setSelected(true);
+				}
+				
+				break;
+			}
+		}
+		
+		if(chnPanel == null) {
+			CC.getLogger().warning("Unknown channels pane");
+			return;
+		}
+		
+		scrollPane.getViewport().setView(chnPanel);
+	}
+	
+	public JSChannelsPane
+	getSelectedChannelsPane() {
+		for(int i = 0; i < getChannelsPaneCount(); i++) {
+			if(buttonsPanel.buttons.get(i).isSelected()) {
+				return channelsPanes.get(i).getChannelsPane();
+			}
+		}
+		
+		return null;
+	}
+	
+	@Override
 	protected void
 	paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -192,12 +220,71 @@ public class MainPane extends FantasiaPanel {
 	getHandler() { return eventHandler; }
 	
 	private class EventHandler extends MouseAdapter {
+		@Override
 		public void
 		mouseClicked(MouseEvent e) {
-			if(e.getButton() != e.BUTTON1) return;
+			if(e.getButton() != MouseEvent.BUTTON1) return;
 			// TAG: channel selection system
-			CC.getMainFrame().getChannelsPane(0).setSelectedChannel(null);
+			CC.getMainFrame().getSelectedChannelsPane().setSelectedChannel(null);
 			///////
+		}
+	}
+	
+	private class ChannelsPanel extends FantasiaPanel {
+		private final JSChannelsPane channelsPane;
+		ChannelsPanel() {
+			ActionListener l = new ActionListener() {
+				public void
+				actionPerformed(ActionEvent e) { scrollToBottom(); }
+			};
+			
+			channelsPane = new ChannelsPane("", l);
+			
+			setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+			channelsPane.setAlignmentX(LEFT_ALIGNMENT);
+			add(channelsPane);
+			JPanel p2 = new NewChannelPane();
+			p2.setAlignmentX(LEFT_ALIGNMENT);
+			add(p2);
+			add(Box.createGlue());
+			setOpaque(false);
+			setBorder(BorderFactory.createEmptyBorder(7, 0, 0, 0));
+			setMinimumSize(new Dimension(420, getMinimumSize().height));
+			setAlignmentX(LEFT_ALIGNMENT);
+			
+			addMouseListener(getHandler());
+		}
+		
+		public JSChannelsPane
+		getChannelsPane() { return channelsPane; }
+	}
+	
+	private class ButtonsPanel extends FantasiaToggleButtonsPanel implements ActionListener {
+		ButtonsPanel() {
+			super(CHANNELS_PANEL_NUMBER, true);
+			for(int i = 0; i < CHANNELS_PANEL_NUMBER; i++) {
+				JToggleButton btn = buttons.get(i);
+				btn.setText(String.valueOf(i + 1));
+				btn.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 8));
+				btn.addActionListener(this);
+				
+				String s = "MainPane.ButtonsPanel.tt";
+				btn.setToolTipText(i18n.getButtonLabel(s, i + 1));
+			}
+			
+			setMaximumSize(getPreferredSize());
+		}
+		
+		@Override
+		public void
+		actionPerformed(ActionEvent e) {
+			AbstractButton btn = (AbstractButton)e.getSource();
+			if(!btn.isSelected()) return;
+			int idx = buttons.indexOf(btn);
+			if(idx == -1) return;
+			
+			ChannelsPanel chnPanel = channelsPanes.get(idx);
+			CC.getMainFrame().setSelectedChannelsPane(chnPanel.getChannelsPane());
 		}
 	}
 	
@@ -252,6 +339,7 @@ public class MainPane extends FantasiaPanel {
 			setToolTipText(s);
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			CC.getSamplerModel().addBackendChannel();

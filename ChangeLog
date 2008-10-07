@@ -72,6 +72,7 @@ CVS HEAD
       (right-click on the sampler channel then choose Small View)
     - Implemented option to choose default sampler channel view
       (choose Edit/Preferences, then click the `Defaults' tab)
+    - Implemented multiple channels panels
     - Added context menu to sampler channels
     - Implemented option to show different channel view when
       the mouse pointer is over sampler channel
@@ -86,6 +87,8 @@ CVS HEAD
       the sampler channel's small view
       (choose Edit/Preferences, then click the `Channels' tab)
     - `Turn off animation effects' checkbox moved to the `View' tab
+    - Refactoring: All basic UI components moved to
+      org.jsampler.view.fantasia.basic package
     - Migrated to substance 5
 
   * Bug fixes:

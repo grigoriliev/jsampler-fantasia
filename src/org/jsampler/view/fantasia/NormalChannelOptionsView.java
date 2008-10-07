@@ -58,6 +58,7 @@ import org.jsampler.event.SamplerChannelEvent;
 import org.jsampler.event.SamplerEvent;
 import org.jsampler.event.SamplerListener;
 
+import org.jsampler.view.fantasia.basic.*;
 import org.jsampler.view.std.JSChannelOutputRoutingDlg;
 
 import org.linuxsampler.lscp.AudioOutputDevice;
@@ -575,6 +576,7 @@ public class NormalChannelOptionsView extends JPanel implements ChannelOptionsVi
 		 * @param e A <code>MidiDeviceListEvent</code>
 		 * instance providing the event information.
 		 */
+		@Override
 		public void
 		deviceAdded(MidiDeviceListEvent e) {
 			cbMidiDevice.addItem(e.getMidiDeviceModel().getDeviceInfo());
@@ -585,6 +587,7 @@ public class NormalChannelOptionsView extends JPanel implements ChannelOptionsVi
 		 * @param e A <code>MidiDeviceListEvent</code>
 		 * instance providing the event information.
 		 */
+		@Override
 		public void
 		deviceRemoved(MidiDeviceListEvent e) {
 			cbMidiDevice.removeItem(e.getMidiDeviceModel().getDeviceInfo());
@@ -595,6 +598,7 @@ public class NormalChannelOptionsView extends JPanel implements ChannelOptionsVi
 		 * @param e An <code>AudioDeviceListEvent</code>
 		 * instance providing the event information.
 		 */
+		@Override
 		public void
 		entryAdded(ListEvent<AudioDeviceModel> e) {
 			cbAudioDevice.addItem(e.getEntry().getDeviceInfo());
@@ -605,11 +609,13 @@ public class NormalChannelOptionsView extends JPanel implements ChannelOptionsVi
 		 * @param e An <code>AudioDeviceListEvent</code>
 		 * instance providing the event information.
 		 */
+		@Override
 		public void
 		entryRemoved(ListEvent<AudioDeviceModel> e) {
 			cbAudioDevice.removeItem(e.getEntry().getDeviceInfo());
 		}
 		
+		@Override
 		public void
 		settingsChanged(MidiDeviceEvent e) {
 			if(isUpdate()) {
@@ -634,6 +640,7 @@ public class NormalChannelOptionsView extends JPanel implements ChannelOptionsVi
 	
 	private class MapListListener implements ListListener<MidiInstrumentMap> {
 		/** Invoked when a new MIDI instrument map is added to a list. */
+		@Override
 		public void
 		entryAdded(ListEvent<MidiInstrumentMap> e) {
 			cbInstrumentMap.insertItemAt(e.getEntry(), cbInstrumentMap.getItemCount());
@@ -642,6 +649,7 @@ public class NormalChannelOptionsView extends JPanel implements ChannelOptionsVi
 		}
 	
 		/** Invoked when a new MIDI instrument map is removed from a list. */
+		@Override
 		public void
 		entryRemoved(ListEvent<MidiInstrumentMap> e) {
 			cbInstrumentMap.removeItem(e.getEntry());

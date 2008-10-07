@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -24,12 +24,9 @@ package org.jsampler.view.fantasia;
 
 import java.awt.Dimension;
 import java.awt.Insets;
-import java.awt.Point;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -43,7 +40,6 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
-import javax.swing.JToolTip;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -53,6 +49,8 @@ import org.jsampler.HF;
 
 import org.jsampler.event.SamplerAdapter;
 import org.jsampler.event.SamplerEvent;
+
+import org.jsampler.view.fantasia.basic.*;
 
 import org.jsampler.view.std.JSVolumeEditorPopup;
 
@@ -75,12 +73,16 @@ public class ChannelsBar extends PixmapPane {
 	private final JLabel lVoices = createScreenLabel("-- ");
 	private JSVolumeEditorPopup popupVolume;
 	
+	private final FantasiaToggleButtonsPanel buttonsPanel;
+	
 	private static NumberFormat numberFormat = NumberFormat.getInstance();
 	
 	/** Creates a new instance of <code>ChannelsBar</code> */
 	public
-	ChannelsBar() {
+	ChannelsBar(FantasiaToggleButtonsPanel buttonsPanel) {
 		super(Res.gfxCreateChannel);
+		
+		this.buttonsPanel = buttonsPanel;
 		
 		numberFormat.setMaximumFractionDigits(1);
 		popupVolume = new JSVolumeEditorPopup(btnVolume, VolumeType.MASTER);
@@ -93,11 +95,14 @@ public class ChannelsBar extends PixmapPane {
 		JLabel l = new JLabel(Res.iconVolume22);
 		add(l);
 		
+		slVolume.setUI(new FantasiaFaderUI(slVolume));
+		slVolume.putClientProperty("Fader.knobSize", new Dimension(15, 22));
 		slVolume.setOpaque(false);
 		slVolume.setFocusable(false);
 		Dimension d = new Dimension(150, 22);
 		slVolume.setPreferredSize(d);
 		slVolume.setMaximumSize(d);
+		slVolume.setAlignmentY(CENTER_ALIGNMENT);
 		
 		add(slVolume);
 		add(Box.createRigidArea(new Dimension(5, 0)));
@@ -125,20 +130,26 @@ public class ChannelsBar extends PixmapPane {
 		lVoices.setToolTipText(i18n.getLabel("ChannelsBar.streamVoiceCount"));
 		p.add(lVoices);
 		
-		add(Box.createRigidArea(new Dimension(5, 0)));
-		
 		btnVolume.setIcon(Res.iconVolume14);
 		btnVolume.setIconTextGap(2);
 		btnVolume.setHorizontalAlignment(btnVolume.LEFT);
 		d = btnVolume.getPreferredSize();
-		d.width = 59;
+		d.width = 65;
 		btnVolume.setPreferredSize(d);
 		btnVolume.setMaximumSize(d);
 		p.add(btnVolume);
 		
 		p.setMaximumSize(p.getPreferredSize());
+		p.setAlignmentY(CENTER_ALIGNMENT);
 		
 		add(p);
+		
+		add(Box.createRigidArea(new Dimension(2, 0)));
+		add(createVSeparator());
+		add(Box.createRigidArea(new Dimension(8, 0)));
+		
+		buttonsPanel.setAlignmentY(CENTER_ALIGNMENT);
+		add(buttonsPanel);
 		add(Box.createGlue());
 		
 		d = new Dimension(420, 29);
@@ -213,6 +224,21 @@ public class ChannelsBar extends PixmapPane {
 		});
 	}
 	
+	/*@Override
+	protected void
+	paintComponent(Graphics g) {
+		if(isOpaque()) super.paintComponent(g);
+		
+		double h = getSize().getHeight();
+		double w = getSize().getWidth();
+		Graphics2D g2 = (Graphics2D)g;
+		
+		FantasiaPainter.paintGradient(g2, 0, 0, w - 1, h - 1);
+		RoundCorners rc = new RoundCorners(false, true, true, false);
+		FantasiaPainter.paintOuterBorder(g2, 0, -1, w - 1, h - 1, rc);
+		
+	}*/
+	
 	private void
 	setVolume() {
 		int volume = slVolume.getValue();
@@ -245,4 +271,13 @@ public class ChannelsBar extends PixmapPane {
 		slVolume.setValue((int)(CC.getSamplerModel().getVolume() * 100));
 	}
 	
+	protected JPanel
+	createVSeparator() {
+		PixmapPane p = new PixmapPane(Res.gfxVLine);
+		p.setOpaque(false);
+		p.setPreferredSize(new Dimension(2, 29));
+		p.setMinimumSize(p.getPreferredSize());
+		p.setMaximumSize(p.getPreferredSize());
+		return p;
+	}
 }

@@ -72,6 +72,10 @@ import org.jsampler.view.JSChannelsPane;
 import org.jsampler.view.JSMainFrame;
 import org.jsampler.view.LscpFileFilter;
 
+import org.jsampler.view.fantasia.basic.FantasiaPainter;
+import org.jsampler.view.fantasia.basic.FantasiaPanel;
+import org.jsampler.view.fantasia.basic.FantasiaSubPanel;
+
 import org.jsampler.view.std.JSConnectDlg;
 import org.jsampler.view.std.JSDetailedErrorDlg;
 import org.jsampler.view.std.JSQuitDlg;
@@ -92,7 +96,7 @@ public class MainFrame extends JSMainFrame {
 	private final FantasiaMenuBar menuBar = new FantasiaMenuBar();
 	private final JPanel rootPane = new RootPane();
 	private final BottomPane bottomPane;
-	private final MainPane mainPane = new MainPane();
+	private final MainPane mainPane;
 	private final PianoKeyboardPane pianoKeyboardPane;
 	
 	private final JMenu recentScriptsMenu =
@@ -100,8 +104,8 @@ public class MainFrame extends JSMainFrame {
 	
 	private final JSplitPane hSplitPane;
 	
-	private final LeftSidePane leftSidePane = new LeftSidePane();
-	private final RightSidePane rightSidePane = new RightSidePane();
+	private final LeftSidePane leftSidePane;
+	private final RightSidePane rightSidePane;
 	private final JPanel rightPane;
 	
 	//private final StatusBar statusBar = new StatusBar();
@@ -131,6 +135,13 @@ public class MainFrame extends JSMainFrame {
 		//setUndecorated(true);
 		if(Res.iconAppIcon != null) setIconImage(Res.iconAppIcon.getImage());
 		
+		CC.setMainFrame(this); // TODO: 
+		mainPane = new MainPane();
+		leftSidePane = new LeftSidePane();
+		rightSidePane = new RightSidePane();
+		
+		setSelectedChannelsPane(mainPane.getChannelsPane(0));
+		
 		getContentPane().add(standardBar, BorderLayout.NORTH);
 		
 		rightPane = createRightPane();
@@ -142,10 +153,14 @@ public class MainFrame extends JSMainFrame {
 		);
 		hSplitPane.setResizeWeight(0.5);
 		
-		addChannelsPane(mainPane.getChannelsPane());
-		
 		pianoKeyboardPane = new PianoKeyboardPane();
-		getChannelsPane(0).addListSelectionListener(pianoKeyboardPane);
+		
+		for(int i = 0; i < mainPane.getChannelsPaneCount(); i++) {
+			addChannelsPane(mainPane.getChannelsPane(i));
+			getChannelsPane(i).addListSelectionListener(pianoKeyboardPane);
+		}
+		
+		
 		int h = preferences().getIntProperty("midiKeyboard.height");
 		setMidiKeyboardHeight(h);
 		
@@ -495,8 +510,8 @@ public class MainFrame extends JSMainFrame {
 	getRightSidePane() { return rightSidePane; }
 	
 	/**
-	 * This method does nothing, because <b>Fantasia</b> has exactly
-	 * one pane containing sampler channels, which can not be changed.
+	 * This method does nothing, because <b>Fantasia</b> has constant
+	 * number of panes containing sampler channels, which can not be changed.
 	 */
 	@Override
 	public void
@@ -504,22 +519,16 @@ public class MainFrame extends JSMainFrame {
 		
 	}
 	
-	/**
-	 * This method always returns the <code>JSChannelsPane</code> at index 0,
-	 * because the <b>Fantasia</b> view has exactly one pane containing sampler channels.
-	 * @return The <code>JSChannelsPane</code> at index 0.
-	 */
 	@Override
 	public JSChannelsPane
-	getSelectedChannelsPane() { return getChannelsPane(0); }
+	getSelectedChannelsPane() { return mainPane.getSelectedChannelsPane(); }
 	
-	/**
-	 * This method does nothing because the <b>Fantasia</b> view has
-	 * exactly one pane containing sampler channels which is always shown. 
-	 */
 	@Override
 	public void
-	setSelectedChannelsPane(JSChannelsPane pane) { }
+	setSelectedChannelsPane(JSChannelsPane pane) {
+		mainPane.setSelectedChannelsPane(pane);
+		fireChannelsPaneSelectionChanged();
+	}
 	
 	@Override
 	public void

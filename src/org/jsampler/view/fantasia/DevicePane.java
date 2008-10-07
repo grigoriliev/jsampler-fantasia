@@ -22,7 +22,6 @@
 
 package org.jsampler.view.fantasia;
 
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Insets;
 
@@ -39,6 +38,10 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import org.jdesktop.swingx.JXCollapsiblePane;
+
+import org.jsampler.view.fantasia.basic.FantasiaLabel;
+import org.jsampler.view.fantasia.basic.PixmapToggleButton;
+import org.jsampler.view.fantasia.basic.PixmapPane;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jsampler.view.fantasia.FantasiaPrefs.*;
@@ -220,6 +223,7 @@ public class DevicePane extends JPanel {
 			setToolTipText(i18n.getButtonLabel("DevicePane.ttShowOptions"));
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			showOptionsPane(isSelected());
@@ -236,6 +240,7 @@ public class DevicePane extends JPanel {
 			setToolTipText(s);
 		}
 		
+		@Override
 		public boolean
 		contains(int x, int y) { return super.contains(x, y) & y < 13; }
 	}
@@ -253,6 +258,7 @@ public class DevicePane extends JPanel {
 			setToolTipText(i18n.getButtonLabel("DevicePane.ttRemoveDevice"));
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			if(shouldConfirm()) {
@@ -269,6 +275,7 @@ public class DevicePane extends JPanel {
 			mainPane.setCollapsed(true);
 		}
 		
+		@Override
 		public void
 		propertyChange(PropertyChangeEvent e) {
 			if(e.getNewValue() == "collapsed") {
@@ -360,6 +367,7 @@ public class DevicePane extends JPanel {
 			showOptions = false;
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			btnRemove.setEnabled(false);

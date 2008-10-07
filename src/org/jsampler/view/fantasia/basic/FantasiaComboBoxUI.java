@@ -20,13 +20,14 @@
  *   MA  02111-1307  USA
  */
 
-package org.jsampler.view.fantasia;
+package org.jsampler.view.fantasia.basic;
 
 import javax.swing.Icon;
 import javax.swing.JButton;
 
 import javax.swing.plaf.basic.ComboPopup;
 
+import org.jsampler.view.fantasia.Res;
 
 /**
  *
@@ -39,12 +40,14 @@ public class FantasiaComboBoxUI extends org.jvnet.substance.SubstanceComboBoxUI 
 	FantasiaComboBoxUI() {
 	}
 	
+	@Override
 	public JButton
 	createArrowButton() {
 		JButton btn = new Button();
 		return btn;
 	}
 	
+	@Override
 	protected ComboPopup
 	createPopup() {
 		ComboPopup popup = super.createPopup();
@@ -62,6 +65,7 @@ public class FantasiaComboBoxUI extends org.jvnet.substance.SubstanceComboBoxUI 
 			setBackground(new java.awt.Color(0x818181));
 		}
 		
+		@Override
 		public void
 		setIcon(Icon icon) { }
 	}

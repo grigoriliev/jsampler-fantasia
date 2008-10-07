@@ -61,11 +61,11 @@ import org.jsampler.event.ParameterListener;
 
 import org.jsampler.task.Audio;
 import org.jsampler.view.ParameterTable;
+import org.jsampler.view.fantasia.basic.PixmapPane;
 
 import org.linuxsampler.lscp.AudioOutputChannel;
 import org.linuxsampler.lscp.AudioOutputDevice;
 import org.linuxsampler.lscp.Parameter;
-import org.linuxsampler.lscp.ParameterFactory;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jsampler.view.fantasia.FantasiaPrefs.preferences;
@@ -96,6 +96,7 @@ public class AudioDevicePane extends DevicePane {
 		setDeviceName(i18n.getLabel("AudioDevicePane.lDevName", id, s));
 	}
 	
+	@Override
 	protected void
 	destroyDevice() {
 		final Task t = new Audio.DestroyDevice(getDeviceId());
@@ -252,6 +253,7 @@ public class AudioDevicePane extends DevicePane {
 			validate();
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			Object obj = cbChannel.getSelectedItem();
@@ -265,12 +267,14 @@ public class AudioDevicePane extends DevicePane {
 			channelParamTable.getModel().setParameters(chn.getAllParameters());
 		}
 		
+		@Override
 		public void
 		itemStateChanged(ItemEvent e) {
 			boolean a = checkActive.isSelected();
 			if(a != audioDeviceModel.isActive()) audioDeviceModel.setBackendActive(a);
 		}
 		
+		@Override
 		public void
 		stateChanged(ChangeEvent e) {
 			int c = (Integer)spinnerChannels.getValue();
@@ -279,6 +283,7 @@ public class AudioDevicePane extends DevicePane {
 			}
 		}
 		
+		@Override
 		public void
 		settingsChanged(AudioDeviceEvent e) {
 			int c = (Integer)spinnerChannels.getValue();
@@ -301,6 +306,7 @@ public class AudioDevicePane extends DevicePane {
 			if(cbChannel.getModel().getSize() > 0) cbChannel.setSelectedIndex(idx);
 		}
 		
+		@Override
 		public void
 		parameterChanged(ParameterEvent e) {
 			int c = cbChannel.getSelectedIndex();

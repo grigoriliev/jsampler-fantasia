@@ -22,6 +22,8 @@
 
 package org.jsampler.view.std;
 
+import javax.swing.SwingUtilities;
+
 import org.jsampler.CC;
 import org.jsampler.SamplerChannelModel;
 
@@ -41,8 +43,6 @@ public class JSFxSendsDlg extends InformationDialog {
 	private JSFxSendsPane mainPane;
 	private final SamplerChannelListListener channelListListener;
 	
-	private int channelIndex;
-	
 	/** Creates a new instance of <code>JSFxSendsDlg</code> */
 	public
 	JSFxSendsDlg(SamplerChannelModel model) {
@@ -56,8 +56,8 @@ public class JSFxSendsDlg extends InformationDialog {
 		
 		mainPane = pane;
 		
-		channelIndex = CC.getSamplerModel().getChannelIndex(pane.getChannelModel()) + 1;
-		setTitle(i18n.getLabel("JSFxSendsDlg.title", channelIndex));
+		String s = CC.getMainFrame().getChannelPath(pane.getChannelModel());
+		setTitle(i18n.getLabel("JSFxSendsDlg.title", s));
 		setModal(false);
 		showCloseButton(false);
 		
@@ -65,14 +65,14 @@ public class JSFxSendsDlg extends InformationDialog {
 			public void
 			channelAdded(SamplerChannelListEvent e) {
 				if(CC.getSamplerModel().getChannelListIsAdjusting()) return;
-				updateChannelIndex();
+				updateTitle();
 			}
 			
 			public void
 			channelRemoved(SamplerChannelListEvent e) {
 				//if(CC.getSamplerModel().getChannelListIsAdjusting()) return; //TODO: 
 				
-				updateChannelIndex();
+				updateTitle();
 			}
 		};
 		
@@ -80,11 +80,14 @@ public class JSFxSendsDlg extends InformationDialog {
 	}
 	
 	protected void
-	updateChannelIndex() {
-		int i = CC.getSamplerModel().getChannelIndex(mainPane.getChannelModel());
-		if(channelIndex == i) return;
+	updateTitle() {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void
+			run() {
+				String s = CC.getMainFrame().getChannelPath(mainPane.getChannelModel());
+				setTitle(i18n.getLabel("JSFxSendsDlg.title", s));
+			}
+		});
 		
-		channelIndex = i;
-		setTitle(i18n.getLabel("JSFxSendsDlg.title", channelIndex + 1));
 	}
 }

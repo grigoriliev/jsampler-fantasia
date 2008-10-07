@@ -24,8 +24,6 @@ package org.jsampler.view.fantasia;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Insets;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -35,7 +33,6 @@ import java.beans.PropertyChangeListener;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
@@ -50,6 +47,7 @@ import org.jsampler.event.OrchestraEvent;
 import org.jsampler.event.ListEvent;
 import org.jsampler.event.ListListener;
 
+import org.jsampler.view.fantasia.basic.*;
 import org.jsampler.view.std.JSManageOrchestrasPane;
 import org.jsampler.view.std.JSOrchestraPane;
 

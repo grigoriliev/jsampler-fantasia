@@ -54,6 +54,8 @@ import javax.swing.event.ChangeListener;
 import net.sf.juife.Dial;
 
 import org.jsampler.CC;
+import org.jsampler.view.fantasia.basic.PixmapPane;
+import org.jsampler.view.fantasia.basic.PixmapButton;
 
 import org.jvnet.substance.utils.SubstanceImageCreator;
 
@@ -209,12 +211,15 @@ public class NormalChannelView extends PixmapPane implements ChannelView {
 	// Implementation of the ChannelView interface
 	//////////////////////////////////////////////
 	
+	@Override
 	public Type
 	getType() { return Type.NORMAL; }
 	
+	@Override
 	public JComponent
 	getComponent() { return this; }
 	
+	@Override
 	public void
 	installView() {
 		String vmud = VOL_MEASUREMENT_UNIT_DECIBEL;
@@ -233,6 +238,7 @@ public class NormalChannelView extends PixmapPane implements ChannelView {
 		addEnhancedMouseListener(getHandler());
 	}
 	
+	@Override
 	public void
 	uninstallView() {
 		screen.onDestroy();
@@ -242,6 +248,7 @@ public class NormalChannelView extends PixmapPane implements ChannelView {
 		removeEnhancedMouseListener(getHandler());
 	}
 	
+	@Override
 	public void
 	installChannelOptionsView() {
 		if(channelOptionsView != null) return;
@@ -251,6 +258,7 @@ public class NormalChannelView extends PixmapPane implements ChannelView {
 		
 	}
 	
+	@Override
 	public void
 	uninstallChannelOptionsView() {
 		if(channelOptionsView == null) return;
@@ -258,9 +266,11 @@ public class NormalChannelView extends PixmapPane implements ChannelView {
 		channelOptionsView = null;
 	}
 	
+	@Override
 	public ChannelOptionsView
 	getChannelOptionsView() { return channelOptionsView; }
 	
+	@Override
 	public void
 	updateChannelInfo() {
 		SamplerChannel sc = channel.getChannelInfo();
@@ -282,26 +292,32 @@ public class NormalChannelView extends PixmapPane implements ChannelView {
 		if(getChannelOptionsView() != null) getChannelOptionsView().updateChannelInfo();
 	}
 	
+	@Override
 	public void
 	updateStreamCount(int count) { screen.updateStreamCount(count); }
 	
+	@Override
 	public void
 	updateVoiceCount(int count) { screen.updateVoiceCount(count); }
 	
+	@Override
 	public void
 	expandChannel() {
 		if(btnOptions.isSelected()) return;
 		btnOptions.doClick();
 	}
 	
+	@Override
 	public boolean
 	isOptionsButtonSelected() { return btnOptions.isSelected(); }
 	
+	@Override
 	public void
 	setOptionsButtonSelected(boolean b) {
 		btnOptions.setSelected(b);
 	}
 	
+	@Override
 	public void
 	addEnhancedMouseListener(MouseListener l) {
 		removeEnhancedMouseListener(l);
@@ -310,6 +326,7 @@ public class NormalChannelView extends PixmapPane implements ChannelView {
 		screen.addEnhancedMouseListener(l);
 	}
 	
+	@Override
 	public void
 	removeEnhancedMouseListener(MouseListener l) {
 		for(JComponent c : components) c.removeMouseListener(l);
@@ -413,6 +430,7 @@ public class NormalChannelView extends PixmapPane implements ChannelView {
 			addActionListener(this);
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			SamplerChannel sc = channel.getChannelInfo();
@@ -433,6 +451,7 @@ public class NormalChannelView extends PixmapPane implements ChannelView {
 			channel.getModel().setBackendMute(b);
 		}
 		
+		@Override
 		public boolean
 		contains(int x, int y) { return (x > 5 && x < 23) && (y > 5 && y < 16); }
 	}
@@ -447,6 +466,7 @@ public class NormalChannelView extends PixmapPane implements ChannelView {
 			addActionListener(this);
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			SamplerChannel sc = channel.getChannelInfo();
@@ -468,6 +488,7 @@ public class NormalChannelView extends PixmapPane implements ChannelView {
 			channel.getModel().setBackendSolo(b);
 		}
 		
+		@Override
 		public boolean
 		contains(int x, int y) { return (x > 5 && x < 23) && (y > 5 && y < 16); }
 	}
@@ -478,11 +499,12 @@ public class NormalChannelView extends PixmapPane implements ChannelView {
 	getHandler() { return eventHandler; }
 	
 	private class EventHandler extends MouseAdapter {
+		@Override
 		public void
 		mouseClicked(MouseEvent e) {
 			if(e.getButton() != e.BUTTON1) return;
 			// TAG: channel selection system
-			CC.getMainFrame().getChannelsPane(0).setSelectedChannel(channel);
+			CC.getMainFrame().getSelectedChannelsPane().setSelectedChannel(channel);
 			///////
 		}
 	}
@@ -793,6 +815,7 @@ class ChannelScreen extends PixmapPane {
 			setPreferredSize(new Dimension(getPreferredSize().width, 13));
 		}
 		
+		@Override
 		public Dimension
 		getPreferredSize() {
 			return new Dimension(super.getPreferredSize().width, 13);
@@ -806,6 +829,7 @@ class ChannelScreen extends PixmapPane {
 	getHandler() { return eventHandler; }
 	
 	private class EventHandler extends MouseAdapter implements HierarchyListener {
+		@Override
 		public void
 		mouseEntered(MouseEvent e)  {
 			if(channel.getChannelInfo().getInstrumentStatus() != 100) return;
@@ -816,6 +840,7 @@ class ChannelScreen extends PixmapPane {
 			}
 		}
 		
+		@Override
 		public void
 		mouseExited(MouseEvent e)  {
 			if(getMousePosition(true) != null) return;
@@ -826,6 +851,7 @@ class ChannelScreen extends PixmapPane {
 		}
 		
 		/** Called when the hierarchy has been changed. */
+		@Override
 		public void
 		hierarchyChanged(HierarchyEvent e) {
 			if((e.getChangeFlags() & e.SHOWING_CHANGED) == e.SHOWING_CHANGED) {

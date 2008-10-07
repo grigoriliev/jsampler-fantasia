@@ -20,7 +20,7 @@
  *   MA  02111-1307  USA
  */
 
-package org.jsampler.view.fantasia;
+package org.jsampler.view.fantasia.basic;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -29,6 +29,8 @@ import java.awt.Insets;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JList;
+
+import org.jsampler.view.fantasia.Res;
 
 import org.jvnet.substance.api.renderers.SubstanceDefaultListCellRenderer;
 
@@ -45,6 +47,7 @@ public class FantasiaListCellRenderer extends SubstanceDefaultListCellRenderer {
 		
 	}
 	
+	@Override
 	public java.awt.Component
 	getListCellRendererComponent (
 		JList list, Object value, int index, boolean isSelected, boolean cellHasFocus
@@ -68,6 +71,7 @@ public class FantasiaListCellRenderer extends SubstanceDefaultListCellRenderer {
 			setFont(Res.fontScreen);
 		}
 		
+		@Override
 		protected void
 		paintComponent(Graphics g) {
 			Graphics2D g2d = (Graphics2D)g;
@@ -81,9 +85,11 @@ public class FantasiaListCellRenderer extends SubstanceDefaultListCellRenderer {
 			super.paintComponent(g);
 		}
 		
+		@Override
 		public java.awt.Color
 		getForeground() { return textColor; }
 		
+		@Override
 		public java.awt.Font
 		getFont() { return Res.fontScreen; }
 	}

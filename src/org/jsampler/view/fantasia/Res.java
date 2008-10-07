@@ -45,304 +45,304 @@ public class Res {
 	/** Forbits the instantiation of this class. */
 	private Res() { }
 	
-	protected static ImageIcon gfxFantasiaLogo;
+	public static ImageIcon gfxFantasiaLogo;
 	
-	protected final static ImageIcon gfxPowerOn
+	public final static ImageIcon gfxPowerOn
 		= new ImageIcon(Res.class.getResource("res/gfx/power_on.png"));
 	
-	protected final static ImageIcon gfxPowerOff
+	public final static ImageIcon gfxPowerOff
 		= new ImageIcon(Res.class.getResource("res/gfx/power_off.png"));
 
-	protected final static ImageIcon gfxMuteOn
+	public final static ImageIcon gfxMuteOn
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_mute_on.png"));
 	
-	protected final static ImageIcon gfxMuteOff
+	public final static ImageIcon gfxMuteOff
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_mute_off.png"));
 	
-	protected final static ImageIcon gfxMuteSmallOn
+	public final static ImageIcon gfxMuteSmallOn
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_mute_s_on.png"));
 	
-	protected final static ImageIcon gfxMuteSmallOff
+	public final static ImageIcon gfxMuteSmallOff
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_mute_s_off.png"));
 	
-	protected final static ImageIcon gfxMuteSoloDisabled
+	public final static ImageIcon gfxMuteSoloDisabled
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_mute_solo_disabled.png"));
 	
-	protected final static ImageIcon gfxMutedBySolo
+	public final static ImageIcon gfxMutedBySolo
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_mute_off.png"));
 	
-	protected final static ImageIcon gfxMutedBySoloSmall
+	public final static ImageIcon gfxMutedBySoloSmall
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_mute_s_off.png"));
 	
-	protected final static ImageIcon gfxSoloOn
+	public final static ImageIcon gfxSoloOn
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_solo_on.png"));
 	
-	protected final static ImageIcon gfxSoloOff
+	public final static ImageIcon gfxSoloOff
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_mute_off.png"));
 	
-	protected final static ImageIcon gfxSoloSmallOn
+	public final static ImageIcon gfxSoloSmallOn
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_solo_s_on.png"));
 	
-	protected final static ImageIcon gfxSoloSmallOff
+	public final static ImageIcon gfxSoloSmallOff
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_solo_s_off.png"));
 	
-	protected final static ImageIcon gfxMuteTitle
+	public final static ImageIcon gfxMuteTitle
 		= new ImageIcon(Res.class.getResource("res/gfx/title_mute.png"));
 	
-	protected final static ImageIcon gfxSoloTitle
+	public final static ImageIcon gfxSoloTitle
 		= new ImageIcon(Res.class.getResource("res/gfx/title_solo.png"));
 	
-	protected final static ImageIcon gfxVolumeTitle
+	public final static ImageIcon gfxVolumeTitle
 		= new ImageIcon(Res.class.getResource("res/gfx/title_volume.png"));
 	
-	protected final static ImageIcon gfxVolumeDial
+	public final static ImageIcon gfxVolumeDial
 		= new ImageIcon(Res.class.getResource("res/gfx/knob_volume.png"));
 	
-	protected final static ImageIcon gfxOptionsTitle
+	public final static ImageIcon gfxOptionsTitle
 		= new ImageIcon(Res.class.getResource("res/gfx/title_options.png"));
 	
-	protected final static ImageIcon gfxOptionsOn
+	public final static ImageIcon gfxOptionsOn
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_hide_channel_options.png"));
 	
-	protected final static ImageIcon gfxOptionsOnRO
+	public final static ImageIcon gfxOptionsOnRO
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_hide_channel_options_ro.png"));
 	
-	protected final static ImageIcon gfxOptionsOff
+	public final static ImageIcon gfxOptionsOff
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_show_channel_options.png"));
 	
-	protected final static ImageIcon gfxOptionsOffRO
+	public final static ImageIcon gfxOptionsOffRO
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_show_channel_options_ro.png"));
 	
-	protected final static ImageIcon gfxFx
+	public final static ImageIcon gfxFx
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_fx.png"));
 	
-	protected final static ImageIcon gfxFxRO
+	public final static ImageIcon gfxFxRO
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_fx_ro.png"));
 	
-	protected final static ImageIcon gfxMidiInputTitle
+	public final static ImageIcon gfxMidiInputTitle
 		= new ImageIcon(Res.class.getResource("res/gfx/title_midi_input.png"));
 	
-	protected final static ImageIcon gfxEngineTitle
+	public final static ImageIcon gfxEngineTitle
 		= new ImageIcon(Res.class.getResource("res/gfx/title_engine.png"));
 	
-	protected final static ImageIcon gfxAudioOutputTitle
+	public final static ImageIcon gfxAudioOutputTitle
 		= new ImageIcon(Res.class.getResource("res/gfx/title_audio_output.png"));
 	
-	protected final static ImageIcon gfxInstrumentMapTitle
+	public final static ImageIcon gfxInstrumentMapTitle
 		= new ImageIcon(Res.class.getResource("res/gfx/title_midi_instrument_map.png"));
 	
-	protected final static ImageIcon gfxChannel
+	public final static ImageIcon gfxChannel
 		= new ImageIcon(Res.class.getResource("res/gfx/channel.png"));
 	
-	protected final static ImageIcon gfxChannelScreen
+	public final static ImageIcon gfxChannelScreen
 		= new ImageIcon(Res.class.getResource("res/gfx/channel.screen.png"));
 	
-	protected final static ImageIcon gfxHLine
+	public final static ImageIcon gfxHLine
 		= new ImageIcon(Res.class.getResource("res/gfx/line_hor.png"));
 	
-	protected final static ImageIcon gfxVLine
+	public final static ImageIcon gfxVLine
 		= new ImageIcon(Res.class.getResource("res/gfx/line_vert.png"));
 	
-	protected final static ImageIcon gfxChannelOptions
+	public final static ImageIcon gfxChannelOptions
 		= new ImageIcon(Res.class.getResource("res/gfx/channel.options.png"));
 	
-	protected final static ImageIcon gfxCreateChannel
+	public final static ImageIcon gfxCreateChannel
 		= new ImageIcon(Res.class.getResource("res/gfx/create_channel.png"));
 	
-	protected final static ImageIcon gfxTextField
+	public final static ImageIcon gfxTextField
 		= new ImageIcon(Res.class.getResource("res/gfx/tf_bg.png"));
 	
-	protected final static ImageIcon gfxCbLabelBg
+	public final static ImageIcon gfxCbLabelBg
 		= new ImageIcon(Res.class.getResource("res/gfx/cb_label_bg.png"));
 	
-	protected final static ImageIcon gfxCbArrow
+	public final static ImageIcon gfxCbArrow
 		= new ImageIcon(Res.class.getResource("res/gfx/cb_arrow.png"));
 	
-	protected final static ImageIcon gfxCbArrowDisabled
+	public final static ImageIcon gfxCbArrowDisabled
 		= new ImageIcon(Res.class.getResource("res/gfx/cb_arrow_disabled.png"));
 	
-	protected final static ImageIcon gfxCbArrowRO
+	public final static ImageIcon gfxCbArrowRO
 		= new ImageIcon(Res.class.getResource("res/gfx/cb_arrow_ro.png"));
 	
-	protected final static ImageIcon gfxPowerOn18
+	public final static ImageIcon gfxPowerOn18
 		= new ImageIcon(Res.class.getResource("res/gfx/power_on18.png"));
 	
-	protected final static ImageIcon gfxPowerOff18
+	public final static ImageIcon gfxPowerOff18
 		= new ImageIcon(Res.class.getResource("res/gfx/power_off18.png"));
 	
-	protected final static ImageIcon gfxDeviceBg
+	public final static ImageIcon gfxDeviceBg
 		= new ImageIcon(Res.class.getResource("res/gfx/device_bg.png"));
 	
-	protected final static ImageIcon gfxRoundBg14
+	public final static ImageIcon gfxRoundBg14
 		= new ImageIcon(Res.class.getResource("res/gfx/round_bg14.png"));
-	protected final static ImageIcon gfxRoundBg7
+	public final static ImageIcon gfxRoundBg7
 		= new ImageIcon(Res.class.getResource("res/gfx/round_bg7.png"));
-	protected final static ImageIcon gfxMenuBarBg
+	public final static ImageIcon gfxMenuBarBg
 		= new ImageIcon(Res.class.getResource("res/gfx/menubar_bg.png"));
 	
-	protected final static ImageIcon gfxScreenBtnBg
+	public final static ImageIcon gfxScreenBtnBg
 		= new ImageIcon(Res.class.getResource("res/gfx/screen_btn_bg.png"));
 	
 	
-	protected final static ImageIcon gfxChannelsBg
+	public final static ImageIcon gfxChannelsBg
 		= new ImageIcon(Res.class.getResource("res/gfx/channels_bg.png"));
 	
-	protected static ImageIcon gfxToolBar;
-	protected static Insets insetsToolBar;
+	public static ImageIcon gfxToolBar;
+	public static Insets insetsToolBar;
 	
-	protected final static ImageIcon gfxBorder
+	public final static ImageIcon gfxBorder
 		= new ImageIcon(Res.class.getResource("res/gfx/border.png"));
 	
-	protected final static ImageIcon gfxBtnCr
+	public final static ImageIcon gfxBtnCr
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_cr.png"));
 	
-	protected final static ImageIcon gfxBtnCrRO
+	public final static ImageIcon gfxBtnCrRO
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_cr_ro.png"));
 	
-	protected final static ImageIcon gfxBtnDecrease
+	public final static ImageIcon gfxBtnDecrease
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_decrease.png"));
 	
-	protected final static ImageIcon gfxBtnDecreaseRO
+	public final static ImageIcon gfxBtnDecreaseRO
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_decrease_ro.png"));
 	
-	protected final static ImageIcon gfxBtnIncrease
+	public final static ImageIcon gfxBtnIncrease
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_increase.png"));
 	
-	protected final static ImageIcon gfxBtnIncreaseRO
+	public final static ImageIcon gfxBtnIncreaseRO
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_increase_ro.png"));
 	
-	protected final static ImageIcon gfxBtnScrollLeft
+	public final static ImageIcon gfxBtnScrollLeft
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_scroll_left.png"));
 	
-	protected final static ImageIcon gfxBtnScrollLeftRO
+	public final static ImageIcon gfxBtnScrollLeftRO
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_scroll_left_ro.png"));
 	
-	protected final static ImageIcon gfxBtnScrollRight
+	public final static ImageIcon gfxBtnScrollRight
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_scroll_right.png"));
 	
-	protected final static ImageIcon gfxBtnScrollRightRO
+	public final static ImageIcon gfxBtnScrollRightRO
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_scroll_right_ro.png"));
 	
 	
-	protected final static ImageIcon iconAppIcon
+	public final static ImageIcon iconAppIcon
 		= new ImageIcon(Res.class.getResource("res/icons/app_icon.png"));
 	
-	protected final static ImageIcon iconArrowUp
+	public final static ImageIcon iconArrowUp
 		= new ImageIcon(Res.class.getResource("res/icons/arrow_up.png"));
 	
-	protected final static ImageIcon iconArrowDown
+	public final static ImageIcon iconArrowDown
 		= new ImageIcon(Res.class.getResource("res/icons/arrow_down.png"));
 	
-	protected final static ImageIcon iconEngine12
+	public final static ImageIcon iconEngine12
 		= new ImageIcon(Res.class.getResource("res/icons/engine12.png"));
 	
-	protected final static ImageIcon iconVolume14
+	public final static ImageIcon iconVolume14
 		= new ImageIcon(Res.class.getResource("res/icons/volume14.png"));
 	
-	protected final static ImageIcon iconNew16
+	public final static ImageIcon iconNew16
 		= new ImageIcon(Res.class.getResource("res/icons/new16.png"));
 	
-	protected final static ImageIcon iconEdit16
+	public final static ImageIcon iconEdit16
 		= new ImageIcon(Res.class.getResource("res/icons/edit16.png"));
 	
-	protected final static ImageIcon iconDelete16
+	public final static ImageIcon iconDelete16
 		= new ImageIcon(Res.class.getResource("res/icons/delete16.png"));
 	
-	protected final static ImageIcon iconBack16
+	public final static ImageIcon iconBack16
 		= new ImageIcon(Res.class.getResource("res/icons/back16.png"));
 	
-	protected final static ImageIcon iconNext16
+	public final static ImageIcon iconNext16
 		= new ImageIcon(Res.class.getResource("res/icons/next16.png"));
 	
-	protected final static ImageIcon iconUp16
+	public final static ImageIcon iconUp16
 		= new ImageIcon(Res.class.getResource("res/icons/up16.png"));
 	
-	protected final static ImageIcon iconBrowse16
+	public final static ImageIcon iconBrowse16
 		= new ImageIcon(Res.class.getResource("res/icons/folder_open16.png"));
 	
-	protected final static ImageIcon iconDb16
+	public final static ImageIcon iconDb16
 		= new ImageIcon(Res.class.getResource("res/icons/collection16.png"));
 	
-	protected final static ImageIcon iconFolder16
+	public final static ImageIcon iconFolder16
 		= new ImageIcon(Res.class.getResource("res/icons/folder16.png"));
 	
-	protected final static ImageIcon iconFolderOpen16
+	public final static ImageIcon iconFolderOpen16
 		= new ImageIcon(Res.class.getResource("res/icons/folder_open16.png"));
 	
-	protected final static ImageIcon iconInstrument16
+	public final static ImageIcon iconInstrument16
 		= new ImageIcon(Res.class.getResource("res/icons/instr16.png"));
 	
-	protected final static ImageIcon iconReload16
+	public final static ImageIcon iconReload16
 		= new ImageIcon(Res.class.getResource("res/icons/reload16.png"));
 	
-	protected final static ImageIcon iconPreferences16
+	public final static ImageIcon iconPreferences16
 		= new ImageIcon(Res.class.getResource("res/icons/preferences16.png"));
 	
-	protected final static ImageIcon iconVolume22
+	public final static ImageIcon iconVolume22
 		= new ImageIcon(Res.class.getResource("res/icons/volume22.png"));
 	
-	protected final static ImageIcon iconFind22
+	public final static ImageIcon iconFind22
 		= new ImageIcon(Res.class.getResource("res/icons/Find22.png"));
 	
-	protected final static ImageIcon iconGoUp22
+	public final static ImageIcon iconGoUp22
 		= new ImageIcon(Res.class.getResource("res/icons/GoUp22.png"));
 	
-	protected final static ImageIcon iconGoBack22
+	public final static ImageIcon iconGoBack22
 		= new ImageIcon(Res.class.getResource("res/icons/GoBack22.png"));
 	
-	protected final static ImageIcon iconGoForward22
+	public final static ImageIcon iconGoForward22
 		= new ImageIcon(Res.class.getResource("res/icons/GoForward22.png"));
 	
-	protected final static ImageIcon iconFolderOpen22
+	public final static ImageIcon iconFolderOpen22
 		= new ImageIcon(Res.class.getResource("res/icons/folder_open22.png"));
 	
-	protected final static ImageIcon iconPreferences22
+	public final static ImageIcon iconPreferences22
 		= new ImageIcon(Res.class.getResource("res/icons/Preferences22.png"));
 	
-	protected final static ImageIcon iconReload22
+	public final static ImageIcon iconReload22
 		= new ImageIcon(Res.class.getResource("res/icons/reload22.png"));
 	
-	protected final static ImageIcon iconSamplerInfo32
+	public final static ImageIcon iconSamplerInfo32
 		= new ImageIcon(Res.class.getResource("res/icons/sampler_info32.png"));
 	
-	protected final static ImageIcon iconOpen32
+	public final static ImageIcon iconOpen32
 		= new ImageIcon(Res.class.getResource("res/icons/open32.png"));
 	
-	protected final static ImageIcon iconSave32
+	public final static ImageIcon iconSave32
 		= new ImageIcon(Res.class.getResource("res/icons/save32.png"));
 	
-	protected final static ImageIcon iconReload32
+	public final static ImageIcon iconReload32
 		= new ImageIcon(Res.class.getResource("res/icons/reload32.png"));
 	
-	protected final static ImageIcon iconReset32
+	public final static ImageIcon iconReset32
 		= new ImageIcon(Res.class.getResource("res/icons/purge32.png"));
 	
-	protected final static ImageIcon iconPreferences32
+	public final static ImageIcon iconPreferences32
 		= new ImageIcon(Res.class.getResource("res/icons/preferences32.png"));
 	
-	protected final static ImageIcon iconMidiKeyboard32
+	public final static ImageIcon iconMidiKeyboard32
 		= new ImageIcon(Res.class.getResource("res/icons/midi_keyboard32.png"));
 	
-	protected final static ImageIcon iconLSConsole32
+	public final static ImageIcon iconLSConsole32
 		= new ImageIcon(Res.class.getResource("res/icons/ls_console32.png"));
 	
-	protected final static ImageIcon iconLSConsole
+	public final static ImageIcon iconLSConsole
 		= new ImageIcon(Res.class.getResource("res/icons/ls_console.png"));
 	
-	protected final static ImageIcon iconDb32
+	public final static ImageIcon iconDb32
 		= new ImageIcon(Res.class.getResource("res/icons/db32.png"));
 	
-	protected final static ImageIcon iconWarning32
+	public final static ImageIcon iconWarning32
 		= new ImageIcon(Res.class.getResource("res/icons/warning32.png"));
 	
-	protected final static ImageIcon iconQuestion32
+	public final static ImageIcon iconQuestion32
 		= new ImageIcon(Res.class.getResource("res/icons/question32.png"));
 	
-	protected final static ImageIcon iconLinuxSamplerLogo
+	public final static ImageIcon iconLinuxSamplerLogo
 		= new ImageIcon(Res.class.getResource("res/icons/LinuxSampler-logo.png"));
 	
-	protected static Font fontScreen = null;
-	protected static Font fontScreenMono = null;
+	public static Font fontScreen = null;
+	public static Font fontScreenMono = null;
 		
 	
 	static {

@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -36,7 +36,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.StringReader;
 
 import java.util.logging.Level;
 import java.util.Vector;
@@ -59,13 +58,11 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import net.sf.juife.NavigationPage;
-import net.sf.juife.NavigationPane;
 
 import org.jsampler.CC;
 import org.jsampler.HF;
 import org.jsampler.LSConsoleModel;
 import org.jsampler.OrchestraModel;
-import org.jsampler.Prefs;
 import org.jsampler.Server;
 
 import org.jsampler.view.JSChannel;
@@ -206,6 +203,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 	}
 	
 	/** Invoked when this window is about to close. */
+	@Override
 	protected void
 	onWindowClose() {
 		boolean b = preferences().getBoolProperty(CONFIRM_APP_QUIT);
@@ -663,6 +661,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		
 		RecentScriptHandler(String script) { this.script = script; }
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {  runScript(script); }
 	}
@@ -844,11 +843,13 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 	 * Adds the specified <code>JSChannelsPane</code> to the view.
 	 * @param chnPane The <code>JSChannelsPane</code> to be added.
 	 */
+	@Override
 	public void
 	addChannelsPane(JSChannelsPane chnPane) {
 		insertChannelsPane(chnPane, getChannelsPaneCount());
 	}
 	
+	@Override
 	public void
 	insertChannelsPane(JSChannelsPane chnPane, int idx) {
 		chnPane.addListSelectionListener(this);
@@ -873,6 +874,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 	 * Gets the <code>JSChannelsPane</code> that is currently shown.
 	 * @return The currently shown <code>JSChannelsPane</code>.
 	 */
+	@Override
 	public JSChannelsPane
 	getSelectedChannelsPane() {
 		if(getChannelsPaneList().size() == 1) return getChannelsPane(0);
@@ -883,10 +885,12 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 	 * Sets the <code>JSChannelsPane</code> to be selected.
 	 * @param pane The <code>JSChannelsPane</code> to be shown.
 	 */
+	@Override
 	public void
 	setSelectedChannelsPane(JSChannelsPane pane) {
 		if(getChannelsPaneList().size() == 1) return;
 		tabbedPane.setSelectedComponent(pane);
+		fireChannelsPaneSelectionChanged();
 	}
 	
 	/**
@@ -895,6 +899,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 	 * @return <code>true</code> if the specified code>JSChannelsPane</code>
 	 * is actually removed from the view, <code>false</code> otherwise.
 	 */
+	@Override
 	public boolean
 	removeChannelsPane(JSChannelsPane chnPane) {
 		chnPane.removeListSelectionListener(this);
@@ -1036,6 +1041,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 	public JMenu
 	getTabsMenu() { return tabsMenu; }
 	
+	@Override
 	public void
 	stateChanged(ChangeEvent e) {
 		updateTabsMenu();
@@ -1043,6 +1049,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		checkTabSelection();
 	}
 	
+	@Override
 	public void
 	valueChanged(ListSelectionEvent e) {
 		if(e.getValueIsAdjusting()) return;
@@ -1191,6 +1198,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		recentScriptsMenu.setEnabled(recentScripts.size() != 0);
 	}
 	
+	@Override
 	public void
 	installJSamplerHome() {
 		JSamplerHomeChooser chooser = new JSamplerHomeChooser(this);
@@ -1200,6 +1208,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		CC.changeJSamplerHome(chooser.getJSamplerHome());
 	}
 	
+	@Override
 	public void
 	showDetailedErrorMessage(Frame owner, String err, String details) {
 		JSDetailedErrorDlg dlg = new JSDetailedErrorDlg (
@@ -1208,6 +1217,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		dlg.setVisible(true);
 	}
 	
+	@Override
 	public void
 	showDetailedErrorMessage(Dialog owner, String err, String details) {
 		JSDetailedErrorDlg dlg = new JSDetailedErrorDlg (
@@ -1220,6 +1230,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 	 * Gets the server address to which to connect. If the server should be
 	 * manually selected, a dialog asking the user to choose a server is displayed.
 	 */
+	@Override
 	public Server
 	getServer() {
 		boolean b = preferences().getBoolProperty(MANUAL_SERVER_SELECT_ON_STARTUP);
@@ -1231,6 +1242,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 	 * manually selected, a dialog asking the user to choose a server is displayed.
 	 * @param manualSelect Determines whether the server should be manually selected.
 	 */
+	@Override
 	public Server
 	getServer(boolean manualSelect) {
 		if(manualSelect) {

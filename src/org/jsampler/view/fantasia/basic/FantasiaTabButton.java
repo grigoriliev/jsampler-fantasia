@@ -20,7 +20,7 @@
  *   MA  02111-1307  USA
  */
 
-package org.jsampler.view.fantasia;
+package org.jsampler.view.fantasia.basic;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -328,6 +328,7 @@ public class FantasiaTabButton extends JToggleButton {
 		g2.setPaint(oldPaint);
 	}
 	
+	@Override
 	public void
 	updateUI() { setUI(new BasicButtonUI()); }
 }

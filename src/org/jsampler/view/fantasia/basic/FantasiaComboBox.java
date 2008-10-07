@@ -20,7 +20,7 @@
  *   MA  02111-1307  USA
  */
 
-package org.jsampler.view.fantasia;
+package org.jsampler.view.fantasia.basic;
 
 import java.awt.Graphics;
 import java.awt.Insets;
@@ -28,9 +28,10 @@ import java.awt.Insets;
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
-import javax.swing.UIManager;
 
 import javax.swing.plaf.basic.BasicComboBoxEditor;
+
+import org.jsampler.view.fantasia.Res;
 
 import org.jvnet.substance.SubstanceLookAndFeel;
 
@@ -61,6 +62,7 @@ class FantasiaComboBoxEditor extends BasicComboBoxEditor {
 	FantasiaComboBoxEditor() {
 	}
 	
+	@Override
 	protected JTextField
 	createEditorComponent() { return new TextEditor(); }
 	
@@ -72,12 +74,14 @@ class FantasiaComboBoxEditor extends BasicComboBoxEditor {
 			setBorder(BorderFactory.createEmptyBorder());
 		}
 		
+		@Override
 		public void
 		setText(String s) {
 			if(getText().equals(s)) return;
 			setText(s);
 		}
 		
+		@Override
 		protected void
 		paintComponent(Graphics g) {
 			super.paintComponent(g);

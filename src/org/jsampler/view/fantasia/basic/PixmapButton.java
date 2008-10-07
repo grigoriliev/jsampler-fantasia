@@ -20,7 +20,7 @@
  *   MA  02111-1307  USA
  */
 
-package org.jsampler.view.fantasia;
+package org.jsampler.view.fantasia.basic;
 
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -42,16 +42,19 @@ public class PixmapButton extends JButton {
 	private Dimension size;
 	
 	/** Creates a new instance of PixmapButton */
+	public
 	PixmapButton(ImageIcon icon) {
 		this(icon, null);
 	}
 	
 	/** Creates a new instance of PixmapButton */
+	public
 	PixmapButton(ImageIcon icon, ImageIcon rolloverIcon) {
 		initPixmapButton(icon, rolloverIcon);
 	}
 	
 	/** Creates a new instance of PixmapButton */
+	public
 	PixmapButton(Action a, ImageIcon icon) {
 		super(a);
 		initPixmapButton(icon, null);
@@ -81,6 +84,7 @@ public class PixmapButton extends JButton {
 		setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 	}
 	
+	@Override
 	public void
 	updateUI() { setUI(new BasicButtonUI()); }
 }

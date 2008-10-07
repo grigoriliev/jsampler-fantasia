@@ -43,6 +43,7 @@ import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
 import org.jsampler.CC;
+import org.jsampler.view.fantasia.basic.*;
 
 import static org.jsampler.view.fantasia.A4n.a4n;
 

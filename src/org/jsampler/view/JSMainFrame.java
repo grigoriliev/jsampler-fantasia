@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -23,7 +23,6 @@
 package org.jsampler.view;
 
 import java.awt.Dialog;
-import java.awt.Dimension;
 import java.awt.Frame;
 
 import java.awt.event.ActionEvent;
@@ -39,9 +38,11 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.KeyStroke;
 
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import org.jsampler.CC;
 import org.jsampler.JSampler;
-import org.jsampler.Prefs;
+import org.jsampler.SamplerChannelModel;
 import org.jsampler.Server;
 
 import org.jsampler.event.SamplerChannelListEvent;
@@ -113,6 +114,34 @@ public abstract class JSMainFrame extends JFrame {
 	 */
 	public abstract void showDetailedErrorMessage(Dialog owner, String err, String details);
 	
+	protected Vector<ListSelectionListener> channelsPaneListeners = 
+		new Vector<ListSelectionListener>();
+	
+	/**
+	 * Registers the specified listener for receiving event messages.
+	 * @param l The <code>ListSelectionListener</code> to register.
+	 */
+	public void
+	addChannelsPaneSelectionListener(ListSelectionListener l) {
+		channelsPaneListeners.add(l);
+	}
+	
+	/**
+	 * Removes the specified listener.
+	 * @param l The <code>ListSelectionListener</code> to remove.
+	 */
+	public void
+	removeChannelsPaneSelectionListener(ListSelectionListener l) {
+		channelsPaneListeners.remove(l);
+	}
+	
+	protected void
+	fireChannelsPaneSelectionChanged() {
+		int i = getChannelsPaneIndex(getSelectedChannelsPane());
+		ListSelectionEvent e = new ListSelectionEvent(this, i, i, false);
+		for(ListSelectionListener l : channelsPaneListeners) l.valueChanged(e);
+	}
+	
 	/**
 	 * Returns a list containing all <code>JSChannelsPane</code>s added to the view.
 	 * @return A list containing all <code>JSChannelsPane</code>s added to the view.
@@ -156,6 +185,15 @@ public abstract class JSMainFrame extends JFrame {
 	getChannelsPaneCount() { return chnPaneList.size(); }
 	
 	/**
+	 * Returns the index of the specified channels pane, or -1 if
+	 * the specified channels pane is not found.
+	 */
+	public int
+	getChannelsPaneIndex(JSChannelsPane chnPane) {
+		return chnPaneList.indexOf(chnPane);
+	}
+	
+	/**
 	 * Inserts the specified <code>JSChannelsPane</code> at the specified position
 	 * in the view and in the code>JSChannelsPane</code> list.
 	 * Where and how this pane will be shown depends on the view/GUI implementation.
@@ -191,7 +229,10 @@ public abstract class JSMainFrame extends JFrame {
 	
 	/**
 	 * Sets the <code>JSChannelsPane</code> to be selected.
+	 * Note that all registered listeners should be notified
+	 * when the selection is changed.
 	 * @param pane The <code>JSChannelsPane</code> to be shown.
+	 * @see #fireChannelsPaneSelectionChanged
 	 */
 	public abstract void setSelectedChannelsPane(JSChannelsPane pane);
 	
@@ -201,6 +242,7 @@ public abstract class JSMainFrame extends JFrame {
 		 * @param e A <code>SamplerChannelListEvent</code>
 		 * instance providing the event information.
 		 */
+		@Override
 		public void
 		channelAdded(SamplerChannelListEvent e) {
 			if(e.getChannelModel() == null) return;
@@ -218,6 +260,7 @@ public abstract class JSMainFrame extends JFrame {
 		 * @param e A <code>SamplerChannelListEvent</code>
 		 * instance providing the event information.
 		 */
+		@Override
 		public void
 		channelRemoved(SamplerChannelListEvent e) {
 			removeChannel(e.getChannelModel().getChannelId());
@@ -260,6 +303,77 @@ public abstract class JSMainFrame extends JFrame {
 		}
 		
 		return null;
+	}
+	
+	/**
+	 * Gets the zero-based position of the specified sampler channel
+	 * in the channels pane, to which the channel is added.
+	 * Note that the position may change when adding/removing sampler channels.
+	 * @return The zero-based position of the specified sampler channel
+	 * in the channels pane, or -1 if the specified channels is not found.
+	 */
+	public int
+	getChannelNumber(SamplerChannelModel channel) {
+		if(channel == null) return -1;
+		
+		for(int i = 0; i < getChannelsPaneCount(); i++) {
+			JSChannelsPane chnPane = getChannelsPane(i);
+			for(int j = 0; j < chnPane.getChannelCount(); j++) {
+				if(chnPane.getChannel(j).getChannelId() == channel.getChannelId()) {
+					return j;
+				}
+			}
+		}
+		
+		return -1;
+	}
+	
+	/**
+	 * Returns a string in the format <code>channelPaneNumber/channelNumber</code>,
+	 * where <code>channelPaneNumber</code> is the one-based number of the channels
+	 * pane containing the specified channel and <code>channelNumber</code> is the
+	 * one-based number of the channel's position in the channels pane.
+	 * Note that this path may change when adding/removing channels/channels panes.
+	 * @return The channels path, or <code>null</code> if the specified channels is not found.
+	 */
+	public String
+	getChannelPath(SamplerChannelModel channel) {
+		if(channel == null) return null;
+		
+		for(int i = 0; i < getChannelsPaneCount(); i++) {
+			JSChannelsPane chnPane = getChannelsPane(i);
+			for(int j = 0; j < chnPane.getChannelCount(); j++) {
+				if(chnPane.getChannel(j).getChannelId() == channel.getChannelId()) {
+					return (i + 1) + "/" + (j + 1);
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Gets the zero-based number of the channels pane,
+	 * to which the specified sampler channel is added.
+	 * Note that the can be moved from one channels pane to another.
+	 * @return The zero-based index of the channels pane,
+	 * to which the specified sampler channel is added, or
+	 * -1 if the specified channels is not found.
+	 */
+	public int
+	getChannelsPaneNumber(SamplerChannelModel channel) {
+		if(channel == null) return -1;
+		
+		for(int i = 0; i < getChannelsPaneCount(); i++) {
+			JSChannelsPane chnPane = getChannelsPane(i);
+			for(int j = 0; j < chnPane.getChannelCount(); j++) {
+				if(chnPane.getChannel(j).getChannelId() == channel.getChannelId()) {
+					return i;
+				}
+			}
+		}
+		
+		return -1;
 	}
 	
 	/**

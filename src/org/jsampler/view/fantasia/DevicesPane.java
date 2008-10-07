@@ -23,17 +23,15 @@
 package org.jsampler.view.fantasia;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Insets;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.BorderFactory;
-import javax.swing.JPanel;
 
 import org.jdesktop.swingx.JXTaskPane;
+
+import org.jsampler.view.fantasia.basic.*;
 
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.api.SubstanceConstants.FocusKind;

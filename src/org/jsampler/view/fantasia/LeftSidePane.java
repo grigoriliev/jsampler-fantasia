@@ -26,9 +26,11 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 
 import javax.swing.BorderFactory;
-import javax.swing.JPanel;
 
 import net.sf.juife.JuifeUtils;
+
+import org.jsampler.view.fantasia.basic.FantasiaTabbedPane;
+import org.jsampler.view.fantasia.basic.FantasiaPanel;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jsampler.view.fantasia.FantasiaPrefs.preferences;
@@ -50,7 +52,7 @@ public class LeftSidePane extends FantasiaPanel {
 		setOpaque(false);
 		setLayout(new BorderLayout());
 		FantasiaTabbedPane tp = tabbedPane;
-		tp.getMainPane().setBorder(BorderFactory.createEmptyBorder(0, 1,01, 1));
+		tp.getMainPane().setBorder(BorderFactory.createEmptyBorder(0, 1, 1, 1));
 		tp.addTab(i18n.getLabel("LeftSidePane.tabOrchestras"), orchestraPane);
 		tp.addTab(i18n.getLabel("LeftSidePane.tabMidiInstruments"), midiInstrumentsPane);
 		

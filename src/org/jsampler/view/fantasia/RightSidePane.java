@@ -37,6 +37,8 @@ import javax.swing.event.ChangeListener;
 
 import net.sf.juife.JuifeUtils;
 
+import org.jsampler.view.fantasia.basic.*;
+
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jsampler.view.fantasia.FantasiaPrefs.preferences;
 

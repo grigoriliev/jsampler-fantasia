@@ -20,13 +20,12 @@
  *   MA  02111-1307  USA
  */
 
-package org.jsampler.view.fantasia;
+package org.jsampler.view.fantasia.basic;
 
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Insets;
 
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JToggleButton;
 
@@ -45,6 +44,7 @@ public class PixmapToggleButton extends JToggleButton {
 	private ImageIcon selectedIcon;
 	
 	/** Creates a new instance of PixmapToggleButton */
+	public
 	PixmapToggleButton(ImageIcon defaultIcon, ImageIcon selectedIcon) {
 		this.defaultIcon = defaultIcon;
 		this.selectedIcon = selectedIcon;

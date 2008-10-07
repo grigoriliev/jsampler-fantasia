@@ -45,7 +45,6 @@ import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 
 import net.sf.juife.ComponentList;
-import net.sf.juife.ComponentListModel;
 import net.sf.juife.DefaultComponentListModel;
 
 import net.sf.juife.event.TaskEvent;
@@ -61,11 +60,12 @@ import org.jsampler.event.ListListener;
 
 import org.jsampler.task.Audio;
 
+import org.jsampler.view.fantasia.basic.PixmapButton;
+import org.jsampler.view.fantasia.basic.PixmapPane;
 import org.jsampler.view.std.JSNewAudioDeviceDlg;
 
 import org.linuxsampler.lscp.AudioOutputDriver;
 
-import static org.jsampler.view.fantasia.A4n.a4n;
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jsampler.view.fantasia.FantasiaPrefs.*;
 
@@ -124,6 +124,7 @@ public class AudioDevicesPane extends JPanel {
 	class DeviceListPane extends ComponentList {
 		private Dimension maxSize = new Dimension();
 		
+		@Override
 		public Dimension
 		getMaximumSize() {
 			maxSize.width = Short.MAX_VALUE;
@@ -326,11 +327,13 @@ public class AudioDevicesPane extends JPanel {
 	getHandler() { return eventHandler; }
 	
 	private class EventHandler implements ListListener<AudioDeviceModel> {
+		@Override
 		public void
 		entryAdded(ListEvent<AudioDeviceModel> e) {
 			addDevice(e.getEntry());
 		}
 		
+		@Override
 		public void
 		entryRemoved(ListEvent<AudioDeviceModel> e) {
 			removeDevice(e.getEntry());

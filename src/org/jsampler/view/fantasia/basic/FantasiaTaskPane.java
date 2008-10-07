@@ -20,7 +20,7 @@
  *   MA  02111-1307  USA
  */
 
-package org.jsampler.view.fantasia;
+package org.jsampler.view.fantasia.basic;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -44,6 +44,8 @@ import javax.swing.plaf.ComponentUI;
 
 import org.jdesktop.swingx.JXTaskPane;
 import org.jdesktop.swingx.plaf.basic.BasicTaskPaneUI;
+
+import org.jsampler.view.fantasia.Res;
 
 /**
  *

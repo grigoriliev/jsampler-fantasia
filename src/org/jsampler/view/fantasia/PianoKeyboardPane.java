@@ -71,6 +71,7 @@ import org.jsampler.event.SamplerChannelListListener;
 import org.jsampler.event.SamplerChannelListEvent;
 
 import org.jsampler.view.JSChannel;
+import org.jsampler.view.fantasia.basic.*;
 import org.jsampler.view.std.JSPianoRoll;
 
 import org.linuxsampler.lscp.Instrument;
@@ -241,7 +242,7 @@ public class PianoKeyboardPane extends FantasiaPanel
 	valueChanged(ListSelectionEvent e) {
 		if(e.getValueIsAdjusting()) return;
 		
-		JSChannel[] chnS = CC.getMainFrame().getChannelsPane(0).getSelectedChannels();
+		JSChannel[] chnS = CC.getMainFrame().getSelectedChannelsPane().getSelectedChannels();
 		if(chnS == null || chnS.length == 0) {
 			disconnectChannel();
 			return;
@@ -480,10 +481,10 @@ public class PianoKeyboardPane extends FantasiaPanel
 		}
 		
 		SamplerChannel sc = channel.getChannelInfo();
-		int i = CC.getSamplerModel().getChannelIndex(channel) + 1;
+		String s = CC.getMainFrame().getChannelPath(channel);
 		
 		StringBuffer sb = new StringBuffer();
-		sb.append(i18n.getLabel("PianoKeyboardPane.channel", i)).append(" - ");
+		sb.append(i18n.getLabel("PianoKeyboardPane.channel", s)).append(" - ");
 		
 		int status = sc.getInstrumentStatus();
 		if(status >= 0 && status < 100) {

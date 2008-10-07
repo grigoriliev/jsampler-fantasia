@@ -62,11 +62,11 @@ import org.jsampler.event.ParameterListener;
 import org.jsampler.task.Midi;
 
 import org.jsampler.view.ParameterTable;
+import org.jsampler.view.fantasia.basic.PixmapPane;
 
 import org.linuxsampler.lscp.MidiInputDevice;
 import org.linuxsampler.lscp.MidiPort;
 import org.linuxsampler.lscp.Parameter;
-import org.linuxsampler.lscp.ParameterFactory;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jsampler.view.fantasia.FantasiaPrefs.preferences;
@@ -97,6 +97,7 @@ public class MidiDevicePane extends DevicePane {
 		setDeviceName(i18n.getLabel("MidiDevicePane.lDevName", id, s));
 	}
 	
+	@Override
 	protected void
 	destroyDevice() {
 		final Task t = new Midi.DestroyDevice(midiDeviceModel.getDeviceId());
@@ -245,6 +246,7 @@ public class MidiDevicePane extends DevicePane {
 			validate();
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			Object obj = cbPort.getSelectedItem();
@@ -258,12 +260,14 @@ public class MidiDevicePane extends DevicePane {
 			portParamTable.getModel().setParameters(port.getAllParameters());
 		}
 		
+		@Override
 		public void
 		itemStateChanged(ItemEvent e) {
 			boolean a = checkActive.isSelected();
 			if(a != midiDeviceModel.isActive()) midiDeviceModel.setBackendActive(a);
 		}
 		
+		@Override
 		public void
 		stateChanged(ChangeEvent e) {
 			int p = (Integer)spinnerPorts.getValue();
@@ -272,6 +276,7 @@ public class MidiDevicePane extends DevicePane {
 			}
 		}
 		
+		@Override
 		public void
 		settingsChanged(MidiDeviceEvent e) {
 			int p = (Integer)spinnerPorts.getValue();
@@ -297,6 +302,7 @@ public class MidiDevicePane extends DevicePane {
 		}
 		
 		/** Invoked when when the value of a particular parameter is changed. */
+		@Override
 		public void
 		parameterChanged(ParameterEvent e) {
 			int port = cbPort.getSelectedIndex();

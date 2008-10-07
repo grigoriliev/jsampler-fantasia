@@ -20,7 +20,7 @@
  *   MA  02111-1307  USA
  */
 
-package org.jsampler.view.fantasia;
+package org.jsampler.view.fantasia.basic;
 
 import javax.swing.JPanel;
 import javax.swing.plaf.basic.BasicPanelUI;
@@ -36,6 +36,7 @@ public class FantasiaPanel extends JPanel {
 	public
 	FantasiaPanel() { }
 	
+	@Override
 	public void
 	updateUI() { setUI(new BasicPanelUI()); }
 	

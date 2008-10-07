@@ -40,7 +40,6 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -50,11 +49,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
-import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
-
-import net.sf.juife.InformationDialog;
-import net.sf.juife.TitleBar;
 
 import org.jdesktop.swingx.JXCollapsiblePane;
 
@@ -69,6 +64,8 @@ import org.jsampler.event.SamplerChannelListener;
 
 import org.jsampler.view.JSChannel;
 import org.jsampler.view.JSChannelsPane;
+
+import org.jsampler.view.fantasia.basic.PixmapToggleButton;
 
 import org.jsampler.view.std.JSChannelOutputRoutingDlg;
 import org.jsampler.view.std.JSFxSendsDlg;
@@ -286,7 +283,9 @@ public class Channel extends JSChannel {
 	 * Determines whether the channel is selected.
 	 * @return <code>true</code> if the channel is selected, <code>false</code> otherwise.
 	 */
-	public boolean isSelected() { return selected; }
+	@Override
+	public boolean
+	isSelected() { return selected; }
 	
 	/**
 	 * Sets the selection state of this channel.
@@ -294,6 +293,7 @@ public class Channel extends JSChannel {
 	 * @param select Specifies the new selection state of this channel;
 	 * <code>true</code> to select the channel, <code>false</code> otherwise.
 	 */
+	@Override
 	public void
 	setSelected(boolean select) {
 		
@@ -389,6 +389,7 @@ public class Channel extends JSChannel {
 		 * @param e A <code>SamplerChannelEvent</code> instance
 		 * containing event information.
 		 */
+		@Override
 		public void
 		channelChanged(SamplerChannelEvent e) { updateChannelInfo(); }
 	
@@ -397,6 +398,7 @@ public class Channel extends JSChannel {
 		 * @param e A <code>SamplerChannelEvent</code> instance
 		 * containing event information.
 		 */
+		@Override
 		public void
 		streamCountChanged(SamplerChannelEvent e) {
 			viewTracker.getCurrentView().updateStreamCount(getModel().getStreamCount());
@@ -407,6 +409,7 @@ public class Channel extends JSChannel {
 		 * @param e A <code>SamplerChannelEvent</code> instance
 		 * containing event information.
 		 */
+		@Override
 		public void
 		voiceCountChanged(SamplerChannelEvent e) {
 			viewTracker.getCurrentView().updateVoiceCount(getModel().getVoiceCount());
@@ -417,6 +420,7 @@ public class Channel extends JSChannel {
 		 * @param e A <code>SamplerChannelListEvent</code>
 		 * instance providing the event information.
 		 */
+		@Override
 		public void
 		channelAdded(SamplerChannelListEvent e) { }
 	
@@ -425,6 +429,7 @@ public class Channel extends JSChannel {
 		 * @param e A <code>SamplerChannelListEvent</code>
 		 * instance providing the event information.
 		 */
+		@Override
 		public void
 		channelRemoved(SamplerChannelListEvent e) {
 			// Some cleanup when the channel is removed.
@@ -433,6 +438,7 @@ public class Channel extends JSChannel {
 			}
 		}
 		
+		@Override
 		public void
 		propertyChange(PropertyChangeEvent e) {
 			if(e.getNewValue() == "collapsed") {
@@ -661,21 +667,25 @@ public class Channel extends JSChannel {
 			fallbackToOriginalView();
 		}
 		
+		@Override
 		public void
 		mouseEntered(MouseEvent e) {
 			guiListener.actionPerformed(null);
 		}
 		
+		@Override
 		public void
 		mouseExited(MouseEvent e) {
 			guiListener.actionPerformed(null);
 		}
 		
+		@Override
 		public void
 		mousePressed(MouseEvent e) {
 			mousePressed = true;
 		}
 		
+		@Override
 		public void
 		mouseReleased(MouseEvent e) {
 			mousePressed = false;
@@ -703,6 +713,7 @@ public class Channel extends JSChannel {
 			preferences().removePropertyChangeListener(s, this);
 		}
 		
+		@Override
 		public void
 		propertyChange(PropertyChangeEvent e) {
 			updateMouseOverViewType();
@@ -716,20 +727,24 @@ public class Channel extends JSChannel {
 			getModel().addSamplerChannelListener(this);
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			CC.getSamplerModel().editBackendInstrument(getChannelId());
 		}
 		
+		@Override
 		public void
 		channelChanged(SamplerChannelEvent e) {
 			boolean b = getChannelInfo().getInstrumentStatus() == 100;
 			setEnabled(b);
 		}
 		
+		@Override
 		public void
 		streamCountChanged(SamplerChannelEvent e) { }
 		
+		@Override
 		public void
 		voiceCountChanged(SamplerChannelEvent e) { }
 	}
@@ -739,6 +754,7 @@ public class Channel extends JSChannel {
 			super(i18n.getMenuLabel("channels.fxSends"));
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			showFxSendsDialog();
@@ -752,21 +768,25 @@ public class Channel extends JSChannel {
 			getModel().addSamplerChannelListener(this);
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			SamplerChannel c = getChannelInfo();
 			new JSChannelOutputRoutingDlg(CC.getMainFrame(), c).setVisible(true);
 		}
 		
+		@Override
 		public void
 		channelChanged(SamplerChannelEvent e) {
 			boolean b = getChannelInfo().getAudioOutputDevice() != -1;
 			setEnabled(b);
 		}
 		
+		@Override
 		public void
 		streamCountChanged(SamplerChannelEvent e) { }
 		
+		@Override
 		public void
 		voiceCountChanged(SamplerChannelEvent e) { }
 	}
@@ -776,6 +796,7 @@ public class Channel extends JSChannel {
 			super(i18n.getMenuLabel("channels.smallView"));
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			viewTracker.setView(new SmallChannelView(Channel.this));
@@ -787,6 +808,7 @@ public class Channel extends JSChannel {
 			super(i18n.getMenuLabel("channels.normalView"));
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			viewTracker.setView(new NormalChannelView(Channel.this));
@@ -838,11 +860,13 @@ public class Channel extends JSChannel {
 			return menu;
 		}
 		
+		@Override
 		public void
 		mousePressed(MouseEvent e) {
 			if(e.isPopupTrigger()) show(e);
 		}
 	
+		@Override
 		public void
 		mouseReleased(MouseEvent e) {
 			if(e.isPopupTrigger()) show(e);
@@ -862,6 +886,7 @@ public class Channel extends JSChannel {
 			actionRemoveFxSend.putValue(Action.SMALL_ICON, Res.iconDelete16);
 		}
 		
+		@Override
 		protected JToolBar
 		createToolBar() {
 			JToolBar tb = new JToolBar();
@@ -1009,6 +1034,7 @@ public class Channel extends JSChannel {
 			setToolTipText(i18n.getButtonLabel("Channel.ttRemoveChannel"));
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			boolean b = preferences().getBoolProperty(CONFIRM_CHANNEL_REMOVAL);
@@ -1022,6 +1048,7 @@ public class Channel extends JSChannel {
 			channel.remove();
 		}
 		
+		@Override
 		public boolean
 		contains(int x, int y) { return (x - 11)*(x - 11) + (y - 11)*(y - 11) < 71; }
 	}
@@ -1042,6 +1069,7 @@ public class Channel extends JSChannel {
 			setToolTipText(i18n.getButtonLabel("Channel.ttShowOptions"));
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			ChannelView view = channel.viewTracker.getCurrentView();
@@ -1064,6 +1092,7 @@ public class Channel extends JSChannel {
 			channel.optionsPane.addPropertyChangeListener(s, this);
 		}
 		
+		@Override
 		public void
 		propertyChange(PropertyChangeEvent e) {
 			if(e.getNewValue() == "collapsed") {
@@ -1079,6 +1108,7 @@ public class Channel extends JSChannel {
 			channel.optionsPane.removePropertyChangeListener(s, this);
 		}
 		
+		@Override
 		public boolean
 		contains(int x, int y) { return super.contains(x, y) & y < 13; }
 	}

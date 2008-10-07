@@ -61,10 +61,6 @@ import org.jsampler.event.SamplerChannelListEvent;
 import org.jsampler.event.SamplerChannelListListener;
 
 import org.jsampler.view.InstrumentTable;
-import org.jsampler.view.InstrumentTableModel;
-
-import org.linuxsampler.lscp.MidiInstrumentEntry;
-import org.linuxsampler.lscp.MidiInstrumentInfo;
 
 import static org.jsampler.view.std.StdI18n.i18n;
 
@@ -173,6 +169,7 @@ public class JSOrchestraPane extends JPanel {
 	}
 	
 	private class InstrumentSelectionHandler implements ListSelectionListener {
+		@Override
 		public void
 		valueChanged(ListSelectionEvent e) {
 			if(e.getValueIsAdjusting()) return;
@@ -202,6 +199,7 @@ public class JSOrchestraPane extends JPanel {
 			putValue(SHORT_DESCRIPTION, s);
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			OrchestraInstrument instr = createInstrument();
@@ -220,6 +218,7 @@ public class JSOrchestraPane extends JPanel {
 			setEnabled(false);
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			editInstrument(instrumentTable.getSelectedInstrument());
@@ -236,6 +235,7 @@ public class JSOrchestraPane extends JPanel {
 			setEnabled(false);
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			OrchestraInstrument instr = instrumentTable.getSelectedInstrument();
@@ -259,6 +259,7 @@ public class JSOrchestraPane extends JPanel {
 			setEnabled(false);
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			OrchestraInstrument instr = instrumentTable.getSelectedInstrument();
@@ -277,6 +278,7 @@ public class JSOrchestraPane extends JPanel {
 			setEnabled(false);
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			OrchestraInstrument instr = instrumentTable.getSelectedInstrument();
@@ -287,16 +289,12 @@ public class JSOrchestraPane extends JPanel {
 	
 	
 	
-	private class LoadInstrumentAction extends AbstractAction {
-		private final SamplerChannelModel channelModel;
-		
-		LoadInstrumentAction(SamplerChannelModel model) {
-			String s = "instrumentsdb.actions.loadInstrument.onChannel";
-			int i = CC.getSamplerModel().getChannelIndex(model) + 1;
-			putValue(Action.NAME, i18n.getMenuLabel(s, i));
-			channelModel = model;
+	private class LoadInstrumentAction extends StdA4n.LoadInstrumentAction {
+		LoadInstrumentAction(SamplerChannelModel model, boolean onPanel) {
+			super(model, onPanel);
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			OrchestraInstrument instr = instrumentTable.getSelectedInstrument();
@@ -308,6 +306,15 @@ public class JSOrchestraPane extends JPanel {
 		}
 	}
 	
+	private LoadInstrumentActionFactory loadInstrActionFactory = new LoadInstrumentActionFactory();
+	
+	class LoadInstrumentActionFactory implements StdA4n.LoadInstrumentActionFactory {
+		public StdA4n.LoadInstrumentAction
+		createLoadInstrumentAction(SamplerChannelModel model, boolean onPanel) {
+			return new LoadInstrumentAction(model, onPanel);
+		}
+	}
+	
 	class AddToMidiMapAction extends AbstractAction {
 		private final MidiInstrumentMap midiMap;
 		
@@ -316,6 +323,7 @@ public class JSOrchestraPane extends JPanel {
 			midiMap = map;
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			OrchestraInstrument instr = instrumentTable.getSelectedInstrument();
@@ -386,16 +394,21 @@ public class JSOrchestraPane extends JPanel {
 				}
 			};
 			
-			CC.getSamplerModel().addMidiInstrumentMapListListener(l);	
+			CC.getSamplerModel().addMidiInstrumentMapListListener(l);
+			
+			CC.getMainFrame().addChannelsPaneSelectionListener(new ListSelectionListener() {
+				public void
+				valueChanged(ListSelectionEvent e) {
+					updateLoadInstrumentMenu(mLoadInstrument);
+				}
+			});
 		}
 		
 		private void
 		updateLoadInstrumentMenu(JMenu menu) {
 			menu.removeAll();
-			for(SamplerChannelModel m : CC.getSamplerModel().getChannels()) {
-				menu.add(new JMenuItem(new LoadInstrumentAction(m)));
-			}
 			
+			StdA4n.updateLoadInstrumentMenu(menu, loadInstrActionFactory);
 			updateLoadInstrumentMenuState(menu);
 		}
 		
@@ -426,28 +439,33 @@ public class JSOrchestraPane extends JPanel {
 			menu.setEnabled(!b);
 		}
 		
+		@Override
 		public void
 		valueChanged(ListSelectionEvent e) {
 			updateLoadInstrumentMenuState(mLoadInstrument);
 			updateAddToMidiMapMenuState(mMapInstrument);
 		}
 		
+		@Override
 		public void
 		channelAdded(SamplerChannelListEvent e) {
 			if(CC.getSamplerModel().getChannelListIsAdjusting()) return;
 			updateLoadInstrumentMenu(mLoadInstrument);
 		}
 		
+		@Override
 		public void
 		channelRemoved(SamplerChannelListEvent e) {
 			updateLoadInstrumentMenu(mLoadInstrument);
 		}
 		
+		@Override
 		public void
 		mousePressed(MouseEvent e) {
 			if(e.isPopupTrigger()) show(e);
 		}
 	
+		@Override
 		public void
 		mouseReleased(MouseEvent e) {
 			if(e.isPopupTrigger()) show(e);

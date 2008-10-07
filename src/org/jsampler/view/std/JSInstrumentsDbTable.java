@@ -28,7 +28,6 @@ import java.awt.Frame;
 import java.awt.Window;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -47,6 +46,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -70,7 +70,6 @@ import org.jsampler.OrchestraInstrument;
 import org.jsampler.MidiInstrumentMap;
 import org.jsampler.OrchestraModel;
 import org.jsampler.SamplerChannelModel;
-import org.jsampler.SamplerModel;
 
 import org.jsampler.event.ListEvent;
 import org.jsampler.event.ListListener;
@@ -83,9 +82,10 @@ import org.jsampler.view.DbClipboard;
 import org.jsampler.view.DbDirectoryTreeNode;
 import org.jsampler.view.InstrumentsDbTableModel;
 
+import org.jsampler.view.JSChannelsPane;
+
 import org.linuxsampler.lscp.DbDirectoryInfo;
 import org.linuxsampler.lscp.DbInstrumentInfo;
-import org.linuxsampler.lscp.MidiInstrumentInfo;
 
 import static org.jsampler.view.InstrumentsDbTableModel.ColumnType;
 import static org.jsampler.view.std.StdI18n.i18n;
@@ -203,6 +203,13 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 		CC.getOrchestras().addOrchestraListListener(getHandler());
 		CC.getSamplerModel().addSamplerChannelListListener(getHandler());
 		
+		CC.getMainFrame().addChannelsPaneSelectionListener(new ListSelectionListener() {
+			public void
+			valueChanged(ListSelectionEvent e) {
+				updateLoadInstrumentMenus();
+			}
+		});
+		
 		ListListener<MidiInstrumentMap> l = new ListListener<MidiInstrumentMap>() {
 			public void
 			entryAdded(ListEvent<MidiInstrumentMap> e) { updateAddToMidiMapMenus(); }
@@ -219,6 +226,7 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 	public static DbClipboard
 	getDbClipboard() { return dbClipboard; }
 	
+	@Override
 	public TableCellRenderer
 	getCellRenderer(int row, int column) {
 		return cellRenderer;
@@ -313,7 +321,8 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 	public void
 	registerLoadInstrumentMenus(JMenu menu) {
 		loadInstrumentMenus.add(menu);
-		updateLoadInstrumentMenu(menu);
+		StdA4n.updateLoadInstrumentMenu(menu, loadInstrActionFactory);
+		updateLoadInstrumentMenuState(menu);
 	}
 	
 	public void
@@ -330,17 +339,10 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 	
 	private void
 	updateLoadInstrumentMenus() {
-		for(JMenu menu : loadInstrumentMenus) updateLoadInstrumentMenu(menu);
-	}
-	
-	private void
-	updateLoadInstrumentMenu(JMenu menu) {
-		menu.removeAll();
-		for(SamplerChannelModel m : CC.getSamplerModel().getChannels()) {
-			menu.add(new JMenuItem(new LoadInstrumentAction(m)));
+		for(JMenu menu : loadInstrumentMenus) {
+			StdA4n.updateLoadInstrumentMenu(menu, loadInstrActionFactory);
+			updateLoadInstrumentMenuState(menu);
 		}
-		
-		updateLoadInstrumentMenuState(menu);
 	}
 	
 	private void
@@ -432,6 +434,7 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 			setEnabled(false);
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			DbDirectoryTreeNode n = instrumentsDbTree.getSelectedDirectoryNode();
@@ -444,6 +447,7 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 			});
 		}
 		
+		@Override
 		public void
 		valueChanged(TreeSelectionEvent e) {
 			DbDirectoryTreeNode n = instrumentsDbTree.getSelectedDirectoryNode();
@@ -461,6 +465,7 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 			putValue(SHORT_DESCRIPTION, s);
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			setDirectoryName(getUniqueDirectoryName());
@@ -511,6 +516,7 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 			setEnabled(false);
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			final DbDirectoryInfo[] dirs = getSelectedDirectories();
@@ -581,6 +587,7 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel(s));
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			String s;
@@ -612,6 +619,7 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel(s));
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			String s;
@@ -635,16 +643,12 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 		}
 	}
 	
-	class LoadInstrumentAction extends AbstractAction {
-		private final SamplerChannelModel channelModel;
-		
-		LoadInstrumentAction(SamplerChannelModel model) {
-			String s = "instrumentsdb.actions.loadInstrument.onChannel";
-			int i = CC.getSamplerModel().getChannelIndex(model) + 1;
-			putValue(Action.NAME, i18n.getMenuLabel(s, i));
-			channelModel = model;
+	class LoadInstrumentAction extends StdA4n.LoadInstrumentAction {
+		LoadInstrumentAction(SamplerChannelModel model, boolean onPanel) {
+			super(model, onPanel);
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			Object obj = getLeadObject();
@@ -656,6 +660,15 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 		}
 	}
 	
+	private LoadInstrumentActionFactory loadInstrActionFactory = new LoadInstrumentActionFactory();
+	
+	class LoadInstrumentActionFactory implements StdA4n.LoadInstrumentActionFactory {
+		public StdA4n.LoadInstrumentAction
+		createLoadInstrumentAction(SamplerChannelModel model, boolean onPanel) {
+			return new LoadInstrumentAction(model, onPanel);
+		}
+	}
+	
 	class AddToMidiMapAction extends AbstractAction {
 		private final MidiInstrumentMap midiMap;
 		
@@ -664,6 +677,7 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 			midiMap = map;
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			DbInstrumentInfo[] instruments = getSelectedInstruments();
@@ -701,6 +715,7 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 			orchestraModel = model;
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			DbInstrumentInfo[] instruments = getSelectedInstruments();
@@ -735,6 +750,7 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 			setEnabled(false);
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			Object obj = getLeadObject();
@@ -794,6 +810,7 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 			setEnabled(false);
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			int i = getSelectionModel().getLeadSelectionIndex();
@@ -813,6 +830,7 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 			setEnabled(false);
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			Object obj = getLeadObject();
@@ -863,6 +881,7 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 			setEnabled(false);
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			getDbClipboard().setDirectories(getSelectedDirectories());
@@ -880,6 +899,7 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 			setEnabled(false);
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			getDbClipboard().setDirectories(getSelectedDirectories());
@@ -898,6 +918,7 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 			getDbClipboard().addChangeListener(this);
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			DbDirectoryInfo[] dirs = getDbClipboard().getDirectories();
@@ -918,9 +939,11 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 			CC.getTaskQueue().add(t);
 		}
 		
+		@Override
 		public void
 		valueChanged(TreeSelectionEvent e) { updateState(); }
 		
+		@Override
 		public void
 		stateChanged(ChangeEvent e) { updateState(); }
 		
@@ -944,6 +967,7 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 			setBorder(BorderFactory.createEmptyBorder(0, 3, 0, 3));
 		}
 		
+		@Override
 		public Component
 		getTableCellRendererComponent (
 			JTable table,
@@ -1018,6 +1042,7 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 	private class EventHandler implements ListSelectionListener, TreeSelectionListener,
 				SamplerChannelListListener, ListListener<OrchestraModel> {
 		
+		@Override
 		public void
 		valueChanged(ListSelectionEvent e) {
 			boolean b = !getSelectionModel().isSelectionEmpty();
@@ -1032,6 +1057,7 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 			updateAddToOrchestraMenuStates();
 		}
 		
+		@Override
 		public void
 		valueChanged(TreeSelectionEvent e) {
 			DbDirectoryTreeNode n = instrumentsDbTree.getSelectedDirectoryNode();
@@ -1041,20 +1067,24 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 			propertiesAction.setEnabled(n != null || getLeadObject() != null);
 		}
 		
+		@Override
 		public void
 		channelAdded(SamplerChannelListEvent e) {
 			if(CC.getSamplerModel().getChannelListIsAdjusting()) return;
 			updateLoadInstrumentMenus();
 		}
 		
+		@Override
 		public void
 		channelRemoved(SamplerChannelListEvent e) {
 			updateLoadInstrumentMenus();
 		}
 		
+		@Override
 		public void
 		entryAdded(ListEvent<OrchestraModel> e) { updateAddToOrchestraMenus(); }
 		
+		@Override
 		public void
 		entryRemoved(ListEvent<OrchestraModel> e) { updateAddToOrchestraMenus(); }
 	}
@@ -1186,11 +1216,13 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 			directoryMenu.add(mi);
 		}
 		
+		@Override
 		public void
 		mousePressed(MouseEvent e) {
 			if(e.isPopupTrigger()) show(e);
 		}
 	
+		@Override
 		public void
 		mouseReleased(MouseEvent e) {
 			if(e.isPopupTrigger()) show(e);

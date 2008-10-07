@@ -20,7 +20,7 @@
  *   MA  02111-1307  USA
  */
 
-package org.jsampler.view.fantasia;
+package org.jsampler.view.fantasia.basic;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -30,6 +30,8 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 
 import javax.swing.plaf.basic.BasicLabelUI;
+
+import org.jsampler.view.fantasia.Res;
 
 /**
  *
@@ -56,6 +58,7 @@ public class FantasiaLabel extends JLabel {
 		setFont(Res.fontScreen);
 	}
 	
+	@Override
 	protected void
 	paintComponent(Graphics g) {
 		if(antialiased) {
@@ -71,12 +74,15 @@ public class FantasiaLabel extends JLabel {
 		super.paintComponent(g);
 	}
 		
+	@Override
 	public void
 	updateUI() { setUI(new BasicLabelUI()); }
 	
+	@Override
 	public java.awt.Color
 	getForeground() { return textColor; }
 	
+	@Override
 	public java.awt.Font
 	getFont() { return Res.fontScreen; }
 }

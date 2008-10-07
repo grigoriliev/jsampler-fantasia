@@ -23,12 +23,9 @@
 package org.jsampler.view.fantasia;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Rectangle;
 
@@ -62,6 +59,10 @@ import org.jsampler.event.MidiDeviceListEvent;
 import org.jsampler.event.MidiDeviceListListener;
 
 import org.jsampler.task.Midi;
+
+import org.jsampler.view.fantasia.basic.FantasiaPanel;
+import org.jsampler.view.fantasia.basic.PixmapButton;
+import org.jsampler.view.fantasia.basic.PixmapPane;
 
 import org.jsampler.view.std.JSNewMidiDeviceDlg;
 

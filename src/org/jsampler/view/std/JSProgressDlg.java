@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -90,10 +90,11 @@ public class JSProgressDlg extends JDialog implements JSProgress {
 			actionPerformed(ActionEvent e) { onCancel(); }
 		});
 		
-		pack();
 		Dimension d = getPreferredSize();
 		d.width = d.width > 300 ? d.width : 300;
-		setSize(d);
+		setPreferredSize(d);
+		
+		pack();
 		setResizable(false);
 		
 		setLocation(JuifeUtils.centerLocation(this, CC.getMainFrame()));
@@ -123,6 +124,7 @@ public class JSProgressDlg extends JDialog implements JSProgress {
 	 * Sets the progress string.
 	 * @param s The value of the progress string.
 	 */
+	@Override
 	public void
 	setString(String s) { l.setText(s); }
 	
@@ -138,6 +140,7 @@ public class JSProgressDlg extends JDialog implements JSProgress {
 	}
 	
 	/** Starts to indicate that an operation is ongoing. */
+	@Override
 	public void
 	start() {
 		setLocation(JuifeUtils.centerLocation(this, CC.getMainFrame()));
@@ -152,6 +155,7 @@ public class JSProgressDlg extends JDialog implements JSProgress {
 	}
 	
 	/** Stops the indication that an operation is ongoing. */
+	@Override
 	public void
 	stop() {
 		SwingUtilities.invokeLater(new Runnable() {

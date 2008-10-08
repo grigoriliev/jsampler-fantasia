@@ -33,6 +33,7 @@ import org.linuxsampler.lscp.LSException;
  */
 public abstract class EnhancedTask<R> extends AbstractTask<R> {
 	private boolean stopped = false;
+	private boolean silent = false;
 	
 	/**
 	 * Marks that the execution of this task was interrupted.
@@ -47,6 +48,20 @@ public abstract class EnhancedTask<R> extends AbstractTask<R> {
 	 */
 	public boolean
 	isStopped() { return stopped; }
+	
+	/**
+	 * Determines whether an error message should be shown
+	 * if the execution of the task fail.
+	 */
+	public boolean
+	isSilent() { return silent; }
+	
+	/**
+	 * DSets whether an error message should be shown
+	 * if the execution of the task fail.
+	 */
+	public void
+	setSilent(boolean b) { silent = b; }
 	
 	/**
 	 * Sets the error details provided by the given exception (if the given

@@ -23,13 +23,12 @@
 package org.jsampler.view.fantasia;
 
 import java.awt.Dimension;
+import java.awt.Rectangle;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-
-import java.util.logging.Level;
 
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -38,6 +37,7 @@ import javax.swing.JMenuItem;
 
 import org.jsampler.CC;
 import org.jsampler.view.std.JSLscpScriptDlg;
+import org.jsampler.view.std.StdUtils;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jsampler.view.fantasia.FantasiaPrefs.preferences;
@@ -138,13 +138,7 @@ public class LSConsoleFrame extends JFrame {
 		preferences().setBoolProperty("LSConsoleFrame.windowMaximized", b);
 		if(b) return;
 		
-		java.awt.Point p = getLocation();
-		Dimension d = getSize();
-		StringBuffer sb = new StringBuffer();
-		sb.append(p.x).append(',').append(p.y).append(',');
-		sb.append(d.width).append(',').append(d.height);
-		String s = "LSConsoleFrame.windowSizeAndLocation";
-		preferences().setStringProperty(s, sb.toString());
+		StdUtils.saveWindowBounds("LSConsoleFrame", getBounds());
 	}
 	
 	private void
@@ -157,36 +151,23 @@ public class LSConsoleFrame extends JFrame {
 	
 	private void
 	setSavedSize() {
-		String sp = "LSConsoleFrame.windowSizeAndLocation";
-		String s = preferences().getStringProperty(sp, null);
-		if(s == null) {
+		Rectangle r = StdUtils.getWindowBounds("LSConsoleFrame");
+		if(r == null) {
 			setDefaultSize();
 			return;
 		}
 		
-		try {
-			int i = s.indexOf(',');
-			int x = Integer.parseInt(s.substring(0, i));
-			
-			s = s.substring(i + 1);
-			i = s.indexOf(',');
-			int y = Integer.parseInt(s.substring(0, i));
-			
-			s = s.substring(i + 1);
-			i = s.indexOf(',');
-			int width = Integer.parseInt(s.substring(0, i));
-			
-			s = s.substring(i + 1);
-			int height = Integer.parseInt(s);
-			
-			setBounds(x, y, width, height);
-		} catch(Exception x) {
-			String msg = "Parsing of window size and location string failed";
-			CC.getLogger().log(Level.INFO, msg, x);
-			setDefaultSize();
-		}
+		setBounds(r);
+	}
+	
+	@Override
+	public void
+	setVisible(boolean b) {
+		if(b == isVisible()) return;
 		
-		if(preferences().getBoolProperty("LSConsoleFrame.windowMaximized")) {
+		super.setVisible(b);
+		
+		if(b && preferences().getBoolProperty("LSConsoleFrame.windowMaximized")) {
 			setExtendedState(getExtendedState() | MAXIMIZED_BOTH);
 		}
 	}

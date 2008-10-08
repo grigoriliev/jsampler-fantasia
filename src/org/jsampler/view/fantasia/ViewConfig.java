@@ -23,8 +23,7 @@
 package org.jsampler.view.fantasia;
 
 import javax.swing.Icon;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
+import javax.swing.ImageIcon;
 import javax.swing.UIManager;
 
 import org.jsampler.CC;
@@ -71,10 +70,12 @@ public class ViewConfig extends JSViewConfig {
 		}
 	}
 	
+	@Override
 	public JSPrefs
 	preferences() { return FantasiaPrefs.preferences(); }
 	
 	/** Exports the view configuration of the current session. */
+	@Override
 	public String
 	exportSessionViewConfig() {
 		StringBuffer sb = new StringBuffer();
@@ -115,66 +116,89 @@ public class ViewConfig extends JSViewConfig {
 		return sb.toString();
 	}
 	
+	@Override
 	public InstrumentsDbTreeView
 	getInstrumentsDbTreeView() { return instrumentsDbTreeView; }
 	
+	@Override
 	public InstrumentsDbTableView
 	getInstrumentsDbTableView() { return instrumentsDbTableView; }
 	
+	@Override
 	public BasicIconSet
 	getBasicIconSet() { return basicIconSet; }
 	
 	private class TreeView implements InstrumentsDbTreeView {
+		@Override
 		public Icon
 		getRootIcon() { return Res.iconDb16; }
 		
+		@Override
 		public Icon
 		getClosedIcon() { return Res.iconFolder16; }
 	
+		@Override
 		public Icon
 		getOpenIcon() { return Res.iconFolderOpen16; }
 	
+		@Override
 		public Icon
 		getInstrumentIcon() { return Res.iconInstrument16; }
 	
+		@Override
 		public Icon
 		getGigInstrumentIcon() { return Res.iconInstrument16; }
 	}
 	
 	private static class TableView implements InstrumentsDbTableView {
+		@Override
 		public Icon
 		getFolderIcon() { return Res.iconFolder16; }
 	
+		@Override
 		public Icon
 		getInstrumentIcon() { return Res.iconInstrument16; }
 	
+		@Override
 		public Icon
 		getGigInstrumentIcon() { return Res.iconInstrument16; }
 	}
 	
 	private class IconSet implements BasicIconSet {
+		@Override
+		public ImageIcon
+		getApplicationIcon() { return Res.iconAppIcon; }
+		
+		@Override
 		public Icon
 		getBack16Icon() { return Res.iconBack16; }
 	
+		@Override
 		public Icon
 		getUp16Icon() { return Res.iconUp16; }
 	
+		@Override
 		public Icon
 		getForward16Icon() { return Res.iconNext16; }
 		
+		@Override
 		public Icon
 		getReload16Icon() { return Res.iconReload16; }
 		
+		@Override
 		public Icon
 		getPreferences16Icon() { return Res.iconPreferences16; }
 		
+		@Override
 		public Icon
 		getWarning32Icon() { return Res.iconWarning32; }
 		
+		@Override
 		public Icon
 		getQuestion32Icon() { return Res.iconQuestion32; }
 	}
 	
+	@Override
 	public boolean
 	getInstrumentsDbSupport() { return true; }
 }

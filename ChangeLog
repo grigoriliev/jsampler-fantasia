@@ -58,7 +58,18 @@ CVS HEAD
   * Implemented option for adding instruments in separate directories in the
     instruments DB (patch by Chris Cherrett & Andrew Williams, a bit adjusted)
 
+  * Implemented option to launch the backend if it is not yet started
+    (choose Edit/Preferences, then click the `Backend' tab)
+
+  * LSCP scripts can now be run by passing them to jsampler
+    as command-line arguments
+
   * Updated LscpTree
+
+  * The scripts in the `scripts' directory now pass the command-line
+    arguments to the respective jsampler distribution
+
+  * ant: the default target is now build-fantasia
 
   * Fantasia:
     - Major memory optimizations when too many sampler channels are present
@@ -101,6 +112,8 @@ CVS HEAD
     - fixed bug #77
     - fixed bug #84
     - fixed bug #98
+    - backend address was always set to 127.0.0.1 when adding backend
+      to the backend list
     - Some minor bugfixes and enhancements
 
 JSampler v0.8a: 2007-12-06

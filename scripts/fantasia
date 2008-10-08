@@ -2,7 +2,7 @@
 #
 #   JSampler - a java front-end for LinuxSampler
 #
-#   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+#   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
 #
 #   This file is part of JSampler.
 #
@@ -44,9 +44,9 @@ fi
 
 if [ -n "$JAVA" ] ; then
     if [ -n "$FANTASIA_PATH" ] ; then
-        $JAVA -jar $FANTASIA_PATH/$FANTASIA
+        $JAVA -jar $FANTASIA_PATH/$FANTASIA $*
     else
-        $JAVA -jar $FANTASIA
+        $JAVA -jar $FANTASIA $*
     fi
 else
     echo "Unable to find java! Please set JAVA_HOME to point to your JRE/JDK directory."

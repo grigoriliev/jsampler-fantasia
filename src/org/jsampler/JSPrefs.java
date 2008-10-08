@@ -109,6 +109,23 @@ public class JSPrefs extends PropertyChangeSupport {
 	public final static String MANUAL_SERVER_SELECT_ON_STARTUP = "manualServerSelectOnStartup";
 	
 	/**
+	 * Property which specifies whether the backend should be launched by jsampler
+	 * if it is not yet started, when trying to connect locally - 127.0.0.1 or localhost.
+	 */
+	public final static String LAUNCH_BACKEND_LOCALLY = "launchBackednLocally";
+	
+	/**
+	 * Property which specifies the command to be used to start the backend.
+	 */
+	public final static String BACKEND_LAUNCH_COMMAND = "backendLaunchCommand";
+	
+	/**
+	 * Property which specifies whether the backend should be launched by jsampler
+	 * if it is not yet started, when trying to connect locally - 127.0.0.1 or localhost.
+	 */
+	public final static String BACKEND_LAUNCH_DELAY = "backendLaunchDelay";
+	
+	/**
 	 * Integer property which provides the index of the server to connect on startup.
 	 */
 	public final static String SERVER_INDEX = "serverIndex";
@@ -194,7 +211,10 @@ public class JSPrefs extends PropertyChangeSupport {
 	 * @see #getStringProperty(String name)
 	 */
 	public String
-	getDefaultStringValue(String name) { return null; }
+	getDefaultStringValue(String name) {
+		if(BACKEND_LAUNCH_COMMAND.equals(name)) return "linuxsampler";
+		return null;
+	}
 	
 	/**
 	 * Gets a string list property.
@@ -299,9 +319,10 @@ public class JSPrefs extends PropertyChangeSupport {
 	 */
 	public int
 	getDefaultIntValue(String name) {
-		if(name == SOCKET_READ_TIMEOUT) return 90;
-		if(name == FIRST_MIDI_BANK_NUMBER) return 1;
-		if(name == FIRST_MIDI_PROGRAM_NUMBER) return 1;
+		if(SOCKET_READ_TIMEOUT.equals(name)) return 90;
+		if(FIRST_MIDI_BANK_NUMBER.equals(name)) return 1;
+		if(FIRST_MIDI_PROGRAM_NUMBER.equals(name)) return 1;
+		if(BACKEND_LAUNCH_DELAY.equals(name)) return 3;
 		return 0;
 	}
 	
@@ -360,9 +381,10 @@ public class JSPrefs extends PropertyChangeSupport {
 	 */
 	public boolean
 	getDefaultBoolValue(String name) {
-		if(name == VOL_MEASUREMENT_UNIT_DECIBEL) return true;
-		if(name == EXPORT_MIDI_MAPS_TO_SESSION_SCRIPT) return true;
-		if(name == LOAD_MIDI_INSTRUMENTS_IN_BACKGROUND) return true;
+		if(VOL_MEASUREMENT_UNIT_DECIBEL.equals(name)) return true;
+		if(EXPORT_MIDI_MAPS_TO_SESSION_SCRIPT.equals(name)) return true;
+		if(LOAD_MIDI_INSTRUMENTS_IN_BACKGROUND.equals(name)) return true;
+		if(LAUNCH_BACKEND_LOCALLY.equals(name)) return true;
 		return false;
 	}
 }

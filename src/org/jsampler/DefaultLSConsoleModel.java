@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -114,6 +114,12 @@ public class DefaultLSConsoleModel implements LSConsoleModel {
 		CC.getTaskQueue().add(cnt);
 	}
 	
+	public void
+	disconnect() {
+		try { if(getSocket() != null) getSocket().close(); }
+		catch(Exception x) { CC.getLogger().info(HF.getErrorMessage(x)); }
+	}
+	
 	private void
 	changeSocket(Socket sock) {
 		setSocket(sock);
@@ -131,6 +137,7 @@ public class DefaultLSConsoleModel implements LSConsoleModel {
 	 * Registers the specified listener for receiving event messages.
 	 * @param l The <code>LSConsoleListener</code> to register.
 	 */
+	@Override
 	public void
 	addLSConsoleListener(LSConsoleListener l) { listeners.add(l); }
 	
@@ -138,10 +145,12 @@ public class DefaultLSConsoleModel implements LSConsoleModel {
 	 * Removes the specified listener.
 	 * @param l The <code>LSConsoleListener</code> to remove.
 	 */
+	@Override
 	public void
 	removeLSConsoleListener(LSConsoleListener l) { listeners.remove(l); }
 	
 	/** Executes the command specified in the command line. */
+	@Override
 	public void
 	execCommand() {
 		String cmd = getCommandLineText();
@@ -168,6 +177,7 @@ public class DefaultLSConsoleModel implements LSConsoleModel {
 	 * Gets the last executed command.
 	 * @return The last command executed in the LS Console.
 	 */
+	@Override
 	public String
 	getLastExecutedCommand() {
 		int size = sessionHistory.size();
@@ -178,6 +188,7 @@ public class DefaultLSConsoleModel implements LSConsoleModel {
 	 * Sets the text in the command line.
 	 * @param cmdLine The new command line text.
 	 */
+	@Override
 	public void
 	setCommandLineText(String cmdLine) {
 		if(this.cmdLine.equals(cmdLine)) return;
@@ -191,6 +202,7 @@ public class DefaultLSConsoleModel implements LSConsoleModel {
 	 * Gets the text in the command line.
 	 * @return The command line's text.
 	 */
+	@Override
 	public String
 	getCommandLineText() { return cmdLine; }
 	
@@ -198,6 +210,7 @@ public class DefaultLSConsoleModel implements LSConsoleModel {
 	 * Gets the command history of the current session, including blank lines and comments.
 	 * @return The command history of the current session, including blank lines and comments.
 	 */
+	@Override
 	public String[]
 	getSessionHistory() {
 		return sessionHistory.toArray(new String[sessionHistory.size()]);
@@ -207,6 +220,7 @@ public class DefaultLSConsoleModel implements LSConsoleModel {
 	 * Clears the session history.
 	 * @see #getSessionHistory
 	 */
+	@Override
 	public void
 	clearSessionHistory() { sessionHistory.removeAllElements(); }
 	
@@ -214,6 +228,7 @@ public class DefaultLSConsoleModel implements LSConsoleModel {
 	 * Adds the specified <code>command</code> to command history.
 	 * @param command The command to be added to command history.
 	 */
+	@Override
 	public void
 	addToCommandHistory(String command) { cmdHistory.add(command); }
 	
@@ -221,6 +236,7 @@ public class DefaultLSConsoleModel implements LSConsoleModel {
 	 * Gets the complete command history, excluding blank lines and comments.
 	 * @return The complete command history, excluding blank lines and comments.
 	 */
+	@Override
 	public String[]
 	getCommandHistory() {
 		return cmdHistory.toArray(new String[cmdHistory.size()]);
@@ -230,6 +246,7 @@ public class DefaultLSConsoleModel implements LSConsoleModel {
 	 * Clears the complete/multisession command history.
 	 * @see #getCommandHistory
 	 */
+	@Override
 	public void
 	clearCommandHistory() {
 		cmdHistory.clear();
@@ -240,6 +257,7 @@ public class DefaultLSConsoleModel implements LSConsoleModel {
 	 * Determines the maximum number of lines to be kept in the command history.
 	 * @return The maximum number of lines to be kept in the command history.
 	 */
+	@Override
 	public int
 	getCommandHistorySize() { return commandHistorySize; }
 	
@@ -247,6 +265,7 @@ public class DefaultLSConsoleModel implements LSConsoleModel {
 	 * Sets the maximum number of lines to be kept in the command history.
 	 * @param size Determines the maximum number of lines to be kept in the command history.
 	 */
+	@Override
 	public void
 	setCommandHistorySize(int size) { commandHistorySize = size; }
 	
@@ -254,10 +273,12 @@ public class DefaultLSConsoleModel implements LSConsoleModel {
 	 * Gets a list of all LSCP commands.
 	 * @return A list of all LSCP commands.
 	 */
+	@Override
 	public String[]
 	getCommandList() { return cmdList; }
 	
 	/** Browses the command history one line up. */
+	@Override
 	public void
 	browseCommandHistoryUp() {
 		if(cmdHistory.size() == 0) return;
@@ -275,6 +296,7 @@ public class DefaultLSConsoleModel implements LSConsoleModel {
 	}
 	
 	/** Browses the command history one line down. */
+	@Override
 	public void
 	browseCommandHistoryDown() {
 		if(cmdHistory.size() == 0 || cmdHistoryIdx == -1) return;
@@ -289,6 +311,7 @@ public class DefaultLSConsoleModel implements LSConsoleModel {
 	}
 	
 	/** Browses to the first line of the command history. */
+	@Override
 	public void
 	browseCommandHistoryFirst() {
 		if(cmdHistory.size() == 0) return;
@@ -297,6 +320,7 @@ public class DefaultLSConsoleModel implements LSConsoleModel {
 	}
 	
 	/** Browses to the last line of the command history. */
+	@Override
 	public void
 	browseCommandHistoryLast() {
 		if(cmdHistory.size() == 0) return;
@@ -312,6 +336,7 @@ public class DefaultLSConsoleModel implements LSConsoleModel {
 	 * @return All commands that contains the string returned by {@link #getCommandLineText}.
 	 * @see #getCommandHistory
 	 */
+	@Override
 	public String[]
 	searchCommandHistory() { return searchCommandHistory(getCommandLineText()); }
 	
@@ -321,6 +346,7 @@ public class DefaultLSConsoleModel implements LSConsoleModel {
 	 * @return All commands that contains <code>substring</code>.
 	 * @see #getCommandList
 	 */
+	@Override
 	public String[]
 	searchCommandHistory(String substring) {
 		tmpVector.removeAllElements();
@@ -335,6 +361,7 @@ public class DefaultLSConsoleModel implements LSConsoleModel {
 	 * @return All commands that contains the string returned by {@link #getCommandLineText}.
 	 * @see #getCommandList
 	 */
+	@Override
 	public String[]
 	searchCommandList() { return searchCommandList(getCommandLineText()); }
 	
@@ -344,6 +371,7 @@ public class DefaultLSConsoleModel implements LSConsoleModel {
 	 * @return All commands that contains <code>substring</code>.
 	 * @see #getCommandList
 	 */
+	@Override
 	public String[]
 	searchCommandList(String substring) {
 		tmpVector.removeAllElements();
@@ -410,6 +438,7 @@ public class DefaultLSConsoleModel implements LSConsoleModel {
 		
 		LSConsoleThread() {super("LS-Console-Thread"); }
 		
+		@Override
 		public void
 		run() {
 			while(!mustTerminate()) {

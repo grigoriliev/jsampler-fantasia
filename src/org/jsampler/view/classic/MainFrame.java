@@ -27,6 +27,7 @@ import java.awt.Color;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.Rectangle;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -37,7 +38,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 
-import java.util.logging.Level;
 import java.util.Vector;
 
 import javax.swing.Action;
@@ -69,10 +69,12 @@ import org.jsampler.view.JSChannel;
 import org.jsampler.view.JSChannelsPane;
 import org.jsampler.view.LscpFileFilter;
 
+import org.jsampler.view.std.JSBackendLogFrame;
 import org.jsampler.view.std.JSConnectDlg;
 import org.jsampler.view.std.JSDetailedErrorDlg;
 import org.jsampler.view.std.JSQuitDlg;
 import org.jsampler.view.std.JSamplerHomeChooser;
+import org.jsampler.view.std.StdUtils;
 
 import static org.jsampler.view.classic.A4n.a4n;
 import static org.jsampler.view.classic.ClassicI18n.i18n;
@@ -105,6 +107,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 	private final JPanel bottomPane = new JPanel();
 	private final LSConsolePane lsConsolePane = new LSConsolePane(this);
 	private LSConsoleDlg lsConsoleDlg = null;
+	private final JSBackendLogFrame backendLogFrame = new JSBackendLogFrame();
 	
 	private final JTabbedPane tabbedPane =
 		new JTabbedPane(JTabbedPane.BOTTOM, JTabbedPane.SCROLL_TAB_LAYOUT);
@@ -128,6 +131,8 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 	public
 	MainFrame() {
 		setTitle(i18n.getLabel("MainFrame.title"));
+		
+		CC.setMainFrame(this); // TODO: 
 		
 		getContentPane().add(standardBar, BorderLayout.NORTH);
 		getContentPane().add(mainPane);
@@ -219,18 +224,13 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 			);
 			
 			setVisible(false);
-			if(ClassicPrefs.getWindowMaximized("Mainframe")) {
+			if(ClassicPrefs.getWindowMaximized("MainFrame")) {
 				//setExtendedState(getExtendedState() & ~MAXIMIZED_BOTH);
 				CC.cleanExit();
 				return;
 			}
 			
-			java.awt.Point p = getLocation();
-			Dimension d = getSize();
-			StringBuffer sb = new StringBuffer();
-			sb.append(p.x).append(',').append(p.y).append(',');
-			sb.append(d.width).append(',').append(d.height);
-			ClassicPrefs.setWindowSizeAndLocation("Mainframe", sb.toString());
+			StdUtils.saveWindowBounds("MainFrame", getBounds());
 			
 			ClassicPrefs.setHSplitDividerLocation(hSplitPane.getDividerLocation());
 		}
@@ -263,7 +263,22 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		ClassicPrefs.setLSConsolePopOut(isLSConsolePopOut());
 		
 		ClassicPrefs.setVSplitDividerLocation(vSplitPane.getDividerLocation());
+		
+		if(getBackendLogFrame() != null) getBackendLogFrame().stopTimer();
+		if(lsConsolePane != null) lsConsolePane.disconnect();
 		super.onWindowClose();
+	}
+	
+	@Override
+	public void
+	setVisible(boolean b) {
+		if(b == isVisible()) return;
+		
+		super.setVisible(b);
+		
+		if(ClassicPrefs.getWindowMaximized("MainFrame")) {
+			setExtendedState(getExtendedState() | MAXIMIZED_BOTH);
+		}
 	}
 	
 	private void
@@ -282,36 +297,13 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 	
 	private void
 	setSavedSize() {
-		String s = ClassicPrefs.getWindowSizeAndLocation("Mainframe");
-		if(s == null) {
+		Rectangle r = StdUtils.getWindowBounds("MainFrame");
+		if(r == null) {
 			setDefaultSize();
 			return;
 		}
 		
-		try {
-			int i = s.indexOf(',');
-			int x = Integer.parseInt(s.substring(0, i));
-			
-			s = s.substring(i + 1);
-			i = s.indexOf(',');
-			int y = Integer.parseInt(s.substring(0, i));
-			
-			s = s.substring(i + 1);
-			i = s.indexOf(',');
-			int width = Integer.parseInt(s.substring(0, i));
-			
-			s = s.substring(i + 1);
-			int height = Integer.parseInt(s);
-			
-			setBounds(x, y, width, height);
-		} catch(Exception x) {
-			String msg = "Parsing of window size and location string failed";
-			CC.getLogger().log(Level.INFO, msg, x);
-			setDefaultSize();
-		}
-		
-		if(ClassicPrefs.getWindowMaximized("Mainframe"))
-			setExtendedState(getExtendedState() | MAXIMIZED_BOTH);
+		setBounds(r);
 	}
 	
 	private void
@@ -639,6 +631,28 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		mi.setIcon(null);
 		m.add(mi);
 		
+		final JMenuItem mi2 = new JMenuItem(i18n.getMenuLabel("window.backendLog"));
+		m.add(mi2);
+		mi2.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) {
+				if(getBackendLogFrame().isVisible()) {
+					getBackendLogFrame().setVisible(false);
+				}
+				
+				getBackendLogFrame().setVisible(true);
+			}
+		});
+		
+		mi2.setEnabled(CC.getBackendProcess() != null);
+		
+		CC.addBackendProcessListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) {
+				mi2.setEnabled(CC.getBackendProcess() != null);
+			}
+		});
+		
 		
 		// Help
 		m = new JMenu(i18n.getMenuLabel("help"));
@@ -791,6 +805,9 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 	
 	protected LSConsoleModel
 	getLSConsoleModel() { return lsConsolePane.getModel(); }
+	
+	protected JSBackendLogFrame
+	getBackendLogFrame() { return backendLogFrame; }
 	
 	/**
 	 * Sets the text color of the LS Console.
@@ -1137,7 +1154,8 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		runScript(fc.getSelectedFile());
 	}
 	
-	private void
+	@Override
+	public void
 	runScript(String script) { runScript(new File(script)); }
 	
 	private void

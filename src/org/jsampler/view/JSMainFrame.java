@@ -377,6 +377,12 @@ public abstract class JSMainFrame extends JFrame {
 	}
 	
 	/**
+	 * Sends the specified script to the backend.
+	 * @param script The file name of the script to run.
+	 */
+	public abstract void runScript(String script);
+	
+	/**
 	 * Determines whether the channel list UI should be automatically updated
 	 * when channel is added/removed. The default value is <code>true</code>.
 	 */

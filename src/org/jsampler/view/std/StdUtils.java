@@ -22,6 +22,7 @@
 package org.jsampler.view.std;
 
 import java.awt.Desktop;
+import java.awt.Rectangle;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -36,6 +37,7 @@ import java.net.URI;
 import java.text.NumberFormat;
 
 import java.util.Vector;
+import java.util.logging.Level;
 
 import javax.swing.JComboBox;
 import javax.swing.JSlider;
@@ -130,6 +132,53 @@ public class StdUtils {
 		
 		try { Desktop.getDesktop().mail(new URI(uri)); }
 		catch(Exception x) { x.printStackTrace(); }
+	}
+	
+	/**
+	 * Gets the windows bounds from the preferences for the specified window.
+	 * @return The windows bounds saved in the preferences for the specified window
+	 * or <code>null</code>.
+	 */
+	public static Rectangle
+	getWindowBounds(String windowName) {
+		String s = windowName + ".windowSizeAndLocation";
+		s = CC.preferences().getStringProperty(s, null);
+		if(s == null) return null;
+		
+		try {
+			int i = s.indexOf(',');
+			int x = Integer.parseInt(s.substring(0, i));
+			
+			s = s.substring(i + 1);
+			i = s.indexOf(',');
+			int y = Integer.parseInt(s.substring(0, i));
+			
+			s = s.substring(i + 1);
+			i = s.indexOf(',');
+			int width = Integer.parseInt(s.substring(0, i));
+			
+			s = s.substring(i + 1);
+			int height = Integer.parseInt(s);
+			
+			return new Rectangle(x, y, width, height);
+		} catch(Exception x) {
+			String msg = windowName;
+			msg += ": Parsing of window size and location string failed";
+			CC.getLogger().log(Level.INFO, msg, x);
+			return null;
+		}
+	}
+	
+	/**
+	 * Saves the windows bounds in the preferences for the specified window.
+	 */
+	public static void
+	saveWindowBounds(String windowName, Rectangle r) {
+		StringBuffer sb = new StringBuffer();
+		sb.append(r.x).append(',').append(r.y).append(',');
+		sb.append(r.width).append(',').append(r.height);
+		String s = windowName + ".windowSizeAndLocation";
+		CC.preferences().setStringProperty(s, sb.toString());
 	}
 	
 	public static JSlider

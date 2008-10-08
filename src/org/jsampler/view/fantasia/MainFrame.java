@@ -34,6 +34,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Paint;
+import java.awt.Rectangle;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -48,7 +49,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 
 import java.util.Vector;
-import java.util.logging.Level;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -76,10 +76,12 @@ import org.jsampler.view.fantasia.basic.FantasiaPainter;
 import org.jsampler.view.fantasia.basic.FantasiaPanel;
 import org.jsampler.view.fantasia.basic.FantasiaSubPanel;
 
+import org.jsampler.view.std.JSBackendLogFrame;
 import org.jsampler.view.std.JSConnectDlg;
 import org.jsampler.view.std.JSDetailedErrorDlg;
 import org.jsampler.view.std.JSQuitDlg;
 import org.jsampler.view.std.JSamplerHomeChooser;
+import org.jsampler.view.std.StdUtils;
 
 import static org.jsampler.view.fantasia.A4n.a4n;
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
@@ -112,6 +114,8 @@ public class MainFrame extends JSMainFrame {
 	
 	private final LSConsoleFrame lsConsoleFrame = new LSConsoleFrame();
 	private final Vector<String> recentScripts = new Vector<String>();
+	
+	private final JSBackendLogFrame backendLogFrame = new JSBackendLogFrame();
 		
 	
 	private final JCheckBoxMenuItem cbmiToolBarVisible =
@@ -225,37 +229,13 @@ public class MainFrame extends JSMainFrame {
 	
 	private void
 	setSavedSize() {
-		String s = preferences().getStringProperty("MainFrame.sizeAndLocation");
-		if(s == null) {
+		Rectangle r = StdUtils.getWindowBounds("MainFrame");
+		if(r == null) {
 			setDefaultSizeAndLocation();
 			return;
 		}
-		pack();
-		try {
-			int i = s.indexOf(',');
-			int x = Integer.parseInt(s.substring(0, i));
-			
-			s = s.substring(i + 1);
-			i = s.indexOf(',');
-			int y = Integer.parseInt(s.substring(0, i));
-			
-			s = s.substring(i + 1);
-			i = s.indexOf(',');
-			int width = Integer.parseInt(s.substring(0, i));
-			
-			s = s.substring(i + 1);
-			int height = Integer.parseInt(s);
-			
-			setBounds(x, y, width, height);
-		} catch(Exception x) {
-			String msg = "Parsing of window size and location string failed";
-			CC.getLogger().log(Level.INFO, msg, x);
-			setDefaultSizeAndLocation();
-		}
 		
-		if(preferences().getBoolProperty("MainFrame.windowMaximized")) {
-			setExtendedState(getExtendedState() | MAXIMIZED_BOTH);
-		}
+		setBounds(r);
 	}
 	
 	private void
@@ -293,12 +273,7 @@ public class MainFrame extends JSMainFrame {
 			return;
 		}
 		
-		java.awt.Point p = getLocation();
-		Dimension d = getSize();
-		StringBuffer sb = new StringBuffer();
-		sb.append(p.x).append(',').append(p.y).append(',');
-		sb.append(d.width).append(',').append(d.height);
-		preferences().setStringProperty("MainFrame.sizeAndLocation", sb.toString());
+		StdUtils.saveWindowBounds("MainFrame", getBounds());
 		
 		String[] list = recentScripts.toArray(new String[recentScripts.size()]);
 		preferences().setStringListProperty(RECENT_LSCP_SCRIPTS, list);
@@ -307,7 +282,22 @@ public class MainFrame extends JSMainFrame {
 			if(lsConsoleFrame != null) getLSConsolePane().saveConsoleHistory();
 		}
 		
+		if(getBackendLogFrame() != null) getBackendLogFrame().stopTimer();
+		if(getLSConsolePane() != null) getLSConsolePane().disconnect();
+		
 		super.onWindowClose();
+	}
+	
+	@Override
+	public void
+	setVisible(boolean b) {
+		if(b == isVisible()) return;
+		
+		super.setVisible(b);
+		
+		if(b && preferences().getBoolProperty("MainFrame.windowMaximized")) {
+			setExtendedState(getExtendedState() | MAXIMIZED_BOTH);
+		}
 	}
 	
 	private void
@@ -489,6 +479,30 @@ public class MainFrame extends JSMainFrame {
 		mi.setIcon(null);
 		m.add(mi);
 		
+		m.addSeparator();
+		
+		final JMenuItem mi2 = new JMenuItem(i18n.getMenuLabel("window.backendLog"));
+		m.add(mi2);
+		mi2.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) {
+				if(getBackendLogFrame().isVisible()) {
+					getBackendLogFrame().setVisible(false);
+				}
+				
+				getBackendLogFrame().setVisible(true);
+			}
+		});
+		
+		mi2.setEnabled(CC.getBackendProcess() != null);
+		
+		CC.addBackendProcessListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) {
+				mi2.setEnabled(CC.getBackendProcess() != null);
+			}
+		});
+		
 		
 		// Help
 		m = new FantasiaMenu(i18n.getMenuLabel("help"));
@@ -580,6 +594,7 @@ public class MainFrame extends JSMainFrame {
 		if(manualSelect) {
 			JSConnectDlg dlg = new JSConnectDlg();
 			dlg.setVisible(true);
+			
 			return dlg.getSelectedServer();
 		}
 		
@@ -605,6 +620,9 @@ public class MainFrame extends JSMainFrame {
 	protected LSConsoleFrame
 	getLSConsoleFrame() { return lsConsoleFrame; }
 	
+	public JSBackendLogFrame
+	getBackendLogFrame() { return backendLogFrame; }
+	
 	protected boolean
 	runScript() {
 		String s = preferences().getStringProperty("lastScriptLocation");
@@ -621,7 +639,8 @@ public class MainFrame extends JSMainFrame {
 		return true;
 	}
 	
-	private void
+	@Override
+	public void
 	runScript(String script) { runScript(new File(script)); }
 	
 	private void

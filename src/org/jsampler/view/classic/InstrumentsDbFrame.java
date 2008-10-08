@@ -25,22 +25,15 @@ package org.jsampler.view.classic;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import java.util.logging.Level;
-
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.Icon;
-import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -49,7 +42,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
@@ -57,39 +49,27 @@ import javax.swing.KeyStroke;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import javax.swing.plaf.ToolBarUI;
-
-import net.sf.juife.InformationDialog;
 import net.sf.juife.NavigationPage;
 import net.sf.juife.NavigationPane;
 
-import net.sf.juife.Task;
-
-import net.sf.juife.event.TaskEvent;
-import net.sf.juife.event.TaskListener;
-
 import org.jsampler.CC;
 import org.jsampler.HF;
-import org.jsampler.JSI18n;
 
 import org.jsampler.task.InstrumentsDb;
 
 import org.jsampler.view.DbDirectoryTreeNode;
-import org.jsampler.view.InstrumentsDbTableModel;
-import org.jsampler.view.InstrumentsDbTableView;
 
 import org.jsampler.view.std.JSInstrumentsDbColumnPreferencesDlg;
 import org.jsampler.view.std.JSInstrumentsDbTable;
 import org.jsampler.view.std.JSInstrumentsDbTree;
 import org.jsampler.view.std.JSLostFilesDlg;
+import org.jsampler.view.std.StdUtils;
 
 import org.linuxsampler.lscp.DbDirectoryInfo;
 import org.linuxsampler.lscp.DbInstrumentInfo;
-import org.linuxsampler.lscp.DbSearchQuery;
 
 import static org.jsampler.view.classic.ClassicI18n.i18n;
 import static org.jsampler.view.classic.ClassicPrefs.preferences;
-import static org.jsampler.view.fantasia.FantasiaPrefs.INSTRUMENTS_DB_FRAME_SORT_ORDER;
 
 /**
  *
@@ -325,17 +305,24 @@ public class InstrumentsDbFrame extends JFrame {
 		ClassicPrefs.setWindowMaximized("InstrumentsDbFrame", b);
 		if(b) return;
 		
-		java.awt.Point p = getLocation();
-		Dimension d = getSize();
-		StringBuffer sb = new StringBuffer();
-		sb.append(p.x).append(',').append(p.y).append(',');
-		sb.append(d.width).append(',').append(d.height);
-		ClassicPrefs.setWindowSizeAndLocation("InstrumentsDbFrame", sb.toString());
+		StdUtils.saveWindowBounds("InstrumentsDbFrame", getBounds());
 		int i = splitPane.getDividerLocation();
 		preferences().setIntProperty("InstrumentsDbFrame.dividerLocation", i);
 		
 		mainPane.getInstrumentsTable().saveColumnsVisibleState();
 		mainPane.getInstrumentsTable().saveColumnWidths();
+	}
+	
+	@Override
+	public void
+	setVisible(boolean b) {
+		if(b == isVisible()) return;
+		
+		super.setVisible(b);
+		
+		if(ClassicPrefs.getWindowMaximized("InstrumentsDbFrame")) {
+			setExtendedState(getExtendedState() | MAXIMIZED_BOTH);
+		}
 	}
 	
 	private void
@@ -348,37 +335,13 @@ public class InstrumentsDbFrame extends JFrame {
 	
 	private void
 	setSavedSize() {
-		String s = ClassicPrefs.getWindowSizeAndLocation("InstrumentsDbFrame");
-		if(s == null) {
+		Rectangle r = StdUtils.getWindowBounds("InstrumentsDbFrame");
+		if(r == null) {
 			setDefaultSize();
 			return;
 		}
 		
-		try {
-			int i = s.indexOf(',');
-			int x = Integer.parseInt(s.substring(0, i));
-			
-			s = s.substring(i + 1);
-			i = s.indexOf(',');
-			int y = Integer.parseInt(s.substring(0, i));
-			
-			s = s.substring(i + 1);
-			i = s.indexOf(',');
-			int width = Integer.parseInt(s.substring(0, i));
-			
-			s = s.substring(i + 1);
-			int height = Integer.parseInt(s);
-			
-			setBounds(x, y, width, height);
-			
-			i = preferences().getIntProperty("InstrumentsDbFrame.dividerLocation");
-			if(i != 0) splitPane.setDividerLocation(i);
-			
-		} catch(Exception x) {
-			String msg = "Parsing of window size and location string failed";
-			CC.getLogger().log(Level.INFO, msg, x);
-			setDefaultSize();
-		}
+		setBounds(r);
 		
 		if(ClassicPrefs.getWindowMaximized("InstrumentsDbFrame"))
 			setExtendedState(getExtendedState() | MAXIMIZED_BOTH);

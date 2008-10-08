@@ -39,7 +39,6 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
@@ -54,9 +53,6 @@ import net.sf.juife.JuifeUtils;
 import org.jsampler.CC;
 import org.jsampler.HF;
 import org.jsampler.JSPrefs;
-import org.jsampler.Prefs;
-
-import org.jsampler.task.SetServerAddress;
 
 import org.jsampler.view.ServerTable;
 import org.jsampler.view.ServerTableModel;
@@ -79,6 +75,7 @@ public class JSConnectionPropsPane extends JPanel {
 	private final JSpinner spinnerTimeout = new JSpinner(new SpinnerNumberModel(0, 0, 2000, 1));
 	
 	private final ServerListPane serverListPane;
+	private final LocalSettingsPane localSettingsPane = new LocalSettingsPane();
 	
 	
 	/** Creates a new instance of <code>JSConnectionPropsPane</code> */
@@ -110,13 +107,17 @@ public class JSConnectionPropsPane extends JPanel {
 		
 		serverListPane = createServerListPane();
 		add(serverListPane);
+		add(Box.createRigidArea(new Dimension(0, 6)));
+		
+		add(localSettingsPane);
+		
 		setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
 	}
 	
 	private ServerListPane
 	createServerListPane() {
 		ServerListPane p = new ServerListPane();
-		p.setPreferredSize(new Dimension(200, 200));
+		p.setPreferredSize(new Dimension(200, 160));
 		p.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
 		
 		String s = i18n.getLabel("JSConnectionPropsPane.title");
@@ -146,6 +147,8 @@ public class JSConnectionPropsPane extends JPanel {
 		
 		int i = serverListPane.serverTable.getSelectedRow();
 		if(i != -1) preferences().setIntProperty(SERVER_INDEX, i);
+		
+		localSettingsPane.apply();
 	}
 	
 	public static class ServerListPane extends JPanel {
@@ -271,6 +274,7 @@ public class JSConnectionPropsPane extends JPanel {
 		}
 		
 		private class ServerSelectionHandler implements ListSelectionListener {
+			@Override
 			public void
 			valueChanged(ListSelectionEvent e) {
 				if(e.getValueIsAdjusting()) return;
@@ -285,6 +289,121 @@ public class JSConnectionPropsPane extends JPanel {
 				btnMoveUp.setEnabled(idx != 0);
 				btnMoveDown.setEnabled(idx != serverTable.getRowCount() - 1);
 			}
+		}
+	}
+	
+	public static class LocalSettingsPane extends JPanel {
+		private final JCheckBox checkLaunchBackend =
+			new JCheckBox(i18n.getLabel("JSConnectionPropsPane.checkLaunchBackend"));
+		
+		private final JLabel lCommand =
+			new JLabel(i18n.getLabel("JSConnectionPropsPane.lCommand"));
+		
+		private final JLabel lDelay =
+			new JLabel(i18n.getLabel("JSConnectionPropsPane.lDelay"));
+		
+		private final JLabel lSeconds =
+			new JLabel(i18n.getLabel("JSConnectionPropsPane.lSeconds"));
+		
+		private final JTextField tfCommand = new JTextField();
+		private final JSpinner spinnerDelay;
+		
+		public
+		LocalSettingsPane() {
+			GridBagLayout gridbag = new GridBagLayout();
+			GridBagConstraints c = new GridBagConstraints();
+			
+			setLayout(gridbag);
+			
+			c.fill = GridBagConstraints.NONE;
+			
+			c.gridx = 0;
+			c.gridy = 0;
+			c.anchor = GridBagConstraints.WEST;
+			c.insets = new Insets(0, 3, 3, 3);
+			c.gridwidth = 3;
+			gridbag.setConstraints(checkLaunchBackend, c);
+			add(checkLaunchBackend);
+			
+			c.gridx = 0;
+			c.gridy = 1;
+			c.gridwidth = 1;
+			c.insets = new Insets(3, 9, 3, 3);
+			c.anchor = GridBagConstraints.EAST;
+			gridbag.setConstraints(lCommand, c);
+			add(lCommand);
+			
+			c.gridx = 0;
+			c.gridy = 2;
+			c.insets = new Insets(3, 3, 3, 3);
+			gridbag.setConstraints(lDelay, c);
+			add(lDelay);
+			
+			spinnerDelay = new JSpinner(new SpinnerNumberModel(3, 0, 100, 1));
+			
+			c.gridx = 1;
+			c.gridy = 2;
+			c.insets = new Insets(3, 3, 3, 3);
+			c.anchor = GridBagConstraints.WEST;
+			gridbag.setConstraints(spinnerDelay, c);
+			add(spinnerDelay);
+			
+			c.gridx = 2;
+			c.gridy = 2;
+			gridbag.setConstraints(lSeconds, c);
+			add(lSeconds);
+			
+			c.fill = GridBagConstraints.HORIZONTAL;
+			c.gridx = 1;
+			c.gridy = 1;
+			c.weightx = 1.0;
+			c.gridwidth = 2;
+			c.anchor = GridBagConstraints.WEST;
+			gridbag.setConstraints(tfCommand, c);
+			add(tfCommand);
+			
+			String s = i18n.getLabel("JSConnectionPropsPane.localSettings");
+			setBorder(BorderFactory.createTitledBorder(s));
+			
+			setMaximumSize(new Dimension(Short.MAX_VALUE, getPreferredSize().height));
+			
+			setAlignmentX(LEFT_ALIGNMENT);
+			
+			checkLaunchBackend.addActionListener(new ActionListener() {
+				public void
+				actionPerformed(ActionEvent e) {
+					updateLocalSettingsState();
+				}
+			});
+			
+			boolean b = preferences().getBoolProperty(LAUNCH_BACKEND_LOCALLY);
+			checkLaunchBackend.setSelected(b);
+			
+			s = preferences().getStringProperty(BACKEND_LAUNCH_COMMAND);
+			tfCommand.setText(s);
+			
+			int i = preferences().getIntProperty(BACKEND_LAUNCH_DELAY);
+			spinnerDelay.setValue(i);
+			
+			updateLocalSettingsState();
+		}
+		
+		private void
+		updateLocalSettingsState() {
+			boolean b = checkLaunchBackend.isSelected();
+			tfCommand.setEnabled(b);
+			spinnerDelay.setEnabled(b);
+		}
+		
+		public void
+		apply() {
+			boolean b = checkLaunchBackend.isSelected();
+			preferences().setBoolProperty(LAUNCH_BACKEND_LOCALLY, b);
+			
+			preferences().setStringProperty(BACKEND_LAUNCH_COMMAND, tfCommand.getText());
+			
+			int i = Integer.parseInt(spinnerDelay.getValue().toString());
+			preferences().setIntProperty(BACKEND_LAUNCH_DELAY, i);
 		}
 	}
 }

@@ -23,12 +23,15 @@
 package org.jsampler.view;
 
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 
 /**
  * Provides the basic icon set.
  * @author Grigor Iliev
  */
 public interface BasicIconSet {
+	public ImageIcon getApplicationIcon();
+	
 	/** Gets the navigation icon Back. */
 	public Icon getBack16Icon();
 	

@@ -52,7 +52,7 @@ public class LSConsoleConnect extends EnhancedTask<Socket> {
 	LSConsoleConnect(Socket oldSocket) {
 		setTitle("LSConsoleConnect_task");
 		setDescription(i18n.getMessage("LSConsoleConnect.description"));
-		
+		setSilent(true);
 		this.oldSocket = oldSocket;
 	}
 	

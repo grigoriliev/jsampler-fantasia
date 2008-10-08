@@ -57,7 +57,7 @@ public class Server extends Resource {
 	 * @param name The new address of the server.
 	 */
 	public void
-	setAddress(String name) {
+	setAddress(String address) {
 		this.address = address;
 		fireChangeEvent();
 	}
@@ -84,7 +84,7 @@ public class Server extends Resource {
 	isLocal() {
 		if(getAddress() == null) return false;
 		if("127.0.0.1".equals(getAddress())) return true;
-		if("localhost".equals(getAddress())) return true;
+		if("localhost".equalsIgnoreCase(getAddress())) return true;
 		return false;
 	}
 	
@@ -176,6 +176,7 @@ public class Server extends Resource {
 		node.appendChild(el);
 	}
 	
+	@Override
 	public String
 	toString() { return getName(); }
 }

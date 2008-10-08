@@ -1,4 +1,4 @@
-<project name="JSampler" default="build-jsclassic" basedir=".">
+<project name="JSampler" default="build-fantasia" basedir=".">
     <description>This buildfile is used to build JSampler distributions</description>
     
     <property name="jlscp.version" value="0.7a"/>
@@ -36,7 +36,7 @@
             </patternset>
         </unjar>
         
-        <javac debug="true" debuglevel="source,lines" srcdir="src" destdir="dist/build" excludes="org/jsampler/view/fantasia/*"/>
+        <javac debug="true" debuglevel="source,lines" srcdir="src" destdir="dist/build" excludes="org/jsampler/view/fantasia/**" />
         <copy todir="./dist/build/org/jsampler/langprops">
             <fileset dir="./src/org/jsampler/langprops"/>
         </copy>
@@ -95,7 +95,7 @@
         <unjar src="lib/required/swingx.jar" dest="dist/build">
         </unjar>
         
-        <javac debug="true" debuglevel="source,lines" srcdir="src" destdir="dist/build" excludes="org/jsampler/view/classic/*"/>
+        <javac debug="true" debuglevel="source,lines" srcdir="src" destdir="dist/build" excludes="org/jsampler/view/classic/**"/>
         
         <copy todir="./dist/build/org/jsampler/langprops">
             <fileset dir="./src/org/jsampler/langprops"/>

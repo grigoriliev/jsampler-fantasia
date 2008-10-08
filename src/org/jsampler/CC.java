@@ -39,6 +39,7 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import java.util.logging.StreamHandler;
 
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import javax.swing.event.ChangeEvent;
@@ -100,6 +101,8 @@ public class CC {
 	
 	private final static TaskQueue taskQueue = new TaskQueue();
 	private final static Timer timer = new Timer(2000, null);
+	
+	private static int connectionFailureCount = 0;
 	
 	/** Forbits the instantiation of this class. */
 	private
@@ -309,6 +312,13 @@ public class CC {
 		
 		getClient().removeChannelMidiDataListener(getHandler());
 		getClient().addChannelMidiDataListener(getHandler());
+		
+		CC.addConnectionEstablishedListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) {
+				connectionFailureCount = 0;
+			}
+		});
 	}
 	
 	/**
@@ -393,6 +403,7 @@ public class CC {
 	private static ServerListListener serverListListener = new ServerListListener();
 	
 	private static class ServerListListener implements ChangeListener {
+		@Override
 		public void
 		stateChanged(ChangeEvent e) {
 			saveServerList();
@@ -491,8 +502,8 @@ public class CC {
 			
 			HF.createBackup("orchestras.xml", "orchestras.xml.bkp");
 			
-			FileOutputStream fos;
-			fos = new FileOutputStream(s + File.separator + "orchestras.xml", false);
+			FileOutputStream fos2;
+			fos2 = new FileOutputStream(s + File.separator + "orchestras.xml", false);
 			
 			Document doc = DOMUtils.createEmptyDocument();
 		
@@ -503,9 +514,9 @@ public class CC {
 			
 			doc.replaceChild(node.getFirstChild(), node);
 		
-			DOMUtils.writeObject(doc, fos);
+			DOMUtils.writeObject(doc, fos2);
 			
-			fos.close();
+			fos2.close();
 			
 			HF.deleteFile("orchestras.xml.bkp");
 		} catch(Exception x) {
@@ -572,8 +583,8 @@ public class CC {
 			
 			HF.createBackup("servers.xml", "servers.xml.bkp");
 			
-			FileOutputStream fos;
-			fos = new FileOutputStream(s + File.separator + "servers.xml", false);
+			FileOutputStream fos2;
+			fos2 = new FileOutputStream(s + File.separator + "servers.xml", false);
 			
 			Document doc = DOMUtils.createEmptyDocument();
 		
@@ -584,9 +595,9 @@ public class CC {
 			
 			doc.replaceChild(node.getFirstChild(), node);
 		
-			DOMUtils.writeObject(doc, fos);
+			DOMUtils.writeObject(doc, fos2);
 			
-			fos.close();
+			fos2.close();
 			
 			HF.deleteFile("servers.xml.bkp");
 		} catch(Exception x) {
@@ -609,6 +620,11 @@ public class CC {
 	public static void
 	cleanExit(int i) {
 		getLogger().fine("CC.jsEnded");
+		try { getClient().disconnect(); } // FIXME: this might block the EDT
+		catch(Exception x) { x.printStackTrace(); }
+		if(backendProcess != null) backendProcess.destroy();
+		backendProcess = null;
+		fireBackendProcessEvent();
 		System.exit(i);
 	}
 	
@@ -639,6 +655,29 @@ public class CC {
 	fireReconnectEvent() {
 		ActionEvent e = new ActionEvent(CC.class, ActionEvent.ACTION_PERFORMED, null);
 		for(ActionListener l : listeners) l.actionPerformed(e);
+	}
+	
+	private static final Vector<ActionListener> ceListeners = new Vector<ActionListener>();
+	
+	/**
+	 * Registers the specified listener to be notified when
+	 * jsampler is connected successfully to LinuxSampler.
+	 * @param l The <code>ActionListener</code> to register.
+	 */
+	public static void
+	addConnectionEstablishedListener(ActionListener l) { ceListeners.add(l); }
+	
+	/**
+	 * Removes the specified listener.
+	 * @param l The <code>ActionListener</code> to remove.
+	 */
+	public static void
+	removeConnectionEstablishedListener(ActionListener l) { ceListeners.remove(l); }
+	
+	private static void
+	fireConnectionEstablishedEvent() {
+		ActionEvent e = new ActionEvent(CC.class, ActionEvent.ACTION_PERFORMED, null);
+		for(ActionListener l : ceListeners) l.actionPerformed(e);
 	}
 	
 	private static final SamplerModel samplerModel = new DefaultSamplerModel();
@@ -675,7 +714,11 @@ public class CC {
 	 * Sets the current server.
 	 */
 	public static void
-	setCurrentServer(Server server) { currentServer = server; }
+	setCurrentServer(Server server) {
+		if(server == currentServer) return;
+		connectionFailureCount = 0;
+		currentServer = server;
+	}
 	
 	/**
 	 * Sets the LSCP client's read timeout.
@@ -788,12 +831,13 @@ public class CC {
 		
 		
 		final Connect cnt = new Connect();
+		boolean b = preferences().getBoolProperty(JSPrefs.LAUNCH_BACKEND_LOCALLY);
+		if(b && srv.isLocal() && backendProcess == null) cnt.setSilent(true);
 		cnt.addTaskListener(new TaskListener() {
 			public void
 			taskPerformed(TaskEvent e) {
 				if(cnt.doneWithErrors()) {
-					setCurrentServer(null);
-					retryToConnect();
+					onConnectFailure();
 					return;
 				}
 				
@@ -806,6 +850,8 @@ public class CC {
 				getTaskQueue().add(new Midi.UpdateDevices());
 				getTaskQueue().add(new Audio.UpdateDevices());
 				addTask(uc);
+				
+				fireConnectionEstablishedEvent();
 			}
 		});
 		
@@ -831,6 +877,41 @@ public class CC {
 	}
 	
 	private static void
+	onConnectFailure() {
+		connectionFailureCount++;
+		if(connectionFailureCount > 50) { // to prevent eventual infinite loop
+			getLogger().warning("Reached maximum number of connection failures");
+			return;
+		}
+		
+		try {
+			if(launchBackend()) {
+				int i = preferences().getIntProperty(JSPrefs.BACKEND_LAUNCH_DELAY);
+				if(i < 1) {
+					initSamplerModel(getCurrentServer());
+					return;
+				}
+				
+				LaunchBackend lb = new LaunchBackend(i, getBackendMonitor());
+				//CC.getTaskQueue().add(lb);
+				new Thread(lb).start();
+				return;
+			}
+		} catch(Exception x) {
+			final String s = JSI18n.i18n.getError("CC.failedToLaunchBackend");
+			CC.getLogger().log(Level.INFO, s, x);
+			
+			SwingUtilities.invokeLater(new Runnable() {
+				public void
+				run() { HF.showErrorMessage(s); }
+			});
+			return;
+		}
+		
+		retryToConnect();
+	}
+	
+	private static void
 	retryToConnect() {
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void
@@ -841,10 +922,72 @@ public class CC {
 	public static void
 	changeBackend() {
 		Server s = getMainFrame().getServer(true);
-		if(s != null) initSamplerModel(s);
+		if(s != null) {
+			connectionFailureCount = 0; // cleared because this change due to user interaction
+			initSamplerModel(s);
+		}
+	}
+	
+	private static final Vector<ActionListener> pListeners = new Vector<ActionListener>();
+	
+	/**
+	 * Registers the specified listener to be notified when
+	 * backend process is created/terminated.
+	 * @param l The <code>ActionListener</code> to register.
+	 */
+	public static void
+	addBackendProcessListener(ActionListener l) { pListeners.add(l); }
+	
+	/**
+	 * Removes the specified listener.
+	 * @param l The <code>ActionListener</code> to remove.
+	 */
+	public static void
+	removeBackendProcessListener(ActionListener l) { pListeners.remove(l); }
+	
+	private static void
+	fireBackendProcessEvent() {
+		ActionEvent e = new ActionEvent(CC.class, ActionEvent.ACTION_PERFORMED, null);
+		for(ActionListener l : pListeners) l.actionPerformed(e);
+	}
+	
+	private static Process backendProcess = null;
+	
+	public static Process
+	getBackendProcess() { return backendProcess; }
+	
+	private static final Object backendMonitor = new Object();
+	
+	public static Object
+	getBackendMonitor() { return backendMonitor; }
+	
+	private static boolean
+	launchBackend() throws Exception {
+		if(backendProcess != null) {
+			try {
+				int i = backendProcess.exitValue();
+				getLogger().info("Backend exited with exit value " + i);
+				backendProcess = null;
+				fireBackendProcessEvent();
+			} catch(IllegalThreadStateException x) { return false; }
+		}
+		
+		if(!preferences().getBoolProperty(JSPrefs.LAUNCH_BACKEND_LOCALLY)) return false;
+		if(connectionFailureCount > 1) return false;
+		
+		Server  s = getCurrentServer();
+		if(s != null && s.isLocal()) {
+			String cmd = preferences().getStringProperty(JSPrefs.BACKEND_LAUNCH_COMMAND);
+			backendProcess = Runtime.getRuntime().exec(cmd);
+			fireBackendProcessEvent();
+			return true;
+		}
+		
+		return false;
 	}
 	
 	private static class GetFxSendsListener implements TaskListener {
+		@Override
 		public void
 		taskPerformed(TaskEvent e) {
 			Channel.GetFxSends gfs = (Channel.GetFxSends)e.getSource();
@@ -1122,12 +1265,14 @@ public class CC {
 		MidiInstrumentInfoListener, GlobalInfoListener, ChannelMidiDataListener {
 		
 		/** Invoked when the number of channels has changed. */
+		@Override
 		public void
 		channelCountChanged( ChannelCountEvent e) {
 			addTask(new UpdateChannels());
 		}
 		
 		/** Invoked when changes to the sampler channel has occured. */
+		@Override
 		public void
 		channelInfoChanged(ChannelInfoEvent e) {
 			/*
@@ -1165,6 +1310,7 @@ public class CC {
 		 * Invoked when the number of effect sends
 		 * on a particular sampler channel has changed.
 		 */
+		@Override
 		public void
 		fxSendCountChanged(FxSendCountEvent e) {
 			getTaskQueue().add(new Channel.UpdateFxSends(e.getChannel()));
@@ -1173,6 +1319,7 @@ public class CC {
 		/**
 		 * Invoked when the settings of an effect sends are changed.
 		 */
+		@Override
 		public void
 		fxSendInfoChanged(FxSendInfoEvent e) {
 			Task t = new Channel.UpdateFxSendInfo(e.getChannel(), e.getFxSend());
@@ -1183,6 +1330,7 @@ public class CC {
 		 * Invoked when the number of active disk
 		 * streams in a specific sampler channel has changed.
 		 */
+		@Override
 		public void
 		streamCountChanged(StreamCountEvent e) {
 			SamplerChannelModel scm = 
@@ -1205,6 +1353,7 @@ public class CC {
 		 * Invoked when the number of active voices
 		 * in a specific sampler channel has changed.
 		 */
+		@Override
 		public void
 		voiceCountChanged(VoiceCountEvent e) {
 			SamplerChannelModel scm = 
@@ -1224,24 +1373,28 @@ public class CC {
 		}
 		
 		/** Invoked when the total number of active streams has changed. */
+		@Override
 		public void
 		totalStreamCountChanged(TotalStreamCountEvent e) {
 			getSamplerModel().updateActiveStreamsInfo(e.getTotalStreamCount());
 		}
 		
 		/** Invoked when the total number of active voices has changed. */
+		@Override
 		public void
 		totalVoiceCountChanged(TotalVoiceCountEvent e) {
 			getTaskQueue().add(new UpdateTotalVoiceCount());
 		}
 		
 		/** Invoked when the number of MIDI instruments in a MIDI instrument map is changed. */
+		@Override
 		public void
 		instrumentCountChanged(MidiInstrumentCountEvent e) {
 			scheduleTask(new Midi.UpdateInstruments(e.getMapId()));
 		}
 		
 		/** Invoked when a MIDI instrument in a MIDI instrument map is changed. */
+		@Override
 		public void
 		instrumentInfoChanged(MidiInstrumentInfoEvent e) {
 			Task t = new Midi.UpdateInstrumentInfo (
@@ -1252,6 +1405,7 @@ public class CC {
 		}
 		
 		/** Invoked when the global volume of the sampler is changed. */
+		@Override
 		public void
 		volumeChanged(GlobalInfoEvent e) {
 			getSamplerModel().setVolume(e.getVolume());
@@ -1261,6 +1415,7 @@ public class CC {
 		 * Invoked to indicate that the state of a task queue is changed.
 		 * This method is invoked only from the event-dispatching thread.
 		 */
+		@Override
 		public void
 		stateChanged(TaskQueueEvent e) {
 			switch(e.getEventID()) {
@@ -1271,7 +1426,7 @@ public class CC {
 				break;
 			case TASK_DONE:
 				EnhancedTask t = (EnhancedTask)e.getSource();
-				if(t.doneWithErrors() && !t.isStopped()) {
+				if(t.doneWithErrors() && !t.isStopped() && !t.isSilent()) {
 					showError(t);
 				}
 				break;
@@ -1304,26 +1459,32 @@ public class CC {
 		}
 		
 		/** Invoked when the name of orchestra is changed. */
+		@Override
 		public void
 		nameChanged(OrchestraEvent e) { saveOrchestras(); }
 	
 		/** Invoked when the description of orchestra is changed. */
+		@Override
 		public void
 		descriptionChanged(OrchestraEvent e) { saveOrchestras(); }
 	
 		/** Invoked when an instrument is added to the orchestra. */
+		@Override
 		public void
 		instrumentAdded(OrchestraEvent e) { saveOrchestras(); }
 	
 		/** Invoked when an instrument is removed from the orchestra. */
+		@Override
 		public void
 		instrumentRemoved(OrchestraEvent e) { saveOrchestras(); }
 	
 		/** Invoked when the settings of an instrument are changed. */
+		@Override
 		public void
 		instrumentChanged(OrchestraEvent e) { saveOrchestras(); }
 		
 		/** Invoked when an orchestra is added to the orchestra list. */
+		@Override
 		public void
 		entryAdded(ListEvent<OrchestraModel> e) {
 			e.getEntry().addOrchestraListener(getHandler());
@@ -1331,6 +1492,7 @@ public class CC {
 		}
 	
 		/** Invoked when an orchestra is removed from the orchestra list. */
+		@Override
 		public void
 		entryRemoved(ListEvent<OrchestraModel> e) {
 			e.getEntry().removeOrchestraListener(getHandler());
@@ -1340,6 +1502,7 @@ public class CC {
 		/**
 		 * Invoked when MIDI data arrives.
 		 */
+		@Override
 		public void
 		midiDataArrived(final ChannelMidiDataEvent e) {
 			try {
@@ -1369,6 +1532,7 @@ public class CC {
 	
 	private static class AudioDeviceCountListener implements ItemCountListener {
 		/** Invoked when the number of audio output devices has changed. */
+		@Override
 		public void
 		itemCountChanged(ItemCountEvent e) {
 			getTaskQueue().add(new Audio.UpdateDevices());
@@ -1380,6 +1544,7 @@ public class CC {
 	
 	private static class AudioDeviceInfoListener implements ItemInfoListener {
 		/** Invoked when the audio output device's settings are changed. */
+		@Override
 		public void
 		itemInfoChanged(ItemInfoEvent e) {
 			getTaskQueue().add(new Audio.UpdateDeviceInfo(e.getItemID()));
@@ -1391,6 +1556,7 @@ public class CC {
 	
 	private static class MidiDeviceCountListener implements ItemCountListener {
 		/** Invoked when the number of MIDI input devices has changed. */
+		@Override
 		public void
 		itemCountChanged(ItemCountEvent e) {
 			getTaskQueue().add(new Midi.UpdateDevices());
@@ -1402,6 +1568,7 @@ public class CC {
 	
 	private static class MidiDeviceInfoListener implements ItemInfoListener {
 		/** Invoked when the MIDI input device's settings are changed. */
+		@Override
 		public void
 		itemInfoChanged(ItemInfoEvent e) {
 			getTaskQueue().add(new Midi.UpdateDeviceInfo(e.getItemID()));
@@ -1413,6 +1580,7 @@ public class CC {
 	
 	private static class MidiInstrMapCountListener implements ItemCountListener {
 		/** Invoked when the number of MIDI instrument maps is changed. */
+		@Override
 		public void
 		itemCountChanged(ItemCountEvent e) {
 			getTaskQueue().add(new Midi.UpdateInstrumentMaps());
@@ -1424,6 +1592,7 @@ public class CC {
 	
 	private static class MidiInstrMapInfoListener implements ItemInfoListener {
 		/** Invoked when the MIDI instrument map's settings are changed. */
+		@Override
 		public void
 		itemInfoChanged(ItemInfoEvent e) {
 			getTaskQueue().add(new Midi.UpdateInstrumentMapInfo(e.getItemID()));

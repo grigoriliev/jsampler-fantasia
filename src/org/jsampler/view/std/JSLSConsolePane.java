@@ -256,6 +256,9 @@ public class JSLSConsolePane extends JPanel {
 		);
 	}
 	
+	public void
+	disconnect() { if(model != null) ((DefaultLSConsoleModel)model).disconnect(); }
+	
 	private void
 	loadConsoleHistory() {
 		String s = CC.getJSamplerHome();

@@ -22,6 +22,11 @@
 
 package org.jsampler;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.SwingUtilities;
+
 import org.jsampler.view.JSViews;
 
 /**
@@ -35,6 +40,8 @@ public class JSampler {
 	/** The application version. */
 	public final static String VERSION = "0.8a";
 	
+	public static String[] scripts;
+	
 	
 	/**
 	 * The entry point of the application.
@@ -43,6 +50,7 @@ public class JSampler {
 	 */
 	public static void
 	main(String[] args) {
+		scripts = args;
 		CC.initJSampler();
 		initGUI();
 	}
@@ -52,14 +60,33 @@ public class JSampler {
 		JSViews.parseManifest();
 		JSViews.setView(JSViews.getDefaultView());
 		
-		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+		SwingUtilities.invokeLater(new Runnable() {
 			public void
-			run() {
-				CC.checkJSamplerHome();
-				CC.loadOrchestras();
-				CC.loadServerList();
-				CC.connect();
-			}
+			run() { initGUI0(); }
 		});
+	}
+	
+	private static void
+	initGUI0() {
+		CC.addConnectionEstablishedListener(new ConnectionEstablishedListener());
+		
+		CC.checkJSamplerHome();
+		CC.loadOrchestras();
+		CC.loadServerList();
+		CC.connect();
+	}
+	
+	private static class ConnectionEstablishedListener implements ActionListener, Runnable {
+		@Override
+		public void
+		actionPerformed(ActionEvent e) {
+			if(scripts == null) return;
+			for(String s : scripts) CC.getMainFrame().runScript(s);
+			SwingUtilities.invokeLater(this);
+		}
+		
+		@Override
+		public void
+		run() { CC.removeConnectionEstablishedListener(this); }
 	}
 }

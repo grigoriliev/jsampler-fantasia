@@ -22,7 +22,10 @@
 
 package org.jsampler.view.fantasia;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Insets;
 
 import java.awt.event.ActionEvent;
@@ -54,8 +57,7 @@ import javax.swing.event.ChangeListener;
 import net.sf.juife.Dial;
 
 import org.jsampler.CC;
-import org.jsampler.view.fantasia.basic.PixmapPane;
-import org.jsampler.view.fantasia.basic.PixmapButton;
+import org.jsampler.view.fantasia.basic.*;
 
 import org.jvnet.substance.utils.SubstanceImageCreator;
 
@@ -70,7 +72,7 @@ import static org.jsampler.view.fantasia.FantasiaUtils.*;
  *
  * @author Grigor Iliev
  */
-public class NormalChannelView extends PixmapPane implements ChannelView {
+public class NormalChannelView extends JPanel implements ChannelView {
 	private final Channel channel;
 	private ChannelOptionsView channelOptionsView = null;
 	
@@ -88,9 +90,6 @@ public class NormalChannelView extends PixmapPane implements ChannelView {
 	/** Creates a new instance of <code>NormalChannelView</code> */
 	public
 	NormalChannelView(Channel channel) {
-		super(Res.gfxChannel);
-		setPixmapInsets(new Insets(3, 3, 3, 3));
-		
 		components.add(this);
 		
 		this.channel = channel;
@@ -335,6 +334,22 @@ public class NormalChannelView extends PixmapPane implements ChannelView {
 	
 	//////////////////////////////////////////////
 	
+	@Override
+	protected void
+	paintComponent(Graphics g) {
+		if(isOpaque()) super.paintComponent(g);
+		
+		double h = getSize().getHeight();
+		double w = getSize().getWidth();
+		
+		Color c1 = channel.isSelected() ? new Color(0x555555) : FantasiaPainter.color6;
+		Color c2 = channel.isSelected() ? new Color(0x606060) : FantasiaPainter.color4;
+		
+		Graphics2D g2 = (Graphics2D)g;
+		FantasiaPainter.paintGradient(g2, 0, 0, w - 1, h - 1, c1, c2);
+		FantasiaPainter.paintOuterBorder(g2, 0, 0, w - 1, h - 1, false, 0.27f, 0.11f, 0.64f, 0.20f);
+	}
+	
 	
 	/**
 	 * Updates the mute button with the proper icon regarding to information obtained
@@ -501,10 +516,13 @@ public class NormalChannelView extends PixmapPane implements ChannelView {
 	private class EventHandler extends MouseAdapter {
 		@Override
 		public void
-		mouseClicked(MouseEvent e) {
-			if(e.getButton() != e.BUTTON1) return;
+		mousePressed(MouseEvent e) {
 			// TAG: channel selection system
-			CC.getMainFrame().getSelectedChannelsPane().setSelectedChannel(channel);
+			if(e.getButton() == MouseEvent.BUTTON3 && channel.isSelected()) return;
+			
+			CC.getMainFrame().getSelectedChannelsPane().processChannelSelection (
+				channel, e.isControlDown(), e.isShiftDown()
+			);
 			///////
 		}
 	}

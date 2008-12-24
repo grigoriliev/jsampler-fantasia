@@ -64,6 +64,10 @@ CVS HEAD
   * LSCP scripts can now be run by passing them to jsampler
     as command-line arguments
 
+  * Added support for controlling the global sampler-wide limit of
+    maximum voices and disk streams
+    (choose Edit/Preferences, then click the `General' tab)
+
   * Updated LscpTree
 
   * The scripts in the `scripts' directory now pass the command-line
@@ -84,6 +88,8 @@ CVS HEAD
     - Implemented option to choose default sampler channel view
       (choose Edit/Preferences, then click the `Defaults' tab)
     - Implemented multiple channels panels
+    - Store the view configuration of audio/MIDI devices and sampler
+      channels in the LSCP script when exporting sampler configuration
     - Added context menu to sampler channels
     - Implemented option to show different channel view when
       the mouse pointer is over sampler channel
@@ -93,6 +99,9 @@ CVS HEAD
     - Implemented options to show the channel number and/or the MIDI
       input port/channel on the sampler channel screen when using Small View
       (choose Edit/Preferences, then click the `Channels' tab)
+    - Implemented multiple sampler channels' selection
+    - Added option to move sampler channels up and down in the channels list
+    - Added option to move sampler channels to another channels panels
     - Added toolbar to the Right-Side Pane's Instruments Database
     - Added option to hide the active stream/voice count statistic in
       the sampler channel's small view

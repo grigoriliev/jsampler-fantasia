@@ -35,6 +35,12 @@ import java.util.prefs.Preferences;
  * @author Grigor Iliev
  */
 public class JSPrefs extends PropertyChangeSupport {
+	/** Property representing the global sampler-wide limit of maximum voices. */
+	public final static String GLOBAL_VOICE_LIMIT = "globalVoiceLimit";
+	
+	/** Property representing the global sampler-wide limit of maximum disk streams. */
+	public final static String GLOBAL_STREAM_LIMIT = "globalStreamLimit";
+	
 	/**
 	 * Property which specifies whether to apply default
 	 * actions to newly created sampler channels.
@@ -319,6 +325,8 @@ public class JSPrefs extends PropertyChangeSupport {
 	 */
 	public int
 	getDefaultIntValue(String name) {
+		if(GLOBAL_VOICE_LIMIT.equals(name)) return 64;
+		if(GLOBAL_STREAM_LIMIT.equals(name)) return 90;
 		if(SOCKET_READ_TIMEOUT.equals(name)) return 90;
 		if(FIRST_MIDI_BANK_NUMBER.equals(name)) return 1;
 		if(FIRST_MIDI_PROGRAM_NUMBER.equals(name)) return 1;

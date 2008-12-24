@@ -71,7 +71,8 @@ public class MainPane extends FantasiaPanel {
 		setOpaque(false);
 		
 		for(int i = 0; i < CHANNELS_PANEL_NUMBER; i++) {
-			channelsPanes.add(new ChannelsPanel());
+			String s = i18n.getButtonLabel("MainPane.ButtonsPanel.tt", i + 1);
+			channelsPanes.add(new ChannelsPanel(s));
 		}
 		
 		buttonsPanel = new ButtonsPanel();
@@ -222,8 +223,7 @@ public class MainPane extends FantasiaPanel {
 	private class EventHandler extends MouseAdapter {
 		@Override
 		public void
-		mouseClicked(MouseEvent e) {
-			if(e.getButton() != MouseEvent.BUTTON1) return;
+		mousePressed(MouseEvent e) {
 			// TAG: channel selection system
 			CC.getMainFrame().getSelectedChannelsPane().setSelectedChannel(null);
 			///////
@@ -232,13 +232,13 @@ public class MainPane extends FantasiaPanel {
 	
 	private class ChannelsPanel extends FantasiaPanel {
 		private final JSChannelsPane channelsPane;
-		ChannelsPanel() {
+		ChannelsPanel(String title) {
 			ActionListener l = new ActionListener() {
 				public void
 				actionPerformed(ActionEvent e) { scrollToBottom(); }
 			};
 			
-			channelsPane = new ChannelsPane("", l);
+			channelsPane = new ChannelsPane(title, l);
 			
 			setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 			channelsPane.setAlignmentX(LEFT_ALIGNMENT);

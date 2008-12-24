@@ -126,14 +126,14 @@ public class CC {
 	 * @return The task queue to be used for scheduling tasks
 	 * for execution out of the event-dispatching thread.
 	 */
-	public static TaskQueue
+	public static synchronized TaskQueue
 	getTaskQueue() { return taskQueue; }
 	
 	/**
 	 * Adds the specified task to the task queue. All task in the
 	 * queue equal to the specified task are removed from the queue.
 	 */
-	public static void
+	public static synchronized void
 	scheduleTask(Task t) {
 		while(getTaskQueue().removeTask(t)) { }
 		
@@ -142,9 +142,9 @@ public class CC {
 	
 	/**
 	 * Adds the specified task to the task queue only if the last
-	 * task in the is not equal to <code>t</code>.
+	 * task in the queue is not equal to <code>t</code>.
 	 */
-	public static void
+	public static synchronized void
 	addTask(Task t) {
 		Task[] tasks = getTaskQueue().getPendingTasks();
 		if(tasks.length > 0 && tasks[tasks.length - 1].equals(t)) return;
@@ -255,9 +255,9 @@ public class CC {
 			actionPerformed(ActionEvent e) { CC.getProgressIndicator().start(); }
 		});
 		
-		taskQueue.addTaskQueueListener(getHandler());
+		getTaskQueue().addTaskQueueListener(getHandler());
 		
-		taskQueue.start();
+		getTaskQueue().start();
 		
 		getClient().removeChannelCountListener(getHandler());
 		getClient().addChannelCountListener(getHandler());
@@ -851,6 +851,11 @@ public class CC {
 				getTaskQueue().add(new Audio.UpdateDevices());
 				addTask(uc);
 				
+				int vl = preferences().getIntProperty(JSPrefs.GLOBAL_VOICE_LIMIT);
+				int sl = preferences().getIntProperty(JSPrefs.GLOBAL_STREAM_LIMIT);
+				
+				getTaskQueue().add(new Global.SetPolyphony(vl, sl));
+				
 				fireConnectionEstablishedEvent();
 			}
 		});
@@ -1108,7 +1113,7 @@ public class CC {
 			sb.append("\r\n");
 		}
 		
-		//sb.append(getViewConfig().exportSessionViewConfig());
+		sb.append(getViewConfig().exportSessionViewConfig());
 		
 		return sb.toString();
 	}
@@ -1268,6 +1273,14 @@ public class CC {
 		@Override
 		public void
 		channelCountChanged( ChannelCountEvent e) {
+			if(e.getChannelCount() == 0) {
+				/*
+				 * This special case is handled because this might be due to
+				 * loading a lscp script containing sampler view configuration.
+				 */
+				CC.getSamplerModel().removeAllChannels();
+				return;
+			}
 			addTask(new UpdateChannels());
 		}
 		
@@ -1383,7 +1396,7 @@ public class CC {
 		@Override
 		public void
 		totalVoiceCountChanged(TotalVoiceCountEvent e) {
-			getTaskQueue().add(new UpdateTotalVoiceCount());
+			scheduleTask(new UpdateTotalVoiceCount());
 		}
 		
 		/** Invoked when the number of MIDI instruments in a MIDI instrument map is changed. */
@@ -1410,6 +1423,14 @@ public class CC {
 		volumeChanged(GlobalInfoEvent e) {
 			getSamplerModel().setVolume(e.getVolume());
 		}
+		
+		@Override
+		public void
+		voiceLimitChanged(GlobalInfoEvent e) { }
+		
+		@Override
+		public void
+		streamLimitChanged(GlobalInfoEvent e) { }
 		
 		/**
 		 * Invoked to indicate that the state of a task queue is changed.

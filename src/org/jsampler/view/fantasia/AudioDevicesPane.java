@@ -60,6 +60,9 @@ import org.jsampler.event.ListListener;
 
 import org.jsampler.task.Audio;
 
+import org.jsampler.view.JSViewConfig;
+import org.jsampler.view.SessionViewConfig.DeviceConfig;
+
 import org.jsampler.view.fantasia.basic.PixmapButton;
 import org.jsampler.view.fantasia.basic.PixmapPane;
 import org.jsampler.view.std.JSNewAudioDeviceDlg;
@@ -97,6 +100,12 @@ public class AudioDevicesPane extends JPanel {
 		}
 	}
 	
+	public int
+	getDevicePaneCount() { return listModel.size(); }
+	
+	public AudioDevicePane
+	getDevicePaneAt(int index) { return listModel.get(index); }
+	
 	private void
 	addDevice(AudioDeviceModel model) {
 		for(int i = 0; i < listModel.getSize(); i++) {
@@ -106,7 +115,16 @@ public class AudioDevicesPane extends JPanel {
 			}
 		}
 		
-		listModel.add(new AudioDevicePane(model));
+		AudioDevicePane dev = new AudioDevicePane(model);
+		DeviceConfig config = null;
+		JSViewConfig viewConfig = CC.getViewConfig();
+		if(viewConfig != null && viewConfig.getSessionViewConfig() != null) {
+			config = viewConfig.getSessionViewConfig().pollAudioDeviceConfig();
+		}
+		
+		if(config != null && config.expanded) dev.showOptionsPane(true);
+		
+		listModel.add(dev);
 	}
 	
 	private void

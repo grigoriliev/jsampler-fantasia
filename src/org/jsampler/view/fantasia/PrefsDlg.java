@@ -175,7 +175,7 @@ class GeneralPane extends JPanel {
 	private final JCheckBox checkShowVolumesInDecibels =
 		new JCheckBox(i18n.getLabel("GeneralPane.checkShowVolumesInDecibels"));
 	
-	private final JSGeneralProps.MaxVolumePane maxVolPane = new JSGeneralProps.MaxVolumePane();
+	private final JSGeneralProps.PolyphonyPane polyphonyPane = new JSGeneralProps.PolyphonyPane();
 	
 	private final JSGeneralProps.JSamplerHomePane jSamplerHomePane =
 		new JSGeneralProps.JSamplerHomePane();
@@ -208,7 +208,7 @@ class GeneralPane extends JPanel {
 		
 		add(Box.createRigidArea(new Dimension(0, 6)));
 		
-		add(maxVolPane);
+		add(polyphonyPane);
 		
 		add(Box.createRigidArea(new Dimension(0, 6)));
 		
@@ -247,7 +247,7 @@ class GeneralPane extends JPanel {
 	
 	protected void
 	apply() {
-		maxVolPane.apply();
+		polyphonyPane.apply();
 		
 		boolean b = checkShowLSConsoleWhenRunScript.isSelected();
 		preferences().setBoolProperty(SHOW_LS_CONSOLE_WHEN_RUN_SCRIPT, b);

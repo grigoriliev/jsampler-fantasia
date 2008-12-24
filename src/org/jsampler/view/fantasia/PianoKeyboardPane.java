@@ -93,6 +93,8 @@ public class PianoKeyboardPane extends FantasiaPanel
 	
 	protected final JToggleButton btnPower = new PowerButton();
 	private final FantasiaLabel lDisplay = new FantasiaLabel(" ", true);
+	//private final PitchWheel pitchWheel = new PitchWheel();
+	//private final ModWheel modWheel = new ModWheel();
 	private final JSPianoRoll pianoRoll = new JSPianoRoll();
 	private SamplerChannelModel channel = null;
 	
@@ -134,10 +136,25 @@ public class PianoKeyboardPane extends FantasiaPanel
 		gridbag.setConstraints(p, c);
 		add(p);
 		
+		/*c.gridx = 2;
+		c.gridy = 1;
+		c.gridheight = 1;
+		c.insets = new Insets(0, 3, 5, 3);
+		c.anchor = GridBagConstraints.CENTER;
+		gridbag.setConstraints(pitchWheel, c);
+		add(pitchWheel);
+		
+		c.gridx = 3;
+		c.gridy = 1;
+		c.insets = new Insets(0, 0, 5, 6);
+		gridbag.setConstraints(modWheel, c);
+		add(modWheel);*/
+		
 		p = new KeyRangePropsPane();
 		
 		c.gridx = 2;
 		c.gridy = 0;
+		c.gridwidth = 3;
 		c.gridheight = 1;
 		c.insets = new Insets(0, 0, 0, 0);
 		c.fill = GridBagConstraints.NONE;
@@ -148,8 +165,9 @@ public class PianoKeyboardPane extends FantasiaPanel
 		
 		p = new KeyRangePropsPane();
 		
-		c.gridx = 6;
+		c.gridx = 8;
 		c.gridy = 0;
+		c.gridwidth = 1;
 		c.anchor = GridBagConstraints.EAST;
 		c.insets = new Insets(0, 0, 0, 10);
 		gridbag.setConstraints(p, c);
@@ -157,7 +175,7 @@ public class PianoKeyboardPane extends FantasiaPanel
 		
 		lDisplay.setPreferredSize(new Dimension(300, lDisplay.getPreferredSize().height));
 		
-		c.gridx = 4;
+		c.gridx = 6;
 		c.gridy = 0;
 		c.insets = new Insets(3, 3, 3, 12);
 		c.fill = GridBagConstraints.NONE;
@@ -167,7 +185,7 @@ public class PianoKeyboardPane extends FantasiaPanel
 		
 		p = new JPanel();
 		p.setOpaque(false);
-		c.gridx = 3;
+		c.gridx = 5;
 		c.gridy = 0;
 		c.insets = new Insets(0, 0, 0, 0);
 		c.fill = GridBagConstraints.HORIZONTAL;
@@ -177,7 +195,7 @@ public class PianoKeyboardPane extends FantasiaPanel
 		
 		p = new JPanel();
 		p.setOpaque(false);
-		c.gridx = 5;
+		c.gridx = 7;
 		c.gridy = 0;
 		gridbag.setConstraints(p, c);
 		add(p);
@@ -188,7 +206,7 @@ public class PianoKeyboardPane extends FantasiaPanel
 		
 		disablePianoRoll();
 		
-		c.gridx = 2;
+		c.gridx = 4;
 		c.gridy = 1;
 		c.gridwidth = 5;
 		c.insets = new Insets(0, 3, 0, 12);
@@ -342,6 +360,7 @@ public class PianoKeyboardPane extends FantasiaPanel
 	createVSeparator() {
 		PixmapPane p = new PixmapPane(Res.gfxVLine);
 		p.setAlignmentY(JPanel.TOP_ALIGNMENT);
+		p.setMinimumSize(new Dimension(2, 30));
 		p.setPreferredSize(new Dimension(2, 60));
 		p.setMaximumSize(new Dimension(2, Short.MAX_VALUE));
 		return p;

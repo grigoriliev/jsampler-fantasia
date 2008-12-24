@@ -394,6 +394,12 @@ public interface SamplerModel {
 	public boolean removeChannelById(int channelId);
 	
 	/**
+	 * Removes all sampler channels.
+	 * Note that this method doesn't remove the channel in the backend.
+	 */
+	public void removeAllChannels();
+	
+	/**
 	 * Schedules a new task for removing the specified sampler channel on the backend side.
 	 * @param channelId The ID of the channel to be removed.
 	 */

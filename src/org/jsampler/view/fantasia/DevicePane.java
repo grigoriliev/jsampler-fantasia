@@ -138,7 +138,7 @@ public class DevicePane extends JPanel {
 	
 	public void
 	showOptionsPane(boolean show) {
-		btnOptions.showOptionsPane(show);
+		if(show != btnOptions.isSelected()) btnOptions.doClick(0);
 	}
 	
 	public boolean

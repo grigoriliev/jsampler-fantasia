@@ -40,6 +40,7 @@ import javax.swing.KeyStroke;
 
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+
 import org.jsampler.CC;
 import org.jsampler.JSampler;
 import org.jsampler.SamplerChannelModel;
@@ -47,6 +48,8 @@ import org.jsampler.Server;
 
 import org.jsampler.event.SamplerChannelListEvent;
 import org.jsampler.event.SamplerChannelListListener;
+
+import org.jsampler.view.SessionViewConfig.ChannelConfig;
 
 
 /**
@@ -252,7 +255,22 @@ public abstract class JSMainFrame extends JFrame {
 				return;
 			}
 			
-			getSelectedChannelsPane().addChannel(e.getChannelModel());
+			ChannelConfig config = null;
+			JSViewConfig viewConfig = CC.getViewConfig();
+			if(viewConfig != null && viewConfig.getSessionViewConfig() != null) {
+				config = viewConfig.getSessionViewConfig().pollChannelConfig();
+			}
+			
+			if(config == null) {
+				getSelectedChannelsPane().addChannel(e.getChannelModel());
+			} else {
+				int i = config.channelsPanel;
+				if(i >= 0 && i < getChannelsPaneCount()) {
+					getChannelsPane(i).addChannel(e.getChannelModel(), config);
+				} else {
+					getSelectedChannelsPane().addChannel(e.getChannelModel(), config);
+				}
+			}
 		}
 	
 		/**
@@ -344,7 +362,7 @@ public abstract class JSMainFrame extends JFrame {
 			JSChannelsPane chnPane = getChannelsPane(i);
 			for(int j = 0; j < chnPane.getChannelCount(); j++) {
 				if(chnPane.getChannel(j).getChannelId() == channel.getChannelId()) {
-					return (i + 1) + "/" + (j + 1);
+					return (i + 1) + "." + (j + 1);
 				}
 			}
 		}

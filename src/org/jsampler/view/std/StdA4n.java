@@ -35,11 +35,17 @@ import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
+
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 import org.jsampler.CC;
 import org.jsampler.HF;
 import org.jsampler.JSPrefs;
 
 import org.jsampler.SamplerChannelModel;
+
+import org.jsampler.view.JSChannel;
 import org.jsampler.view.JSChannelsPane;
 import org.jsampler.view.LscpFileFilter;
 
@@ -122,6 +128,7 @@ public class StdA4n {
 			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("actions.refresh.tt"));
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			if(!CC.verifyConnection()) {
@@ -141,6 +148,7 @@ public class StdA4n {
 			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("actions.resetSampler.tt"));
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			if(!CC.verifyConnection()) return;
@@ -162,6 +170,7 @@ public class StdA4n {
 			
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			if(!CC.verifyConnection()) return;
@@ -179,6 +188,7 @@ public class StdA4n {
 			putValue(SHORT_DESCRIPTION, s);
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			if(!CC.verifyConnection()) return;
@@ -195,8 +205,212 @@ public class StdA4n {
 			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("actions.changeBackend.tt"));
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) { CC.changeBackend(); }
+	}
+	
+	
+	public final Action moveChannelsOnTop = new MoveChannelsOnTop();
+	
+	private class MoveChannelsOnTop extends AbstractAction {
+		MoveChannelsOnTop() {
+			super(i18n.getMenuLabel("channels.moveOnTop"));
+			
+			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("channels.moveOnTop.tt"));
+			setEnabled(false);
+		}
+		
+		@Override
+		public void
+		actionPerformed(ActionEvent e) {
+			JSChannelsPane p = CC.getMainFrame().getSelectedChannelsPane();
+			p.moveSelectedChannelsOnTop();
+		}
+	}
+	
+	public final Action moveChannelsUp = new MoveChannelsUp();
+	
+	private class MoveChannelsUp extends AbstractAction {
+		MoveChannelsUp() {
+			super(i18n.getMenuLabel("channels.moveUp"));
+			
+			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("channels.moveUp.tt"));
+			setEnabled(false);
+		}
+		
+		@Override
+		public void
+		actionPerformed(ActionEvent e) {
+			JSChannelsPane p = CC.getMainFrame().getSelectedChannelsPane();
+			p.moveSelectedChannelsUp();
+		}
+	}
+	
+	public final Action moveChannelsDown = new MoveChannelsDown();
+	
+	private class MoveChannelsDown extends AbstractAction {
+		MoveChannelsDown() {
+			super(i18n.getMenuLabel("channels.moveDown"));
+			
+			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("channels.moveDown.tt"));
+			setEnabled(false);
+		}
+		
+		@Override
+		public void
+		actionPerformed(ActionEvent e) {
+			JSChannelsPane p = CC.getMainFrame().getSelectedChannelsPane();
+			p.moveSelectedChannelsDown();
+		}
+	}
+	
+	public final Action moveChannelsAtBottom = new MoveChannelsAtBottom();
+	
+	private class MoveChannelsAtBottom extends AbstractAction {
+		MoveChannelsAtBottom() {
+			super(i18n.getMenuLabel("channels.moveAtBottom"));
+			
+			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("channels.moveAtBottom.tt"));
+			setEnabled(false);
+		}
+		
+		@Override
+		public void
+		actionPerformed(ActionEvent e) {
+			JSChannelsPane p = CC.getMainFrame().getSelectedChannelsPane();
+			p.moveSelectedChannelsAtBottom();
+		}
+	}
+	
+	public final Action duplicateChannels = new DuplicateChannels();
+
+	private static class DuplicateChannels extends AbstractAction {
+		DuplicateChannels() {
+			super(i18n.getMenuLabel("channels.duplicate"));
+			
+			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("channels.duplicateChannels.tt"));
+			
+			setEnabled(false);
+		}
+		
+		public void
+		actionPerformed(ActionEvent e) {
+			JSChannel[] channels =
+				CC.getMainFrame().getSelectedChannelsPane().getSelectedChannels();
+			
+			if(channels.length > 2) {
+				if(!HF.showYesNoDialog (
+					CC.getMainFrame(),
+					i18n.getMessage("StdA4n.duplicateChannels?")
+				)) return;
+			}
+			
+			CC.getTaskQueue().add (
+				new org.jsampler.task.DuplicateChannels(channels)
+			);
+		}
+	}
+	
+	public final Action removeChannels = new RemoveChannels();
+	
+	private static class RemoveChannels extends AbstractAction {
+		RemoveChannels() {
+			super(i18n.getMenuLabel("channels.removeChannel"));
+			
+			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("channels.removeChannels.tt"));
+			
+			setEnabled(false);
+		}
+		
+		public void
+		actionPerformed(ActionEvent e) {
+			JSChannelsPane p = CC.getMainFrame().getSelectedChannelsPane();
+			if(p.getSelectedChannelCount() > 1) 
+				if(!HF.showYesNoDialog (
+					CC.getMainFrame(), i18n.getMessage("StdA4n.removeChannels?")
+				)) return;
+			
+			JSChannel[] chnS = p.getSelectedChannels();
+			
+			for(JSChannel c : chnS) removeChannel(c);
+		}
+		
+		private void
+		removeChannel(final JSChannel c) {
+			final JSChannelsPane p = CC.getMainFrame().getSelectedChannelsPane();
+			int id = c.getChannelInfo().getChannelId();
+			
+			CC.getSamplerModel().removeBackendChannel(id);
+		}
+	}
+	
+	public static class
+	MoveChannelsToPanel extends AbstractAction implements ListSelectionListener {
+		private final JSChannelsPane pane;
+		
+		public
+		MoveChannelsToPanel(JSChannelsPane pane) {
+			super(pane.getTitle());
+			this.pane = pane;
+			CC.getMainFrame().addChannelsPaneSelectionListener(this);
+			valueChanged(null);
+		}
+		
+		@Override
+		public void
+		actionPerformed(ActionEvent e) {
+			JSChannelsPane acp = CC.getMainFrame().getSelectedChannelsPane();
+			JSChannel[] chns = acp.getSelectedChannels();
+			
+			for(JSChannel c : chns) acp.removeChannel(c);
+			
+			pane.addChannels(chns);
+			
+			//CC.getMainFrame().setSelectedChannelsPane(pane);
+			
+		}
+		
+		@Override
+		public void
+		valueChanged(ListSelectionEvent e) {
+			setEnabled(CC.getMainFrame().getSelectedChannelsPane() != pane);
+		}
+	
+		public JSChannelsPane
+		getChannelsPane() { return pane; }
+	}
+	
+	public final Action selectAllChannels = new SelectAllChannels();
+	
+	private static class SelectAllChannels extends AbstractAction {
+		SelectAllChannels() {
+			super(i18n.getMenuLabel("channels.selectAll"));
+			
+			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("channels.selectAll.tt"));
+		}
+		
+		@Override
+		public void
+		actionPerformed(ActionEvent e) {
+			CC.getMainFrame().getSelectedChannelsPane().selectAll();
+		}
+	}
+	
+	public final Action deselectChannels = new DeselectChannels();
+	
+	private static class DeselectChannels extends AbstractAction {
+		DeselectChannels() {
+			super(i18n.getMenuLabel("channels.selectNone"));
+			
+			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("channels.selectNone.tt"));
+		}
+		
+		@Override
+		public void
+		actionPerformed(ActionEvent e) {
+			CC.getMainFrame().getSelectedChannelsPane().clearSelection();
+		}
 	}
 	
 	public final Action browseOnlineTutorial = new BrowseOnlineTutorial();
@@ -208,6 +422,7 @@ public class StdA4n {
 			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("help.onlineTutorial.tt"));
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			StdUtils.browse("http://jsampler.sourceforge.net/");

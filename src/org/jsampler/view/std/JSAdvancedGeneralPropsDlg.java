@@ -77,12 +77,15 @@ public class JSAdvancedGeneralPropsDlg extends OkCancelDialog {
 	onCancel() { setVisible(false); }
 	
 	public static class MainPane extends JPanel {
+		private final JSGeneralProps.MaxVolumePane maxVolumePane = new JSGeneralProps.MaxVolumePane();
 		private final MidiBankProgramNumberingPane numberingPane = new MidiBankProgramNumberingPane();
 		private final ExportSettingsPane exportSettingsPane = new ExportSettingsPane();
 		
 		public
 		MainPane() {
 			setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+			add(maxVolumePane);
+			add(Box.createRigidArea(new Dimension(0, 6)));
 			add(numberingPane);
 			add(Box.createRigidArea(new Dimension(0, 6)));
 			add(exportSettingsPane);
@@ -90,6 +93,7 @@ public class JSAdvancedGeneralPropsDlg extends OkCancelDialog {
 		
 		public void
 		apply() {
+			maxVolumePane.apply();
 			numberingPane.apply();
 			exportSettingsPane.apply();
 		}

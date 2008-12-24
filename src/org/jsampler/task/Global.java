@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -55,6 +55,7 @@ public class Global {
 		}
 		
 		/** The entry point of the task. */
+		@Override
 		public void
 		run() {
 			try { setResult(CC.getClient().getServerInfo()); }
@@ -78,6 +79,7 @@ public class Global {
 		}
 		
 		/** The entry point of the task. */
+		@Override
 		public void
 		run() {
 			try { CC.getClient().resetSampler(); }
@@ -100,6 +102,7 @@ public class Global {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
 		run() {
 			try { setResult(CC.getClient().getVolume()); }
@@ -129,10 +132,48 @@ public class Global {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
 		run() {
 			try {
 				CC.getClient().setVolume(volume);
+			} catch(Exception x) {
+				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
+				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
+			}
+		}
+	}
+
+	
+	/**
+	 * This task sets the global sampler-wide limits of maximum voices and streams.
+	 */
+	public static class SetPolyphony extends EnhancedTask {
+		private int maxVoices;
+		private int maxStreams;
+		
+		/**
+		 * Creates new instance of <code>SetPolyphony</code>.
+		 * @param maxVoices The new global limit of maximum voices or
+		 * <code>-1</code> to ignore it.
+		 * @param maxStreams The new global limit of maximum disk streams or
+		 * <code>-1</code> to ignore it.
+		 */
+		public
+		SetPolyphony(int maxVoices, int maxStreams) {
+			setTitle("Global.SetPolyphony_task");
+			setDescription(i18n.getMessage("Global.SetPolyphony.desc"));
+			this.maxVoices = maxVoices;
+			this.maxStreams = maxStreams;
+		}
+	
+		/** The entry point of the task. */
+		@Override
+		public void
+		run() {
+			try {
+				if(maxVoices != -1) CC.getClient().setGlobalVoiceLimit(maxVoices);
+				if(maxStreams != -1) CC.getClient().setGlobalStreamLimit(maxStreams);
 			} catch(Exception x) {
 				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
 				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
@@ -159,6 +200,7 @@ public class Global {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
 		run() {
 			try {
@@ -185,6 +227,7 @@ public class Global {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
 		run() {
 			try { setResult(CC.getClient().getFileInstruments(filename)); }
@@ -212,6 +255,7 @@ public class Global {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
 		run() {
 			try { setResult(CC.getClient().getFileInstrumentInfo(filename, instrIdx)); }
@@ -223,6 +267,7 @@ public class Global {
 	}
 	
 	public static class DummyTask extends EnhancedTask {
+		@Override
 		public void
 		run() { }
 	}

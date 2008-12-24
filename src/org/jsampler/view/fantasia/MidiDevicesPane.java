@@ -60,6 +60,9 @@ import org.jsampler.event.MidiDeviceListListener;
 
 import org.jsampler.task.Midi;
 
+import org.jsampler.view.JSViewConfig;
+import org.jsampler.view.SessionViewConfig.DeviceConfig;
+
 import org.jsampler.view.fantasia.basic.FantasiaPanel;
 import org.jsampler.view.fantasia.basic.PixmapButton;
 import org.jsampler.view.fantasia.basic.PixmapPane;
@@ -114,7 +117,16 @@ public class MidiDevicesPane extends JPanel {
 			}
 		}
 		
-		listModel.add(new MidiDevicePane(model));
+		MidiDevicePane dev = new MidiDevicePane(model);
+		DeviceConfig config = null;
+		JSViewConfig viewConfig = CC.getViewConfig();
+		if(viewConfig != null && viewConfig.getSessionViewConfig() != null) {
+			config = viewConfig.getSessionViewConfig().pollMidiDeviceConfig();
+		}
+		
+		if(config != null && config.expanded) dev.showOptionsPane(true);
+		
+		listModel.add(dev);
 	}
 	
 	private void

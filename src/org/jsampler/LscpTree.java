@@ -120,7 +120,7 @@ public class LscpTree {
 		find.setChildren(nodes);
 		
 		// GET command
-		nodes = new LscpNode[32];
+		nodes = new LscpNode[34];
 		nodes[0] = new LscpNode("AUDIO_OUTPUT_CHANNEL", new LscpNode("INFO", true));
 		nodes[1] = new LscpNode("AUDIO_OUTPUT_CHANNEL_PARAMETER", new LscpNode("INFO", true));
 		nodes[2] = new LscpNode("AUDIO_OUTPUT_DEVICE", new LscpNode("INFO", true));
@@ -154,7 +154,9 @@ public class LscpTree {
 		nodes[28] = new LscpNode("MIDI_INSTRUMENT_MAPS", true, false);
 		nodes[29] = new LscpNode("MIDI_INSTRUMENTS", new LscpNode("ALL", true, false), true);
 		nodes[30] = new LscpNode("SERVER", new LscpNode("INFO", true, false));
-		nodes[31] = new LscpNode("VOLUME", true, false);
+		nodes[31] = new LscpNode("STREAMS", true, false);
+		nodes[32] = new LscpNode("VOICES", true, false);
+		nodes[33] = new LscpNode("VOLUME", true, false);
 		get.setChildren(nodes);
 		
 		// GET CHANNEL command
@@ -215,7 +217,7 @@ public class LscpTree {
 		remove.setChildren(nodes);
 		
 		// SET command
-		nodes = new LscpNode[11];
+		nodes = new LscpNode[13];
 		nodes[0] = new LscpNode("AUDIO_OUTPUT_CHANNEL_PARAMETER", true);
 		nodes[1] = new LscpNode("AUDIO_OUTPUT_DEVICE_PARAMETER", true);
 		LscpNode setChn = new LscpNode("CHANNEL");
@@ -230,7 +232,9 @@ public class LscpTree {
 		nodes[7] = new LscpNode("MIDI_INPUT_DEVICE_PARAMETER", true);
 		nodes[8] = new LscpNode("MIDI_INPUT_PORT_PARAMETER", true);
 		nodes[9] = new LscpNode("MIDI_INSTRUMENT_MAP", new LscpNode("NAME", true));
-		nodes[10] = new LscpNode("VOLUME", true);
+		nodes[10] = new LscpNode("STREAMS", true);
+		nodes[11] = new LscpNode("VOICES", true);
+		nodes[12] = new LscpNode("VOLUME", true);
 		set.setChildren(nodes);
 		
 		// SET CHANNEL command
@@ -271,7 +275,7 @@ public class LscpTree {
 		setFxSend.setChildren(nodes);
 		
 		// SUBSCRIBE command
-		nodes = new LscpNode[25];
+		nodes = new LscpNode[26];
 		nodes[0] = new LscpNode("AUDIO_OUTPUT_DEVICE_COUNT", true, false);
 		nodes[1] = new LscpNode("AUDIO_OUTPUT_DEVICE_INFO", true, false);
 		nodes[2] = new LscpNode("BUFFER_FILL", true, false);
@@ -295,8 +299,9 @@ public class LscpTree {
 		nodes[20] = new LscpNode("MIDI_INSTRUMENT_MAP_INFO", true, false);
 		nodes[21] = new LscpNode("MISCELLANEOUS", true, false);
 		nodes[22] = new LscpNode("STREAM_COUNT", true, false);
-		nodes[23] = new LscpNode("TOTAL_VOICE_COUNT", true, false);
-		nodes[24] = new LscpNode("VOICE_COUNT", true, false);
+		nodes[23] = new LscpNode("TOTAL_STREAM_COUNT", true, false);
+		nodes[24] = new LscpNode("TOTAL_VOICE_COUNT", true, false);
+		nodes[25] = new LscpNode("VOICE_COUNT", true, false);
 		subscribe.setChildren(nodes);
 		
 		// UNSUBSCRIBE command

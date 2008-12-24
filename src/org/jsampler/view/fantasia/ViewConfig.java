@@ -32,6 +32,7 @@ import org.jsampler.JSPrefs;
 import org.jsampler.view.InstrumentsDbTableView;
 import org.jsampler.view.InstrumentsDbTreeView;
 import org.jsampler.view.BasicIconSet;
+import org.jsampler.view.JSMainFrame;
 import org.jsampler.view.JSViewConfig;
 
 import org.jvnet.substance.api.SubstanceConstants;
@@ -81,10 +82,46 @@ public class ViewConfig extends JSViewConfig {
 		StringBuffer sb = new StringBuffer();
 		MainFrame frame = (MainFrame)CC.getMainFrame();
 		
-		for(int i = 0; i < frame.getChannelsPane(0).getChannelCount(); i++) {
-			Channel c = (Channel)frame.getChannelsPane(0).getChannel(i);
+		for(int i = 0; i < frame.getChannelsPaneCount(); i++) {
+			exportSamplerChannels(sb, i);
+		}
+		
+		MidiDevicesPane midi = frame.getRightSidePane().getDevicesPane().getMidiDevicesPane();
+		
+		for(int i = 0; i < midi.getDevicePaneCount(); i++) {
+			sb.append("#jsampler.fantasia: [MIDI device]\r\n");
+			
+			boolean b = midi.getDevicePaneAt(i).isOptionsPaneExpanded();
+			sb.append("#jsampler.fantasia: expanded = ").append(b).append("\r\n");
+			
+			sb.append("#\r\n");
+		}
+		
+		AudioDevicesPane au = frame.getRightSidePane().getDevicesPane().getAudioDevicesPane();
+		
+		for(int i = 0; i < au.getDevicePaneCount(); i++) {
+			sb.append("#jsampler.fantasia: [audio device]\r\n");
+			
+			boolean b = au.getDevicePaneAt(i).isOptionsPaneExpanded();
+			sb.append("#jsampler.fantasia: expanded = ").append(b).append("\r\n");
+			
+			sb.append("#\r\n");
+		}
+		
+		return sb.toString();
+	}
+	
+	private void
+	exportSamplerChannels(StringBuffer sb, int channelsPane) {
+		JSMainFrame frame = CC.getMainFrame();
+		
+		for(int i = 0; i < frame.getChannelsPane(channelsPane).getChannelCount(); i++) {
+			Channel c = (Channel)frame.getChannelsPane(channelsPane).getChannel(i);
 			
 			sb.append("#jsampler.fantasia: [channel]\r\n");
+			
+			sb.append("#jsampler.fantasia: channelsPanel = ");
+			sb.append(channelsPane + 1).append("\r\n");
 			
 			switch(c.getViewTracker().getOriginalView().getType()) {
 				case SMALL:
@@ -96,24 +133,11 @@ public class ViewConfig extends JSViewConfig {
 					break;
 			}
 			
-			sb.append("#jsampler.fantasia: \r\n");
-		}
-		
-		MidiDevicesPane midi = frame.getRightSidePane().getDevicesPane().getMidiDevicesPane();
-		
-		for(int i = 0; i < midi.getDevicePaneCount(); i++) {
-			sb.append("#jsampler.fantasia: [MIDI device]\r\n");
+			boolean b = c.getViewTracker().getOriginalView().isOptionsButtonSelected();
+			sb.append("#jsampler.fantasia: expanded = ").append(b).append("\r\n");
 			
-			if(midi.getDevicePaneAt(i).isOptionsPaneExpanded()) {
-				sb.append("#jsampler.fantasia: expanded = true\r\n");
-			} else {
-				sb.append("#jsampler.fantasia: expanded = false\r\n");
-			}
-			
-			sb.append("#jsampler.fantasia: \r\n");
+			sb.append("#\r\n");
 		}
-		
-		return sb.toString();
 	}
 	
 	@Override

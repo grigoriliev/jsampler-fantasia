@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -23,19 +23,11 @@
 package org.jsampler.view.classic;
 
 import java.awt.Dimension;
-import java.awt.Point;
-
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JToolBar;
 
@@ -49,6 +41,7 @@ import org.jsampler.event.SamplerEvent;
 
 import org.jsampler.view.std.StdUtils;
 
+import static org.jsampler.view.classic.A4n.a4n;
 import static org.jsampler.view.classic.ClassicI18n.i18n;
 import static org.jsampler.view.classic.ClassicPrefs.preferences;
 import static org.jsampler.view.std.StdPrefs.*;
@@ -60,10 +53,10 @@ import static org.jsampler.view.std.StdPrefs.*;
  */
 public class ChannelsBar extends JToolBar {
 	private final JButton btnNew = new ToolbarButton(A4n.newChannel);
-	private final JButton btnDuplicate = new ToolbarButton(A4n.duplicateChannels);
-	private final JButton btnUp = new ToolbarButton(A4n.moveChannelsUp);
-	private final JButton btnDown = new ToolbarButton(A4n.moveChannelsDown);
-	private final JButton btnRemove = new ToolbarButton(A4n.removeChannels);
+	private final JButton btnDuplicate = new ToolbarButton(a4n.duplicateChannels);
+	private final JButton btnUp = new ToolbarButton(a4n.moveChannelsUp);
+	private final JButton btnDown = new ToolbarButton(a4n.moveChannelsDown);
+	private final JButton btnRemove = new ToolbarButton(a4n.removeChannels);
 	
 	private final JButton btnNewTab = new ToolbarButton(A4n.newChannelsTab);
 	private final JButton btnRemoveTab = new ToolbarButton(A4n.closeChannelsTab);

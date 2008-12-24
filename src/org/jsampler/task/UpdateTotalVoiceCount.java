@@ -45,6 +45,7 @@ public class UpdateTotalVoiceCount extends EnhancedTask {
 	}
 	
 	/** The entry point of the task. */
+	@Override
 	public void
 	run() {
 		try {
@@ -56,5 +57,20 @@ public class UpdateTotalVoiceCount extends EnhancedTask {
 			String msg = getDescription() + ": " + HF.getErrorMessage(x);
 			CC.getLogger().log(Level.INFO, msg, x);
 		}
+			
+	}
+		
+	/**
+	 * Used to decrease the traffic. All task in the queue
+	 * equal to this are removed if added using {@link org.jsampler.CC#scheduleTask}.
+	 * @see org.jsampler.CC#addTask
+	 */
+	@Override
+	public boolean
+	equals(Object obj) {
+		if(obj == null) return false;
+		if(!(obj instanceof UpdateTotalVoiceCount)) return false;
+		
+		return true;
 	}
 }

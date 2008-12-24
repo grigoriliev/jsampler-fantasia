@@ -26,6 +26,7 @@ import javax.swing.JPanel;
 import javax.swing.event.ListSelectionListener;
 
 import org.jsampler.SamplerChannelModel;
+import org.jsampler.view.SessionViewConfig.ChannelConfig;
 
 
 /**
@@ -66,6 +67,7 @@ public abstract class JSChannelsPane extends JPanel {
 	 * Returns the title of this <code>JSChannelsPane</code>.
 	 * @return The title of this <code>JSChannelsPane</code>.
 	 */
+	@Override
 	public String
 	toString() { return getTitle(); }
 	
@@ -74,6 +76,16 @@ public abstract class JSChannelsPane extends JPanel {
 	 * @param channelModel The sampler channel model to be used by the new channel.
 	 */
 	public abstract void addChannel(SamplerChannelModel channelModel);
+	
+	/**
+	 * Adds new channel to this channels pane.
+	 * @param channelModel The sampler channel model to be used by the new channel.
+	 * @param config The view config of the sampler channel.
+	 */
+	public void
+	addChannel(SamplerChannelModel channelModel, ChannelConfig config) {
+		addChannel(channelModel);
+	}
 	
 	/**
 	 * Adds the specified channels to this channels pane.
@@ -146,6 +158,12 @@ public abstract class JSChannelsPane extends JPanel {
 	 */
 	public abstract void setSelectedChannel(JSChannel channel);
 	
+	/** Selects all channels. */
+	public abstract void selectAll();
+	
+	/** Deselects all selected channels. */
+	public abstract void clearSelection();
+	
 	/**
 	 * Removes all selected channels in this channels pane.
 	 * Notice that this method does not remove any channels in the back-end.
@@ -154,6 +172,14 @@ public abstract class JSChannelsPane extends JPanel {
 	 */
 	public abstract int removeSelectedChannels();
 	
+	public abstract void moveSelectedChannelsOnTop();
+	
+	public abstract void moveSelectedChannelsUp();
+	
+	public abstract void moveSelectedChannelsDown();
+	
+	public abstract void moveSelectedChannelsAtBottom();
+		
 	/**
 	 * Registers the specified listener for receiving list selection events.
 	 * @param listener The <code>ListSelectionListener</code> to register.
@@ -165,6 +191,14 @@ public abstract class JSChannelsPane extends JPanel {
 	 * @param listener The <code>ListSelectionListener</code> to remove.
 	 */
 	public abstract void removeListSelectionListener(ListSelectionListener listener);
+	
+	/**
+	 * Process a selection event.
+	 * @param c The newly selected channel.
+	 * @param controlDown Specifies whether the control key is held down during selection.
+	 * @param shiftDown Specifies whether the shift key is held down during selection.
+	 */
+	public abstract void processChannelSelection(JSChannel c, boolean controlDown, boolean shiftDown);
 	
 	/**
 	 * Determines whether the channel list UI should be automatically updated

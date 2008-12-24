@@ -109,6 +109,14 @@ public abstract class JSViewConfig {
 	public String
 	exportSessionViewConfig() { return ""; }
 	
+	private SessionViewConfig sessionViewConfig = null;
+	
+	public SessionViewConfig
+	getSessionViewConfig() { return sessionViewConfig; }
+	
+	public void
+	setSessionViewConfig(SessionViewConfig config) { sessionViewConfig = config; }
+	
 	public int
 	getFirstMidiBankNumber() { return firstMidiBankNumber; }
 	

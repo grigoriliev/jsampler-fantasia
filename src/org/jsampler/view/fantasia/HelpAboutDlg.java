@@ -23,7 +23,6 @@
 package org.jsampler.view.fantasia;
 
 import java.awt.Color;
-import java.awt.Desktop;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -34,7 +33,6 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import java.net.URI;
 import java.net.URL;
 
 import javax.swing.BorderFactory;
@@ -48,10 +46,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
 import net.sf.juife.InformationDialog;
-import net.sf.juife.JuifeUtils;
 import net.sf.juife.LinkButton;
 
-import org.jsampler.HF;
 import org.jsampler.view.std.StdUtils;
 
 import org.jvnet.substance.SubstanceLookAndFeel;
@@ -64,7 +60,7 @@ import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
  */
 public class HelpAboutDlg extends InformationDialog {
 	private JLabel lProductName =
-		new JLabel("<html>\n<font size=+1>JSampler Fantasia (version 0.8a cvs_5)</font>");
+		new JLabel("<html>\n<font size=+1>JSampler Fantasia (version 0.8a cvs_6)</font>");
 	
 	private JLabel lAuthor = new JLabel(i18n.getLabel("HelpAboutDlg.lAuthor"));
 	private LinkButton btnAuthor = new Lnkbutton(i18n.getLabel("HelpAboutDlg.btnAuthor"));

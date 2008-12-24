@@ -29,7 +29,7 @@ import javax.swing.Action;
 
 import org.jsampler.CC;
 import org.jsampler.HF;
-
+import org.jsampler.view.JSChannel;
 import org.jsampler.view.std.JSNewAudioDeviceDlg;
 import org.jsampler.view.std.JSNewMidiDeviceDlg;
 import org.jsampler.view.std.StdA4n;
@@ -52,10 +52,9 @@ public class A4n extends StdA4n {
 		//exportMidiInstrumentMaps.putValue(Action.SMALL_ICON, Res.icon);
 	}
 	
+	@Override
 	protected FantasiaPrefs
-	preferences() {
-		return FantasiaPrefs.preferences();
-	}
+	preferences() { return FantasiaPrefs.preferences(); }
 	
 	public final Action samplerInfo = new SamplerInfo();
 	
@@ -67,6 +66,7 @@ public class A4n extends StdA4n {
 			putValue(Action.SMALL_ICON, Res.iconSamplerInfo32);
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			new SamplerInfoDlg(CC.getMainFrame()).setVisible(true);
@@ -83,6 +83,7 @@ public class A4n extends StdA4n {
 			putValue(Action.SMALL_ICON, Res.iconOpen32);
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			if(!((MainFrame)CC.getMainFrame()).runScript()) return;
@@ -104,6 +105,7 @@ public class A4n extends StdA4n {
 			//putValue(Action.SMALL_ICON, Res.iconNew16);
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			if(!CC.verifyConnection()) return;
@@ -122,6 +124,7 @@ public class A4n extends StdA4n {
 			//putValue(Action.SMALL_ICON, Res.iconNew16);
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			if(!CC.verifyConnection()) return;
@@ -141,8 +144,77 @@ public class A4n extends StdA4n {
 			putValue(Action.SMALL_ICON, Res.iconPreferences32);
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) { new PrefsDlg(CC.getMainFrame()).setVisible(true); }
+	}
+	
+	
+	// CHANNELS
+	
+	public final Action setSmallView = new SetView(ChannelView.Type.SMALL);
+	public final Action setNormalView = new SetView(ChannelView.Type.NORMAL);
+	
+	public static class SetView extends AbstractAction {
+		private ChannelView.Type type;
+		
+		SetView(ChannelView.Type type) {
+			this.type = type;
+			
+			switch(type) {
+			case SMALL:
+				putValue(Action.NAME, i18n.getMenuLabel("channels.smallView"));
+				break;
+			case NORMAL:
+				putValue(Action.NAME, i18n.getMenuLabel("channels.normalView"));
+				break;
+			}
+		}
+		
+		@Override
+		public void
+		actionPerformed(ActionEvent e) {
+			JSChannel[] channels =
+				CC.getMainFrame().getSelectedChannelsPane().getSelectedChannels();
+			
+			for(JSChannel c : channels) {
+				Channel c2 = (Channel)c;
+				if(c2.getViewTracker().getOriginalView().getType() == type) {
+					continue;
+				}
+				
+				c2.getViewTracker().setView(createView(type, c2));
+			}
+			
+			MenuManager.getMenuManager().updateChannelViewGroups();
+		}
+		
+		public static int
+		getViewCount(ChannelView.Type type) {
+			int count = 0;
+			
+			JSChannel[] channels =
+				CC.getMainFrame().getSelectedChannelsPane().getSelectedChannels();
+			
+			for(JSChannel c : channels) {
+				Channel c2 = (Channel)c;
+				if(c2.getViewTracker().getOriginalView().getType() == type) {
+					count++;
+				}
+			}
+			
+			return count;
+		}
+		
+		public ChannelView
+		createView(ChannelView.Type type, Channel channel) {
+			switch(type) {
+				case SMALL: return new SmallChannelView(channel);
+				case NORMAL: return new NormalChannelView(channel);
+			}
+			
+			throw new IllegalArgumentException("Unknown channel type");
+		}
 	}
 	
 	// WINDOW
@@ -155,6 +227,7 @@ public class A4n extends StdA4n {
 			putValue(Action.SMALL_ICON, Res.iconLSConsole32);
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			LSConsoleFrame console = ((MainFrame)CC.getMainFrame()).getLSConsoleFrame();
@@ -176,6 +249,7 @@ public class A4n extends StdA4n {
 			putValue(Action.SMALL_ICON, Res.iconDb32);
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			if(!CC.verifyConnection()) return;
@@ -205,6 +279,7 @@ public class A4n extends StdA4n {
 			super(i18n.getMenuLabel("help.about", "Fantasia"));
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			new HelpAboutDlg(CC.getMainFrame()).setVisible(true);

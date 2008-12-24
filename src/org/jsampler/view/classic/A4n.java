@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -27,17 +27,11 @@ import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import java.util.logging.Level;
-
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 
-import net.sf.juife.event.TaskEvent;
-import net.sf.juife.event.TaskListener;
-
 import org.jsampler.CC;
 import org.jsampler.HF;
-import org.jsampler.JSampler;
 
 import org.jsampler.view.JSChannel;
 import org.jsampler.view.JSChannelsPane;
@@ -65,6 +59,12 @@ public class A4n extends StdA4n {
 		resetSampler.putValue(Action.SMALL_ICON, Res.iconReset32);
 		exportSamplerConfig.putValue(Action.SMALL_ICON, Res.iconExportSession32);
 		exportMidiInstrumentMaps.putValue(Action.SMALL_ICON, Res.iconExport16);
+		
+		moveChannelsUp.putValue(Action.SMALL_ICON, Res.iconUp24);
+		moveChannelsDown.putValue(Action.SMALL_ICON, Res.iconDown24);
+		
+		duplicateChannels.putValue(Action.SMALL_ICON, Res.iconCopy24);
+		removeChannels.putValue(Action.SMALL_ICON, Res.iconDelete24);
 	}
 	
 	protected ClassicPrefs
@@ -244,17 +244,6 @@ public class A4n extends StdA4n {
 // CHANNELS
 	public final static Action newChannel = new NewChannel();
 	public final static Action newChannelWizard = new NewChannelWizard();
-	public final static Action duplicateChannels = new DuplicateChannels();
-	
-	public final static Action moveChannelsOnTop = new MoveChannelsOnTop();
-	public final static Action moveChannelsUp = new MoveChannelsUp();
-	public final static Action moveChannelsDown = new MoveChannelsDown();
-	public final static Action moveChannelsAtBottom = new MoveChannelsAtBottom();
-	
-	public final static Action selectAllChannels = new SelectAllChannels();
-	public final static Action deselectChannels = new DeselectChannels();
-	
-	public final static Action removeChannels = new RemoveChannels();
 	
 	
 	private static class NewChannel extends AbstractAction {
@@ -282,98 +271,6 @@ public class A4n extends StdA4n {
 		public void
 		actionPerformed(ActionEvent e) {
 			new org.jsampler.view.classic.NewChannelWizard().showWizard();
-		}
-	}
-	
-	private static class DuplicateChannels extends AbstractAction {
-		DuplicateChannels() {
-			super(i18n.getMenuLabel("channels.duplicate"));
-			
-			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("ttDuplicateChannels"));
-			putValue(Action.SMALL_ICON, Res.iconCopy24);
-			
-			setEnabled(false);
-		}
-		
-		public void
-		actionPerformed(ActionEvent e) {
-			JSChannel[] channels =
-				CC.getMainFrame().getSelectedChannelsPane().getSelectedChannels();
-			
-			if(channels.length > 2) {
-				if(!HF.showYesNoDialog (
-					CC.getMainFrame(),
-					i18n.getMessage("A4n.duplicateChannels?")
-				)) return;
-			}
-			
-			CC.getTaskQueue().add (
-				new org.jsampler.task.DuplicateChannels(channels)
-			);
-		}
-	}
-	
-	private static class MoveChannelsOnTop extends AbstractAction {
-		MoveChannelsOnTop() {
-			super(i18n.getMenuLabel("channels.MoveOnTop"));
-			
-			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("ttMoveChannelsOnTop"));
-			setEnabled(false);
-		}
-		
-		public void
-		actionPerformed(ActionEvent e) {
-			ChannelsPane p = (ChannelsPane)CC.getMainFrame().getSelectedChannelsPane();
-			p.moveSelectedChannelsOnTop();
-		}
-	}
-	
-	private static class MoveChannelsUp extends AbstractAction {
-		MoveChannelsUp() {
-			super(i18n.getMenuLabel("channels.MoveUp"));
-			
-			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("ttMoveChannelsUp"));
-			putValue(Action.SMALL_ICON, Res.iconUp24);
-			
-			setEnabled(false);
-		}
-		
-		public void
-		actionPerformed(ActionEvent e) {
-			ChannelsPane p = (ChannelsPane)CC.getMainFrame().getSelectedChannelsPane();
-			p.moveSelectedChannelsUp();
-		}
-	}
-	
-	private static class MoveChannelsDown extends AbstractAction {
-		MoveChannelsDown() {
-			super(i18n.getMenuLabel("channels.MoveDown"));
-			
-			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("ttMoveChannelsDown"));
-			putValue(Action.SMALL_ICON, Res.iconDown24);
-			
-			setEnabled(false);
-		}
-		
-		public void
-		actionPerformed(ActionEvent e) {
-			ChannelsPane p = (ChannelsPane)CC.getMainFrame().getSelectedChannelsPane();
-			p.moveSelectedChannelsDown();
-		}
-	}
-	
-	private static class MoveChannelsAtBottom extends AbstractAction {
-		MoveChannelsAtBottom() {
-			super(i18n.getMenuLabel("channels.MoveAtBottom"));
-			
-			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("ttMoveChannelsAtBottom"));
-			setEnabled(false);
-		}
-		
-		public void
-		actionPerformed(ActionEvent e) {
-			ChannelsPane p = (ChannelsPane)CC.getMainFrame().getSelectedChannelsPane();
-			p.moveSelectedChannelsAtBottom();
 		}
 	}
 	
@@ -414,66 +311,6 @@ public class A4n extends StdA4n {
 	
 		public JSChannelsPane
 		getChannelsPane() { return pane; }
-	}
-	
-	private static class SelectAllChannels extends AbstractAction {
-		SelectAllChannels() {
-			super(i18n.getMenuLabel("channels.selectAll"));
-			
-			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("ttSelectAllChannels"));
-		}
-		
-		public void
-		actionPerformed(ActionEvent e) {
-			ChannelsPane p = (ChannelsPane)CC.getMainFrame().getSelectedChannelsPane();
-			p.selectAllChannels();
-		}
-	}
-	
-	private static class DeselectChannels extends AbstractAction {
-		DeselectChannels() {
-			super(i18n.getMenuLabel("channels.selectNone"));
-			
-			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("ttDeselectChannels"));
-		}
-		
-		public void
-		actionPerformed(ActionEvent e) {
-			ChannelsPane p = (ChannelsPane)CC.getMainFrame().getSelectedChannelsPane();
-			p.deselectChannels();
-		}
-	}
-	
-	private static class RemoveChannels extends AbstractAction {
-		RemoveChannels() {
-			super(i18n.getMenuLabel("channels.RemoveChannel"));
-			
-			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("ttRemoveChannels"));
-			putValue(Action.SMALL_ICON, Res.iconDelete24);
-			
-			setEnabled(false);
-		}
-		
-		public void
-		actionPerformed(ActionEvent e) {
-			JSChannelsPane p = CC.getMainFrame().getSelectedChannelsPane();
-			if(p.getSelectedChannelCount() > 1) 
-				if(!HF.showYesNoDialog (
-					CC.getMainFrame(), i18n.getMessage("A4n.removeChannels?")
-				)) return;
-			
-			JSChannel[] chnS = p.getSelectedChannels();
-			
-			for(JSChannel c : chnS) removeChannel(c);
-		}
-		
-		private void
-		removeChannel(final JSChannel c) {
-			final JSChannelsPane p = CC.getMainFrame().getSelectedChannelsPane();
-			int id = c.getChannelInfo().getChannelId();
-			
-			CC.getSamplerModel().removeBackendChannel(id);
-		}
 	}
 	
 // TABS

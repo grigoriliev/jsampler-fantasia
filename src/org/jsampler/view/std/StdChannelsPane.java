@@ -20,22 +20,20 @@
  *   MA  02111-1307  USA
  */
 
-package org.jsampler.view.classic;
+package org.jsampler.view.std;
+
 
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Rectangle;
 
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.KeyEvent;
 
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 
 import javax.swing.event.ListSelectionEvent;
@@ -51,27 +49,32 @@ import org.jsampler.SamplerChannelModel;
 import org.jsampler.view.JSChannel;
 import org.jsampler.view.JSChannelsPane;
 
-import static org.jsampler.view.classic.A4n.a4n;
-import static org.jsampler.view.classic.ClassicI18n.i18n;
+import static javax.swing.KeyStroke.*;
 
 
 /**
  *
  * @author Grigor Iliev
  */
-public class ChannelsPane extends JSChannelsPane implements ListSelectionListener {
-	private final ComponentList chnList = new ComponentList();
-	private final DefaultComponentListModel listModel = new DefaultComponentListModel();
+public abstract class StdChannelsPane extends JSChannelsPane implements ListSelectionListener {
+	protected final ChannelList chnList = createChannelList();
+	protected final ChannelListModel listModel = createChannelListModel();
 	
-	private final JScrollPane scrollPane;
+	protected final JScrollPane scrollPane;
+	
+	protected static class ChannelList extends ComponentList { }
+	
+	protected static class ChannelListModel extends DefaultComponentListModel<JSChannel> { }
+	
+	private final Vector<ListSelectionListener> selListeners = new Vector<ListSelectionListener>();
 		
 	/**
-	 * Creates a new instance of <code>ChannelsPane</code> with
+	 * Creates a new instance of <code>StdChannelsPane</code> with
 	 * the specified <code>title</code>.
-	 * @param title The title of this <code>ChannelsPane</code>
+	 * @param title The title of this <code>StdChannelsPane</code>
 	 */
 	public
-	ChannelsPane(String title) {
+	StdChannelsPane(String title) {
 		super(title);
 		
 		setLayout(new BorderLayout());
@@ -80,17 +83,87 @@ public class ChannelsPane extends JSChannelsPane implements ListSelectionListene
 		//chnList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
 		chnList.setModel(listModel);
 		chnList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		chnList.addListSelectionListener(this);
-		chnList.addMouseListener(new ContextMenu());
-		//chnList.setDragEnabled(true);
 		
 		scrollPane = new JScrollPane(chnList);
 		scrollPane.setBorder(BorderFactory.createEmptyBorder());
 		add(scrollPane);
 		
 		setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
+		installListeners();
+	}
+	
+	protected void
+	installListeners() {
+		chnList.addListSelectionListener(this);
+		
+		KeyStroke k = getKeyStroke(KeyEvent.VK_UP, KeyEvent.ALT_MASK | KeyEvent.SHIFT_MASK);
+		getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(k, "a4n.moveChannelsOnTop");
+		getActionMap().put("a4n.moveChannelsOnTop", getA4n().moveChannelsOnTop);
+		
+		k = getKeyStroke(KeyEvent.VK_UP, KeyEvent.ALT_MASK);
+		getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(k, "a4n.moveChannelsUp");
+		getActionMap().put("a4n.moveChannelsUp", getA4n().moveChannelsUp);
+		
+		k = getKeyStroke(KeyEvent.VK_DOWN, KeyEvent.ALT_MASK);
+		getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(k, "a4n.moveChannelsDown");
+		getActionMap().put("a4n.moveChannelsDown", getA4n().moveChannelsDown);
+		
+		k = getKeyStroke(KeyEvent.VK_DOWN, KeyEvent.ALT_MASK | KeyEvent.SHIFT_MASK);
+		getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(k, "a4n.moveChannelsAtBottom");
+		getActionMap().put("a4n.moveChannelsAtBottom", getA4n().moveChannelsAtBottom);
 		
 	}
+	
+	public StdA4n
+	getA4n() { return ((StdMainFrame)CC.getMainFrame()).getA4n(); }
+	
+	/**
+	 * Registers the specified listener for receiving list selection events.
+	 * @param listener The <code>ListSelectionListener</code> to register.
+	 */
+	@Override
+	public void
+	addListSelectionListener(ListSelectionListener listener) {
+		selListeners.add(listener);
+	}
+	
+	/**
+	 * Removes the specified listener.
+	 * @param listener The <code>ListSelectionListener</code> to remove.
+	 */
+	@Override
+	public void
+	removeListSelectionListener(ListSelectionListener listener) {
+		selListeners.remove(listener);
+	}
+	
+	/**
+	 * Invoked when the selection has changed.
+	 * This method implements <code>valueChanged</code>
+	 * method of the <code>ListSelectionListener</code> interface.
+	 * @param e A <code>ListSelectionEvent</code>
+	 * instance providing the event information.
+	 */
+	@Override
+	public void
+	valueChanged(ListSelectionEvent e) {
+		ListSelectionEvent e2 = null;
+		for(ListSelectionListener l : selListeners) {
+			if(e2 == null) e2 = new ListSelectionEvent (
+				this,
+				e.getFirstIndex(),
+				e.getLastIndex(),
+				e.getValueIsAdjusting()
+			);
+			l.valueChanged(e2);
+		}
+	}
+	
+	protected ChannelList
+	createChannelList() { return new ChannelList(); }
+	
+	protected ChannelListModel
+	createChannelListModel() { return new ChannelListModel(); }
 	
 	@Override
 	public void
@@ -105,12 +178,13 @@ public class ChannelsPane extends JSChannelsPane implements ListSelectionListene
 	@Override
 	public void
 	addChannel(SamplerChannelModel channelModel) {
-		Channel channel = new Channel(channelModel);
+		JSChannel channel = createChannel(channelModel);
 		listModel.add(channel);
-		if(channel.getChannelInfo().getEngine() == null) channel.expandChannel();
 		chnList.setSelectedComponent(channel, true);
 		scrollToBottom();
 	}
+	
+	protected abstract JSChannel createChannel(SamplerChannelModel channelModel);
 	
 	/**
 	 * Adds the specified channels to this channels pane.
@@ -145,7 +219,7 @@ public class ChannelsPane extends JSChannelsPane implements ListSelectionListene
 	 */
 	@Override
 	public JSChannel
-	getFirstChannel() { return listModel.size() == 0 ? null : (JSChannel)listModel.get(0); }
+	getFirstChannel() { return listModel.size() == 0 ? null : listModel.get(0); }
 	
 	/**
 	 * Gets the last channel in this channels pane.
@@ -155,7 +229,7 @@ public class ChannelsPane extends JSChannelsPane implements ListSelectionListene
 	@Override
 	public JSChannel
 	getLastChannel() {
-		return listModel.size() == 0 ? null : (JSChannel)listModel.get(listModel.size()-1);
+		return listModel.size() == 0 ? null : listModel.get(listModel.size() - 1);
 	}
 	
 	/**
@@ -165,7 +239,7 @@ public class ChannelsPane extends JSChannelsPane implements ListSelectionListene
 	 */
 	@Override
 	public JSChannel
-	getChannel(int idx) { return (JSChannel)listModel.get(idx); }
+	getChannel(int idx) { return listModel.get(idx); }
 	
 	/**
 	 * Gets an array with all channels in this channels pane.
@@ -175,7 +249,7 @@ public class ChannelsPane extends JSChannelsPane implements ListSelectionListene
 	public JSChannel[]
 	getChannels() {
 		JSChannel[] chns = new JSChannel[listModel.size()];
-		for(int i = 0; i < listModel.size(); i++) chns[i] = (JSChannel)listModel.get(i);
+		for(int i = 0; i < listModel.size(); i++) chns[i] = listModel.get(i);
 		return chns;
 	}
 	
@@ -248,53 +322,6 @@ public class ChannelsPane extends JSChannelsPane implements ListSelectionListene
 	@Override
 	public void
 	clearSelection() { chnList.clearSelection(); }
-	
-	/**
-	 * Registers the specified listener for receiving list selection events.
-	 * @param listener The <code>ListSelectionListener</code> to register.
-	 */
-	@Override
-	public void
-	addListSelectionListener(ListSelectionListener listener) {
-		listenerList.add(ListSelectionListener.class, listener);
-	}
-	
-	/**
-	 * Removes the specified listener.
-	 * @param listener The <code>ListSelectionListener</code> to remove.
-	 */
-	@Override
-	public void
-	removeListSelectionListener(ListSelectionListener listener) {
-		listenerList.remove(ListSelectionListener.class, listener);
-	}
-	
-	/**
-	 * Invoked when the selection has changed.
-	 * This method implements <code>valueChanged</code>
-	 * method of the <code>ListSelectionListener</code> interface.
-	 * @param e A <code>ListSelectionEvent</code>
-	 * instance providing the event information.
-	 */
-	@Override
-	public void
-	valueChanged(ListSelectionEvent e) {
-		ListSelectionEvent e2 = null;
-		Object[] listeners = listenerList.getListenerList();
-		
-		for(int i = listeners.length - 2; i >= 0; i -= 2) {
-			if(listeners[i] == ListSelectionListener.class) {
-				if(e2 == null) e2 = new ListSelectionEvent (
-					this,
-					e.getFirstIndex(),
-					e.getLastIndex(),
-					e.getValueIsAdjusting()
-				);
-				((ListSelectionListener)listeners[i + 1]).valueChanged(e2);
-			}
-		}
-			
-	}
 	
 	/**
 	 * Determines whether the channel list UI should be automatically updated
@@ -401,79 +428,15 @@ public class ChannelsPane extends JSChannelsPane implements ListSelectionListene
 		chnList.ensureIndexIsVisible(listModel.getSize() - 1);
 	}
 	
+	@Override
+	public void
+	processChannelSelection(JSChannel c, boolean controlDown, boolean shiftDown) {
+		chnList.getUI().processSelectionEvent(c, controlDown, shiftDown);
+	}
+	
 	private void
 	scrollToBottom() {
 		int h = scrollPane.getViewport().getView().getHeight();
 		scrollPane.getViewport().scrollRectToVisible(new Rectangle(0, h - 2, 1, 1));
-	}
-	
-	class ContextMenu extends MouseAdapter {
-		private final JPopupMenu cmenu = new JPopupMenu();
-		private final JMenu submenu = new JMenu(i18n.getMenuLabel("channels.MoveToTab"));
-		
-		ContextMenu() {
-			JMenuItem mi = new JMenuItem(a4n.moveChannelsOnTop);
-			mi.setIcon(null);
-			cmenu.add(mi);
-			
-			mi = new JMenuItem(a4n.moveChannelsUp);
-			mi.setIcon(null);
-			cmenu.add(mi);
-			
-			mi = new JMenuItem(a4n.moveChannelsDown);
-			mi.setIcon(null);
-			cmenu.add(mi);
-			
-			mi = new JMenuItem(a4n.moveChannelsAtBottom);
-			mi.setIcon(null);
-			cmenu.add(mi);
-			
-			cmenu.add(submenu);
-			
-			cmenu.addSeparator();
-			
-			mi = new JMenuItem(a4n.removeChannels);
-			mi.setIcon(null);
-			cmenu.add(mi);
-		}
-		
-		@Override
-		public void
-		mousePressed(MouseEvent e) {
-			if(e.isPopupTrigger()) show(e);
-		}
-	
-		@Override
-		public void
-		mouseReleased(MouseEvent e) {
-			if(e.isPopupTrigger()) show(e);
-		}
-	
-		void
-		show(MouseEvent e) {
-			/*int idx = chnList.locationToIndex(e.getPoint());
-			if(!chnList.isSelectedIndex(idx)) chnList.setSelectedIndex(idx);
-			
-			if(idx != -1 && CC.getMainFrame().getChannelsPaneCount() > 1) {
-				updateMenu();
-				submenu.setEnabled(true);
-			} else submenu.setEnabled(false);
-			
-			cmenu.show(e.getComponent(), e.getX(), e.getY());*/
-		}
-		
-		private void
-		updateMenu() {
-			submenu.removeAll();
-			Vector<JSChannelsPane> v = CC.getMainFrame().getChannelsPaneList();
-			for(JSChannelsPane p : v) 
-				if(p != CC.getMainFrame().getSelectedChannelsPane())
-					submenu.add(new JMenuItem(new A4n.MoveChannelsTo(p)));
-		}
-	}
-	
-	public void
-	processChannelSelection(JSChannel c, boolean controlDown, boolean shiftDown) {
-		
 	}
 }

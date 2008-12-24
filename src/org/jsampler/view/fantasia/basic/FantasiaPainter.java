@@ -137,14 +137,38 @@ public class FantasiaPainter {
 	paintOuterBorder (
 		Graphics2D g2,
 		double x1, double y1, double x2, double y2,
+		boolean round, float alphaTop, float alphaLeft, float alphaBottom, float alphaRight
+	) {
+		paintOuterBorder (
+			g2, x1, y1, x2, y2, new RoundCorners(round), 1.0f, 1.0f,
+			alphaTop, alphaLeft, alphaBottom, alphaRight
+		);
+	}
+	
+	public static void
+	paintOuterBorder (
+		Graphics2D g2,
+		double x1, double y1, double x2, double y2,
 		RoundCorners rc, float alphaWhite, float alphaBlack
+	) {
+		paintOuterBorder (
+			g2, x1, y1, x2, y2, rc, alphaWhite, alphaBlack,
+			alphaWhite * 0.40f, alphaWhite * 0.255f, alphaBlack * 0.40f, alphaBlack * 0.20f
+		);
+	}
+	public static void
+	paintOuterBorder (
+		Graphics2D g2,
+		double x1, double y1, double x2, double y2, RoundCorners rc,
+		float alphaWhite, float alphaBlack,
+		float alphaTop, float alphaLeft, float alphaBottom, float alphaRight
 	) {
 		
 		Paint oldPaint = g2.getPaint();
 		Composite oldComposite = g2.getComposite();
 		
 		AlphaComposite ac;
-		ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.40f * alphaWhite);
+		ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alphaTop);
 		g2.setComposite(ac);
 		
 		double x1t = rc.topLeft ? x1 + 2 : x1;
@@ -194,12 +218,12 @@ public class FantasiaPainter {
 			g2.draw(l);
 		}
 		
-		g2.setComposite(ac.derive(0.255f * alphaWhite));
+		g2.setComposite(ac.derive(alphaLeft));
 		
 		l = new Line2D.Double(x1, y1l, x1, y2l);
 		g2.draw(l);
 		
-		g2.setComposite(ac.derive(0.40f * alphaBlack));
+		g2.setComposite(ac.derive(alphaBottom));
 		g2.setPaint(Color.BLACK);
 		
 		l = new Line2D.Double(x1b, y2, x2b, y2);
@@ -225,7 +249,7 @@ public class FantasiaPainter {
 			g2.setPaint(Color.BLACK);
 		}
 		
-		g2.setComposite(ac.derive(0.20f * alphaBlack));
+		g2.setComposite(ac.derive(alphaRight));
 		
 		l = new Line2D.Double(x2, y1r, x2, y2r);
 		g2.draw(l);

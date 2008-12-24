@@ -31,7 +31,7 @@ import javax.swing.JComponent;
  * @author Grigor Iliev
  */
 public interface ChannelView {
-	enum Type { SMALL, NORMAL }
+	public static enum Type { SMALL, NORMAL }
 	
 	/** Determines the type of the view. */
 	public Type getType();

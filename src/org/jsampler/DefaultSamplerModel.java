@@ -96,6 +96,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * Registers the specified listener for receiving event messages.
 	 * @param l The <code>SamplerListener</code> to register.
 	 */
+	@Override
 	public void
 	addSamplerListener(SamplerListener l) { listeners.add(l); }
 	
@@ -103,6 +104,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * Removes the specified listener.
 	 * @param l The <code>SamplerListener</code> to remove.
 	 */
+	@Override
 	public void
 	removeSamplerListener(SamplerListener l) { listeners.remove(l); }
 	
@@ -110,6 +112,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * Registers the specified listener for receiving event messages.
 	 * @param listener The <code>AudioDeviceListListener</code> to register.
 	 */
+	@Override
 	public void
 	addAudioDeviceListListener(ListListener<AudioDeviceModel> listener) {
 		listenerList.add(ListListener.class, listener);
@@ -119,6 +122,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * Removes the specified listener.
 	 * @param listener The <code>AudioDeviceListListener</code> to remove.
 	 */
+	@Override
 	public void
 	removeAudioDeviceListListener(ListListener<AudioDeviceModel> listener) {
 		listenerList.remove(ListListener.class, listener);
@@ -128,6 +132,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * Registers the specified listener for receiving event messages.
 	 * @param listener The <code>MidiDeviceListListener</code> to register.
 	 */
+	@Override
 	public void
 	addMidiDeviceListListener(MidiDeviceListListener listener) {
 		listenerList.add(MidiDeviceListListener.class, listener);
@@ -137,6 +142,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * Removes the specified listener.
 	 * @param listener The <code>MidiDeviceListListener</code> to remove.
 	 */
+	@Override
 	public void
 	removeMidiDeviceListListener(MidiDeviceListListener listener) {
 		listenerList.remove(MidiDeviceListListener.class, listener);
@@ -146,6 +152,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * Registers the specified listener for receiving event messages.
 	 * @param listener The <code>ListListener</code> to register.
 	 */
+	@Override
 	public void
 	addMidiInstrumentMapListListener(ListListener<MidiInstrumentMap> listener) {
 		mapsListeners.add(listener);
@@ -155,6 +162,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * Removes the specified listener.
 	 * @param listener The <code>ListListener</code> to remove.
 	 */
+	@Override
 	public void
 	removeMidiInstrumentMapListListener(ListListener<MidiInstrumentMap> listener) {
 		mapsListeners.remove(listener);
@@ -164,6 +172,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * Registers the specified listener for receiving event messages.
 	 * @param listener The <code>SamplerChannelListListener</code> to register.
 	 */
+	@Override
 	public void
 	addSamplerChannelListListener(SamplerChannelListListener listener) {
 		listenerList.add(SamplerChannelListListener.class, listener);
@@ -173,6 +182,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * Removes the specified listener.
 	 * @param listener The <code>SamplerChannelListListener</code> to remove.
 	 */
+	@Override
 	public void
 	removeSamplerChannelListListener(SamplerChannelListListener listener) {
 		listenerList.remove(SamplerChannelListListener.class, listener);
@@ -184,6 +194,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * @return <code>ServerInfo</code> instance containing
 	 * information about the LinuxSampler instance the front-end is connected to.
 	 */
+	@Override
 	public ServerInfo
 	getServerInfo() { return serverInfo; }
 	
@@ -202,6 +213,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * @return <code>AudioOutputDriver</code> array containing all audio output drivers
 	 * currently available for the LinuxSampler instance.
 	 */
+	@Override
 	public AudioOutputDriver[]
 	getAudioOutputDrivers() { return aoDrvS; }
 	
@@ -220,6 +232,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * @return The model of the audio device at the specified position.
 	 * @see #getAudioDeviceCount
 	 */
+	@Override
 	public AudioDeviceModel
 	getAudioDevice(int index) {
 		return audioDeviceModels.get(index);
@@ -231,6 +244,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * @return The model of the specified audio device or <code>null</code> 
 	 * if there is no audio device with ID <code>deviceId</code>.
 	 */
+	@Override
 	public AudioDeviceModel
 	getAudioDeviceById(int deviceId) {
 		for(AudioDeviceModel m : audioDeviceModels)
@@ -243,6 +257,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * Gets the current number of audio devices.
 	 * @return The current number of audio devices.
 	 */
+	@Override
 	public int
 	getAudioDeviceCount() { return audioDeviceModels.size(); }
 	
@@ -250,6 +265,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * Gets the current list of audio device models.
 	 * @return The current list of audio device models.
 	 */
+	@Override
 	public AudioDeviceModel[]
 	getAudioDevices() {
 		return audioDeviceModels.toArray(new AudioDeviceModel[audioDeviceModels.size()]);
@@ -259,6 +275,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * Adds the specified audio device.
 	 * @param device The audio device to be added.
 	 */
+	@Override
 	public void
 	addAudioDevice(AudioOutputDevice device) {
 		DefaultAudioDeviceModel model = new DefaultAudioDeviceModel(device);
@@ -272,6 +289,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * @return <code>true</code> if the audio device is removed successfully, <code>false</code>
 	 * if the device list does not contain audio device with ID <code>deviceId</code>.
 	 */
+	@Override
 	public boolean
 	removeAudioDeviceById(int deviceId) {
 		for(int i = 0; i < audioDeviceModels.size(); i++) {
@@ -290,6 +308,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * Schedules a new task for removing the specified audio device on the backend side.
 	 * @param deviceId The ID of the audio device to be removed.
 	 */
+	@Override
 	public void
 	removeBackendAudioDevice(int deviceId) {
 		CC.getTaskQueue().add(new Audio.DestroyDevice(deviceId));
@@ -301,6 +320,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * @return <code>MidiInputDriver</code> array containing all MIDI input drivers currently 
 	 * available for the LinuxSampler instance.
 	 */
+	@Override
 	public MidiInputDriver[]
 	getMidiInputDrivers() { return miDrvS; }
 	
@@ -318,6 +338,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * @param index The position of the MIDI device to return.
 	 * @return The model of the MIDI device at the specified position.
 	 */
+	@Override
 	public MidiDeviceModel
 	getMidiDevice(int index) {
 		return midiDeviceModels.get(index);
@@ -329,6 +350,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * @return The model of the specified MIDI device or <code>null</code> 
 	 * if there is no MIDI device with ID <code>deviceId</code>.
 	 */
+	@Override
 	public MidiDeviceModel
 	getMidiDeviceById(int deviceId) {
 		for(MidiDeviceModel m : midiDeviceModels)
@@ -341,6 +363,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * Gets the current number of MIDI input devices.
 	 * @return The current number of MIDI input devices.
 	 */
+	@Override
 	public int
 	getMidiDeviceCount() { return midiDeviceModels.size(); }
 	
@@ -348,6 +371,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * Gets the current list of MIDI device models.
 	 * @return The current list of MIDI device models.
 	 */
+	@Override
 	public MidiDeviceModel[]
 	getMidiDevices() {
 		return midiDeviceModels.toArray(new MidiDeviceModel[midiDeviceModels.size()]);
@@ -357,6 +381,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * Adds the specified MIDI device.
 	 * @param device The MIDI device to be added.
 	 */
+	@Override
 	public void
 	addMidiDevice(MidiInputDevice device) {
 		DefaultMidiDeviceModel model = new DefaultMidiDeviceModel(device);
@@ -369,6 +394,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * @param driver The desired MIDI input system.
 	 * @param parameters An optional list of driver specific parameters.
 	 */
+	@Override
 	public void
 	addBackendMidiDevice(String driver, Parameter... parameters) {
 		CC.getTaskQueue().add(new Midi.CreateDevice(driver, parameters));
@@ -380,6 +406,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * @return <code>true</code> if the MIDI device is removed successfully, <code>false</code>
 	 * if the device list does not contain MIDI device with ID <code>deviceId</code>.
 	 */
+	@Override
 	public boolean
 	removeMidiDeviceById(int deviceId) {
 		for(int i = 0; i < midiDeviceModels.size(); i++) {
@@ -398,6 +425,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * Schedules a new task for removing the specified MIDI device.
 	 * @param deviceId The ID of the MIDI input device to be destroyed.
 	 */
+	@Override
 	public void
 	removeBackendMidiDevice(int deviceId) {
 		CC.getTaskQueue().add(new Midi.DestroyDevice(deviceId));
@@ -409,6 +437,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * @return The MIDI instrument map with the specified ID or <code>null</code> 
 	 * if there is no MIDI instrument map with ID <code>mapId</code>.
 	 */
+	@Override
 	public MidiInstrumentMap
 	getMidiInstrumentMapById(int mapId) {
 		for(MidiInstrumentMap m : midiInstrMaps)
@@ -422,6 +451,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * @param index The position of the MIDI instrument map to return.
 	 * @return The MIDI instrument map at the specified position.
 	 */
+	@Override
 	public MidiInstrumentMap
 	getMidiInstrumentMap(int index) {
 		return midiInstrMaps.get(index);
@@ -431,6 +461,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * Gets the current number of MIDI instrument maps.
 	 * @return The current number of MIDI instrument maps.
 	 */
+	@Override
 	public int
 	getMidiInstrumentMapCount() { return midiInstrMaps.size(); }
 	
@@ -438,6 +469,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * Gets the current list of MIDI instrument maps.
 	 * @return The current list of MIDI instrument maps.
 	 */
+	@Override
 	public MidiInstrumentMap[]
 	getMidiInstrumentMaps() {
 		return midiInstrMaps.toArray(new MidiInstrumentMap[midiInstrMaps.size()]);
@@ -450,6 +482,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * or -1 if <code>map</code> is <code>null</code> or
 	 * the map list does not contain the specified map.
 	 */
+	@Override
 	public int
 	getMidiInstrumentMapIndex(MidiInstrumentMap map) {
 		if(map == null) return -1;
@@ -466,6 +499,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * @param map The MIDI instrument map to be added.
 	 * @throws IllegalArgumentException If <code>map</code> is <code>null</code>.
 	 */
+	@Override
 	public void
 	addMidiInstrumentMap(MidiInstrumentMap map) {
 		if(map == null) throw new IllegalArgumentException("map should be non-null!");
@@ -479,6 +513,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * @param name The name of the MIDI instrument map.
 	 * @throws IllegalArgumentException If <code>name</code> is <code>null</code>.
 	 */
+	@Override
 	public void
 	addBackendMidiInstrumentMap(String name) {
 		if(name == null) throw new IllegalArgumentException("name should be non-null!");
@@ -493,6 +528,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * <code>false</code> if the MIDI instrument map's list does not contain
 	 * MIDI instrument map with ID <code>mapId</code>.
 	 */
+	@Override
 	public boolean
 	removeMidiInstrumentMapById(int mapId) {
 		for(int i = 0; i < midiInstrMaps.size(); i++) {
@@ -521,6 +557,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	}
 	
 	/** Removes all MIDI instrument maps. */
+	@Override
 	public void
 	removeAllMidiInstrumentMaps() {
 		for(int i = midiInstrMaps.size() - 1; i >= 0; i--) {
@@ -535,6 +572,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * specified MIDI instrument map on the backend side.
 	 * @param mapId The numerical ID of the MIDI instrument map to remove.
 	 */
+	@Override
 	public void
 	removeBackendMidiInstrumentMap(int mapId) {
 		CC.getTaskQueue().add(new Midi.RemoveInstrumentMap(mapId));
@@ -546,6 +584,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * @param mapId The numerical ID of the MIDI instrument map.
 	 * @param name The new name for the specified MIDI instrument map.
 	 */
+	@Override
 	public void
 	setBackendMidiInstrumentMapName(final int mapId, String name) {
 		final Task t = new Midi.SetInstrumentMapInfo(mapId, name);
@@ -571,6 +610,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * @return The default MIDI instrument map or <code>null</code>
 	 * if there are no maps created.
 	 */
+	@Override
 	public MidiInstrumentMap
 	getDefaultMidiInstrumentMap() {
 		return defaultMidiInstrumentMap;
@@ -598,6 +638,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * @param program The MIDI program number of the new instrument.
 	 * @param instrInfo Provides the MIDI instrument settings.
 	 */
+	@Override
 	public void
 	mapBackendMidiInstrument(int mapId, int bank, int program, MidiInstrumentInfo instrInfo) {
 		CC.getTaskQueue().add(new Midi.MapInstrument(mapId, bank, program, instrInfo));
@@ -609,6 +650,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * @param bank The index of the MIDI bank containing the instrument to be removed.
 	 * @param program The MIDI program number of the instrument to be removed.
 	 */
+	@Override
 	public void
 	unmapBackendMidiInstrument(int mapId, int bank, int program) {
 		CC.getTaskQueue().add(new Midi.UnmapInstrument(mapId, bank, program));
@@ -618,6 +660,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * Gets a list of all available engines.
 	 * @return A list of all available engines.
 	 */
+	@Override
 	public SamplerEngine[]
 	getEngines() { return engines; }
 	
@@ -634,6 +677,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * @return The model of the specified sampler channel.
 	 * @see #getchannelCount
 	 */
+	@Override
 	public SamplerChannelModel
 	getChannel(int index) {
 		return channelModels.get(index);
@@ -645,6 +689,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * @return The model of the specified sampler channel or <code>null</code> 
 	 * if there is no channel with ID <code>channelId</code>.
 	 */
+	@Override
 	public SamplerChannelModel
 	getChannelById(int channelId) {
 		for(SamplerChannelModel m : channelModels)
@@ -659,6 +704,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * @return The position of the specified channel in the channel list or -1
 	 * if the channel is not in the list.
 	 */
+	@Override
 	public int
 	getChannelIndex(SamplerChannelModel channel) {
 		if(channel == null) return -1;
@@ -673,6 +719,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * Gets the current number of sampler channels.
 	 * @return The current number of sampler channels.
 	 */
+	@Override
 	public int
 	getChannelCount() { return channelModels.size(); }
 	
@@ -680,6 +727,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * Gets the current list of sampler channel models.
 	 * @return The current list of sampler channel models.
 	 */
+	@Override
 	public SamplerChannelModel[]
 	getChannels() {
 		return channelModels.toArray(new SamplerChannelModel[channelModels.size()]);
@@ -691,6 +739,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * when the backend notifies for its creation.
 	 * @see #addChannel
 	 */
+	@Override
 	public void
 	addBackendChannel() {
 		CC.getTaskQueue().add(new Channel.Add());
@@ -701,6 +750,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * Adds the specified sampler channel.
 	 * @param channel The channel to be added.
 	 */
+	@Override
 	public void
 	addChannel(SamplerChannel channel) {
 		DefaultSamplerChannelModel model = new DefaultSamplerChannelModel(channel);
@@ -713,6 +763,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * @param channel A <code>SamplerChannel</code> instance containing the new settings
 	 * for the channel.
 	 */
+	@Override
 	public void
 	updateChannel(SamplerChannel channel) {
 		for(SamplerChannelModel m : channelModels) {
@@ -731,6 +782,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * Determines whether there are known upcoming changes to the 
 	 * channel list, which should be considered as part of a single action.
 	 */
+	@Override
 	public synchronized boolean
 	getChannelListIsAdjusting() { return channelListIsAdjusting; }
 	
@@ -738,6 +790,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * Sets whether the upcoming changes to the 
 	 * channel list should be considered part of a single action.
 	 */
+	@Override
 	public synchronized void
 	setChannelListIsAdjusting(boolean b) {
 		channelListIsAdjusting = b;
@@ -745,10 +798,14 @@ public class DefaultSamplerModel implements SamplerModel {
 	
 	/**
 	 * Removes the specified sampler channel.
+	 * Note that this method doesn't remove the channel in the backend,
+	 * it is used to remove the channel from the model when those channel
+	 * is removed in the backend.
 	 * @param channelId The ID of the channel to be removed.
 	 * @return <code>true</code> if the channel is removed successfully, <code>false</code>
 	 * if the channel's list does not contain channel with ID <code>channelId</code>.
 	 */
+	@Override
 	public boolean
 	removeChannelById(int channelId) {
 		for(int i = 0; i < channelModels.size(); i++) {
@@ -764,9 +821,32 @@ public class DefaultSamplerModel implements SamplerModel {
 	}
 	
 	/**
+	 * Removes all sampler channels.
+	 * Note that this method doesn't remove the channel in the backend.
+	 */
+	@Override
+	public void
+	removeAllChannels() {
+		if(channelModels.size() == 0) return;
+		
+		setChannelListIsAdjusting(true);
+		for(int i = channelModels.size() - 1; i > 0; i--) {
+			SamplerChannelModel m = channelModels.get(i);
+			channelModels.remove(i);
+			fireSamplerChannelRemoved(m);
+		}
+		setChannelListIsAdjusting(false);
+		
+		SamplerChannelModel m = channelModels.get(0);
+		channelModels.remove(0);
+		fireSamplerChannelRemoved(m);
+	}
+	
+	/**
 	 * Schedules a new task for removing the specified sampler channel on the backend side.
 	 * @param channelId The ID of the channel to be removed.
 	 */
+	@Override
 	public void
 	removeBackendChannel(int channelId) {
 		CC.getTaskQueue().add(new Channel.Remove(channelId));
@@ -777,6 +857,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * the loaded instrument on the specified sampler channel.
 	 * @param channelId The sampler channel number.
 	 */
+	@Override
 	public void
 	editBackendInstrument(int channelId) {
 		CC.getTaskQueue().add(new Channel.EditInstrument(channelId));
@@ -788,6 +869,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * @return <code>true</code> if there is at least one solo channel in the current list of 
 	 * sampler channels, <code>false</code> otherwise.
 	 */
+	@Override
 	public boolean
 	hasSoloChannel() {
 		for(SamplerChannelModel m : channelModels)
@@ -800,6 +882,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * Gets the number of solo channels in the current list of sampler channels.
 	 * @return The number of solo channels in the current list of sampler channels.
 	 */
+	@Override
 	public int
 	getSoloChannelCount() {
 		int count = 0;
@@ -814,6 +897,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * This number includes the channels muted because of the presence of a solo channel.
 	 * @return The number of muted channels in the current list of sampler channels.
 	 */
+	@Override
 	public int
 	getMutedChannelCount() {
 		int count = 0;
@@ -827,6 +911,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * Gets the number of channels muted because of the presence of a solo channel.
 	 * @return The number of channels muted because of the presence of a solo channel.
 	 */
+	@Override
 	public int
 	getMutedBySoloChannelCount() {
 		int count = 0;
@@ -840,6 +925,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * Gets the total number of active streams.
 	 * @return The total number of active streams.
 	 */
+	@Override
 	public int
 	getTotalStreamCount() { return totalStreamCount; }
 	
@@ -847,6 +933,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * Gets the total number of active voices.
 	 * @return The total number of active voices.
 	 */
+	@Override
 	public int
 	getTotalVoiceCount() { return totalVoiceCount; }
 	
@@ -854,6 +941,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * Gets the maximum number of active voices.
 	 * @return The maximum number of active voices.
 	 */
+	@Override
 	public int
 	getTotalVoiceCountMax() { return totalVoiceCountMax; }
 	
@@ -861,6 +949,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * Gets the golobal volume of the sampler.
 	 * @return The golobal volume of the sampler.
 	 */
+	@Override
 	public float
 	getVolume() { return volume; }
 	
@@ -868,6 +957,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * Sets the global volume.
 	 * @param volume The new volume value.
 	 */
+	@Override
 	public void
 	setVolume(float volume) {
 		if(this.volume == volume) return;
@@ -880,6 +970,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * Schedules a new task for setting the global volume on the backend side.
 	 * @param volume The new volume value.
 	 */
+	@Override
 	public void
 	setBackendVolume(float volume) {
 		CC.getTaskQueue().add(new Global.SetVolume(volume));
@@ -888,6 +979,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	/**
 	 * Schedules a new task for resetting the sampler.
 	 */
+	@Override
 	public void
 	resetBackend() { CC.getTaskQueue().add(new org.jsampler.task.Global.ResetSampler()); }
 	
@@ -895,6 +987,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * Updates the current number of active disk streams in the sampler.
 	 * @param count The new number of active streams.
 	 */
+	@Override
 	public void
 	updateActiveStreamsInfo(int count) {
 		if(totalStreamCount == count) return;
@@ -908,6 +1001,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * @param count The new number of active voices.
 	 * @param countMax The maximum number of active voices.
 	 */
+	@Override
 	public void
 	updateActiveVoiceInfo(int count, int countMax) {
 		if(totalVoiceCount == count && totalVoiceCountMax == countMax) return;
@@ -920,16 +1014,19 @@ public class DefaultSamplerModel implements SamplerModel {
 	/**
 	 * Determines whether the sampler configuration is modified.
 	 */
+	@Override
 	public boolean
 	isModified() { return modified; }
 	
 	/**
 	 * Sets whether the sampler configuration is modified.
 	 */
+	@Override
 	public void
 	setModified(boolean b) { modified = b; }
 	
 	/** Resets the model. */
+	@Override
 	public void
 	reset() {
 		removeAllMidiInstrumentMaps();

@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -45,6 +45,7 @@ import javax.swing.SpinnerNumberModel;
 
 import org.jsampler.CC;
 import org.jsampler.JSPrefs;
+import org.jsampler.task.Global;
 
 import static org.jsampler.view.std.StdI18n.i18n;
 import static org.jsampler.view.std.StdPrefs.*;
@@ -61,6 +62,85 @@ public class JSGeneralProps {
 	
 	private static JSPrefs
 	preferences() { return CC.getViewConfig().preferences(); }
+	
+	
+	public static class PolyphonyPane extends JPanel {
+		private final JLabel lVoiceLimit =
+			new JLabel(i18n.getLabel("JSGeneralProps.lVoiceLimit"));
+		
+		private final JLabel lStreamLimit =
+			new JLabel(i18n.getLabel("JSGeneralProps.lStreamLimit"));
+		
+		private final JSpinner spVoiceLimit;
+		private final JSpinner spStreamLimit;
+		
+		public
+		PolyphonyPane() {
+			int i = preferences().getIntProperty(GLOBAL_VOICE_LIMIT);
+			spVoiceLimit = new JSpinner(new SpinnerNumberModel(i, 1, 32000, 1));
+			i = preferences().getIntProperty(GLOBAL_STREAM_LIMIT);
+			spStreamLimit = new JSpinner(new SpinnerNumberModel(i, 10, 32000, 1));
+			
+			GridBagLayout gridbag = new GridBagLayout();
+			GridBagConstraints c = new GridBagConstraints();
+			
+			setLayout(gridbag);
+			
+			c.fill = GridBagConstraints.NONE;
+			
+			c.gridx = 0;
+			c.gridy = 0;
+			c.anchor = GridBagConstraints.EAST;
+			c.insets = new Insets(3, 3, 3, 3);
+			gridbag.setConstraints(lVoiceLimit, c);
+			add(lVoiceLimit); 
+			
+			c.gridx = 0;
+			c.gridy = 1;
+			gridbag.setConstraints(lStreamLimit, c);
+			add(lStreamLimit);
+			
+			c.gridx = 1;
+			c.gridy = 0;
+			c.fill = GridBagConstraints.HORIZONTAL;
+			c.anchor = GridBagConstraints.WEST;
+			gridbag.setConstraints(spVoiceLimit, c);
+			add(spVoiceLimit);
+			
+			c.gridx = 1;
+			c.gridy = 1;
+			gridbag.setConstraints(spStreamLimit, c);
+			add(spStreamLimit);
+			
+			c.gridx = 2;
+			c.gridy = 0;
+			c.gridheight = 2;
+			c.weightx = 1.0;
+			JPanel p = new JPanel();
+			p.setOpaque(false);
+			gridbag.setConstraints(p, c);
+			add(p);
+			
+			setAlignmentX(JPanel.LEFT_ALIGNMENT);
+			setOpaque(false);
+			
+			String s = i18n.getLabel("JSGeneralProps.PolyphonyPane");
+			setBorder(BorderFactory.createTitledBorder(s));
+			setMaximumSize(new Dimension(Short.MAX_VALUE, getPreferredSize().height));
+			setAlignmentX(JPanel.LEFT_ALIGNMENT);
+		}
+		
+		public void
+		apply() {
+			int v = Integer.parseInt(spVoiceLimit.getValue().toString());
+			preferences().setIntProperty(GLOBAL_VOICE_LIMIT, v);
+			
+			int s = Integer.parseInt(spStreamLimit.getValue().toString());
+			preferences().setIntProperty(GLOBAL_STREAM_LIMIT, s);
+			
+			CC.getTaskQueue().add(new Global.SetPolyphony(v, s));
+		}
+	}
 	
 	
 	public static class MaxVolumePane extends JPanel {

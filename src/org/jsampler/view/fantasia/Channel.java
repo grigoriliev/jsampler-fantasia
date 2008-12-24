@@ -39,7 +39,6 @@ import java.text.NumberFormat;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -47,7 +46,6 @@ import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 
@@ -75,6 +73,7 @@ import org.jsampler.view.std.JSVolumeEditorPopup;
 
 import org.linuxsampler.lscp.SamplerChannel;
 
+import static org.jsampler.view.fantasia.A4n.a4n;
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jsampler.view.fantasia.FantasiaPrefs.*;
 import static org.jsampler.view.fantasia.FantasiaUtils.*;
@@ -172,6 +171,24 @@ public class Channel extends JSChannel {
 	 */
 	public
 	Channel(SamplerChannelModel model, final ActionListener listener) {
+		this (
+			model, listener,
+			preferences().getIntProperty(DEFAULT_CHANNEL_VIEW) == 0 ?
+				ChannelView.Type.SMALL : ChannelView.Type.NORMAL
+		);
+	}
+	
+	/**
+	 * Creates a new instance of <code>Channel</code> using the specified
+	 * non-<code>null</code> channel model.
+	 * @param model The model to be used by this channel.
+	 * @param listener A listener which is notified when the newly created
+	 * channel is fully expanded on the screen.
+	 * @param type Specifies the view type to be used.
+	 * @throws IllegalArgumentException If the model is <code>null</code>.
+	 */
+	public
+	Channel(SamplerChannelModel model, final ActionListener listener, ChannelView.Type type) {
 		super(model);
 		
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -185,13 +202,10 @@ public class Channel extends JSChannel {
 			new BoxLayout(mainPane.getContentPane(), BoxLayout.Y_AXIS)
 		);
 		
-		int viewIdx = preferences().getIntProperty(DEFAULT_CHANNEL_VIEW);
-		if(viewIdx == 0) {
-			viewTracker.setView(new SmallChannelView(Channel.this));
-		} else if(viewIdx == 1) {
-			viewTracker.setView(new NormalChannelView(Channel.this));
-		} else {
-			viewTracker.setView(new NormalChannelView(Channel.this));
+		switch(type) {
+			case SMALL: viewTracker.setView(new SmallChannelView(Channel.this)); break;
+			case NORMAL: viewTracker.setView(new NormalChannelView(Channel.this)); break;
+			default: viewTracker.setView(new NormalChannelView(Channel.this));
 		}
 		
 		setOpaque(false);
@@ -296,8 +310,9 @@ public class Channel extends JSChannel {
 	@Override
 	public void
 	setSelected(boolean select) {
-		
+		if(selected == select) return;
 		selected = select;
+		repaint();
 	}
 	
 	/** Shows the channel properties. */
@@ -791,38 +806,11 @@ public class Channel extends JSChannel {
 		voiceCountChanged(SamplerChannelEvent e) { }
 	}
 	
-	class SetSmallViewAction extends AbstractAction {
-		SetSmallViewAction() {
-			super(i18n.getMenuLabel("channels.smallView"));
-		}
-		
-		@Override
-		public void
-		actionPerformed(ActionEvent e) {
-			viewTracker.setView(new SmallChannelView(Channel.this));
-		}
-	}
-	
-	class SetNormalViewAction extends AbstractAction {
-		SetNormalViewAction() {
-			super(i18n.getMenuLabel("channels.normalView"));
-		}
-		
-		@Override
-		public void
-		actionPerformed(ActionEvent e) {
-			viewTracker.setView(new NormalChannelView(Channel.this));
-		}
-	}
-	
 	public ContextMenu
 	getContextMenu() { return contextMenu; }
 	
 	class ContextMenu extends MouseAdapter {
 		private JPopupMenu menu = null;
-		
-		protected JRadioButtonMenuItem rbmiSmallView;
-		protected JRadioButtonMenuItem rbmiNormalView;
 		
 		ContextMenu() {
 			
@@ -834,22 +822,23 @@ public class Channel extends JSChannel {
 			menu.add(new JMenuItem(new EditInstrumentAction()));
 			menu.addSeparator();
 			
-			rbmiSmallView = new JRadioButtonMenuItem(new SetSmallViewAction());
-			rbmiNormalView = new JRadioButtonMenuItem(new SetNormalViewAction());
-			if(viewTracker.getOriginalView() instanceof SmallChannelView) {
-				rbmiSmallView.setSelected(true);
-			} else if(viewTracker.getOriginalView() instanceof NormalChannelView) {
-				rbmiNormalView.setSelected(true);
-			}
+			MenuManager.ChannelViewGroup group;
+			group = new MenuManager.ChannelViewGroup(true, true);
+			MenuManager.getMenuManager().registerChannelViewGroup(group);
 			
-			ButtonGroup group = new ButtonGroup();
-			group.add(rbmiSmallView);
-			group.add(rbmiNormalView);
-			
-			menu.add(rbmiSmallView);
-			menu.add(rbmiNormalView);
+			for(JMenuItem mi : group.getMenuItems()) menu.add(mi);
 			
 			menu.addSeparator();
+			
+			menu.add(new JMenuItem(a4n.moveChannelsOnTop));
+			menu.add(new JMenuItem(a4n.moveChannelsUp));
+			menu.add(new JMenuItem(a4n.moveChannelsDown));
+			menu.add(new JMenuItem(a4n.moveChannelsAtBottom));
+			
+			menu.add(new MainFrame.ToPanelMenu());
+			
+			menu.addSeparator();
+			
 			menu.add(new JMenuItem(new FxSendsAction()));
 			menu.add(new JMenuItem(new ChannelRoutingAction()));
 		}

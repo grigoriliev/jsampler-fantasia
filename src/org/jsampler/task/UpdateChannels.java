@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -52,7 +52,7 @@ public class UpdateChannels extends EnhancedTask {
 	/** The entry point of the task. */
 	public void
 	run() {
-		try { 
+		try {
 			SamplerModel sm = CC.getSamplerModel();
 			Integer[] chnIDs = CC.getClient().getSamplerChannelIDs();
 			
@@ -91,7 +91,8 @@ public class UpdateChannels extends EnhancedTask {
 			
 			if(v.size() > 0) sm.addChannel(v.elementAt(v.size() - 1));
 			else if(!CC.getSamplerModel().getChannelListIsAdjusting()) {
-				if(oldValue) sm.addChannel(null);
+				// FIXME: no change after
+				// CC.getSamplerModel().setChannelListIsAdjusting(false);
 			}
 		} catch(Exception x) {
 			setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
@@ -107,14 +108,18 @@ public class UpdateChannels extends EnhancedTask {
 			for(Task t : tasks) if(t.equals(this)) return;
 		}
 		
-		javax.swing.SwingUtilities.invokeLater(new Runnable() {
-			public void
-			run() {
-				CC.getSamplerModel().setChannelListIsAdjusting(false);
-				CC.getMainFrame().setAutoUpdateChannelListUI(true);
-				CC.getMainFrame().updateChannelListUI();
-			}
-		});
+		try {
+			javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
+				public void
+				run() {
+					CC.getSamplerModel().setChannelListIsAdjusting(false);
+					CC.getMainFrame().setAutoUpdateChannelListUI(true);
+					CC.getMainFrame().updateChannelListUI();
+				}
+			});
+		} catch(Exception x) {
+			x.printStackTrace();
+		}
 	}
 		
 	/**
@@ -122,6 +127,7 @@ public class UpdateChannels extends EnhancedTask {
 	 * equal to this are removed if added using {@link org.jsampler.CC#scheduleTask}.
 	 * @see org.jsampler.CC#addTask
 	 */
+	@Override
 	public boolean
 	equals(Object obj) {
 		if(obj == null) return false;

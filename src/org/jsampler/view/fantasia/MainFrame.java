@@ -63,14 +63,17 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 import org.jsampler.CC;
 import org.jsampler.HF;
 import org.jsampler.LSConsoleModel;
 import org.jsampler.Server;
 
 import org.jsampler.view.JSChannelsPane;
-import org.jsampler.view.JSMainFrame;
 import org.jsampler.view.LscpFileFilter;
+import org.jsampler.view.SessionViewConfig;
 
 import org.jsampler.view.fantasia.basic.FantasiaPainter;
 import org.jsampler.view.fantasia.basic.FantasiaPanel;
@@ -81,6 +84,7 @@ import org.jsampler.view.std.JSConnectDlg;
 import org.jsampler.view.std.JSDetailedErrorDlg;
 import org.jsampler.view.std.JSQuitDlg;
 import org.jsampler.view.std.JSamplerHomeChooser;
+import org.jsampler.view.std.StdMainFrame;
 import org.jsampler.view.std.StdUtils;
 
 import static org.jsampler.view.fantasia.A4n.a4n;
@@ -93,7 +97,7 @@ import static org.jsampler.view.std.StdPrefs.*;
  *
  * @author Grigor Iliev
  */
-public class MainFrame extends JSMainFrame {
+public class MainFrame extends StdMainFrame {
 	private final StandardBar standardBar = new StandardBar();
 	private final FantasiaMenuBar menuBar = new FantasiaMenuBar();
 	private final JPanel rootPane = new RootPane();
@@ -467,6 +471,50 @@ public class MainFrame extends JSMainFrame {
 		setMidiKeyboardVisible(b);
 		
 		
+		// Channels
+		m = new FantasiaMenu(i18n.getMenuLabel("channels"));
+		
+		mi = new JMenuItem(i18n.getMenuLabel("channels.newChannel"));
+		mi.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) {
+				CC.getSamplerModel().addBackendChannel();
+			}
+		});
+		m.add(mi);
+		
+		m.addSeparator();
+		
+		MenuManager.ChannelViewGroup group = new MenuManager.ChannelViewGroup();
+		MenuManager.getMenuManager().registerChannelViewGroup(group);
+		
+		for(JMenuItem menuItem : group.getMenuItems()) m.add(menuItem);
+		
+		m.addSeparator();
+		
+		m.add(new JMenuItem(a4n.moveChannelsOnTop));
+		m.add(new JMenuItem(a4n.moveChannelsUp));
+		m.add(new JMenuItem(a4n.moveChannelsDown));
+		m.add(new JMenuItem(a4n.moveChannelsAtBottom));
+		
+		m.add(new ToPanelMenu());
+		
+		m.addSeparator();
+		
+		mi = new JMenuItem(a4n.selectAllChannels);
+		mi.setIcon(null);
+		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.CTRL_MASK));
+		m.add(mi);
+		
+		mi = new JMenuItem(a4n.deselectChannels);
+		mi.setIcon(null);
+		mi.setAccelerator(KeyStroke.getKeyStroke (
+			KeyEvent.VK_A, KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK
+		));
+		m.add(mi);
+		
+		menuBar.add(m);
+		
 		// Window
 		m = new FantasiaMenu(i18n.getMenuLabel("window"));
 		menuBar.add(m);
@@ -520,8 +568,34 @@ public class MainFrame extends JSMainFrame {
 		menuBar.add(m);
 	}
 	
+	public static class ToPanelMenu extends FantasiaMenu implements ListSelectionListener {
+		public
+		ToPanelMenu() {
+			super(i18n.getMenuLabel("channels.toPanel"));
+			setEnabled(CC.getMainFrame().getSelectedChannelsPane().hasSelectedChannel());
+			
+			CC.getMainFrame().addChannelsPaneSelectionListener(this);
+			
+			for(int i = 0; i < CC.getMainFrame().getChannelsPaneCount(); i++) {
+				JSChannelsPane p = CC.getMainFrame().getChannelsPane(i);
+				add(new JMenuItem(new A4n.MoveChannelsToPanel(p)));
+				p.addListSelectionListener(this);
+			}
+		}
+		
+		@Override
+		public void
+		valueChanged(ListSelectionEvent e) {
+			setEnabled(CC.getMainFrame().getSelectedChannelsPane().hasSelectedChannel());
+		}
+	}
+	
 	public RightSidePane
 	getRightSidePane() { return rightSidePane; }
+	
+	@Override
+	public A4n
+	getA4n() { return A4n.a4n; }
 	
 	/**
 	 * This method does nothing, because <b>Fantasia</b> has constant
@@ -652,6 +726,8 @@ public class MainFrame extends JSMainFrame {
 			return;
 		}
 		
+		String prefix = "#jsampler.fantasia: ";
+		Vector<String> v = new Vector<String>();
 		BufferedReader br = new BufferedReader(fr);
 		
 		try {
@@ -659,6 +735,7 @@ public class MainFrame extends JSMainFrame {
 			while(s != null) {
 				getLSConsoleModel().setCommandLineText(s);
 				getLSConsoleModel().execCommand();
+				if(s.startsWith(prefix)) v.add(s.substring(prefix.length()));
 				s = br.readLine();
 			}
 		} catch(Exception e) {
@@ -671,6 +748,10 @@ public class MainFrame extends JSMainFrame {
 		recentScripts.insertElementAt(s, 0);
 		
 		updateRecentScriptsMenu();
+		
+		CC.getViewConfig().setSessionViewConfig(
+			new SessionViewConfig(v.toArray(new String[v.size()]))
+		);
 	}
 	
 	protected void

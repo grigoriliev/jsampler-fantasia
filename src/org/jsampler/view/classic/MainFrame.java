@@ -520,30 +520,30 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		);
 		m.add(mi);
 		
-		mi = new JMenuItem(A4n.duplicateChannels);
+		mi = new JMenuItem(a4n.duplicateChannels);
 		mi.setIcon(null);
 		m.add(mi);
 		
 		m.addSeparator();
 		
-		mi = new JMenuItem(A4n.moveChannelsOnTop);
+		mi = new JMenuItem(a4n.moveChannelsOnTop);
 		mi.setIcon(null);
 		mi.setAccelerator(KeyStroke.getKeyStroke (
 			KeyEvent.VK_UP, KeyEvent.ALT_MASK | KeyEvent.SHIFT_MASK
 		));
 		m.add(mi);
 		
-		mi = new JMenuItem(A4n.moveChannelsUp);
+		mi = new JMenuItem(a4n.moveChannelsUp);
 		mi.setIcon(null);
 		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_UP, KeyEvent.ALT_MASK));
 		m.add(mi);
 		
-		mi = new JMenuItem(A4n.moveChannelsDown);
+		mi = new JMenuItem(a4n.moveChannelsDown);
 		mi.setIcon(null);
 		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, KeyEvent.ALT_MASK));
 		m.add(mi);
 		
-		mi = new JMenuItem(A4n.moveChannelsAtBottom);
+		mi = new JMenuItem(a4n.moveChannelsAtBottom);
 		mi.setIcon(null);
 		mi.setAccelerator(KeyStroke.getKeyStroke (
 			KeyEvent.VK_DOWN, KeyEvent.ALT_MASK | KeyEvent.SHIFT_MASK
@@ -555,12 +555,12 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		
 		m.addSeparator();
 		
-		mi = new JMenuItem(A4n.selectAllChannels);
+		mi = new JMenuItem(a4n.selectAllChannels);
 		mi.setIcon(null);
 		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.CTRL_MASK));
 		m.add(mi);
 		
-		mi = new JMenuItem(A4n.deselectChannels);
+		mi = new JMenuItem(a4n.deselectChannels);
 		mi.setIcon(null);
 		mi.setAccelerator(KeyStroke.getKeyStroke (
 			KeyEvent.VK_A, KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK
@@ -569,7 +569,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		
 		m.addSeparator();
 		
-		mi = new JMenuItem(A4n.removeChannels);
+		mi = new JMenuItem(a4n.removeChannels);
 		mi.setIcon(null);
 		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, KeyEvent.SHIFT_MASK));
 		m.add(mi);
@@ -963,69 +963,69 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 	private void
 	checkChannelSelection(JSChannelsPane pane) {
 		if(!pane.hasSelectedChannel()) {
-			A4n.duplicateChannels.putValue (
+			a4n.duplicateChannels.putValue (
 				Action.NAME, i18n.getMenuLabel("channels.duplicate")
 			);
-			A4n.duplicateChannels.setEnabled(false);
+			a4n.duplicateChannels.setEnabled(false);
 				
-			A4n.removeChannels.putValue (
+			a4n.removeChannels.putValue (
 				Action.NAME, i18n.getMenuLabel("channels.RemoveChannel")
 			);
-			A4n.removeChannels.setEnabled(false);
+			a4n.removeChannels.setEnabled(false);
 			
 			tabsMenu.setEnabled(false);
 			
-			A4n.moveChannelsOnTop.setEnabled(false);
-			A4n.moveChannelsUp.setEnabled(false);
-			A4n.moveChannelsDown.setEnabled(false);
-			A4n.moveChannelsAtBottom.setEnabled(false);
+			a4n.moveChannelsOnTop.setEnabled(false);
+			a4n.moveChannelsUp.setEnabled(false);
+			a4n.moveChannelsDown.setEnabled(false);
+			a4n.moveChannelsAtBottom.setEnabled(false);
 			
 			return;
 		}
 		
-		A4n.duplicateChannels.setEnabled(true);
-		A4n.removeChannels.setEnabled(true);
+		a4n.duplicateChannels.setEnabled(true);
+		a4n.removeChannels.setEnabled(true);
 		
 		if(getChannelsPaneCount() > 1) tabsMenu.setEnabled(true);
 		
 		if(pane.getSelectedChannelCount() > 1) {
-			A4n.duplicateChannels.putValue (
+			a4n.duplicateChannels.putValue (
 				Action.NAME, i18n.getMenuLabel("channels.duplicateChannels")
 			);
-			A4n.removeChannels.putValue (
+			a4n.removeChannels.putValue (
 				Action.NAME, i18n.getMenuLabel("channels.RemoveChannels")
 			);
 		} else {
-			A4n.duplicateChannels.putValue (
+			a4n.duplicateChannels.putValue (
 				Action.NAME, i18n.getMenuLabel("channels.duplicate")
 			);
-			A4n.removeChannels.putValue (
+			a4n.removeChannels.putValue (
 				Action.NAME, i18n.getMenuLabel("channels.RemoveChannel")
 			);
 		}
 		
-		A4n.moveChannelsOnTop.setEnabled(false);
-		A4n.moveChannelsUp.setEnabled(true);
-		A4n.moveChannelsDown.setEnabled(true);
-		A4n.moveChannelsAtBottom.setEnabled(false);
+		a4n.moveChannelsOnTop.setEnabled(false);
+		a4n.moveChannelsUp.setEnabled(true);
+		a4n.moveChannelsDown.setEnabled(true);
+		a4n.moveChannelsAtBottom.setEnabled(false);
 		
 		JSChannel[] chns = pane.getSelectedChannels();
 		
 		for(int i = 0; i < chns.length; i++) {
 			if(pane.getChannel(i) != chns[i]) {
-				A4n.moveChannelsOnTop.setEnabled(true);
+				a4n.moveChannelsOnTop.setEnabled(true);
 				break;
 			}
 		}
 		
-		if(chns[0] == pane.getFirstChannel()) A4n.moveChannelsUp.setEnabled(false);
+		if(chns[0] == pane.getFirstChannel()) a4n.moveChannelsUp.setEnabled(false);
 		
 		if(chns[chns.length - 1] == pane.getLastChannel())
-			A4n.moveChannelsDown.setEnabled(false);
+			a4n.moveChannelsDown.setEnabled(false);
 		
 		for(int i = chns.length - 1, j = pane.getChannelCount() - 1; i >= 0; i--, j--) {
 			if(pane.getChannel(j) != chns[i]) {
-				A4n.moveChannelsAtBottom.setEnabled(true);
+				a4n.moveChannelsAtBottom.setEnabled(true);
 				break;
 			}
 		}

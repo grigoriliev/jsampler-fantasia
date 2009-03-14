@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -121,21 +121,23 @@ public class JSInstrumentsDbTree extends org.jsampler.view.AbstractInstrumentsDb
 		};
 		a.setEnabled(false);
 		getActionMap().put("none", a);
+
+		int modKey = CC.getViewConfig().getDefaultModKey();
 		
 		getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put (
-			KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_MASK), "none"
+			KeyStroke.getKeyStroke(KeyEvent.VK_X, modKey), "none"
 		);
 		
 		getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put (
-			KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_MASK), "none"
+			KeyStroke.getKeyStroke(KeyEvent.VK_V, modKey), "none"
 		);
 		
 		getInputMap(JComponent.WHEN_FOCUSED).put (
-			KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_MASK), "none"
+			KeyStroke.getKeyStroke(KeyEvent.VK_X, modKey), "none"
 		);
 		
 		getInputMap(JComponent.WHEN_FOCUSED).put (
-			KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_MASK), "none"
+			KeyStroke.getKeyStroke(KeyEvent.VK_V, modKey), "none"
 		);
 	}
 	

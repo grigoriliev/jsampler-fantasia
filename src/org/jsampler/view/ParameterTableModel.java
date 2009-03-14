@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -192,10 +192,12 @@ public class ParameterTableModel extends AbstractTableModel {
 		} if(p.getType() == ParameterType.INT_LIST) {
 			
 		} if(p.getType() == ParameterType.STRING_LIST) {
-			StringListParameter slp = (StringListParameter)p;
+            // TODO: string list editor with no possibilities
+			/*StringListParameter slp = (StringListParameter)p;
 			if(slp.hasPossibilities()) {
-				return stringListEditor;
-			}
+				
+			}*/
+            return stringListEditor;
 		} else if(p.hasPossibilities()) {
 			JComboBox cb = new JComboBox(p.getPossibilities());
 			cb.setSelectedItem(null);
@@ -432,6 +434,10 @@ public class ParameterTableModel extends AbstractTableModel {
 			int column
 		) {
 			StringListParameter slp = (StringListParameter)parameters[row];
+            if(slp.getPossibilities().length == 0) {
+                editor.setText("");
+                return editor;
+            }
 			String[] poss = slp.getPossibilities()[0];
 			String[] vals = (String[])value;
 			

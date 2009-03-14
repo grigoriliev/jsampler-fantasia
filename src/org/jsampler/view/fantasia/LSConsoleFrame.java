@@ -71,6 +71,10 @@ public class LSConsoleFrame extends JFrame {
 	
 	private void
 	addMenu() {
+		if(CC.getViewConfig().isUsingScreenMenuBar()) {
+			((ViewConfig)CC.getViewConfig()).setNativeMenuProperties();
+		}
+		
 		JMenu m;
 		JMenuItem mi;
 		
@@ -129,6 +133,10 @@ public class LSConsoleFrame extends JFrame {
 				((MainFrame)CC.getMainFrame()).runScript();
 			}
 		});
+
+		if(CC.getViewConfig().isUsingScreenMenuBar()) {
+			((ViewConfig)CC.getViewConfig()).restoreMenuProperties();
+		}
 	}
 	
 	/** Invoked when this window is about to close. */

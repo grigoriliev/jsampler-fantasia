@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -165,19 +165,21 @@ public class PianoRoll extends JPanel implements MidiDataListener {
 	
 	public void
 	registerKeys(JComponent c) {
-		KeyStroke k = KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.CTRL_MASK);
+		int modKey = CC.getViewConfig().getDefaultModKey();
+
+		KeyStroke k = KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, modKey);
 		c.getInputMap(JComponent.WHEN_FOCUSED).put(k, "scrollLeft");
 		c.getActionMap().put("scrollLeft", actionScrollLeft);
 		
-		k = KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.CTRL_MASK);
+		k = KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, modKey);
 		c.getInputMap(JComponent.WHEN_FOCUSED).put(k, "scrollRight");
 		c.getActionMap().put("scrollRight", actionScrollRight);
 		
-		k = KeyStroke.getKeyStroke(KeyEvent.VK_UP, KeyEvent.CTRL_MASK);
+		k = KeyStroke.getKeyStroke(KeyEvent.VK_UP, modKey);
 		c.getInputMap(JComponent.WHEN_FOCUSED).put(k, "increaseKeyRange");
 		c.getActionMap().put("increaseKeyRange", actionIncreaseKeyNumber);
 		
-		k = KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, KeyEvent.CTRL_MASK);
+		k = KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, modKey);
 		c.getInputMap(JComponent.WHEN_FOCUSED).put(k, "decreaseKeyRange");
 		c.getActionMap().put("decreaseKeyRange", actionDecreaseKeyNumber);
 		

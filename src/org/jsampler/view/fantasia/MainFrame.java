@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -252,7 +252,7 @@ public class MainFrame extends StdMainFrame {
 	
 	/** Invoked when this window is about to close. */
 	@Override
-	protected void
+	public void
 	onWindowClose() {
 		boolean b = preferences().getBoolProperty(CONFIRM_APP_QUIT);
 		if(b && CC.getSamplerModel().isModified()) {
@@ -306,6 +306,15 @@ public class MainFrame extends StdMainFrame {
 	
 	private void
 	addMenu() {
+		if(CC.isMacOS()) {
+			try { new MacOSApplicationHandler(); }
+			catch(Throwable e) { }
+		}
+
+		if(CC.getViewConfig().isUsingScreenMenuBar()) {
+			((ViewConfig)CC.getViewConfig()).setNativeMenuProperties();
+		}
+
 		JMenu m;
 		JMenuItem mi;
 		
@@ -331,10 +340,12 @@ public class MainFrame extends StdMainFrame {
 		
 		JMenu exportMenu = new JMenu(i18n.getMenuLabel("actions.export"));
 		m.add(exportMenu);
+
+		int modKey = CC.getViewConfig().getDefaultModKey();
 		
 		mi = new JMenuItem(a4n.exportSamplerConfig);
 		mi.setIcon(null);
-		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_MASK));
+		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, modKey));
 		exportMenu.add(mi);
 		
 		mi = new JMenuItem(a4n.exportMidiInstrumentMaps);
@@ -345,7 +356,7 @@ public class MainFrame extends StdMainFrame {
 		
 		mi = new JMenuItem(a4n.loadScript);
 		mi.setIcon(null);
-		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_MASK));
+		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, modKey));
 		m.add(mi);
 		
 		String[] list = preferences().getStringListProperty(RECENT_LSCP_SCRIPTS);
@@ -359,7 +370,7 @@ public class MainFrame extends StdMainFrame {
 		
 		mi = new JMenuItem(a4n.changeBackend);
 		mi.setIcon(null);
-		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, KeyEvent.CTRL_MASK));
+		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, modKey));
 		m.add(mi);
 		
 		m.addSeparator();
@@ -402,7 +413,7 @@ public class MainFrame extends StdMainFrame {
 		mi = new JMenuItem(a4n.editPreferences);
 		mi.setIcon(null);
 		mi.setAccelerator(KeyStroke.getKeyStroke (
-			KeyEvent.VK_P, KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK
+			KeyEvent.VK_P, modKey | KeyEvent.SHIFT_MASK
 		));
 		m.add(mi);
 		
@@ -424,7 +435,7 @@ public class MainFrame extends StdMainFrame {
 		showToolBar(b);
 		
 		cbmiLeftSidePaneVisible.setAccelerator(KeyStroke.getKeyStroke (
-			KeyEvent.VK_L, KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK
+			KeyEvent.VK_L, modKey | KeyEvent.SHIFT_MASK
 		));
 		m.add(cbmiLeftSidePaneVisible);
 		
@@ -440,7 +451,7 @@ public class MainFrame extends StdMainFrame {
 		showSidePane(b);
 		
 		cbmiRightSidePaneVisible.setAccelerator(KeyStroke.getKeyStroke (
-			KeyEvent.VK_R, KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK
+			KeyEvent.VK_R, modKey | KeyEvent.SHIFT_MASK
 		));
 		m.add(cbmiRightSidePaneVisible);
 		
@@ -503,13 +514,13 @@ public class MainFrame extends StdMainFrame {
 		
 		mi = new JMenuItem(a4n.selectAllChannels);
 		mi.setIcon(null);
-		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.CTRL_MASK));
+		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, modKey));
 		m.add(mi);
 		
 		mi = new JMenuItem(a4n.deselectChannels);
 		mi.setIcon(null);
 		mi.setAccelerator(KeyStroke.getKeyStroke (
-			KeyEvent.VK_A, KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK
+			KeyEvent.VK_A, modKey | KeyEvent.SHIFT_MASK
 		));
 		m.add(mi);
 		
@@ -566,6 +577,10 @@ public class MainFrame extends StdMainFrame {
 		m.add(mi);
 		
 		menuBar.add(m);
+
+		if(CC.getViewConfig().isUsingScreenMenuBar()) {
+			((ViewConfig)CC.getViewConfig()).restoreMenuProperties();
+		}
 	}
 	
 	public static class ToPanelMenu extends FantasiaMenu implements ListSelectionListener {

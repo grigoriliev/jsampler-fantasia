@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -1255,6 +1255,11 @@ public class CC {
 		}
 		
 		return true;
+	}
+
+	public static boolean
+	isMacOS() {
+		return System.getProperty("os.name").toLowerCase().startsWith("mac os x");
 	}
 	
 	

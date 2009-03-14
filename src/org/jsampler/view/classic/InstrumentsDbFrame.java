@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -218,26 +218,27 @@ public class InstrumentsDbFrame extends JFrame {
 		
 		m = new JMenu(i18n.getMenuLabel("instrumentsdb.edit"));
 		menuBar.add(m);
-		
+
+		int modKey = CC.getViewConfig().getDefaultModKey();
 		mi = new JMenuItem(mainPane.getInstrumentsTable().cutAction);
-		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_MASK));
+		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, modKey));
 		mi.setIcon(null);
 		m.add(mi);
 		
 		mi = new JMenuItem(mainPane.getInstrumentsTable().copyAction);
-		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_MASK));
+		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, modKey));
 		mi.setIcon(null);
 		m.add(mi);
 		
 		mi = new JMenuItem(mainPane.getInstrumentsTable().pasteAction);
-		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_MASK));
+		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, modKey));
 		mi.setIcon(null);
 		m.add(mi);
 		
 		m.addSeparator();
 		
 		mi = new JMenuItem(i18n.getMenuLabel("instrumentsdb.edit.find"));
-		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.CTRL_MASK));
+		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, modKey));
 		m.add(mi);
 		mi.addActionListener(new ActionListener() {
 			public void

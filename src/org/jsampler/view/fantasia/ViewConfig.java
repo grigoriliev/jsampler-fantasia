@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -21,6 +21,9 @@
  */
 
 package org.jsampler.view.fantasia;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -47,11 +50,19 @@ public class ViewConfig extends JSViewConfig {
 	private InstrumentsDbTreeView instrumentsDbTreeView = new TreeView();
 	private InstrumentsDbTableView instrumentsDbTableView = new TableView();
 	private BasicIconSet basicIconSet = new IconSet();
+
+	private Map nativeMenuPropsMap = null;
+	private Map menuPropsMap = null;
 	
 	/** Creates a new instance of <code>ViewConfig</code> */
 	public
 	ViewConfig() {
 		try {
+			if(CC.isMacOS()) {
+				// fix for setting the menu bar on top of the screen
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+				nativeMenuPropsMap = getMenuProperties();
+			}
 			UIManager.setLookAndFeel(new SubstanceRavenGraphiteLookAndFeel());
 			UIManager.put(SubstanceLookAndFeel.WATERMARK_VISIBLE, Boolean.FALSE);
 			
@@ -59,6 +70,12 @@ public class ViewConfig extends JSViewConfig {
 				SubstanceLookAndFeel.TABBED_PANE_CONTENT_BORDER_KIND,
 				SubstanceConstants.TabContentPaneBorderKind.SINGLE_FULL
 			);
+
+			if(CC.isMacOS()) {
+				// fix for setting the menu bar on top of the screen
+				menuPropsMap = getMenuProperties();
+				setNativeMenuProperties();
+			}
 			
 			if(!preferences().getBoolProperty("TurnOffCustomWindowDecoration")) {
 				javax.swing.JFrame.setDefaultLookAndFeelDecorated(true);
@@ -69,6 +86,45 @@ public class ViewConfig extends JSViewConfig {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * If running on Mac OS and third party LaF is used
+	 * certain properties from the system LaF should be set
+	 * to be able to move the menu bar on top of the screen.
+	 */
+	public void
+	setNativeMenuProperties() {
+		setMenuProperties(nativeMenuPropsMap);
+	}
+
+	/**
+	 * If running on Mac OS and third party LaF is used
+	 * certain properties from the system LaF should be set
+	 * to be able to move the menu bar on top of the screen.
+	 * This method is used to reverse them back to the LaF to be used.
+	 */
+	public void
+	restoreMenuProperties() {
+		setMenuProperties(menuPropsMap);
+	}
+
+	private void
+	setMenuProperties(Map props) {
+		if(props == null) return;
+		for(Object o : props.keySet()) UIManager.put(o, props.get(o));
+	}
+
+	public Map
+	getMenuProperties() {
+		Map props = new HashMap();
+		props.put("MenuBarUI", UIManager.get("MenuBarUI"));
+		props.put("MenuUI", UIManager.get("MenuUI"));
+		props.put("MenuItemUI", UIManager.get("MenuItemUI"));
+		props.put("CheckBoxMenuItemUI", UIManager.get("CheckBoxMenuItemUI"));
+		props.put("RadioButtonMenuItemUI", UIManager.get("RadioButtonMenuItemUI"));
+		props.put("PopupMenuUI", UIManager.get("PopupMenuUI"));
+		return props;
 	}
 	
 	@Override

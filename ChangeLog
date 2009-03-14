@@ -74,6 +74,7 @@ CVS HEAD
     arguments to the respective jsampler distribution
 
   * ant: the default target is now build-fantasia
+  * ant: added new target build-fantasia-osx
 
   * Fantasia:
     - Major memory optimizations when too many sampler channels are present
@@ -111,6 +112,12 @@ CVS HEAD
       org.jsampler.view.fantasia.basic package
     - Migrated to substance 5
 
+    * Mac OS Integration
+      - Moved the menu bar on top of the screen
+      - Use custom application icon
+      - Register LSCP scripts to be opened with Fantasia
+      - Changed shortcut keys (use command key instead of ctrl key)
+
   * Bug fixes:
     - bugfix: JSampler took forever to load a configuration with
       too many sampler channels
@@ -123,6 +130,8 @@ CVS HEAD
     - fixed bug #98
     - backend address was always set to 127.0.0.1 when adding backend
       to the backend list
+    - Fixed bug in the parameter table when editing
+      string list parameters with no possibilities
     - Some minor bugfixes and enhancements
 
 JSampler v0.8a: 2007-12-06

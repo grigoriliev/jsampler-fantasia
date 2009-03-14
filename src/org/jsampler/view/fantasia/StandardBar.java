@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -68,22 +68,27 @@ public class StandardBar extends JPanel {
 	private final ToolbarButton btnPreferences = new ToolbarButton(a4n.editPreferences);
 	
 	private final JLabel lLogo = new JLabel(Res.gfxFantasiaLogo);
+
+	private final Boolean screenMenuEnabled;
 	
 	/** Creates a new instance of <code>StandardBar</code> */
 	public
 	StandardBar() {
+		screenMenuEnabled = CC.getViewConfig().isUsingScreenMenuBar();
 		//super(Res.gfxToolBarBg);
 		//setPixmapInsets(new Insets(0, 6, 6, 6));
 		
 		setLayout(new BorderLayout());
 		setOpaque(false);
-		
-		Dimension d = new Dimension(60, 51);
+
+		int h = screenMenuEnabled ? 56 : 51;
+		Dimension d = new Dimension(60, h);
 		setMinimumSize(d);
 		setPreferredSize(d);
 		d = new Dimension(Short.MAX_VALUE, 51);
 		setMaximumSize(d);
-		setBorder(BorderFactory.createEmptyBorder(0, 5, 2, 5));
+		int top = screenMenuEnabled ? 5 : 0;
+		setBorder(BorderFactory.createEmptyBorder(top, 5, 2, 5));
 		
 		
 		//mainPane = new PixmapPane(Res.gfxToolBar);
@@ -145,8 +150,9 @@ public class StandardBar extends JPanel {
 		double w = getSize().getWidth();
 		
 		FantasiaPainter.paintGradient(g2, 0.0, 0.0, w - 1, h - 1, FantasiaPainter.color5, midColor);
-		
-		FantasiaPainter.Border b = new FantasiaPainter.Border(false, true, false, true);
+
+		boolean paintTop = screenMenuEnabled;
+		FantasiaPainter.Border b = new FantasiaPainter.Border(paintTop, true, false, true);
 		FantasiaPainter.paintBoldOuterBorder(g2, 0, 0, w - 1, h + 2, b);
 		
 		g2.setPaint(oldPaint);

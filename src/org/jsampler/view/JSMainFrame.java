@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -91,7 +91,7 @@ public abstract class JSMainFrame extends JFrame {
 	 * Don't forget to call <code>super.onWindowClose()</code> at the end,
 	 * when override this method.
 	 */
-	protected void
+	public void
 	onWindowClose() {
 		CC.cleanExit();
 	}

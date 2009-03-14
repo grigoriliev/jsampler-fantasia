@@ -117,6 +117,28 @@
         <delete dir="./dist/build"/>
     </target>
 
+    <target name="build-fantasia-osx" depends="build-fantasia">
+        <copy todir="./dist/Fantasia.app/Contents">
+            <fileset file="./res/fantasia/osx/Info.plist"/>
+        </copy>
+        <copy todir="./dist/Fantasia.app/Contents">
+            <fileset file="./res/fantasia/osx/PkgInfo"/>
+        </copy>
+        <copy todir="./dist/Fantasia.app/Contents/MacOS">
+            <fileset file="/System/Library/Frameworks/JavaVM.framework/Versions/Current/Resources/MacOS/JavaApplicationStub"/>
+        </copy>
+        <chmod file="./dist/Fantasia.app/Contents/MacOS/JavaApplicationStub" perm="755" />
+        <copy todir="./dist/Fantasia.app/Contents/Resources/Java">
+            <fileset file="./dist/Fantasia-${JSampler.version}.jar"/>
+        </copy>
+        <copy todir="./dist/Fantasia.app/Contents/Resources">
+            <fileset file="./res/fantasia/osx/Fantasia.icns"/>
+        </copy>
+        <copy todir="./dist/Fantasia.app/Contents/Resources">
+            <fileset file="./res/fantasia/osx/LSCPScript.icns"/>
+        </copy>
+    </target>
+
     <target name="build-coredoc" depends="clean-coredoc">
         <mkdir dir="doc/api"/>
         <javadoc sourcepath="./src" destdir="./doc/api" windowtitle="JSampler ${JSampler.version} API specification" overview="./src/overview.html" Author="false" splitindex="true" use="true">
@@ -133,14 +155,14 @@
     </target>
     
     <target name="clean-jsclassic">
-        <delete file="dist/js-classic.jar"/>
+        <delete file="dist/JS_Classic-${JSampler.version}.jar"/>
 
         
     </target>
 
     <target name="clean-fantasia">
-        <delete file="dist/fantasia.jar"/>
-
+        <delete file="dist/Fantasia-${JSampler.version}.jar"/>
+        <delete dir="dist/Fantasia.app"/>
         
     </target>
     

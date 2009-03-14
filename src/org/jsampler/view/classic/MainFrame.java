@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -209,7 +209,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 	
 	/** Invoked when this window is about to close. */
 	@Override
-	protected void
+	public void
 	onWindowClose() {
 		boolean b = preferences().getBoolProperty(CONFIRM_APP_QUIT);
 		if(b && CC.getSamplerModel().isModified()) {
@@ -350,9 +350,10 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		JMenu exportMenu = new JMenu(i18n.getMenuLabel("actions.export"));
 		m.add(exportMenu);
 		
+		int modKey = CC.getViewConfig().getDefaultModKey();
 		mi = new JMenuItem(a4n.exportSamplerConfig);
 		mi.setIcon(null);
-		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_MASK));
+		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, modKey));
 		exportMenu.add(mi);
 		
 		mi = new JMenuItem(a4n.exportMidiInstrumentMaps);
@@ -362,7 +363,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		m.addSeparator();
 		
 		mi = new JMenuItem(A4n.loadScript);
-		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_MASK));
+		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, modKey));
 		mi.setIcon(null);
 		m.add(mi);
 		
@@ -377,7 +378,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		
 		mi = new JMenuItem(a4n.changeBackend);
 		mi.setIcon(null);
-		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, KeyEvent.CTRL_MASK));
+		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, modKey));
 		m.add(mi);
 		
 		m.addSeparator();
@@ -428,7 +429,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		mi = new JMenuItem(A4n.preferences);
 		mi.setIcon(null);
 		mi.setAccelerator(KeyStroke.getKeyStroke (
-			KeyEvent.VK_P, KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK
+			KeyEvent.VK_P, modKey | KeyEvent.SHIFT_MASK
 		));
 		m.add(mi);
 		
@@ -510,13 +511,13 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		
 		mi = new JMenuItem(A4n.newChannel);
 		mi.setIcon(null);
-		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_MASK));
+		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, modKey));
 		m.add(mi);
 		
 		mi = new JMenuItem(A4n.newChannelWizard);
 		mi.setIcon(null);
 		mi.setAccelerator(KeyStroke.getKeyStroke (
-			KeyEvent.VK_N, KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK)
+			KeyEvent.VK_N, modKey | KeyEvent.SHIFT_MASK)
 		);
 		m.add(mi);
 		
@@ -557,13 +558,13 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		
 		mi = new JMenuItem(a4n.selectAllChannels);
 		mi.setIcon(null);
-		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.CTRL_MASK));
+		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, modKey));
 		m.add(mi);
 		
 		mi = new JMenuItem(a4n.deselectChannels);
 		mi.setIcon(null);
 		mi.setAccelerator(KeyStroke.getKeyStroke (
-			KeyEvent.VK_A, KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK
+			KeyEvent.VK_A, KeyEvent.SHIFT_MASK | modKey
 		));
 		m.add(mi);
 		
@@ -581,7 +582,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		
 		mi = new JMenuItem(A4n.newChannelsTab);
 		mi.setIcon(null);
-		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.CTRL_MASK));
+		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, modKey));
 		m.add(mi);
 		
 		mi = new JMenuItem(A4n.editTabTitle);
@@ -619,7 +620,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		
 		mi = new JMenuItem(A4n.closeChannelsTab);
 		mi.setIcon(null);
-		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, KeyEvent.CTRL_MASK));
+		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, modKey));
 		m.add(mi);
 		
 		

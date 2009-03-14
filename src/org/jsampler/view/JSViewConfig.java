@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -22,9 +22,12 @@
 
 package org.jsampler.view;
 
+import java.awt.event.KeyEvent;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import org.jsampler.CC;
 import org.jsampler.JSPrefs;
 import org.jsampler.MidiInstrument;
 
@@ -122,4 +125,20 @@ public abstract class JSViewConfig {
 	
 	public int
 	getFirstMidiProgramNumber() { return firstMidiProgramNumber; }
+
+	public int
+	getDefaultModKey() {
+		return CC.isMacOS() ? KeyEvent.META_MASK : KeyEvent.CTRL_MASK;
+	}
+
+	/**
+	 * Determines whether main menu is moved to
+	 * the screen menu bar when running on Mac OS
+	 */
+	public boolean
+	isUsingScreenMenuBar() {
+		if(!CC.isMacOS()) return false;
+		String s = System.getProperty("apple.laf.useScreenMenuBar");
+		return (s != null && "true".equalsIgnoreCase(s)) ? true : false;
+	}
 }

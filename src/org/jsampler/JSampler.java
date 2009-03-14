@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -54,6 +54,33 @@ public class JSampler {
 		CC.initJSampler();
 		initGUI();
 	}
+
+	/**
+	 * Schedule the specified script to be run when connection is established.
+	 * @param fileName The path of the script to run.
+	 */
+	public static void
+	open(String fileName) {
+		CC.getLogger().warning(fileName);
+		if(fileName == null) return;
+		if(CC.getClient().isConnected()) {
+			CC.getMainFrame().runScript(fileName);
+			return;
+		}
+		
+		if(scripts == null) {
+			scripts = new String[1];
+			scripts[0] = fileName;
+			CC.addConnectionEstablishedListener(new ConnectionEstablishedListener());
+		} else {
+			String[] files = new String[scripts.length + 1];
+			for(int i = 0; i < scripts.length; i++) {
+				files[i] = scripts[i];
+			}
+			files[files.length - 1] = fileName;
+			scripts = files;
+		}
+	}
 	
 	private static void
 	initGUI() {
@@ -68,7 +95,9 @@ public class JSampler {
 	
 	private static void
 	initGUI0() {
-		CC.addConnectionEstablishedListener(new ConnectionEstablishedListener());
+		if(scripts != null) {
+			CC.addConnectionEstablishedListener(new ConnectionEstablishedListener());
+		}
 		
 		CC.checkJSamplerHome();
 		CC.loadOrchestras();
@@ -82,6 +111,7 @@ public class JSampler {
 		actionPerformed(ActionEvent e) {
 			if(scripts == null) return;
 			for(String s : scripts) CC.getMainFrame().runScript(s);
+			scripts = null;
 			SwingUtilities.invokeLater(this);
 		}
 		

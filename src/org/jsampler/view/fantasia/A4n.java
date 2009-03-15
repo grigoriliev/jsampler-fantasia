@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -260,13 +260,23 @@ public class A4n extends StdA4n {
 				return;
 			}
 			
-			if(instrumentsDbFrame != null && instrumentsDbFrame.isVisible()) {
+			if(instrumentsDbFrame != null) {
 				instrumentsDbFrame.setVisible(false);
 				instrumentsDbFrame.setVisible(true);
 				return;
 			}
 			
-			instrumentsDbFrame = new InstrumentsDbFrame();
+			if(CC.getViewConfig().isUsingScreenMenuBar()) {
+				// fix for moving the menu bar on top of the screen
+				// when running on Mac OS and third party plugin is used
+				((ViewConfig)CC.getViewConfig()).setNativeMenuProperties();
+				instrumentsDbFrame = new InstrumentsDbFrame();
+				((ViewConfig)CC.getViewConfig()).restoreMenuProperties();
+
+			} else {
+				instrumentsDbFrame = new InstrumentsDbFrame();
+			}
+
 			instrumentsDbFrame.setVisible(true);
 		}
 	}

@@ -174,6 +174,11 @@ public class StdUtils {
 	 */
 	public static void
 	saveWindowBounds(String windowName, Rectangle r) {
+		if(r.width < 50 || r.height < 50 || r.x < r.width * -1 || r.y < 0) {
+			CC.getLogger().warning("Invalid window size or location");
+			return;
+		}
+
 		StringBuffer sb = new StringBuffer();
 		sb.append(r.x).append(',').append(r.y).append(',');
 		sb.append(r.width).append(',').append(r.height);

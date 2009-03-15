@@ -188,8 +188,19 @@ public class MainFrame extends StdMainFrame {
 		rootPane.add(hSplitPane);
 		rootPane.add(bottomPane, BorderLayout.SOUTH);
 		add(rootPane);
+
+		if(CC.isMacOS()) {
+			try { new MacOSApplicationHandler(); }
+			catch(Throwable e) { }
+		}
 		
 		addMenu();
+		
+		if(CC.getViewConfig().isUsingScreenMenuBar()) {
+			// fix for moving the menu bar on top of the screen
+			// when running on Mac OS and third party plugin is used
+			((ViewConfig)CC.getViewConfig()).restoreMenuProperties();
+		}
 		
 		int i = preferences().getIntProperty("MainFrame.hSplitDividerLocation", 220);
 		hSplitPane.setDividerLocation(i);
@@ -306,15 +317,6 @@ public class MainFrame extends StdMainFrame {
 	
 	private void
 	addMenu() {
-		if(CC.isMacOS()) {
-			try { new MacOSApplicationHandler(); }
-			catch(Throwable e) { }
-		}
-
-		if(CC.getViewConfig().isUsingScreenMenuBar()) {
-			((ViewConfig)CC.getViewConfig()).setNativeMenuProperties();
-		}
-
 		JMenu m;
 		JMenuItem mi;
 		
@@ -577,10 +579,6 @@ public class MainFrame extends StdMainFrame {
 		m.add(mi);
 		
 		menuBar.add(m);
-
-		if(CC.getViewConfig().isUsingScreenMenuBar()) {
-			((ViewConfig)CC.getViewConfig()).restoreMenuProperties();
-		}
 	}
 	
 	public static class ToPanelMenu extends FantasiaMenu implements ListSelectionListener {

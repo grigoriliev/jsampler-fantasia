@@ -58,7 +58,7 @@ public class ViewConfig extends JSViewConfig {
 	public
 	ViewConfig() {
 		try {
-			if(CC.isMacOS()) {
+			if(isUsingScreenMenuBar()) {
 				// fix for setting the menu bar on top of the screen
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 				nativeMenuPropsMap = getMenuProperties();
@@ -71,7 +71,7 @@ public class ViewConfig extends JSViewConfig {
 				SubstanceConstants.TabContentPaneBorderKind.SINGLE_FULL
 			);
 
-			if(CC.isMacOS()) {
+			if(isUsingScreenMenuBar()) {
 				// fix for setting the menu bar on top of the screen
 				menuPropsMap = getMenuProperties();
 				setNativeMenuProperties();

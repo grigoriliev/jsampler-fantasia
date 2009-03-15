@@ -40,6 +40,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.jsampler.CC;
+import org.jsampler.HF;
 import org.jsampler.MidiInstrumentMap;
 
 import org.jsampler.view.MidiMapTable;
@@ -86,6 +87,7 @@ public class JSManageMidiMapsPane extends JPanel implements ListSelectionListene
 		midiMapTable.getActionMap().put("removeMidiMap", actionRemoveMap);
 	}
 	
+	@Override
 	public void
 	valueChanged(ListSelectionEvent e) {
 		if(e.getValueIsAdjusting()) return;
@@ -125,6 +127,7 @@ public class JSManageMidiMapsPane extends JPanel implements ListSelectionListene
 			putValue(SHORT_DESCRIPTION, s);
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			addMidiInstrumentMap();
@@ -141,6 +144,7 @@ public class JSManageMidiMapsPane extends JPanel implements ListSelectionListene
 			setEnabled(false);
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			editMidiInstrumentMap(midiMapTable.getSelectedMidiInstrumentMap());
@@ -157,9 +161,15 @@ public class JSManageMidiMapsPane extends JPanel implements ListSelectionListene
 			setEnabled(false);
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			MidiInstrumentMap map = midiMapTable.getSelectedMidiInstrumentMap();
+			if(map.getAllMidiInstruments().length > 0) {
+				String s = i18n.getMessage("JSManageMidiMapsPane.removeMap", map.getName());
+				String s2 = i18n.getMessage("JSManageMidiMapsPane.removeMap?");
+				if(!HF.showYesNoDialog(JSManageMidiMapsPane.this, s2, s)) return;
+			}
 			CC.getSamplerModel().removeBackendMidiInstrumentMap(map.getMapId());
 		}
 	}

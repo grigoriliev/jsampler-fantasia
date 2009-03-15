@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -88,7 +88,7 @@ public class OrchestrasPane extends JPanel {
 		boolean b;
 		orchestrasTaskPane.setAnimated(preferences().getBoolProperty(ANIMATED));
 		b = preferences().getBoolProperty("OrchestrasPane.orchestrasTaskPane.expanded");
-		orchestrasTaskPane.setExpanded(b);
+		orchestrasTaskPane.setCollapsed(!b);
 		
 		preferences().addPropertyChangeListener(ANIMATED, new PropertyChangeListener() {
 			public void
@@ -129,7 +129,7 @@ public class OrchestrasPane extends JPanel {
 	
 	public void
 	savePreferences() {
-		boolean b = orchestrasTaskPane.isExpanded();
+		boolean b = !orchestrasTaskPane.isCollapsed();
 		preferences().setBoolProperty("OrchestrasPane.orchestrasTaskPane.expanded", b);
 	}
 	

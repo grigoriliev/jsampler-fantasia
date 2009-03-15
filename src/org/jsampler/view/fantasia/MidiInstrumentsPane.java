@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -87,7 +87,7 @@ public class MidiInstrumentsPane extends JPanel {
 		boolean b;
 		mapsTaskPane.setAnimated(preferences().getBoolProperty(ANIMATED));
 		b = preferences().getBoolProperty("MidiInstrumentsPane.mapsTaskPane.expanded");
-		mapsTaskPane.setExpanded(b);
+		mapsTaskPane.setCollapsed(!b);
 		
 		preferences().addPropertyChangeListener(ANIMATED, new PropertyChangeListener() {
 			public void
@@ -125,7 +125,7 @@ public class MidiInstrumentsPane extends JPanel {
 	
 	public void
 	savePreferences() {
-		boolean b = mapsTaskPane.isExpanded();
+		boolean b = !mapsTaskPane.isCollapsed();
 		preferences().setBoolProperty("MidiInstrumentsPane.mapsTaskPane.expanded", b);
 	}
 	

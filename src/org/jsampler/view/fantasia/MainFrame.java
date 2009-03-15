@@ -190,7 +190,9 @@ public class MainFrame extends StdMainFrame {
 		add(rootPane);
 
 		if(CC.isMacOS()) {
-			try { new MacOSApplicationHandler(); }
+			try {
+				String s = "org.jsampler.view.fantasia.MacOSApplicationHandler";
+				Class.forName(s).newInstance(); }
 			catch(Throwable e) { }
 		}
 		

@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -77,6 +77,7 @@ public class DbSearchPage extends NavigationPage {
 			super(owner);
 		}
 		
+		@Override
 		protected JComponent
 		createCriteriaPane(String title, JComponent mainPane) {
 			final TaskPane tp = new TaskPane();
@@ -84,7 +85,7 @@ public class DbSearchPage extends NavigationPage {
 			tp.add(mainPane);
 			tp.setAlignmentX(LEFT_ALIGNMENT);
 			tp.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
-			tp.setExpanded(false);
+			tp.setCollapsed(true);
 			tp.setAnimated(preferences().getBoolProperty(ANIMATED));
 			
 			preferences().addPropertyChangeListener(ANIMATED, new PropertyChangeListener() {

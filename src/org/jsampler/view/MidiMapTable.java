@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -40,7 +40,7 @@ public class MidiMapTable extends JTable {
 	/** Creates a new instance of <code>MidiMapTable</code> */
 	public
 	MidiMapTable() {
-		super(new MidiMapTableModel());
+		setModel(new MidiMapTableModel(this));
 		
 		setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		setFillsViewportHeight(true);
@@ -48,7 +48,7 @@ public class MidiMapTable extends JTable {
 		addMouseListener(new MouseAdapter() {
 			public void
 			mouseClicked(MouseEvent e) {
-				if(e.getButton() != e.BUTTON1) return;
+				if(e.getButton() != MouseEvent.BUTTON1) return;
 				int r = rowAtPoint(e.getPoint());
 				if(r == -1) {
 					clearSelection();
@@ -76,7 +76,7 @@ public class MidiMapTable extends JTable {
 	 * @param map The MIDI instrument map to select.
 	 */
 	public void
-	setSelectedOrchestra(MidiInstrumentMap map) {
+	setSelectedMidiInstrumentMap(MidiInstrumentMap map) {
 		int i = CC.getSamplerModel().getMidiInstrumentMapIndex(map);
 		if(i < 0) {
 			clearSelection();

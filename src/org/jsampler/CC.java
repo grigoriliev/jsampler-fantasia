@@ -1223,6 +1223,7 @@ public class CC {
 			for(int i = 0; i < fxSends.length; i++) {
 				FxSend f = fxSends[i];
 				lscpClient.createFxSend(chnId, f.getMidiController(), f.getName());
+				lscpClient.setFxSendLevel(chnId, i, f.getLevel());
 				
 				Integer[] r = f.getAudioOutputRouting();
 				for(int j = 0; j < r.length; j++) {

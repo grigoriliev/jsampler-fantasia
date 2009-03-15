@@ -73,6 +73,8 @@ CVS HEAD
   * The scripts in the `scripts' directory now pass the command-line
     arguments to the respective jsampler distribution
 
+  * Show controller names in fx sends dialogs
+
   * ant: the default target is now build-fantasia
   * ant: added new target build-fantasia-osx
 
@@ -110,6 +112,7 @@ CVS HEAD
     - `Turn off animation effects' checkbox moved to the `View' tab
     - Refactoring: All basic UI components moved to
       org.jsampler.view.fantasia.basic package
+    - Ask when removing nonempty map
     - Migrated to substance 5
 
     * Mac OS Integration
@@ -119,19 +122,20 @@ CVS HEAD
       - Changed shortcut keys (use command key instead of ctrl key)
 
   * Bug fixes:
-    - bugfix: JSampler took forever to load a configuration with
+    - Bugfix: JSampler took forever to load a configuration with
       too many sampler channels
-    - fixed bug #66
-    - fixed a null pointer exception in the AudioDevicePane, when JACK
+    - Fixed bug #66
+    - Fixed a null pointer exception in the AudioDevicePane, when JACK
       driver is used and the additional device parameters are shown.
-    - fixed bug #76
-    - fixed bug #77
-    - fixed bug #84
-    - fixed bug #98
-    - backend address was always set to 127.0.0.1 when adding backend
+    - Fixed bug #76
+    - Fixed bug #77
+    - Fixed bug #84
+    - Fixed bug #98
+    - Backend address was always set to 127.0.0.1 when adding backend
       to the backend list
     - Fixed bug in the parameter table when editing
       string list parameters with no possibilities
+    - Save send levels when exporting sampler configuration
     - Some minor bugfixes and enhancements
 
 JSampler v0.8a: 2007-12-06

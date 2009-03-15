@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -377,6 +377,7 @@ public class JSMidiInstrumentTree extends JTree {
 		public int
 		getId() { return id; }
 		
+		@Override
 		public boolean
 		equals(Object obj) {
 			if(obj == null) return false;
@@ -385,6 +386,7 @@ public class JSMidiInstrumentTree extends JTree {
 			return false;
 		}
 		
+		@Override
 		public String
 		toString() {
 			int i = CC.getViewConfig().getFirstMidiBankNumber();
@@ -397,6 +399,7 @@ public class JSMidiInstrumentTree extends JTree {
 			super(obj);
 		}
 		
+		@Override
 		public void
 		setUserObject(Object userObject) {
 			if(userObject instanceof MidiBank) {
@@ -408,6 +411,7 @@ public class JSMidiInstrumentTree extends JTree {
 			CC.getLogger().info("MidiInstrumentTree: editing not supported");
 		}
 		
+		@Override
 		public boolean
 		isLeaf() { return false; }
 	}
@@ -417,6 +421,7 @@ public class JSMidiInstrumentTree extends JTree {
 			super(obj);
 		}
 		
+		@Override
 		public void
 		setUserObject(Object userObject) {
 			if(userObject instanceof MidiInstrument) {
@@ -428,6 +433,7 @@ public class JSMidiInstrumentTree extends JTree {
 			CC.getLogger().info("MidiInstrumentTree: editing not supported");
 		}
 		
+		@Override
 		public boolean
 		isLeaf() { return true; }
 	}
@@ -605,7 +611,7 @@ public class JSMidiInstrumentTree extends JTree {
 		if(oldInstr != null) {
 			String[] iS = new String [1];
 			int base = CC.getViewConfig().getFirstMidiProgramNumber();
-			iS[0] = (base + prg) + ". " + oldInstr.getName();
+			iS[0] = (base + newProgram) + ". " + oldInstr.getName();
 			JSOverrideInstrumentsConfirmDlg dlg;
 			dlg = new JSOverrideInstrumentsConfirmDlg(iS);
 			dlg.setVisible(true);
@@ -626,6 +632,7 @@ public class JSMidiInstrumentTree extends JTree {
 					      TreeSelectionListener {
 		
 		/** Invoked when a MIDI instrument in a MIDI instrument map is changed. */
+		@Override
 		public void
 		instrumentInfoChanged(MidiInstrumentEvent e) {
 			DefaultMutableTreeNode n = findInstrument(e.getSource());
@@ -633,9 +640,11 @@ public class JSMidiInstrumentTree extends JTree {
 		}
 		
 		/** Invoked when the name of MIDI instrument map is changed. */
+		@Override
 		public void nameChanged(MidiInstrumentMapEvent e) { }
 		
 		/** Invoked when an instrument is added to a MIDI instrument map. */
+		@Override
 		public void
 		instrumentAdded(MidiInstrumentMapEvent e) {
 			e.getInstrument().addMidiInstrumentListener(getHandler());
@@ -644,12 +653,14 @@ public class JSMidiInstrumentTree extends JTree {
 		}
 	
 		/** Invoked when an instrument is removed from a MIDI instrument map. */
+		@Override
 		public void
 		instrumentRemoved(MidiInstrumentMapEvent e) {
 			unmapInstrument(e.getInstrument());
 			e.getInstrument().removeMidiInstrumentListener(getHandler());
 		}
 		
+		@Override
 		public void
 		valueChanged(TreeSelectionEvent e) {
 			MidiInstrument instr = getSelectedInstrument();
@@ -833,11 +844,13 @@ public class JSMidiInstrumentTree extends JTree {
 			}
 		}
 		
+		@Override
 		public void
 		mousePressed(MouseEvent e) {
 			if(e.isPopupTrigger()) show(e);
 		}
 		
+		@Override
 		public void
 		mouseReleased(MouseEvent e) {
 			if(e.isPopupTrigger()) show(e);
@@ -869,6 +882,7 @@ public class JSMidiInstrumentTree extends JTree {
 				setText(String.valueOf(base + program));
 			}
 			
+			@Override
 			public void
 			actionPerformed(ActionEvent e) {
 				moveSelectedInstrument(program);
@@ -914,6 +928,7 @@ class JSOverrideInstrumentsConfirmDlg extends OkCancelDialog {
 		setResizable(true);
 	}
 	
+	@Override
 	protected void
 	onOk() {
 		if(!btnOk.isEnabled()) return;
@@ -922,6 +937,7 @@ class JSOverrideInstrumentsConfirmDlg extends OkCancelDialog {
 		setCancelled(false);
 	}
 	
+	@Override
 	protected void
 	onCancel() { setVisible(false); }
 }

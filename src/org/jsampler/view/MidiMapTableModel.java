@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -26,7 +26,6 @@ import javax.swing.table.AbstractTableModel;
 
 import org.jsampler.CC;
 import org.jsampler.MidiInstrumentMap;
-import org.jsampler.MidiInstrumentMapList;
 import org.jsampler.SamplerModel;
 
 import org.jsampler.event.ListEvent;
@@ -41,12 +40,13 @@ import static org.jsampler.JSI18n.i18n;
  * @author Grigor Iliev
  */
 public class MidiMapTableModel extends AbstractTableModel {
-	
+	private final MidiMapTable table;
 	/**
 	 * Creates a new instance of <code>MidiMapTableModel</code>.
 	 */
 	public
-	MidiMapTableModel() {
+	MidiMapTableModel(MidiMapTable table) {
+		this.table = table;
 		SamplerModel sm = CC.getSamplerModel();
 		
 		for(int i = 0; i < sm.getMidiInstrumentMapCount(); i++) {
@@ -61,6 +61,7 @@ public class MidiMapTableModel extends AbstractTableModel {
 	 * Gets the number of columns in the model.
 	 * @return The number of columns in the model.
 	 */
+	@Override
 	public int
 	getColumnCount() { return 1; }
 	
@@ -68,6 +69,7 @@ public class MidiMapTableModel extends AbstractTableModel {
 	 * Gets the number of rows in the model.
 	 * @return The number of rows in the model.
 	 */
+	@Override
 	public int
 	getRowCount() { return CC.getSamplerModel().getMidiInstrumentMapCount(); }
 	
@@ -75,6 +77,7 @@ public class MidiMapTableModel extends AbstractTableModel {
 	 * Gets the name of the column at <code>columnIndex</code>.
 	 * @return The name of the column at <code>columnIndex</code>.
 	 */
+	@Override
 	public String
 	getColumnName(int col) { return i18n.getLabel("MidiMapTableModel.title"); }
 	
@@ -86,6 +89,7 @@ public class MidiMapTableModel extends AbstractTableModel {
 	 * @return The value for the cell at <code>columnIndex</code> and
 	 * <code>rowIndex</code>.
 	 */
+	@Override
 	public Object
 	getValueAt(int row, int col) {
 		return CC.getSamplerModel().getMidiInstrumentMap(row);
@@ -95,6 +99,7 @@ public class MidiMapTableModel extends AbstractTableModel {
 	 * Sets the value in the cell at <code>col</code>
 	 * and <code>row</code> to <code>value</code>.
 	 */
+	@Override
 	public void
 	setValueAt(Object value, int row, int col) {
 		
@@ -105,6 +110,7 @@ public class MidiMapTableModel extends AbstractTableModel {
 	 * Returns <code>true</code> if the cell at
 	 * <code>row</code> and <code>col</code> is editable.
 	 */
+	@Override
 	public boolean
 	isCellEditable(int row, int col) { return false; }
 	
@@ -116,19 +122,23 @@ public class MidiMapTableModel extends AbstractTableModel {
 	
 	private class Handler implements ListListener<MidiInstrumentMap>, MidiInstrumentMapListener {
 		/** Invoked when an orchestra is added to the orchestra list. */
+		@Override
 		public void
 		entryAdded(ListEvent<MidiInstrumentMap> e) {
 			e.getEntry().addMidiInstrumentMapListener(getHandler());
 			fireTableDataChanged();
+			table.setSelectedMidiInstrumentMap(e.getEntry());
 		}
 	
 		/** Invoked when an orchestra is removed from the orchestra list. */
+		@Override
 		public void
 		entryRemoved(ListEvent<MidiInstrumentMap> e) {
 			e.getEntry().removeMidiInstrumentMapListener(getHandler());
 			fireTableDataChanged();
 		}
 		
+		@Override
 		public void
 		nameChanged(MidiInstrumentMapEvent e) {
 			MidiInstrumentMap m = (MidiInstrumentMap)e.getSource();
@@ -136,9 +146,11 @@ public class MidiMapTableModel extends AbstractTableModel {
 			fireTableRowsUpdated(idx, idx);
 		}
 		
+		@Override
 		public void
 		instrumentAdded(MidiInstrumentMapEvent e) { }
 		
+		@Override
 		public void
 		instrumentRemoved(MidiInstrumentMapEvent e) { }
 	}

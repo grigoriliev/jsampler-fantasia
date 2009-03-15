@@ -94,8 +94,12 @@
         
         <unjar src="lib/required/swingx.jar" dest="dist/build">
         </unjar>
-        
-        <javac debug="true" debuglevel="source,lines" srcdir="src" destdir="dist/build" excludes="org/jsampler/view/classic/**"/>
+
+        <condition property="mac-src" value="org/jsampler/view/fantasia/MacOSApplicationHandler.java">
+            <not><os name="mac" /></not>
+        </condition>
+
+        <javac debug="true" debuglevel="source,lines" srcdir="src" destdir="dist/build" excludes="org/jsampler/view/classic/** ${mac-src}"/>
         
         <copy todir="./dist/build/org/jsampler/langprops">
             <fileset dir="./src/org/jsampler/langprops"/>

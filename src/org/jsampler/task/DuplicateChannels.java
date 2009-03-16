@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -22,10 +22,7 @@
 
 package org.jsampler.task;
 
-import java.util.logging.Level;
-
 import org.jsampler.CC;
-import org.jsampler.HF;
 
 import org.jsampler.view.JSChannel;
 
@@ -74,16 +71,11 @@ public class DuplicateChannels extends EnhancedTask {
 	}
 	
 	/** The entry point of the task. */
+	@Override
 	public void
-	run() {
-		try {
-			for(SamplerChannel c : chnS) {
-				duplicateSettings(c, CC.getClient().addSamplerChannel());
-			}
-		}
-		catch(Exception x) {
-			setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-			CC.getLogger().log(Level.FINE, getErrorMessage(), x);
+	exec() throws Exception {
+		for(SamplerChannel c : chnS) {
+			duplicateSettings(c, CC.getClient().addSamplerChannel());
 		}
 	}
 	

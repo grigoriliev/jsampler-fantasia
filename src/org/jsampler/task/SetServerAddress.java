@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -22,10 +22,7 @@
 
 package org.jsampler.task;
 
-import java.util.logging.Level;
-
 import org.jsampler.CC;
-import org.jsampler.HF;
 
 
 /**
@@ -47,6 +44,7 @@ public class SetServerAddress extends EnhancedTask {
 	 */
 	public
 	SetServerAddress(String address, int port) {
+		setSilent(true);
 		setTitle("");
 		setDescription("");
 		this.address = address;
@@ -54,13 +52,10 @@ public class SetServerAddress extends EnhancedTask {
 	}
 	
 	/** The entry point of the task. */
+	@Override
 	public void
-	run() {
-		try {
-			CC.getClient().setServerAddress(address);
-			CC.getClient().setServerPort(port);
-		} catch(Exception x) {
-			CC.getLogger().log(Level.FINE, HF.getErrorMessage(x), x);
-		}
+	exec() throws Exception {
+		CC.getClient().setServerAddress(address);
+		CC.getClient().setServerPort(port);
 	}
 }

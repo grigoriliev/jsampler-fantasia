@@ -176,7 +176,7 @@ public class ViewConfig extends JSViewConfig {
 			
 			sb.append("#jsampler.fantasia: [channel]\r\n");
 			
-			sb.append("#jsampler.fantasia: channelsPanel = ");
+			sb.append("#jsampler.fantasia: channelLane = ");
 			sb.append(channelsPane + 1).append("\r\n");
 			
 			switch(c.getViewTracker().getOriginalView().getType()) {

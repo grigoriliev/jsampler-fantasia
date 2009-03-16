@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -22,12 +22,9 @@
 
 package org.jsampler.task;
 
-import java.util.logging.Level;
-
 import net.sf.juife.Task;
 
 import org.jsampler.CC;
-import org.jsampler.HF;
 import org.jsampler.JSPrefs;
 import org.jsampler.SamplerChannelModel;
 import org.jsampler.SamplerModel;
@@ -61,46 +58,42 @@ public class Channel {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try {
-				setResult(CC.getClient().addSamplerChannel());
-				int chnId = getResult();
-				
-				JSPrefs p = CC.getViewConfig().preferences();
-				if(!p.getBoolProperty(USE_CHANNEL_DEFAULTS)) return;
-				
-				String s = p.getStringProperty(DEFAULT_ENGINE);
-				if(s != null && s.length() > 0) {
-					CC.getClient().loadSamplerEngine(s, chnId);
-				}
-				
-				s = p.getStringProperty(DEFAULT_MIDI_INPUT);
-				if(s != null && s.equals("firstDevice")) {
-					assignFirstMidiDevice();
-				} else if(s != null && s.equals("firstDeviceNextChannel")) {
-					assignFirstMidiDeviceNextChannel();
-				}
-				
-				s = p.getStringProperty(DEFAULT_AUDIO_OUTPUT);
-				if(s != null && s.equals("firstDevice")) {
-					assignFirstAudioDevice();
-				}
-				
-				s = p.getStringProperty(DEFAULT_MIDI_INSTRUMENT_MAP);
-				if(s != null && s.equals("midiInstrumentMap.none")) {
-					CC.getClient().setChannelMidiInstrumentMap(chnId, -1);
-				} else if(s != null && s.equals("midiInstrumentMap.default")) {
-					CC.getClient().setChannelMidiInstrumentMap(chnId, -2);
-				}
-				
-				float volume = p.getIntProperty(DEFAULT_CHANNEL_VOLUME);
-				volume /= 100;
-				CC.getClient().setChannelVolume(chnId, volume);
-			} catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
+		exec() throws Exception {
+			setResult(CC.getClient().addSamplerChannel());
+			int chnId = getResult();
+			
+			JSPrefs p = CC.getViewConfig().preferences();
+			if(!p.getBoolProperty(USE_CHANNEL_DEFAULTS)) return;
+			
+			String s = p.getStringProperty(DEFAULT_ENGINE);
+			if(s != null && s.length() > 0) {
+				CC.getClient().loadSamplerEngine(s, chnId);
 			}
+			
+			s = p.getStringProperty(DEFAULT_MIDI_INPUT);
+			if(s != null && s.equals("firstDevice")) {
+				assignFirstMidiDevice();
+			} else if(s != null && s.equals("firstDeviceNextChannel")) {
+				assignFirstMidiDeviceNextChannel();
+			}
+			
+			s = p.getStringProperty(DEFAULT_AUDIO_OUTPUT);
+			if(s != null && s.equals("firstDevice")) {
+				assignFirstAudioDevice();
+			}
+			
+			s = p.getStringProperty(DEFAULT_MIDI_INSTRUMENT_MAP);
+			if(s != null && s.equals("midiInstrumentMap.none")) {
+				CC.getClient().setChannelMidiInstrumentMap(chnId, -1);
+			} else if(s != null && s.equals("midiInstrumentMap.default")) {
+				CC.getClient().setChannelMidiInstrumentMap(chnId, -2);
+			}
+			
+			float volume = p.getIntProperty(DEFAULT_CHANNEL_VOLUME);
+			volume /= 100;
+			CC.getClient().setChannelVolume(chnId, volume);
 		}
 		
 		private void
@@ -186,14 +179,9 @@ public class Channel {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { CC.getClient().removeSamplerChannel(channel); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
-		}
+		exec() throws Exception { CC.getClient().removeSamplerChannel(channel); }
 	}
 
 	/**
@@ -215,14 +203,9 @@ public class Channel {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { CC.getClient().resetChannel(channel); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
-		}
+		exec() throws Exception { CC.getClient().resetChannel(channel); }
 	}
 
 	/**
@@ -253,13 +236,10 @@ public class Channel {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { CC.getClient().setChannelAudioOutputChannel(chn, audioOut, audioIn); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			CC.getClient().setChannelAudioOutputChannel(chn, audioOut, audioIn);
 		}
 	}
 
@@ -286,13 +266,10 @@ public class Channel {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { CC.getClient().setChannelAudioOutputDevice(channel, deviceID); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			CC.getClient().setChannelAudioOutputDevice(channel, deviceID);
 		}
 	}
 	
@@ -320,13 +297,10 @@ public class Channel {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { CC.getClient().setChannelMidiInputChannel(channel, midiChannel); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			CC.getClient().setChannelMidiInputChannel(channel, midiChannel);
 		}
 	}
 
@@ -353,13 +327,10 @@ public class Channel {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { CC.getClient().setChannelMidiInputDevice(channel, deviceID); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			CC.getClient().setChannelMidiInputDevice(channel, deviceID);
 		}
 	}
 
@@ -386,19 +357,15 @@ public class Channel {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { CC.getClient().setChannelMidiInputPort(channel, port); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			CC.getClient().setChannelMidiInputPort(channel, port);
 		}
 	}
 	
 	/**
 	 * This task loads a sampler engine in a specific sampler channel.
-	 * @author Grigor Iliev
 	 */
 	public static class LoadEngine extends EnhancedTask {
 		private String engine;
@@ -422,19 +389,13 @@ public class Channel {
 		}
 		
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { CC.getClient().loadSamplerEngine(engine, channel); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
-		}
+		exec() throws Exception { CC.getClient().loadSamplerEngine(engine, channel); }
 	}
 	
 	/**
 	 * This task loads and assigns an instrument to a sampler channel.
-	 * @author Grigor Iliev
 	 */
 	public static class LoadInstrument extends EnhancedTask {
 		private String filename;
@@ -460,13 +421,10 @@ public class Channel {
 		}
 		
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { CC.getClient().loadInstrument(filename, instrIndex, channel, true); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			CC.getClient().loadInstrument(filename, instrIndex, channel, true);
 		}
 	}
 	
@@ -495,13 +453,10 @@ public class Channel {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { CC.getClient().setChannelMidiInstrumentMap(channel, mapId); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			CC.getClient().setChannelMidiInstrumentMap(channel, mapId);
 		}
 	}
 	
@@ -528,14 +483,9 @@ public class Channel {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { CC.getClient().setChannelMute(channel, mute); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
-		}
+		exec() throws Exception { CC.getClient().setChannelMute(channel, mute); }
 	}
 	
 	/**
@@ -561,14 +511,9 @@ public class Channel {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { CC.getClient().setChannelSolo(channel, solo); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
-		}
+		exec() throws Exception { CC.getClient().setChannelSolo(channel, solo); }
 	}
 
 	/**
@@ -593,8 +538,9 @@ public class Channel {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
+		exec() throws Exception {
 			/*
 			 * Because of the rapid flow of volume change tasks in some cases
 			 * we need to do some optimization to decrease the traffic.
@@ -613,11 +559,7 @@ public class Channel {
 				}
 			}
 		
-			try { CC.getClient().setChannelVolume(channel, volume); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+			CC.getClient().setChannelVolume(channel, volume);
 		}
 	
 		/**
@@ -647,21 +589,18 @@ public class Channel {
 		}
 		
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try {
-				SamplerModel sm = CC.getSamplerModel();
-				sm.updateChannel(CC.getClient().getSamplerChannelInfo(channel));
-			} catch(Exception x) {
-				/*
-				 * We don't want to bother the user if error occurs when updating
-				 * a channel because in most cases this happens due to a race
-				 * condition between delete/update events. So we just log this
-				 * error instead to indicate the failure of this task.
-				 */
-				String msg = getDescription() + ": " + HF.getErrorMessage(x);
-				CC.getLogger().log(Level.INFO, msg, x);
-			}
+		exec() throws Exception {
+			/*
+			 * We don't want to bother the user if error occurs when updating
+			 * a channel because in most cases this happens due to a race
+			 * condition between delete/update events. So we just log this
+			 * error instead to indicate the failure of this task.
+			 */
+			setSilent(true);
+			SamplerModel sm = CC.getSamplerModel();
+			sm.updateChannel(CC.getClient().getSamplerChannelInfo(channel));
 		}
 		
 		/**
@@ -709,14 +648,10 @@ public class Channel {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { setResult(CC.getClient().createFxSend(channel, midiCtrl, name)); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-				x.printStackTrace();
-			}
+		exec() throws Exception {
+			setResult(CC.getClient().createFxSend(channel, midiCtrl, name));
 		}
 	}
 
@@ -742,14 +677,9 @@ public class Channel {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { CC.getClient().destroyFxSend(channel, fxSend); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
-		}
+		exec() throws Exception { CC.getClient().destroyFxSend(channel, fxSend); }
 	}
 	
 	/**
@@ -776,15 +706,9 @@ public class Channel {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { 
-				setResult(CC.getClient().getFxSends(channel));
-			} catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
-		}
+		exec() throws Exception { setResult(CC.getClient().getFxSends(channel)); }
 		
 		/**
 		 * Gets the channel ID.
@@ -822,38 +746,34 @@ public class Channel {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { 
-				SamplerChannelModel scm;
-				scm = CC.getSamplerModel().getChannelById(channel);
-				Integer[] fxSendIDs = CC.getClient().getFxSendIDs(channel);
+		exec() throws Exception {
+			SamplerChannelModel scm;
+			scm = CC.getSamplerModel().getChannelById(channel);
+			Integer[] fxSendIDs = CC.getClient().getFxSendIDs(channel);
+		
+			boolean found = false;
 			
-				boolean found = false;
-				
-				for(FxSend fxs : scm.getFxSends()) {
-					for(int i = 0; i < fxSendIDs.length; i++) {
-						if(fxSendIDs[i] == fxs.getFxSendId()) {
-							fxSendIDs[i] = -1;
-							found = true;
-						}
-					}
-				
-					if(!found) scm.removeFxSendById(fxs.getFxSendId());
-					found = false;
-				}
-			
-				FxSend fxs;
-				
-				for(int id : fxSendIDs) {
-					if(id >= 0) {
-						fxs = CC.getClient().getFxSendInfo(channel, id);
-						scm.addFxSend(fxs);
+			for(FxSend fxs : scm.getFxSends()) {
+				for(int i = 0; i < fxSendIDs.length; i++) {
+					if(fxSendIDs[i] == fxs.getFxSendId()) {
+						fxSendIDs[i] = -1;
+						found = true;
 					}
 				}
-			} catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
+			
+				if(!found) scm.removeFxSendById(fxs.getFxSendId());
+				found = false;
+			}
+		
+			FxSend fxs;
+			
+			for(int id : fxSendIDs) {
+				if(id >= 0) {
+					fxs = CC.getClient().getFxSendInfo(channel, id);
+					scm.addFxSend(fxs);
+				}
 			}
 		}
 	}
@@ -883,22 +803,19 @@ public class Channel {
 		}
 		
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try {
-				SamplerChannelModel scm;
-				scm = CC.getSamplerModel().getChannelById(channel);
-				scm.updateFxSend(CC.getClient().getFxSendInfo(channel, fxSend));
-			} catch(Exception x) {
-				/*
-				 * We don't want to bother the user if error occurs when updating
-				 * an effect send because in most cases this happens due to a race
-				 * condition between delete/update events. So we just log this
-				 * error instead to indicate the failure of this task.
-				 */
-				String msg = getDescription() + ": " + HF.getErrorMessage(x);
-				CC.getLogger().log(Level.INFO, msg, x);
-			}
+		exec() throws Exception {
+			/*
+			 * We don't want to bother the user if error occurs when updating
+			 * an effect send because in most cases this happens due to a race
+			 * condition between delete/update events. So we just log this
+			 * error instead to indicate the failure of this task.
+			 */
+			setSilent(true);
+			SamplerChannelModel scm;
+			scm = CC.getSamplerModel().getChannelById(channel);
+			scm.updateFxSend(CC.getClient().getFxSendInfo(channel, fxSend));
 		}
 	}
 
@@ -929,14 +846,9 @@ public class Channel {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { CC.getClient().setFxSendName(channel, fxSend, name); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
-		}
+		exec() throws Exception { CC.getClient().setFxSendName(channel, fxSend, name); }
 	}
 	
 	/**
@@ -970,17 +882,12 @@ public class Channel {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { 
-				CC.getClient().setFxSendAudioOutputChannel (
-					channel, fxSend, audioSrc, audioDst
-				);
-			}
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			CC.getClient().setFxSendAudioOutputChannel (
+				channel, fxSend, audioSrc, audioDst
+			);
 		}
 	}
 	
@@ -1011,13 +918,10 @@ public class Channel {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { CC.getClient().setFxSendLevel(channel, fxSend, volume); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			CC.getClient().setFxSendLevel(channel, fxSend, volume);
 		}
 	}
 
@@ -1049,13 +953,10 @@ public class Channel {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { CC.getClient().setFxSendMidiController(channel, fxSend, midiCtrl); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			CC.getClient().setFxSendMidiController(channel, fxSend, midiCtrl);
 		}
 	}
 
@@ -1080,14 +981,9 @@ public class Channel {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { CC.getClient().editChannelInstrument(chn); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
-		}
+		exec() throws Exception { CC.getClient().editChannelInstrument(chn); }
 	}
 
 	/**
@@ -1114,18 +1010,14 @@ public class Channel {
 			setTitle("Channel.SendMidiMsg_task");
 			String s = i18n.getMessage("Channel.SendMidiMsg.desc", channel);
 			setDescription(s);
-			
-			
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { CC.getClient().sendChannelMidiData(chn, type, arg1, arg2); }
-			catch(Exception x) {
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			setSilent(true);
+			CC.getClient().sendChannelMidiData(chn, type, arg1, arg2);
 		}
 	}
-
 }

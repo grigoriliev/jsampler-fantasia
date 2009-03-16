@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -23,10 +23,8 @@
 package org.jsampler.task;
 
 import java.util.Vector;
-import java.util.logging.Level;
 
 import org.jsampler.CC;
-import org.jsampler.HF;
 import org.jsampler.SamplerChannelModel;
 import org.jsampler.SamplerModel;
 
@@ -50,55 +48,56 @@ public class UpdateChannels extends EnhancedTask {
 	}
 	
 	/** The entry point of the task. */
+	@Override
 	public void
-	run() {
-		try {
-			SamplerModel sm = CC.getSamplerModel();
-			Integer[] chnIDs = CC.getClient().getSamplerChannelIDs();
-			
-			boolean found = false;
-			
-			boolean oldValue = CC.getSamplerModel().getChannelListIsAdjusting();
-			
-			javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
-				public void
-				run() {
-					CC.getSamplerModel().setChannelListIsAdjusting(true);
-					CC.getMainFrame().setAutoUpdateChannelListUI(false);
+	exec() throws Exception {
+		SamplerModel sm = CC.getSamplerModel();
+		Integer[] chnIDs = CC.getClient().getSamplerChannelIDs();
+		
+		boolean found = false;
+		
+		boolean oldValue = CC.getSamplerModel().getChannelListIsAdjusting();
+		
+		javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
+			public void
+			run() {
+				CC.getSamplerModel().setChannelListIsAdjusting(true);
+				CC.getMainFrame().setAutoUpdateChannelListUI(false);
+			}
+		});
+		
+		for(SamplerChannelModel m : sm.getChannels()) {
+			for(int i = 0; i < chnIDs.length; i++) {
+				if(m.getChannelId() == chnIDs[i]) {
+					chnIDs[i] = -1;
+					found = true;
 				}
-			});
-			
-			for(SamplerChannelModel m : sm.getChannels()) {
-				for(int i = 0; i < chnIDs.length; i++) {
-					if(m.getChannelId() == chnIDs[i]) {
-						chnIDs[i] = -1;
-						found = true;
-					}
-				}
-				
-				if(!found) sm.removeChannelById(m.getChannelId());
-				found = false;
 			}
 			
-			Vector<SamplerChannel> v = new Vector<SamplerChannel>();
-			for(int id : chnIDs) {
-				if(id >= 0) v.add(CC.getClient().getSamplerChannelInfo(id));
-			}
-			
-			for(int i = 0; i < v.size() - 1; i++) sm.addChannel(v.elementAt(i));
-			
-			manageAutoUpdate(false);
-			
-			if(v.size() > 0) sm.addChannel(v.elementAt(v.size() - 1));
-			else if(!CC.getSamplerModel().getChannelListIsAdjusting()) {
-				// FIXME: no change after
-				// CC.getSamplerModel().setChannelListIsAdjusting(false);
-			}
-		} catch(Exception x) {
-			setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-			CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			manageAutoUpdate(true);
+			if(!found) sm.removeChannelById(m.getChannelId());
+			found = false;
 		}
+		
+		Vector<SamplerChannel> v = new Vector<SamplerChannel>();
+		for(int id : chnIDs) {
+			if(id >= 0) v.add(CC.getClient().getSamplerChannelInfo(id));
+		}
+		
+		for(int i = 0; i < v.size() - 1; i++) sm.addChannel(v.elementAt(i));
+		
+		manageAutoUpdate(false);
+		
+		if(v.size() > 0) sm.addChannel(v.elementAt(v.size() - 1));
+		else if(!CC.getSamplerModel().getChannelListIsAdjusting()) {
+			// FIXME: no change after
+			// CC.getSamplerModel().setChannelListIsAdjusting(false);
+		}
+	}
+
+	@Override
+	public void
+	onError(Exception e) {
+		manageAutoUpdate(true);
 	}
 	
 	private void

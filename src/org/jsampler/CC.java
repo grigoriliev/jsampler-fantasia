@@ -772,7 +772,7 @@ public class CC {
 			}
 		});
 		
-		final GetEngines ge = new GetEngines();
+		final Global.GetEngines ge = new Global.GetEngines();
 		ge.addTaskListener(new TaskListener() {
 			public void
 			taskPerformed(TaskEvent e) {
@@ -830,7 +830,7 @@ public class CC {
 		});
 		
 		
-		final Connect cnt = new Connect();
+		final Global.Connect cnt = new Global.Connect();
 		boolean b = preferences().getBoolProperty(JSPrefs.LAUNCH_BACKEND_LOCALLY);
 		if(b && srv.isLocal() && backendProcess == null) cnt.setSilent(true);
 		cnt.addTaskListener(new TaskListener() {
@@ -1402,7 +1402,7 @@ public class CC {
 		@Override
 		public void
 		totalVoiceCountChanged(TotalVoiceCountEvent e) {
-			scheduleTask(new UpdateTotalVoiceCount());
+			scheduleTask(new Global.UpdateTotalVoiceCount());
 		}
 		
 		/** Invoked when the number of MIDI instruments in a MIDI instrument map is changed. */
@@ -1453,8 +1453,12 @@ public class CC {
 				break;
 			case TASK_DONE:
 				EnhancedTask t = (EnhancedTask)e.getSource();
-				if(t.doneWithErrors() && !t.isStopped() && !t.isSilent()) {
-					showError(t);
+				if(t.doneWithErrors() && !t.isSilent()) {
+					if(t.getErrorCode() == t.SOCKET_ERROR) {
+						getMainFrame().handleConnectionFailure();
+					} else if(!t.isStopped()) {
+						showError(t);
+					}
 				}
 				break;
 			case NOT_IDLE:

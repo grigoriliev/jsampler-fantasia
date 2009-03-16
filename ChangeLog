@@ -75,6 +75,8 @@ CVS HEAD
 
   * Show controller names in fx sends dialogs
 
+  * Proper handling of connection failures
+
   * ant: the default target is now build-fantasia
   * ant: added new target build-fantasia-osx
 

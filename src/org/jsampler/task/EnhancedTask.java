@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -22,9 +22,16 @@
 
 package org.jsampler.task;
 
+import java.util.logging.Level;
+
 import net.sf.juife.AbstractTask;
 
+import org.jsampler.CC;
+import org.jsampler.HF;
+
 import org.linuxsampler.lscp.LSException;
+
+import static org.jsampler.JSI18n.i18n;
 
 
 /**
@@ -32,8 +39,39 @@ import org.linuxsampler.lscp.LSException;
  * @author Grigor Iliev
  */
 public abstract class EnhancedTask<R> extends AbstractTask<R> {
+	public static final int SOCKET_ERROR = 1;
 	private boolean stopped = false;
 	private boolean silent = false;
+	private boolean showErrorDetails;
+	
+	public
+	EnhancedTask() { this(false); }
+
+	public
+	EnhancedTask(boolean showErrorDetails) {
+		this.showErrorDetails = showErrorDetails;
+	}
+
+	public void
+	run() {
+		try { exec(); }
+		catch(java.net.SocketException x) {
+			setErrorCode(SOCKET_ERROR);
+			setErrorMessage(i18n.getError("SOCKET_ERROR"));
+			CC.getLogger().log(Level.FINE, getErrorMessage(), x);
+		} catch(Exception x) {
+			setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
+			if(showErrorDetails) setErrorDetails(x);
+			CC.getLogger().log(Level.FINE, getErrorMessage(), x);
+			onError(x);
+		}
+	}
+
+	public void
+	exec() throws Exception { }
+
+	public void
+	onError(Exception e) { }
 	
 	/**
 	 * Marks that the execution of this task was interrupted.

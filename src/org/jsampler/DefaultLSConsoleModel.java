@@ -423,13 +423,7 @@ public class DefaultLSConsoleModel implements LSConsoleModel {
 	
 		/** The entry point of the task. */
 		public void
-		run() {
-			try { out.writeLine(cmd); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
-		}
+		exec() throws Exception { out.writeLine(cmd); }
 	}
 
 	class LSConsoleThread extends Thread {

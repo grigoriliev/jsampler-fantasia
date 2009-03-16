@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -25,10 +25,7 @@ package org.jsampler.task;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
-import java.util.logging.Level;
-
 import org.jsampler.CC;
-import org.jsampler.HF;
 
 import static org.jsampler.JSI18n.i18n;
 
@@ -57,26 +54,22 @@ public class LSConsoleConnect extends EnhancedTask<Socket> {
 	}
 	
 	/** The entry point of the task. */
+	@Override
 	public void
-	run() {
-		try {
-			String address = CC.getCurrentServer().getAddress();
-			int port = CC.getCurrentServer().getPort();
-			
-			if(oldSocket != null) oldSocket.close();
-			InetSocketAddress sockAddr = new InetSocketAddress(address, port);
-			
-			int soTimeout = 10000;
-			Socket sock = new Socket();
-			sock.bind(null);
-			sock.connect(sockAddr, soTimeout);
-			sock.setSoTimeout(soTimeout);
-			sock.setTcpNoDelay(true);
-			
-			setResult(sock);
-		} catch(Exception x) {
-			String err = getDescription() + ": " + HF.getErrorMessage(x);
-			CC.getLogger().log(Level.INFO, err, x);
-		}
+	exec() throws Exception {
+		String address = CC.getCurrentServer().getAddress();
+		int port = CC.getCurrentServer().getPort();
+		
+		if(oldSocket != null) oldSocket.close();
+		InetSocketAddress sockAddr = new InetSocketAddress(address, port);
+		
+		int soTimeout = 10000;
+		Socket sock = new Socket();
+		sock.bind(null);
+		sock.connect(sockAddr, soTimeout);
+		sock.setSoTimeout(soTimeout);
+		sock.setTcpNoDelay(true);
+		
+		setResult(sock);
 	}
 }

@@ -116,6 +116,8 @@ public abstract class JSMainFrame extends JFrame {
 	 * Shows a detailed error information about the specified exception.
 	 */
 	public abstract void showDetailedErrorMessage(Dialog owner, String err, String details);
+
+	public abstract void handleConnectionFailure();
 	
 	protected Vector<ListSelectionListener> channelsPaneListeners = 
 		new Vector<ListSelectionListener>();

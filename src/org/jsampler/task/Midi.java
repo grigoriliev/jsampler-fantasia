@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -21,11 +21,6 @@
  */
 package org.jsampler.task;
 
-import java.util.Vector;
-import java.util.logging.Level;
-
-import net.sf.juife.Task;
-
 import org.linuxsampler.lscp.BoolParameter;
 import org.linuxsampler.lscp.MidiInputDevice;
 import org.linuxsampler.lscp.MidiInputDriver;
@@ -35,7 +30,6 @@ import org.linuxsampler.lscp.MidiInstrumentMapInfo;
 import org.linuxsampler.lscp.Parameter;
 
 import org.jsampler.CC;
-import org.jsampler.HF;
 import org.jsampler.MidiDeviceModel;
 import org.jsampler.MidiInstrument;
 import org.jsampler.MidiInstrumentMap;
@@ -66,14 +60,9 @@ public class Midi {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { setResult(CC.getClient().getMidiInputDrivers()); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
-		}
+		exec() throws Exception { setResult(CC.getClient().getMidiInputDrivers()); }
 	}
 	
 	/**
@@ -98,17 +87,12 @@ public class Midi {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try {
-				MidiInputDriver d;
-				d = CC.getClient().getMidiInputDriverInfo(driver, depList);
-				setResult(d.getParameters());
-			}
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			MidiInputDriver d;
+			d = CC.getClient().getMidiInputDriverInfo(driver, depList);
+			setResult(d.getParameters());
 		}
 	}
 
@@ -134,15 +118,9 @@ public class Midi {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try {
-				run0();
-			} catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
-		}
+		exec() throws Exception { run0(); }
 		
 		private void
 		run0() throws Exception {
@@ -170,14 +148,9 @@ public class Midi {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { CC.getClient().destroyMidiInputDevice(deviceId); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
-		}
+		exec() throws Exception { CC.getClient().destroyMidiInputDevice(deviceId); }
 	}
 
 	/**
@@ -203,17 +176,13 @@ public class Midi {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { 
-				CC.getClient().enableMidiInputDevice(dev, enable);
+		exec() throws Exception {
+			CC.getClient().enableMidiInputDevice(dev, enable);
 			
-				// Not needed, but eventually speeds up the change.
-				CC.getSamplerModel().getMidiDeviceById(dev).setActive(enable);
-			} catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+			// Not needed, but eventually speeds up the change.
+			CC.getSamplerModel().getMidiDeviceById(dev).setActive(enable);
 		}
 	}
 
@@ -250,16 +219,11 @@ public class Midi {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { 
-				CC.getClient().setMidiInputDeviceParameter(dev, prm);
-				
-				CC.getSamplerModel().getMidiDeviceById(dev);
-			} catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			CC.getClient().setMidiInputDeviceParameter(dev, prm);
+			CC.getSamplerModel().getMidiDeviceById(dev);
 		}
 	}
 
@@ -285,13 +249,10 @@ public class Midi {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { CC.getClient().setMidiInputPortCount(deviceId, ports); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			CC.getClient().setMidiInputPortCount(deviceId, ports);
 		}
 	}
 	
@@ -320,13 +281,10 @@ public class Midi {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { CC.getClient().setMidiInputPortParameter(dev, port, prm); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			CC.getClient().setMidiInputPortParameter(dev, port, prm);
 		}
 	}
 
@@ -349,15 +307,11 @@ public class Midi {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { 
-				MidiInputDevice mid = CC.getClient().getMidiInputDeviceInfo(dev);
-				CC.getSamplerModel().getMidiDeviceById(dev).setDeviceInfo(mid);
-			} catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			MidiInputDevice mid = CC.getClient().getMidiInputDeviceInfo(dev);
+			CC.getSamplerModel().getMidiDeviceById(dev).setDeviceInfo(mid);
 		}
 	}
 
@@ -373,37 +327,33 @@ public class Midi {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { 
-				SamplerModel sm = CC.getSamplerModel();
-				Integer[] deviceIDs = CC.getClient().getMidiInputDeviceIDs();
+		exec() throws Exception {
+			SamplerModel sm = CC.getSamplerModel();
+			Integer[] deviceIDs = CC.getClient().getMidiInputDeviceIDs();
+		
+			boolean found = false;
 			
-				boolean found = false;
-				
-				for(MidiDeviceModel m : sm.getMidiDevices()) {
-					for(int i = 0; i < deviceIDs.length; i++) {
-						if(m.getDeviceId() == deviceIDs[i]) {
-							deviceIDs[i] = -1;
-							found = true;
-						}
-					}
-				
-					if(!found) sm.removeMidiDeviceById(m.getDeviceId());
-					found = false;
-				}
-			
-				MidiInputDevice dev;
-				
-				for(int id : deviceIDs) {
-					if(id >= 0) {
-						dev = CC.getClient().getMidiInputDeviceInfo(id);
-						sm.addMidiDevice(dev);
+			for(MidiDeviceModel m : sm.getMidiDevices()) {
+				for(int i = 0; i < deviceIDs.length; i++) {
+					if(m.getDeviceId() == deviceIDs[i]) {
+						deviceIDs[i] = -1;
+						found = true;
 					}
 				}
-			} catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
+			
+				if(!found) sm.removeMidiDeviceById(m.getDeviceId());
+				found = false;
+			}
+		
+			MidiInputDevice dev;
+			
+			for(int id : deviceIDs) {
+				if(id >= 0) {
+					dev = CC.getClient().getMidiInputDeviceInfo(id);
+					sm.addMidiDevice(dev);
+				}
 			}
 		}
 	}
@@ -428,15 +378,11 @@ public class Midi {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try {
-				Integer mapId = CC.getClient().addMidiInstrumentMap(name);
-				setResult(mapId);
-			} catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			Integer mapId = CC.getClient().addMidiInstrumentMap(name);
+			setResult(mapId);
 		}
 	}
 	
@@ -460,15 +406,9 @@ public class Midi {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try {
-				CC.getClient().removeMidiInstrumentMap(mapId);
-			} catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
-		}
+		exec() throws Exception { CC.getClient().removeMidiInstrumentMap(mapId); }
 	}
 	
 	/**
@@ -493,15 +433,9 @@ public class Midi {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try {
-				CC.getClient().setMidiInstrumentMapName(mapId, name);
-			} catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
-		}
+		exec() throws Exception { CC.getClient().setMidiInstrumentMapName(mapId, name); }
 	}
 	
 	/**
@@ -523,17 +457,11 @@ public class Midi {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { 
-				MidiInstrumentMapInfo info =
-					CC.getClient().getMidiInstrumentMapInfo(mapId);
-				
-				CC.getSamplerModel().getMidiInstrumentMapById(mapId).setInfo(info);
-			} catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			MidiInstrumentMapInfo info = CC.getClient().getMidiInstrumentMapInfo(mapId);
+			CC.getSamplerModel().getMidiInstrumentMapById(mapId).setInfo(info);
 		}
 	}
 
@@ -549,22 +477,18 @@ public class Midi {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { 
-				MidiInstrumentMapInfo[] mims;
-				mims = CC.getClient().getMidiInstrumentMaps();
-				MidiInstrumentMap[] maps = new MidiInstrumentMap[mims.length];
-				
-				for(int i = 0; i < mims.length; i++) {
-					maps[i] = createMap(mims[i]);
-				}
-				
-				setResult(maps);
-			} catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
+		exec() throws Exception {
+			MidiInstrumentMapInfo[] mims;
+			mims = CC.getClient().getMidiInstrumentMaps();
+			MidiInstrumentMap[] maps = new MidiInstrumentMap[mims.length];
+			
+			for(int i = 0; i < mims.length; i++) {
+				maps[i] = createMap(mims[i]);
 			}
+			
+			setResult(maps);
 		}
 		
 		private MidiInstrumentMap
@@ -593,38 +517,33 @@ public class Midi {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { 
-				SamplerModel sm = CC.getSamplerModel();
-				Integer[] mapIDs = CC.getClient().getMidiInstrumentMapIDs();
+		exec() throws Exception {
+			SamplerModel sm = CC.getSamplerModel();
+			Integer[] mapIDs = CC.getClient().getMidiInstrumentMapIDs();
+		
+			boolean found = false;
 			
-				boolean found = false;
-				
-				for(MidiInstrumentMap m : sm.getMidiInstrumentMaps()) {
-					for(int i = 0; i < mapIDs.length; i++) {
-						if(mapIDs[i] == m.getMapId()) {
-							mapIDs[i] = -1;
-							found = true;
-						}
-					}
-					
-					if(!found) sm.removeMidiInstrumentMapById(m.getMapId());
-					found = false;
-				}
-				
-				MidiInstrumentMapInfo map;
-				
-				for(int id : mapIDs) {
-					if(id >= 0) {
-						map = CC.getClient().getMidiInstrumentMapInfo(id);
-						sm.addMidiInstrumentMap(new MidiInstrumentMap(map));
+			for(MidiInstrumentMap m : sm.getMidiInstrumentMaps()) {
+				for(int i = 0; i < mapIDs.length; i++) {
+					if(mapIDs[i] == m.getMapId()) {
+						mapIDs[i] = -1;
+						found = true;
 					}
 				}
-			} catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-				x.printStackTrace();
+				
+				if(!found) sm.removeMidiInstrumentMapById(m.getMapId());
+				found = false;
+			}
+			
+			MidiInstrumentMapInfo map;
+			
+			for(int id : mapIDs) {
+				if(id >= 0) {
+					map = CC.getClient().getMidiInstrumentMapInfo(id);
+					sm.addMidiInstrumentMap(new MidiInstrumentMap(map));
+				}
 			}
 		}
 	}
@@ -657,15 +576,11 @@ public class Midi {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { 
-				MidiInstrumentEntry entry = new MidiInstrumentEntry(bank, program);
-				CC.getClient().mapMidiInstrument(mapId, entry, instrInfo, true);
-			} catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			MidiInstrumentEntry entry = new MidiInstrumentEntry(bank, program);
+			CC.getClient().mapMidiInstrument(mapId, entry, instrInfo, true);
 		}
 	}
 
@@ -695,15 +610,11 @@ public class Midi {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { 
-				MidiInstrumentEntry entry = new MidiInstrumentEntry(bank, program);
-				CC.getClient().unmapMidiInstrument(mapId, entry);
-			} catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			MidiInstrumentEntry entry = new MidiInstrumentEntry(bank, program);
+			CC.getClient().unmapMidiInstrument(mapId, entry);
 		}
 	}
 
@@ -732,19 +643,15 @@ public class Midi {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { 
-				MidiInstrumentInfo info =
-					CC.getClient().getMidiInstrumentInfo(mapId, bank, program);
-				
-				MidiInstrumentMap map;
-				map = CC.getSamplerModel().getMidiInstrumentMapById(mapId);
-				map.getMidiInstrument(bank, program).setInfo(info);
-			} catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			MidiInstrumentInfo info =
+				CC.getClient().getMidiInstrumentInfo(mapId, bank, program);
+			
+			MidiInstrumentMap map;
+			map = CC.getSamplerModel().getMidiInstrumentMapById(mapId);
+			map.getMidiInstrument(bank, program).setInfo(info);
 		}
 	}
 
@@ -764,43 +671,37 @@ public class Midi {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { 
-				SamplerModel sm = CC.getSamplerModel();
-				int[][] entries = CC.getClient().getMidiInstrumentEntries(mapId);
-				MidiInstrumentMap map = sm.getMidiInstrumentMapById(mapId);
-				boolean found = false;
-				
-				for(MidiInstrument instr : map.getAllMidiInstruments()) {
-					for(int i = 0; i < entries.length; i++) {
-						if(entries[i] == null) continue;
-						
-						if(equal(instr, entries[i])) {
-							entries[i] = null;
-							found = true;
-						}
+		exec() throws Exception {
+			SamplerModel sm = CC.getSamplerModel();
+			int[][] entries = CC.getClient().getMidiInstrumentEntries(mapId);
+			MidiInstrumentMap map = sm.getMidiInstrumentMapById(mapId);
+			boolean found = false;
+			
+			for(MidiInstrument instr : map.getAllMidiInstruments()) {
+				for(int i = 0; i < entries.length; i++) {
+					if(entries[i] == null) continue;
+					
+					if(equal(instr, entries[i])) {
+						entries[i] = null;
+						found = true;
 					}
-				
-					if(!found) {
-						map.unmapMidiInstrument(instr.getInfo().getEntry());
-					}
-					found = false;
 				}
-				
-				for(int[] entry : entries) {
-					if(entry != null) {
-						MidiInstrumentInfo i;
-						i = CC.getClient().getMidiInstrumentInfo (
+			
+				if(!found) map.unmapMidiInstrument(instr.getInfo().getEntry());
+				found = false;
+			}
+			
+			for(int[] entry : entries) {
+				if(entry != null) {
+					MidiInstrumentInfo i;
+					i = CC.getClient().getMidiInstrumentInfo (
 							entry[0], entry[1], entry[2]
-						);
-						MidiInstrument instr = new MidiInstrument(i);
-						map.mapMidiInstrument(i.getEntry(), instr);
-					}
+					);
+					MidiInstrument instr = new MidiInstrument(i);
+					map.mapMidiInstrument(i.getEntry(), instr);
 				}
-			} catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
 			}
 		}
 		
@@ -823,6 +724,7 @@ public class Midi {
 		 * equal to this are removed if added using {@link org.jsampler.CC#scheduleTask}.
 		 * @see org.jsampler.CC#addTask
 		 */
+		@Override
 		public boolean
 		equals(Object obj) {
 			if(obj == null) return false;

@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -22,11 +22,8 @@
 
 package org.jsampler.task;
 
-import java.util.logging.Level;
-
 import org.jsampler.AudioDeviceModel;
 import org.jsampler.CC;
-import org.jsampler.HF;
 import org.jsampler.SamplerModel;
 
 import org.linuxsampler.lscp.AudioOutputDevice;
@@ -57,14 +54,9 @@ public class Audio {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { setResult(CC.getClient().getAudioOutputDrivers()); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
-		}
+		exec() throws Exception { setResult(CC.getClient().getAudioOutputDrivers()); }
 	}
 	
 	/**
@@ -89,17 +81,12 @@ public class Audio {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try {
-				AudioOutputDriver d;
-				d = CC.getClient().getAudioOutputDriverInfo(driver, depList);
-				setResult(d.getParameters());
-			}
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			AudioOutputDriver d;
+			d = CC.getClient().getAudioOutputDriverInfo(driver, depList);
+			setResult(d.getParameters());
 		}
 	}
 
@@ -126,16 +113,11 @@ public class Audio {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try {
-				Integer deviceId =
-					CC.getClient().createAudioOutputDevice(driver, parameters);
-				setResult(deviceId);
-			} catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			Integer deviceId = CC.getClient().createAudioOutputDevice(driver, parameters);
+			setResult(deviceId);
 		}
 	}
 	
@@ -159,14 +141,9 @@ public class Audio {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { CC.getClient().destroyAudioOutputDevice(deviceId); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
-		}
+		exec() throws Exception { CC.getClient().destroyAudioOutputDevice(deviceId); }
 	}
 	
 	/**
@@ -192,17 +169,13 @@ public class Audio {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { 
-				CC.getClient().enableAudioOutputDevice(dev, enable);
+		exec() throws Exception {
+			CC.getClient().enableAudioOutputDevice(dev, enable);
 			
-				// Not needed, but eventually speeds up the change.
-				CC.getSamplerModel().getAudioDeviceById(dev).setActive(enable);
-			} catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+			// Not needed, but eventually speeds up the change.
+			CC.getSamplerModel().getAudioDeviceById(dev).setActive(enable);
 		}
 	}
 
@@ -228,13 +201,10 @@ public class Audio {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { CC.getClient().setAudioOutputDeviceParameter(dev, prm); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			CC.getClient().setAudioOutputDeviceParameter(dev, prm);
 		}
 	}
 
@@ -263,13 +233,10 @@ public class Audio {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { CC.getClient().setAudioOutputChannelParameter(dev, channel, prm); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			CC.getClient().setAudioOutputChannelParameter(dev, channel, prm);
 		}
 	}
 	
@@ -295,13 +262,10 @@ public class Audio {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { CC.getClient().setAudioOutputChannelCount(deviceId, channels); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			CC.getClient().setAudioOutputChannelCount(deviceId, channels);
 		}
 	}
 
@@ -325,15 +289,11 @@ public class Audio {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { 
-				AudioOutputDevice d = CC.getClient().getAudioOutputDeviceInfo(dev);
-				CC.getSamplerModel().getAudioDeviceById(dev).setDeviceInfo(d);
-			} catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			AudioOutputDevice d = CC.getClient().getAudioOutputDeviceInfo(dev);
+			CC.getSamplerModel().getAudioDeviceById(dev).setDeviceInfo(d);
 		}
 	}
 
@@ -349,37 +309,33 @@ public class Audio {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { 
-				SamplerModel sm = CC.getSamplerModel();
-				Integer[] devIDs = CC.getClient().getAudioOutputDeviceIDs();
+		exec() throws Exception {
+			SamplerModel sm = CC.getSamplerModel();
+			Integer[] devIDs = CC.getClient().getAudioOutputDeviceIDs();
+		
+			boolean found = false;
 			
-				boolean found = false;
-				
-				for(AudioDeviceModel m : sm.getAudioDevices()) {
-					for(int i = 0; i < devIDs.length; i++) {
-						if(m.getDeviceId() == devIDs[i]) {
-							devIDs[i] = -1;
-							found = true;
-						}
-					}
-				
-					if(!found) sm.removeAudioDeviceById(m.getDeviceId());
-					found = false;
-				}
-			
-				AudioOutputDevice d;
-				
-				for(int id : devIDs) {
-					if(id >= 0) {
-						d = CC.getClient().getAudioOutputDeviceInfo(id);
-						sm.addAudioDevice(d);
+			for(AudioDeviceModel m : sm.getAudioDevices()) {
+				for(int i = 0; i < devIDs.length; i++) {
+					if(m.getDeviceId() == devIDs[i]) {
+						devIDs[i] = -1;
+						found = true;
 					}
 				}
-			} catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
+			
+				if(!found) sm.removeAudioDeviceById(m.getDeviceId());
+				found = false;
+			}
+		
+			AudioOutputDevice d;
+			
+			for(int id : devIDs) {
+				if(id >= 0) {
+					d = CC.getClient().getAudioOutputDeviceInfo(id);
+					sm.addAudioDevice(d);
+				}
 			}
 		}
 	}

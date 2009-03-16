@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -22,13 +22,13 @@
 
 package org.jsampler.task;
 
-import java.util.logging.Level;
-
 import org.jsampler.CC;
-import org.jsampler.HF;
 
+import org.linuxsampler.lscp.SamplerEngine;
 import org.linuxsampler.lscp.ServerInfo;
 import org.linuxsampler.lscp.Instrument;
+
+import org.jsampler.SamplerModel;
 
 import static org.jsampler.JSI18n.i18n;
 
@@ -41,10 +41,41 @@ public class Global {
 	
 	/** Forbits the instantiation of this class. */
 	private Global() { }
+
+	/**
+	 * Establishes connection to LinuxSampler.
+	 */
+	public static class Connect extends EnhancedTask {
+		/** Creates a new instance of <code>Connect</code>. */
+		public
+		Connect() {
+			setTitle("Global.Connect_task");
+			setDescription(i18n.getMessage("Global.Connect.desc"));
+		}
+
+		/** The entry point of the task. */
+		@Override
+		public void
+		exec() throws Exception { CC.getClient().connect(); }
+	}
+
+	public static class Disconnect extends EnhancedTask {
+		/** Creates a new instance of <code>Disconnect</code>. */
+		public
+		Disconnect() {
+			setSilent(true);
+			setTitle("Global.Disconnect_task");
+			setDescription("Disconnecting...");
+		}
+
+		/** The entry point of the task. */
+		@Override
+		public void
+		exec() throws Exception { CC.getClient().disconnect(); }
+	}
 	
 	/**
 	 * This task retrieves information about the LinuxSampler instance.
-	 * @author Grigor Iliev
 	 */
 	public static class GetServerInfo extends EnhancedTask<ServerInfo> {
 		/** Creates a new instance of <code>GetServerInfo</code>. */
@@ -57,18 +88,11 @@ public class Global {
 		/** The entry point of the task. */
 		@Override
 		public void
-		run() {
-			try { setResult(CC.getClient().getServerInfo()); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
-		}
+		exec() throws Exception { setResult(CC.getClient().getServerInfo()); }
 	}
 	
 	/**
 	 * This task resets the whole sampler.
-	 * @author Grigor Iliev
 	 */
 	public static class ResetSampler extends EnhancedTask {
 		/** Creates a new instance of <code>ResetSampler</code>. */
@@ -81,13 +105,24 @@ public class Global {
 		/** The entry point of the task. */
 		@Override
 		public void
-		run() {
-			try { CC.getClient().resetSampler(); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception { CC.getClient().resetSampler(); }
+	}
+
+	/**
+	 * This task retrieves the list of all available engines.
+	 */
+	public static class GetEngines extends EnhancedTask<SamplerEngine[]> {
+		/** Creates a new instance of <code>GetEngines</code>. */
+		public
+		GetEngines() {
+			setTitle("Global.GetEngines_task");
+			setDescription(i18n.getMessage("Global.GetEngines.desc"));
 		}
+
+		/** The entry point of the task. */
+		@Override
+		public void
+		exec() throws Exception { setResult(CC.getClient().getEngines()); }
 	}
 	
 	/**
@@ -104,13 +139,7 @@ public class Global {
 		/** The entry point of the task. */
 		@Override
 		public void
-		run() {
-			try { setResult(CC.getClient().getVolume()); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
-		}
+		exec() throws Exception { setResult(CC.getClient().getVolume()); }
 	}
 
 	
@@ -134,14 +163,7 @@ public class Global {
 		/** The entry point of the task. */
 		@Override
 		public void
-		run() {
-			try {
-				CC.getClient().setVolume(volume);
-			} catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
-		}
+		exec() throws Exception { CC.getClient().setVolume(volume); }
 	}
 
 	
@@ -170,14 +192,47 @@ public class Global {
 		/** The entry point of the task. */
 		@Override
 		public void
-		run() {
-			try {
-				if(maxVoices != -1) CC.getClient().setGlobalVoiceLimit(maxVoices);
-				if(maxStreams != -1) CC.getClient().setGlobalStreamLimit(maxStreams);
-			} catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			if(maxVoices != -1) CC.getClient().setGlobalVoiceLimit(maxVoices);
+			if(maxStreams != -1) CC.getClient().setGlobalStreamLimit(maxStreams);
+		}
+	}
+
+	/**
+	 * This task updates the current number of all active voices
+	 * and the maximum number of active voices allowed.
+	 */
+	public static class UpdateTotalVoiceCount extends EnhancedTask {
+		/** Creates a new instance of <code>UpdateTotalVoiceCount</code>. */
+		public
+		UpdateTotalVoiceCount() {
+			setSilent(true);
+			setTitle("Global.UpdateTotalVoiceCount_task");
+			setDescription(i18n.getMessage("Global.UpdateTotalVoiceCount.desc"));
+		}
+
+		/** The entry point of the task. */
+		@Override
+		public void
+		exec() throws Exception {
+			SamplerModel sm = CC.getSamplerModel();
+			int voices = CC.getClient().getTotalVoiceCount();
+			int voicesMax = CC.getClient().getTotalVoiceCountMax();
+			sm.updateActiveVoiceInfo(voices, voicesMax);
+		}
+
+		/**
+		 * Used to decrease the traffic. All task in the queue
+		 * equal to this are removed if added using {@link org.jsampler.CC#scheduleTask}.
+		 * @see org.jsampler.CC#addTask
+		 */
+		@Override
+		public boolean
+		equals(Object obj) {
+			if(obj == null) return false;
+			if(!(obj instanceof UpdateTotalVoiceCount)) return false;
+
+			return true;
 		}
 	}
 
@@ -202,14 +257,7 @@ public class Global {
 		/** The entry point of the task. */
 		@Override
 		public void
-		run() {
-			try {
-				CC.getClient().setSoTimeout(timeout * 1000);
-			} catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
-		}
+		exec() throws Exception { CC.getClient().setSoTimeout(timeout * 1000); }
 	}
 	
 	/**
@@ -221,6 +269,7 @@ public class Global {
 		/** Creates a new instance of <code>GetFileInstruments</code>. */
 		public
 		GetFileInstruments(String filename) {
+			setSilent(true);
 			this.filename = filename;
 			setTitle("Global.GetFileInstruments_task");
 			setDescription(i18n.getMessage("Global.GetFileInstruments.desc"));
@@ -229,12 +278,8 @@ public class Global {
 		/** The entry point of the task. */
 		@Override
 		public void
-		run() {
-			try { setResult(CC.getClient().getFileInstruments(filename)); }
-			catch(Exception x) {
-				String s = getDescription() + ": " + HF.getErrorMessage(x);
-				CC.getLogger().log(Level.FINE, s, x);
-			}
+		exec() throws Exception {
+			setResult(CC.getClient().getFileInstruments(filename));
 		}
 	}
 	
@@ -248,6 +293,7 @@ public class Global {
 		/** Creates a new instance of <code>GetFileInstrument</code>. */
 		public
 		GetFileInstrument(String filename, int instrIdx) {
+			setSilent(true);
 			this.filename = filename;
 			this.instrIdx = instrIdx;
 			setTitle("Global.GetFileInstrument_task");
@@ -257,12 +303,8 @@ public class Global {
 		/** The entry point of the task. */
 		@Override
 		public void
-		run() {
-			try { setResult(CC.getClient().getFileInstrumentInfo(filename, instrIdx)); }
-			catch(Exception x) {
-				String s = getDescription() + ": " + HF.getErrorMessage(x);
-				CC.getLogger().log(Level.FINE, s, x);
-			}
+		exec() throws Exception {
+			setResult(CC.getClient().getFileInstrumentInfo(filename, instrIdx));
 		}
 	}
 	

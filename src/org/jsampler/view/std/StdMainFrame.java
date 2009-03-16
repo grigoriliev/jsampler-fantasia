@@ -27,6 +27,8 @@ import javax.swing.Action;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.jsampler.CC;
+import org.jsampler.task.Global;
 import org.jsampler.view.JSChannel;
 import org.jsampler.view.JSChannelsPane;
 import org.jsampler.view.JSMainFrame;
@@ -67,6 +69,19 @@ public abstract class StdMainFrame extends JSMainFrame implements ListSelectionL
 	
 	public StdA4n
 	getA4n() { return StdA4n.a4n; }
+
+	private boolean processConnectionFailure = false;
+
+	@Override
+	public void
+	handleConnectionFailure() {
+		if(processConnectionFailure) return;
+		processConnectionFailure = true;
+		CC.getTaskQueue().add(new Global.Disconnect());
+		JSConnectionFailurePane p = new JSConnectionFailurePane();
+		p.showDialog();
+		processConnectionFailure = false;
+	}
 	
 	private void
 	checkChannelSelection(JSChannelsPane pane) {

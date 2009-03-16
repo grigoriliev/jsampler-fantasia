@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -79,14 +79,23 @@ public class SessionViewConfig {
 		ChannelConfig channelConfig = new ChannelConfig();
 		for(int i = index; i < conf.length; i++) {
 			if(conf[i].startsWith("[")) return channelConfig;
-			if(conf[i].startsWith("channelsPanel = ")) {
-				String s = conf[i].substring("channelsPanel = ".length());
+			if(conf[i].startsWith("channelLane = ")) {
+				String s = conf[i].substring("channelLane = ".length());
 				if(s.isEmpty()) continue;
 				
 				try {
 					channelConfig.channelsPanel = Integer.parseInt(s) - 1;
 				} catch(Exception x) {
-					CC.getLogger().info("Uknown channels panel: " + s);
+					CC.getLogger().info("Uknown channel lane: " + s);
+				}
+			} else if(conf[i].startsWith("channelsPanel = ")) {
+				String s = conf[i].substring("channelsPanel = ".length());
+				if(s.isEmpty()) continue;
+
+				try {
+					channelConfig.channelsPanel = Integer.parseInt(s) - 1;
+				} catch(Exception x) {
+					CC.getLogger().info("Uknown channel lane: " + s);
 				}
 			} else if(conf[i].startsWith("viewType = ")) {
 				String s = conf[i].substring("viewType = ".length());

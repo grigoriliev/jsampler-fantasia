@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -22,12 +22,9 @@
 
 package org.jsampler.task;
 
-import java.util.logging.Level;
-
 import javax.swing.SwingUtilities;
 
 import org.jsampler.CC;
-import org.jsampler.HF;
 
 import static org.jsampler.JSI18n.i18n;
 
@@ -45,6 +42,7 @@ public class LaunchBackend extends EnhancedTask {
 	 */
 	public
 	LaunchBackend(int delay, Object monitor) {
+		setSilent(true);
 		setTitle("LaunchBackend_task");
 		setDescription(i18n.getMessage("LaunchBackend.desc"));
 		this.delay = delay;
@@ -54,16 +52,12 @@ public class LaunchBackend extends EnhancedTask {
 	/** The entry point of the task. */
 	@Override
 	public void
-	run() {
-		try {
-			synchronized(monitor) { monitor.wait(delay * 1000); }
-			
-			SwingUtilities.invokeLater(new Runnable() {
-				public void
-				run() { CC.reconnect(); }
-			});
-		} catch(Exception x) {
-			CC.getLogger().log(Level.FINE, HF.getErrorMessage(x), x);
-		}
+	exec() throws Exception {
+		synchronized(monitor) { monitor.wait(delay * 1000); }
+		
+		SwingUtilities.invokeLater(new Runnable() {
+			public void
+			run() { CC.reconnect(); }
+		});
 	}
 }

@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -22,10 +22,7 @@
 
 package org.jsampler.task;
 
-import java.util.logging.Level;
-
 import org.jsampler.CC;
-import org.jsampler.HF;
 
 import org.linuxsampler.lscp.DbDirectoryInfo;
 import org.linuxsampler.lscp.DbInstrumentInfo;
@@ -66,13 +63,10 @@ public class InstrumentsDb {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { setResult(CC.getClient().getDbDirectoryCount(dir, recursive)); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			setResult(CC.getClient().getDbDirectoryCount(dir, recursive));
 		}
 	}
 	
@@ -98,13 +92,10 @@ public class InstrumentsDb {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { setResult(CC.getClient().getDbInstrumentCount(dir, recursive)); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			setResult(CC.getClient().getDbInstrumentCount(dir, recursive));
 		}
 	}
 	
@@ -126,14 +117,9 @@ public class InstrumentsDb {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { setResult(CC.getClient().getDbDirectories(dir)); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
-		}
+		exec() throws Exception { setResult(CC.getClient().getDbDirectories(dir)); }
 		
 		public String
 		getDirectory() { return dir; }
@@ -143,6 +129,7 @@ public class InstrumentsDb {
 		 * equal to this are removed if added using {@link org.jsampler.CC#scheduleTask}.
 		 * @see org.jsampler.CC#addTask
 		 */
+		@Override
 		public boolean
 		equals(Object obj) {
 			if(obj == null) return false;
@@ -176,14 +163,9 @@ public class InstrumentsDb {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { setResult(CC.getClient().getDbDirectoryInfo(dir)); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
-		}
+		exec() throws Exception { setResult(CC.getClient().getDbDirectoryInfo(dir)); }
 	}
 	
 	/**
@@ -204,14 +186,9 @@ public class InstrumentsDb {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { CC.getClient().addDbDirectory(dir); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
-		}
+		exec() throws Exception { CC.getClient().addDbDirectory(dir); }
 	}
 	
 	/**
@@ -235,14 +212,9 @@ public class InstrumentsDb {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { CC.getClient().renameDbDirectory(dir, newName); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
-		}
+		exec() throws Exception { CC.getClient().renameDbDirectory(dir, newName); }
 	}
 	
 	/**
@@ -267,13 +239,10 @@ public class InstrumentsDb {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { CC.getClient().setDbDirectoryDescription(dir, desc); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			CC.getClient().setDbDirectoryDescription(dir, desc);
 		}
 	}
 	
@@ -289,22 +258,16 @@ public class InstrumentsDb {
 		 */
 		public
 		RemoveDirectories(DbDirectoryInfo[] directories) {
+			super(true);
 			setTitle("InstrumentsDb.RemoveDirectories_task");
 			setDescription(i18n.getMessage("InstrumentsDb.RemoveDirectories.desc"));
 			this.directories = directories;
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try {
-				removeDirectories();
-			} catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				setErrorDetails(x);
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
-		}
+		exec() throws Exception { removeDirectories(); }
 		
 		private void
 		removeDirectories() throws Exception {
@@ -345,13 +308,10 @@ public class InstrumentsDb {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { setResult(CC.getClient().findDbDirectories(dir, query)); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			setResult(CC.getClient().findDbDirectories(dir, query));
 		}
 	}
 	
@@ -367,21 +327,16 @@ public class InstrumentsDb {
 		 */
 		public
 		GetInstruments(String dir) {
+			super(true);
 			setTitle("InstrumentsDb.GetInstruments_task");
 			setDescription(i18n.getMessage("InstrumentsDb.GetInstruments.desc"));
 			this.dir = dir;
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { setResult(CC.getClient().getDbInstruments(dir)); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				setErrorDetails(x);
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
-		}
+		exec() throws Exception { setResult(CC.getClient().getDbInstruments(dir)); }
 		
 		public String
 		getDirectory() { return dir; }
@@ -391,6 +346,7 @@ public class InstrumentsDb {
 		 * equal to this are removed if added using {@link org.jsampler.CC#scheduleTask}.
 		 * @see org.jsampler.CC#addTask
 		 */
+		@Override
 		public boolean
 		equals(Object obj) {
 			if(obj == null) return false;
@@ -422,13 +378,10 @@ public class InstrumentsDb {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { setResult(CC.getClient().getDbInstrumentInfo(instr)); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			setResult(CC.getClient().getDbInstrumentInfo(instr));
 		}
 	}
 	
@@ -454,13 +407,10 @@ public class InstrumentsDb {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { setResult(CC.getClient().findDbInstruments(dir, query)); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			setResult(CC.getClient().findDbInstruments(dir, query));
 		}
 	}
 	
@@ -485,14 +435,9 @@ public class InstrumentsDb {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { CC.getClient().renameDbInstrument(instr, newName); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
-		}
+		exec() throws Exception { CC.getClient().renameDbInstrument(instr, newName); }
 	}
 	
 	/**
@@ -517,13 +462,10 @@ public class InstrumentsDb {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { CC.getClient().setDbInstrumentDescription(instr, desc); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			CC.getClient().setDbInstrumentDescription(instr, desc);
 		}
 	}
 	
@@ -539,22 +481,16 @@ public class InstrumentsDb {
 		 */
 		public
 		RemoveInstruments(DbInstrumentInfo[] instruments) {
+			super(true);
 			setTitle("InstrumentsDb.RemoveInstruments_task");
 			setDescription(i18n.getMessage("InstrumentsDb.RemoveInstruments.desc"));
 			this.instruments = instruments;
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try {
-				removeInstruments();
-			} catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				setErrorDetails(x);
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
-		}
+		exec() throws Exception { removeInstruments(); }
 		
 		private void
 		removeInstruments() throws Exception {
@@ -612,23 +548,19 @@ public class InstrumentsDb {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try {
-				int i;
-				if(instrIndex != -1) {
-					i = CC.getClient().addDbInstrument (
-						dbDir, filePath, instrIndex, true
-					);
-				} else {
-					i = CC.getClient().addDbInstruments(dbDir, filePath, true);
-				}
-				
-				setResult(i);
-			} catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
+		exec() throws Exception {
+			int i;
+			if(instrIndex != -1) {
+				i = CC.getClient().addDbInstrument (
+					dbDir, filePath, instrIndex, true
+				);
+			} else {
+				i = CC.getClient().addDbInstruments(dbDir, filePath, true);
 			}
+			
+			setResult(i);
 		}
 	}
 	
@@ -687,20 +619,15 @@ public class InstrumentsDb {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try {
-				ScanMode scanMode = flat ? ScanMode.FLAT : ScanMode.RECURSIVE;
-				int i = CC.getClient().addDbInstruments (
-					scanMode, dbDir, fsDir, true, insDir
-				);
-				
-				setResult(i);
-			}
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			ScanMode scanMode = flat ? ScanMode.FLAT : ScanMode.RECURSIVE;
+			int i = CC.getClient().addDbInstruments (
+				scanMode, dbDir, fsDir, true, insDir
+			);
+			
+			setResult(i);
 		}
 	}
 	
@@ -745,18 +672,13 @@ public class InstrumentsDb {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try {
-				int i = CC.getClient().addDbInstruments (
-					ScanMode.NON_RECURSIVE, dbDir, fsDir, true, insDir
-				);
-				setResult(i);
-			}
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			int i = CC.getClient().addDbInstruments (
+				ScanMode.NON_RECURSIVE, dbDir, fsDir, true, insDir
+			);
+			setResult(i);
 		}
 	}
 	
@@ -778,6 +700,7 @@ public class InstrumentsDb {
 		 */
 		public
 		Move(DbDirectoryInfo[] directories, DbInstrumentInfo[] instruments, String dest) {
+			super(true);
 			setTitle("InstrumentsDb.Move_task");
 			setDescription(i18n.getMessage("InstrumentsDb.Move.desc"));
 			this.directories = directories;
@@ -786,16 +709,11 @@ public class InstrumentsDb {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try {
-				moveInstruments();
-				moveDirectories();
-			} catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				setErrorDetails(x);
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			moveInstruments();
+			moveDirectories();
 		}
 		
 		private void
@@ -849,6 +767,7 @@ public class InstrumentsDb {
 		 */
 		public
 		Copy(DbDirectoryInfo[] directories, DbInstrumentInfo[] instruments, String dest) {
+			super(true);
 			setTitle("InstrumentsDb.Copy_task");
 			setDescription(i18n.getMessage("InstrumentsDb.Copy.desc"));
 			this.directories = directories;
@@ -857,16 +776,11 @@ public class InstrumentsDb {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try {
-				copyInstruments();
-				copyDirectories();
-			} catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				setErrorDetails(x);
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			copyInstruments();
+			copyDirectories();
 		}
 		
 		private void
@@ -918,13 +832,10 @@ public class InstrumentsDb {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { setResult(CC.getClient().findLostDbInstrumentFiles()); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			setResult(CC.getClient().findLostDbInstrumentFiles());
 		}
 	}
 	
@@ -950,13 +861,10 @@ public class InstrumentsDb {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { CC.getClient().setDbInstrumentFilePath(oldPath, newPath); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			CC.getClient().setDbInstrumentFilePath(oldPath, newPath);
 		}
 	}
 	
@@ -978,13 +886,10 @@ public class InstrumentsDb {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { setResult(CC.getClient().getDbInstrumentsJobInfo(jobId)); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
+		exec() throws Exception {
+			setResult(CC.getClient().getDbInstrumentsJobInfo(jobId));
 		}
 		
 		public int
@@ -995,6 +900,7 @@ public class InstrumentsDb {
 		 * equal to this are removed if added using {@link org.jsampler.CC#scheduleTask}.
 		 * @see org.jsampler.CC#addTask
 		 */
+		@Override
 		public boolean
 		equals(Object obj) {
 			if(obj == null) return false;
@@ -1020,13 +926,8 @@ public class InstrumentsDb {
 		}
 	
 		/** The entry point of the task. */
+		@Override
 		public void
-		run() {
-			try { CC.getClient().formatInstrumentsDb(); }
-			catch(Exception x) {
-				setErrorMessage(getDescription() + ": " + HF.getErrorMessage(x));
-				CC.getLogger().log(Level.FINE, getErrorMessage(), x);
-			}
-		}
+		exec() throws Exception { CC.getClient().formatInstrumentsDb(); }
 	}
 }

@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -34,6 +34,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 
+import java.io.File;
+
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -41,14 +43,10 @@ import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -100,7 +98,7 @@ public class JSInstrumentChooser extends OkCancelDialog {
 	private final JLabel lIndex = new JLabel(i18n.getLabel("JSInstrumentChooser.lIndex"));
 	
 	private final JComboBox cbFilename = StdUtils.createPathComboBox();
-	private final JComboBox cbIndex = new JComboBox();
+	private final JComboBox cbIndex = StdUtils.createEnhancedComboBox();
 	
 	private final JButton btnBrowse;
 	
@@ -408,6 +406,7 @@ public class JSInstrumentChooser extends OkCancelDialog {
 		return new JSDbInstrumentChooser(owner);
 	}
 	
+	@Override
 	protected void
 	onOk() {
 		if(!btnOk.isEnabled()) return;
@@ -477,20 +476,15 @@ public class JSInstrumentChooser extends OkCancelDialog {
 	private void
 	onBrowse() {
 		if(!rbSelectFromFile.isSelected()) rbSelectFromFile.doClick(0);
-		String s = preferences().getStringProperty("lastInstrumentLocation");
-		JFileChooser fc = new JFileChooser(s);
-		int result = fc.showOpenDialog(this);
-		if(result != JFileChooser.APPROVE_OPTION) return;
+		File f = StdUtils.showOpenInstrumentFileChooser(this);
+		if(f == null) return;
 		
-		String path = fc.getSelectedFile().getAbsolutePath();
+		String path = f.getAbsolutePath();
 		if(java.io.File.separatorChar == '\\') {
 			path = path.replace('\\', '/');
 		}
 		cbFilename.setSelectedItem(toEscapedString(path));
 		btnOk.requestFocusInWindow();
-		
-		path = fc.getCurrentDirectory().getAbsolutePath();
-		preferences().setStringProperty("lastInstrumentLocation", path);
 	}
 	
 	private void
@@ -582,22 +576,27 @@ public class JSInstrumentChooser extends OkCancelDialog {
 	private class EventHandler extends FocusAdapter
 				implements ActionListener, DocumentListener {
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			updateState();
 		}
 		
 		// DocumentListener
+		@Override
 		public void
 		insertUpdate(DocumentEvent e) { updateState(); }
 		
+		@Override
 		public void
 		removeUpdate(DocumentEvent e) { updateState(); }
 		
+		@Override
 		public void
 		changedUpdate(DocumentEvent e) { updateState(); }
 		
 		// FocusListener
+		@Override
 		public void
 		focusGained(FocusEvent e) {
 			Object src = e.getSource();

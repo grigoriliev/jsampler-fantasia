@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -19,29 +19,15 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  *   MA  02111-1307  USA
  */
+package org.jsampler.view;
 
-package org.jsampler.view.fantasia;
-
-import javax.swing.JComponent;
-
-import org.jdesktop.swingx.JXTaskPane;
-import org.jvnet.substance.swingx.SubstanceTaskPaneUI;
-
+import java.io.FilenameFilter;
+import javax.swing.filechooser.FileFilter;
 
 /**
  *
  * @author Grigor Iliev
  */
-public class TaskPane extends JXTaskPane {
-	
-	/** Creates a new instance of <code>TaskPane</code> */
-	public
-	TaskPane() {
-		setUI(new SubstanceTaskPaneUI());
-		//this.getContentPane().setBackground(java.awt.Color.BLACK);
-		if(getContentPane() instanceof JComponent) {
-			((JComponent)getContentPane()).setOpaque(false);
-		}
-	}
-	
+public abstract class JSFileFilter extends FileFilter implements FilenameFilter {
+
 }

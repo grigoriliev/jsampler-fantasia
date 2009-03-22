@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -24,13 +24,13 @@ package org.jsampler.view.std;
 
 import java.awt.event.ActionEvent;
 
+import java.io.File;
 import java.io.FileOutputStream;
 
 import java.util.logging.Level;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.JFileChooser;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -47,7 +47,6 @@ import org.jsampler.SamplerChannelModel;
 
 import org.jsampler.view.JSChannel;
 import org.jsampler.view.JSChannelsPane;
-import org.jsampler.view.LscpFileFilter;
 
 import static org.jsampler.view.std.StdI18n.i18n;
 
@@ -65,17 +64,15 @@ public class StdA4n {
 	
 	protected void
 	exportSamplerConfig() {
-		String s = preferences().getStringProperty("lastScriptLocation");
-		JFileChooser fc = new JFileChooser(s);
-		fc.setFileFilter(new LscpFileFilter());
-		int result = fc.showSaveDialog(CC.getMainFrame());
-		if(result != JFileChooser.APPROVE_OPTION) return;
-		
-		String path = fc.getCurrentDirectory().getAbsolutePath();
-		preferences().setStringProperty("lastScriptLocation", path);
+		File f = StdUtils.showSaveLscpFileChooser();
+		if(f == null) return;
+		if(f.exists()) {
+			String msg = i18n.getMessage("StdA4n.overwriteFile?");
+			if(!HF.showYesNoDialog(CC.getMainFrame(), msg)) return;
+		}
 	
 		try {
-			FileOutputStream fos = new FileOutputStream(fc.getSelectedFile());
+			FileOutputStream fos = new FileOutputStream(f);
 			fos.write(CC.exportSessionToLscpScript().getBytes("US-ASCII"));
 			fos.close();
 		} catch(Exception x) {
@@ -86,17 +83,16 @@ public class StdA4n {
 	
 	protected void
 	exportMidiInstrumentMaps() {
-		String s = preferences().getStringProperty("lastScriptLocation");
-		JFileChooser fc = new JFileChooser(s);
-		fc.setFileFilter(new LscpFileFilter());
-		int result = fc.showSaveDialog(CC.getMainFrame());
-		if(result != JFileChooser.APPROVE_OPTION) return;
-		
-		String path = fc.getCurrentDirectory().getAbsolutePath();
-		preferences().setStringProperty("lastScriptLocation", path);
+		File f = StdUtils.showSaveLscpFileChooser();
+		if(f == null) return;
+
+		if(f.exists()) {
+			String msg = i18n.getMessage("StdA4n.overwriteFile?");
+			if(!HF.showYesNoDialog(CC.getMainFrame(), msg)) return;
+		}
 		
 		try {
-			FileOutputStream fos = new FileOutputStream(fc.getSelectedFile());
+			FileOutputStream fos = new FileOutputStream(f);
 			fos.write(CC.exportInstrMapsToLscpScript().getBytes("US-ASCII"));
 			fos.close();
 		} catch(Exception x) {
@@ -294,6 +290,7 @@ public class StdA4n {
 			setEnabled(false);
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			JSChannel[] channels =
@@ -323,6 +320,7 @@ public class StdA4n {
 			setEnabled(false);
 		}
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
 			JSChannelsPane p = CC.getMainFrame().getSelectedChannelsPane();

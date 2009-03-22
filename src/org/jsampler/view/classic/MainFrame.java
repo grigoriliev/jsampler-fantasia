@@ -65,12 +65,15 @@ import org.jsampler.LSConsoleModel;
 import org.jsampler.OrchestraModel;
 import org.jsampler.Server;
 
+import org.jsampler.task.Global;
+
 import org.jsampler.view.JSChannel;
 import org.jsampler.view.JSChannelsPane;
 import org.jsampler.view.LscpFileFilter;
 
 import org.jsampler.view.std.JSBackendLogFrame;
 import org.jsampler.view.std.JSConnectDlg;
+import org.jsampler.view.std.JSConnectionFailurePane;
 import org.jsampler.view.std.JSDetailedErrorDlg;
 import org.jsampler.view.std.JSQuitDlg;
 import org.jsampler.view.std.JSamplerHomeChooser;
@@ -1276,5 +1279,18 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		if(i >= size) return CC.getServerList().getServer(0);
 		
 		return CC.getServerList().getServer(i);
+	}
+
+	private boolean processConnectionFailure = false;
+
+	@Override
+	public void
+	handleConnectionFailure() {
+		if(processConnectionFailure) return;
+		processConnectionFailure = true;
+		CC.getTaskQueue().add(new Global.Disconnect());
+		JSConnectionFailurePane p = new JSConnectionFailurePane();
+		p.showDialog();
+		processConnectionFailure = false;
 	}
 }

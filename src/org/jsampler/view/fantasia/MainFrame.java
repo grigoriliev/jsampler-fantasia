@@ -53,7 +53,6 @@ import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -72,7 +71,6 @@ import org.jsampler.LSConsoleModel;
 import org.jsampler.Server;
 
 import org.jsampler.view.JSChannelsPane;
-import org.jsampler.view.LscpFileFilter;
 import org.jsampler.view.SessionViewConfig;
 
 import org.jsampler.view.fantasia.basic.FantasiaPainter;
@@ -714,16 +712,9 @@ public class MainFrame extends StdMainFrame {
 	
 	protected boolean
 	runScript() {
-		String s = preferences().getStringProperty("lastScriptLocation");
-		JFileChooser fc = new JFileChooser(s);
-		fc.setFileFilter(new LscpFileFilter());
-		int result = fc.showOpenDialog(this);
-		if(result != JFileChooser.APPROVE_OPTION) return false;
-		
-		String path = fc.getCurrentDirectory().getAbsolutePath();
-		preferences().setStringProperty("lastScriptLocation", path);
-					
-		runScript(fc.getSelectedFile());
+		File f = StdUtils.showOpenLscpFileChooser();
+		if(f == null) return false;
+		runScript(f);
 		
 		return true;
 	}
@@ -737,7 +728,7 @@ public class MainFrame extends StdMainFrame {
 		FileReader fr;
 		try { fr = new FileReader(script); }
 		catch(FileNotFoundException e) {
-			HF.showErrorMessage(i18n.getMessage("FileNotFound!"));
+			HF.showErrorMessage(i18n.getError("fileNotFound!"));
 			return;
 		}
 		

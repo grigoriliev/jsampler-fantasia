@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -30,6 +30,8 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import java.io.File;
+
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -37,7 +39,6 @@ import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
@@ -233,20 +234,15 @@ public class JSAddDbInstrumentsFromFileDlg extends OkCancelDialog {
 	
 	private void
 	onBrowse() {
-		String path = preferences().getStringProperty("lastInstrumentLocation");
-		JFileChooser fc = new JFileChooser(path);
-		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		int result = fc.showOpenDialog(this);
-		if(result != JFileChooser.APPROVE_OPTION) return;
+		File f = StdUtils.showOpenInstrumentFileChooser(this);
+		if(f == null) return;
 		
-		path = fc.getSelectedFile().getAbsolutePath();
+		String path = f.getAbsolutePath();
 		if(java.io.File.separatorChar == '\\') {
 			path = path.replace('\\', '/');
 		}
 		path = toEscapedString(path);
 		cbSource.setSelectedItem(path);
-		path = fc.getCurrentDirectory().getAbsolutePath();
-		preferences().setStringProperty("lastInstrumentLocation", path);
 	}
 	
 	private void
@@ -269,6 +265,7 @@ public class JSAddDbInstrumentsFromFileDlg extends OkCancelDialog {
 		btnOk.setEnabled(b);
 	}
 	
+	@Override
 	protected void
 	onOk() {
 		if(!btnOk.isEnabled()) return;
@@ -305,6 +302,7 @@ public class JSAddDbInstrumentsFromFileDlg extends OkCancelDialog {
 		});
 	}
 	
+	@Override
 	protected void
 	onCancel() { setVisible(false); }
 	
@@ -315,16 +313,20 @@ public class JSAddDbInstrumentsFromFileDlg extends OkCancelDialog {
 	
 	private class Handler implements DocumentListener, ActionListener {
 		// DocumentListener
+		@Override
 		public void
 		insertUpdate(DocumentEvent e) { updateState(); }
 		
+		@Override
 		public void
 		removeUpdate(DocumentEvent e) { updateState(); }
 		
+		@Override
 		public void
 		changedUpdate(DocumentEvent e) { updateState(); }
 		///////
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) { updateState(); }
 	}

@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -22,7 +22,11 @@
 package org.jsampler.view.std;
 
 import java.awt.Desktop;
+import java.awt.Dialog;
+import java.awt.FileDialog;
+import java.awt.Frame;
 import java.awt.Rectangle;
+import java.awt.Window;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -32,6 +36,8 @@ import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.net.URI;
 
 import java.text.NumberFormat;
@@ -40,6 +46,7 @@ import java.util.Vector;
 import java.util.logging.Level;
 
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JSlider;
 import javax.swing.JToolTip;
 import javax.swing.Popup;
@@ -51,6 +58,8 @@ import org.jsampler.CC;
 import org.jsampler.HF;
 import org.jsampler.JSPrefs;
 
+import org.jsampler.view.JSFileFilter;
+import org.jsampler.view.LscpFileFilter;
 import static org.jsampler.view.std.StdI18n.i18n;
 import static org.jsampler.view.std.StdPrefs.*;
 
@@ -67,11 +76,10 @@ public class StdUtils {
 	
 	private static JSPrefs
 	preferences() { return CC.getViewConfig().preferences(); }
-	
+
 	public static JComboBox
-	createPathComboBox() {
+	createEnhancedComboBox() {
 		final JComboBox cb = new JComboBox();
-		cb.setEditable(true);
 		cb.addActionListener(new ActionListener() {
 			public void
 			actionPerformed(ActionEvent e) {
@@ -84,7 +92,14 @@ public class StdUtils {
 				else cb.setToolTipText(s);
 			}
 		});
-		
+
+		return cb;
+	}
+	
+	public static JComboBox
+	createPathComboBox() {
+		JComboBox cb = createEnhancedComboBox();
+		cb.setEditable(true);
 		return cb;
 	}
 	
@@ -184,6 +199,98 @@ public class StdUtils {
 		sb.append(r.width).append(',').append(r.height);
 		String s = windowName + ".windowSizeAndLocation";
 		CC.preferences().setStringProperty(s, sb.toString());
+	}
+
+	public static File
+	showOpenLscpFileChooser() {
+		return showLscpFileChooser(true);
+	}
+
+	public static File
+	showOpenLscpFileChooser(Window owner) {
+		return showLscpFileChooser(true, owner);
+	}
+
+	public static File
+	showSaveLscpFileChooser() {
+		return showLscpFileChooser(false);
+	}
+
+	public static File
+	showSaveLscpFileChooser(Window owner) {
+		return showLscpFileChooser(false, owner);
+	}
+
+	private static File
+	showLscpFileChooser(boolean openDialog) {
+		return showLscpFileChooser(openDialog, CC.getMainFrame());
+	}
+
+	private static File
+	showLscpFileChooser(boolean openDialog, Window owner) {
+		return showFileChooser (
+			openDialog, owner, false, new LscpFileFilter(), "lastScriptLocation"
+		);
+	}
+
+	public static File
+	showOpenInstrumentFileChooser(Window owner) {
+		return showFileChooser(true, owner, false, null, "lastInstrumentLocation");
+	}
+
+	public static File
+	showOpenDirectoryChooser(Window owner, String locationProperty) {
+		return showFileChooser(true, owner, true, null, locationProperty);
+	}
+
+	private static File
+	showFileChooser (
+		boolean       openDialog,
+		Window        owner,
+		boolean       dirChooser,
+		JSFileFilter  filter,
+		String        locationProperty
+	) {
+		boolean nativeFileChooser = preferences().getBoolProperty("nativeFileChoosers");
+		String oldPath = null;
+		if(locationProperty != null) {
+			oldPath = preferences().getStringProperty(locationProperty);
+		}
+		File f = null;
+		if(nativeFileChooser && CC.isMacOS()) {
+			if(dirChooser) {
+				System.setProperty("apple.awt.fileDialogForDirectories", "true");
+			}
+			FileDialog dlg;
+			if(owner instanceof Frame) dlg = new FileDialog((Frame)owner);
+			else if(owner instanceof Dialog) dlg = new FileDialog((Dialog)owner);
+			else dlg = new FileDialog(CC.getMainFrame());
+			dlg.setDirectory(oldPath);
+			dlg.setMode(openDialog ? FileDialog.LOAD : FileDialog.SAVE);
+			if(filter != null) dlg.setFilenameFilter(filter);
+			dlg.setVisible(true);
+			if(dirChooser) {
+				System.setProperty("apple.awt.fileDialogForDirectories", "false");
+			}
+			if(dlg.getFile() != null) {
+				f = new File(new File(dlg.getDirectory()), dlg.getFile());
+			}
+		} else {
+			JFileChooser fc = new JFileChooser(oldPath);
+			if(filter != null) fc.setFileFilter(filter);
+			if(dirChooser) fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			int result;
+			if(openDialog) result = fc.showOpenDialog(owner);
+			else result = fc.showSaveDialog(owner);
+			if(result == JFileChooser.APPROVE_OPTION) f = fc.getSelectedFile();
+		}
+
+		if(f == null) return null;
+		String path = f.getParent();
+		if(path != null && locationProperty != null) {
+			preferences().setStringProperty(locationProperty, path);
+		}
+		return f;
 	}
 	
 	public static JSlider

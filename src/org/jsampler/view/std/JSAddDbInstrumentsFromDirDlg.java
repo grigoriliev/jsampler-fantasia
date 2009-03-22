@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -32,6 +32,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
+import java.io.File;
+
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -39,7 +41,6 @@ import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
@@ -222,20 +223,14 @@ public class JSAddDbInstrumentsFromDirDlg extends OkCancelDialog {
 	
 	private void
 	onBrowse() {
-		String path = preferences().getStringProperty("lastInstrumentLocation");
-		JFileChooser fc = new JFileChooser(path);
-		fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		int result = fc.showOpenDialog(this);
-		if(result != JFileChooser.APPROVE_OPTION) return;
-		
-		path = fc.getSelectedFile().getAbsolutePath();
+		File f = StdUtils.showOpenDirectoryChooser(this, "lastInstrumentLocation");
+		if(f == null) return;
+		String path = f.getAbsolutePath();
 		if(java.io.File.separatorChar == '\\') {
 			path = path.replace('\\', '/');
 		}
 		path = toEscapedString(path);
 		cbSource.setSelectedItem(path);
-		path = fc.getCurrentDirectory().getAbsolutePath();
-		preferences().setStringProperty("lastInstrumentLocation", path);
 	}
 	
 	private void
@@ -258,6 +253,7 @@ public class JSAddDbInstrumentsFromDirDlg extends OkCancelDialog {
 		btnOk.setEnabled(b);
 	}
 	
+	@Override
 	protected void
 	onOk() {
 		if(!btnOk.isEnabled()) return;
@@ -275,6 +271,7 @@ public class JSAddDbInstrumentsFromDirDlg extends OkCancelDialog {
 		StdUtils.updateRecentElements("recentDbDirectories", dbDir);
 	}
 	
+	@Override
 	protected void
 	onCancel() { setVisible(false); }
 	
@@ -309,19 +306,24 @@ public class JSAddDbInstrumentsFromDirDlg extends OkCancelDialog {
 	
 	private class Handler implements DocumentListener, ActionListener, ItemListener {
 		// DocumentListener
+		@Override
 		public void
 		insertUpdate(DocumentEvent e) { updateState(); }
 		
+		@Override
 		public void
 		removeUpdate(DocumentEvent e) { updateState(); }
 		
+		@Override
 		public void
 		changedUpdate(DocumentEvent e) { updateState(); }
 		///////
 		
+		@Override
 		public void
 		actionPerformed(ActionEvent e) { updateState(); }
 		
+		@Override
 		public void
 		itemStateChanged(ItemEvent e) {
 			checkFlat.setEnabled(checkScanSubdirs.isSelected());

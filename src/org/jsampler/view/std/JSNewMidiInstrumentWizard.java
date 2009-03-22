@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -23,7 +23,6 @@
 package org.jsampler.view.std;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -31,14 +30,14 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.Box;
+import java.io.File;
+
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -140,6 +139,7 @@ class NewMidiInstrumentWizardModel extends DefaultWizardModel {
 	 * Moves to the next page in the wizard.
 	 * @return The next page in the wizard.
 	 */
+	@Override
 	public WizardPage
 	next() {
 		InstrLocationMethodWizardPage p1 = instrLocationMethodWizardPage;
@@ -159,6 +159,7 @@ class NewMidiInstrumentWizardModel extends DefaultWizardModel {
 	 * @return The previous page in the wizard.
 	 * @see #hasPrevious
 	 */
+	@Override
 	public WizardPage
 	previous() {
 		InstrLocationMethodWizardPage p1 = instrLocationMethodWizardPage;
@@ -442,6 +443,7 @@ class OrchestraSelectWizardPage extends UserInputPage {
 		getWizard().enableNextButton(instr != null);
 	}
 	
+	@Override
 	public void
 	postinitPage() {
 		getWizard().enableNextButton(cbInstruments.getSelectedItem() != null);
@@ -606,18 +608,14 @@ class ManualSelectWizardPage extends UserInputPage {
 	
 	private void
 	onBrowse() {
-		String s = preferences().getStringProperty("lastInstrumentLocation");
-		JFileChooser fc = new JFileChooser(s);
-		int result = fc.showOpenDialog(this);
-		if(result != JFileChooser.APPROVE_OPTION) return;
+		File f = StdUtils.showOpenInstrumentFileChooser(getWizardDialog());
+		if(f == null) return;
 		
-		String path = fc.getSelectedFile().getAbsolutePath();
+		String path = f.getAbsolutePath();
 		if(java.io.File.separatorChar == '\\') {
 			path = path.replace('\\', '/');
 		}
 		cbFilename.setSelectedItem(toEscapedString(path));
-		path = fc.getCurrentDirectory().getAbsolutePath();
-		preferences().setStringProperty("lastInstrumentLocation", path);
 	}
 	
 	private void
@@ -670,10 +668,9 @@ class ManualSelectWizardPage extends UserInputPage {
 		return s.substring(i + 3);
 	}
 	
+	@Override
 	public void
-	postinitPage() {
-		updateState();
-	}
+	postinitPage() { updateState(); }
 	
 	/**
 	 * Gets the name of the instrument file.
@@ -708,12 +705,15 @@ class ManualSelectWizardPage extends UserInputPage {
 	
 	private class Handler implements DocumentListener {
 		// DocumentListener
+		@Override
 		public void
 		insertUpdate(DocumentEvent e) { updateState(); }
 		
+		@Override
 		public void
 		removeUpdate(DocumentEvent e) { updateState(); }
 		
+		@Override
 		public void
 		changedUpdate(DocumentEvent e) { updateState(); }
 	}
@@ -878,6 +878,7 @@ class InstrumentMappingWizardPage extends WizardPage  {
 		cbProgram.setSelectedIndex(entry.getMidiProgram());
 	}
 	
+	@Override
 	public void
 	postinitPage() {
 		String s = wizardModel.getInstrumentName();
@@ -894,6 +895,7 @@ class InstrumentMappingWizardPage extends WizardPage  {
 	 * while this page is the current page of the wizard.
 	 * @return <code>true</code>
 	 */
+	@Override
 	public boolean
 	mayFinish() {
 		((NewMidiInstrumentWizardModel)getWizardModel()).mapInstrument();
@@ -951,12 +953,15 @@ class InstrumentMappingWizardPage extends WizardPage  {
 	
 	private class Handler implements DocumentListener {
 		// DocumentListener
+		@Override
 		public void
 		insertUpdate(DocumentEvent e) { updateState(); }
 		
+		@Override
 		public void
 		removeUpdate(DocumentEvent e) { updateState(); }
 		
+		@Override
 		public void
 		changedUpdate(DocumentEvent e) { updateState(); }
 	}

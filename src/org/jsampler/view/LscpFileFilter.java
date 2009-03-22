@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -24,13 +24,11 @@ package org.jsampler.view;
 
 import java.io.File;
 
-import javax.swing.filechooser.FileFilter;
-
 /**
  * A file filter for LSCP script files.
  * @author Grigor Iliev
  */
-public class LscpFileFilter extends FileFilter {
+public class LscpFileFilter extends JSFileFilter {
 	
 	/** Creates a new instance of LscpFileFilter */
 	public LscpFileFilter() {
@@ -45,12 +43,22 @@ public class LscpFileFilter extends FileFilter {
 	public boolean
 	accept(File f) {
 		if(f.isDirectory()) return true;
-		String s = f.getName();
-		int i = s.lastIndexOf('.');
-		if(i == -1) return false;
-		s = s.substring(i);
+		return acceptFile(f.getName());
 		
-		return s.equalsIgnoreCase(".lscp");
+	}
+
+	public boolean
+	accept(File dir, String name) {
+		return acceptFile(name);
+	}
+
+	private boolean
+	acceptFile(String fileName) {
+		int i = fileName.lastIndexOf('.');
+		if(i == -1) return false;
+		fileName = fileName.substring(i);
+
+		return fileName.equalsIgnoreCase(".lscp");
 	}
 	
 	/**

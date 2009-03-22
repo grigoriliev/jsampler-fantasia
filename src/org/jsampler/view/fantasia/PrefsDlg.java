@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -44,7 +44,6 @@ import net.sf.juife.JuifeUtils;
 
 import org.jsampler.CC;
 import org.jsampler.LSConsoleModel;
-import org.jsampler.Prefs;
 
 import org.jsampler.view.std.JSAdvancedGeneralPropsDlg;
 import org.jsampler.view.std.JSConnectionPropsPane;
@@ -283,6 +282,9 @@ class ViewPane extends JPanel {
 	private final JCheckBox checkShowInstrumentsDb =
 		new JCheckBox(i18n.getLabel("ViewPane.checkShowInstrumentsDb"));
 	
+	private final JCheckBox checkUseNativeFileChoosers =
+		new JCheckBox(i18n.getLabel("ViewPane.checkUseNativeFileChoosers"));
+
 	private final JSViewProps.MidiDevicesPane midiDevsPane = new JSViewProps.MidiDevicesPane();
 	private final JSViewProps.AudioDevicesPane audioDevsPane = new JSViewProps.AudioDevicesPane();
 	
@@ -312,6 +314,12 @@ class ViewPane extends JPanel {
 		checkShowInstrumentsDb.setAlignmentX(JPanel.LEFT_ALIGNMENT);
 		add(checkShowInstrumentsDb);
 		add(Box.createRigidArea(new Dimension(0, 6)));
+
+		b = preferences().getBoolProperty("nativeFileChoosers");
+		checkUseNativeFileChoosers.setSelected(b);
+		checkUseNativeFileChoosers.setAlignmentX(JPanel.LEFT_ALIGNMENT);
+		add(checkUseNativeFileChoosers);
+		add(Box.createRigidArea(new Dimension(0, 6)));
 		
 		add(midiDevsPane);
 		add(audioDevsPane);
@@ -329,6 +337,9 @@ class ViewPane extends JPanel {
 		s = "rightSidePane.showInstrumentsDb";
 		preferences().setBoolProperty(s, checkShowInstrumentsDb.isSelected());
 		
+		s = "nativeFileChoosers";
+		preferences().setBoolProperty(s, checkUseNativeFileChoosers.isSelected());
+
 		midiDevsPane.apply();
 		audioDevsPane.apply();
 		confirmationMessagesPane.apply();

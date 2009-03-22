@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -32,12 +32,13 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import java.io.File;
+
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -127,6 +128,7 @@ public class JSLostFilesDlg extends InformationDialog {
 	getHandler() { return eventHandler; }
 	
 	private class EventHandler implements ListSelectionListener, ChangeListener {
+		@Override
 		public void
 		valueChanged(ListSelectionEvent e) {
 			if(e.getValueIsAdjusting()) return;
@@ -135,6 +137,7 @@ public class JSLostFilesDlg extends InformationDialog {
 			btnRename.setEnabled(!lsm.isSelectionEmpty());
 		}
 		
+		@Override
 		public void
 		stateChanged(ChangeEvent e) {
 			boolean b = CC.getLostFilesModel().getLostFileCount() != 0;
@@ -324,12 +327,10 @@ class JSReplaceLostFilesDlg extends InformationDialog {
 	
 	private String
 	browse() {
-		JFileChooser fc = new JFileChooser();
-		fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		int result = fc.showOpenDialog(this);
-		if(result != JFileChooser.APPROVE_OPTION) return null;
+		File f = StdUtils.showOpenDirectoryChooser(this, null);
+		if(f == null) return null;
 		
-		String path = fc.getSelectedFile().getAbsolutePath();
+		String path = f.getAbsolutePath();
 		if(path.length() < 2) return path;
 		
 		char sep = java.io.File.separatorChar;
@@ -345,12 +346,15 @@ class JSReplaceLostFilesDlg extends InformationDialog {
 	
 	private class EventHandler implements DocumentListener {
 		// DocumentListener
+		@Override
 		public void
 		insertUpdate(DocumentEvent e) { updateState(); }
 		
+		@Override
 		public void
 		removeUpdate(DocumentEvent e) { updateState(); }
 		
+		@Override
 		public void
 		changedUpdate(DocumentEvent e) { updateState(); }
 	}

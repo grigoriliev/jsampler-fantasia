@@ -36,6 +36,7 @@ import javax.swing.event.ChangeListener;
 
 import net.sf.juife.NavigationPage;
 
+import org.jsampler.view.fantasia.basic.FantasiaTaskPane;
 import org.jsampler.view.std.JSDbSearchPane;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
@@ -80,7 +81,7 @@ public class DbSearchPage extends NavigationPage {
 		@Override
 		protected JComponent
 		createCriteriaPane(String title, JComponent mainPane) {
-			final TaskPane tp = new TaskPane();
+			final FantasiaTaskPane tp = new FantasiaTaskPane();
 			tp.setTitle(title);
 			tp.add(mainPane);
 			tp.setAlignmentX(LEFT_ALIGNMENT);

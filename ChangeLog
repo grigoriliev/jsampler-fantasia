@@ -122,6 +122,8 @@ CVS HEAD
       - Use custom application icon
       - Register LSCP scripts to be opened with Fantasia
       - Changed shortcut keys (use command key instead of ctrl key)
+      - Added option to use native file choosers
+        (choose Edit/Preferences, then click the `View' tab)
 
   * Bug fixes:
     - Bugfix: JSampler took forever to load a configuration with

@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -36,7 +36,6 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -253,16 +252,14 @@ public class JSGeneralProps {
 		
 		private void
 		onChange() {
-			JFileChooser fc = new JFileChooser();
-			fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-			int result = fc.showOpenDialog(this);
-			if(result != JFileChooser.APPROVE_OPTION) return;
+			File f = StdUtils.showOpenDirectoryChooser(CC.getMainFrame(), null);
+			if(f == null) return;
 			
 			String s = CC.getJSamplerHome();
 			String suf = File.separator + ".jsampler";
 			if(s != null) suf = File.separator + new File(s).getName();
 			
-			tfJSamplerHome.setText(fc.getSelectedFile().getPath() + suf);
+			tfJSamplerHome.setText(f.getPath() + suf);
 		}
 		
 		/**

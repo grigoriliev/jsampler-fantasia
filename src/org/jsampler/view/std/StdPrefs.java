@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -22,6 +22,7 @@
 
 package org.jsampler.view.std;
 
+import org.jsampler.CC;
 import org.jsampler.JSPrefs;
 
 /**
@@ -102,6 +103,7 @@ public class StdPrefs extends JSPrefs {
 		super(pathName);
 	}
 	
+	@Override
 	public String
 	getDefaultStringValue(String name) {
 		if(name == RECENT_LSCP_SCRIPTS) return "";
@@ -115,6 +117,7 @@ public class StdPrefs extends JSPrefs {
 		return super.getDefaultStringValue(name);
 	}
 	
+	@Override
 	public int
 	getDefaultIntValue(String name) {
 		if(name == DEFAULT_CHANNEL_VOLUME) return 100;
@@ -129,6 +132,7 @@ public class StdPrefs extends JSPrefs {
 		return super.getDefaultIntValue(name);
 	}
 	
+	@Override
 	public boolean
 	getDefaultBoolValue(String name) {
 		if(name == DIFFERENT_CHANNEL_VIEW_ON_MOUSE_OVER) return true;
@@ -137,6 +141,7 @@ public class StdPrefs extends JSPrefs {
 		if(name == CONFIRM_APP_QUIT) return true;
 		if(name == SAVE_LS_CONSOLE_HISTORY) return true;
 		if(name == USE_CHANNEL_DEFAULTS) return true;
+		if("nativeFileChoosers".equals(name) && CC.isMacOS()) return true;
 		
 		return super.getDefaultBoolValue(name);
 	}

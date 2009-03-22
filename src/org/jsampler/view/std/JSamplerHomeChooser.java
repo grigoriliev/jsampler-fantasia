@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -32,7 +32,6 @@ import java.io.File;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -83,16 +82,15 @@ public class JSamplerHomeChooser extends OkCancelDialog {
 	
 	private void
 	onBrowse() {
-		JFileChooser fc = new JFileChooser();
-		fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		int result = fc.showOpenDialog(this);
-		if(result != JFileChooser.APPROVE_OPTION) return;
+		File f = StdUtils.showOpenDirectoryChooser(this, null);
+		if(f == null) return;
 		
-		tfHome.setText(fc.getSelectedFile().getPath() + File.separator + ".jsampler");
+		tfHome.setText(f.getPath() + File.separator + ".jsampler");
 		btnOk.requestFocusInWindow();
 		
 	}
 	
+	@Override
 	protected void
 	onOk() {
 		if(tfHome.getText().length() == 0) {
@@ -108,6 +106,7 @@ public class JSamplerHomeChooser extends OkCancelDialog {
 		setVisible(false);
 	}
 	
+	@Override
 	protected void
 	onCancel() { setVisible(false); }
 	

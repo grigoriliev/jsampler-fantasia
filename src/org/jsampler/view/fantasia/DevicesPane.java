@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -30,12 +30,9 @@ import java.beans.PropertyChangeListener;
 import javax.swing.BorderFactory;
 
 import org.jdesktop.swingx.JXTaskPane;
+import org.jdesktop.swingx.JXTaskPaneContainer;
 
 import org.jsampler.view.fantasia.basic.*;
-
-import org.jvnet.substance.SubstanceLookAndFeel;
-import org.jvnet.substance.api.SubstanceConstants.FocusKind;
-import org.jvnet.substance.shaper.ClassicButtonShaper;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jsampler.view.fantasia.FantasiaPrefs.*;
@@ -45,7 +42,7 @@ import static org.jsampler.view.fantasia.FantasiaPrefs.*;
  * @author Grigor Iliev
  */
 public class DevicesPane extends FantasiaPanel {
-	private final TaskPaneContainer taskPaneContainer = new TaskPaneContainer();
+	private final JXTaskPaneContainer taskPaneContainer = new JXTaskPaneContainer();
 	private final JXTaskPane midiDevicesTaskPane = new FantasiaTaskPane();
 	private final JXTaskPane audioDevicesTaskPane = new FantasiaTaskPane();
 	
@@ -78,14 +75,6 @@ public class DevicesPane extends FantasiaPanel {
 				audioDevicesTaskPane.setAnimated(b);
 			}
 		});
-		
-		midiDevicesTaskPane.putClientProperty (
-			SubstanceLookAndFeel.FOCUS_KIND, FocusKind.NONE
-		);
-		
-		taskPaneContainer.putClientProperty (
-			SubstanceLookAndFeel.BUTTON_SHAPER_PROPERTY, new ClassicButtonShaper()
-		);
 		
 		taskPaneContainer.add(midiDevicesTaskPane);
 		taskPaneContainer.add(audioDevicesTaskPane);

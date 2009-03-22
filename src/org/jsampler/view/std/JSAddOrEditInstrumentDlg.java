@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -30,9 +30,10 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import java.io.File;
+
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -184,6 +185,15 @@ public class JSAddOrEditInstrumentDlg extends OkCancelDialog {
 				updateFileInstruments();
 			}
 		});
+
+		cbIndex.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) {
+				Object o = cbIndex.getSelectedItem();
+				if(o == null) return;
+				if(o.toString().length() > 5) tfName.setText(o.toString());
+			}
+		});
 		
 		updateInfo();
 		updateState();
@@ -248,6 +258,7 @@ public class JSAddOrEditInstrumentDlg extends OkCancelDialog {
 		CC.getTaskQueue().add(t);
 	}
 	
+	@Override
 	protected void
 	onOk() {
 		if(!btnOk.isEnabled()) return;
@@ -264,10 +275,9 @@ public class JSAddOrEditInstrumentDlg extends OkCancelDialog {
 		setCancelled(false);
 	}
 	
+	@Override
 	protected void
-	onCancel() {
-		setVisible(false);
-	}
+	onCancel() { setVisible(false); }
 	
 	/**
 	 * Gets the created/modified orchestra.
@@ -284,31 +294,31 @@ public class JSAddOrEditInstrumentDlg extends OkCancelDialog {
 	
 	private class Handler implements DocumentListener, ActionListener {
 		// DocumentListener
+		@Override
 		public void
 		insertUpdate(DocumentEvent e) { updateState(); }
 		
+		@Override
 		public void
 		removeUpdate(DocumentEvent e) { updateState(); }
 		
+		@Override
 		public void
 		changedUpdate(DocumentEvent e) { updateState(); }
 		
 		// ActionListener
+		@Override
 		public void
 		actionPerformed(ActionEvent e) {
-			String path = preferences().getStringProperty("lastInstrumentLocation");
-			JFileChooser fc = new JFileChooser(path);
-			int result = fc.showOpenDialog(JSAddOrEditInstrumentDlg.this);
-			if(result != JFileChooser.APPROVE_OPTION) return;
+			File f = StdUtils.showOpenInstrumentFileChooser(JSAddOrEditInstrumentDlg.this);
+			if(f == null) return;
 			
-			path = fc.getSelectedFile().getAbsolutePath();
+			String path = f.getAbsolutePath();
 			if(java.io.File.separatorChar == '\\') {
 				path = path.replace('\\', '/');
 			}
 			path = toEscapedString(path);
 			cbPath.setSelectedItem(path);
-			path = fc.getCurrentDirectory().getAbsolutePath();
-			preferences().setStringProperty("lastInstrumentLocation", path);
 		}
 	}
 }

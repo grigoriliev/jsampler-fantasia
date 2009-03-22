@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -22,13 +22,13 @@
 
 package org.jsampler.view.std;
 
-import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import java.io.File;
 import java.io.FileOutputStream;
 
 import java.util.logging.Level;
@@ -38,7 +38,6 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
@@ -46,8 +45,6 @@ import javax.swing.JTextPane;
 import org.jsampler.CC;
 import org.jsampler.HF;
 import org.jsampler.JSPrefs;
-
-import org.jsampler.view.LscpFileFilter;
 
 import static org.jsampler.view.std.StdI18n.i18n;
 
@@ -126,17 +123,16 @@ public class JSLscpScriptDlg extends JDialog {
 	
 	private void
 	saveScript() {
-		String s = preferences().getStringProperty("lastScriptLocation");
-		JFileChooser fc = new JFileChooser(s);
-		fc.setFileFilter(new LscpFileFilter());
-		int result = fc.showSaveDialog(this);
-		if(result != JFileChooser.APPROVE_OPTION) return;
-		
-		String path = fc.getCurrentDirectory().getAbsolutePath();
-		preferences().setStringProperty("lastScriptLocation", path);
+		File f = StdUtils.showSaveLscpFileChooser(this);
+		if(f == null) return;
+
+		if(f.exists()) {
+			String msg = i18n.getMessage("JSLscpScriptDlg.overwriteFile?");
+			if(!HF.showYesNoDialog(CC.getMainFrame(), msg)) return;
+		}
 		
 		try {
-			FileOutputStream fos = new FileOutputStream(fc.getSelectedFile());
+			FileOutputStream fos = new FileOutputStream(f);
 			fos.write(textPane.getText().getBytes("US-ASCII"));
 			fos.close();
 		} catch(Exception e) {

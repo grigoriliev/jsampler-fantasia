@@ -86,9 +86,6 @@
             </patternset>
         </unjar>
         
-        <unjar src="lib/required/substance-swingx.jar" dest="dist/build">
-        </unjar>
-        
         <unjar src="lib/required/substance.jar" dest="dist/build">
         </unjar>
         

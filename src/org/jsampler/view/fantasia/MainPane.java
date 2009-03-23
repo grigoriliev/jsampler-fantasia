@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -59,7 +59,6 @@ import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
  * @author Grigor Iliev
  */
 public class MainPane extends FantasiaPanel {
-	private final int CHANNELS_PANEL_NUMBER = 4;
 	private final ChannelsBar channelsBar;
 	private final ButtonsPanel buttonsPanel;
 	private final Vector<ChannelsPanel> channelsPanes = new Vector<ChannelsPanel>();
@@ -69,13 +68,15 @@ public class MainPane extends FantasiaPanel {
 	/** Creates a new instance of <code>MainPane</code> */
 	public MainPane() {
 		setOpaque(false);
-		
-		for(int i = 0; i < CHANNELS_PANEL_NUMBER; i++) {
+
+		int count = CC.preferences().getIntProperty("channelLanes.count");
+		for(int i = 0; i < count; i++) {
 			String s = i18n.getButtonLabel("MainPane.ButtonsPanel.tt", i + 1);
 			channelsPanes.add(new ChannelsPanel(s));
 		}
 		
-		buttonsPanel = new ButtonsPanel();
+		buttonsPanel = new ButtonsPanel(count);
+		if(count == 1) buttonsPanel.setVisible(false);
 		channelsBar = new ChannelsBar(buttonsPanel);
 		GridBagLayout gridbag = new GridBagLayout();
 		GridBagConstraints c = new GridBagConstraints();
@@ -131,6 +132,14 @@ public class MainPane extends FantasiaPanel {
 		
 		setMaximumSize(new Dimension(420, Short.MAX_VALUE));
 	}
+
+	public JSChannelsPane
+	addChannelsPane() {
+		String s = i18n.getButtonLabel("MainPane.ButtonsPanel.tt", channelsPanes.size() + 1);
+		ChannelsPanel cp = new ChannelsPanel(s);
+		channelsPanes.add(cp);
+		return cp.getChannelsPane();
+	}
 	
 	private void
 	onScrollBarVisibilityChanged() {
@@ -166,6 +175,9 @@ public class MainPane extends FantasiaPanel {
 	
 	public int
 	getChannelsPaneCount() { return channelsPanes.size(); }
+
+	public void
+	removeChannelsPane(int index) { channelsPanes.remove(index); }
 	
 	public void
 	setSelectedChannelsPane(JSChannelsPane pane) {
@@ -201,6 +213,9 @@ public class MainPane extends FantasiaPanel {
 		
 		return null;
 	}
+
+	public ButtonsPanel
+	getButtonsPanel() { return buttonsPanel; }
 	
 	@Override
 	protected void
@@ -259,15 +274,34 @@ public class MainPane extends FantasiaPanel {
 		getChannelsPane() { return channelsPane; }
 	}
 	
-	private class ButtonsPanel extends FantasiaToggleButtonsPanel implements ActionListener {
-		ButtonsPanel() {
-			super(CHANNELS_PANEL_NUMBER, true);
-			for(int i = 0; i < CHANNELS_PANEL_NUMBER; i++) {
+	public class ButtonsPanel extends FantasiaToggleButtonsPanel implements ActionListener {
+		public
+		ButtonsPanel(int count) {
+			super(count, true);
+			setButtonNumber(count);
+		}
+		
+		@Override
+		public void
+		setButtonNumber(int number) {
+			if(number > MainFrame.MAX_CHANNEL_LANE_NUMBER) return;
+			int j = number == 7 ? 98 : 96;
+			int k = j / number;
+
+			for(int i = 0; i < buttons.size(); i++) {
+				buttons.get(i).removeActionListener(this);
+			}
+
+			super.setButtonNumber(number);
+
+			for(int i = 0; i < number; i++) {
 				JToggleButton btn = buttons.get(i);
 				btn.setText(String.valueOf(i + 1));
-				btn.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 8));
+				btn.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 				btn.addActionListener(this);
-				
+				btn.setMinimumSize(new Dimension(k, btn.getPreferredSize().height));
+				btn.setPreferredSize(btn.getMinimumSize());
+				btn.setMaximumSize(btn.getMinimumSize());
 				String s = "MainPane.ButtonsPanel.tt";
 				btn.setToolTipText(i18n.getButtonLabel(s, i + 1));
 			}

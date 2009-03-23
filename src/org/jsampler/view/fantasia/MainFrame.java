@@ -96,6 +96,8 @@ import static org.jsampler.view.std.StdPrefs.*;
  * @author Grigor Iliev
  */
 public class MainFrame extends StdMainFrame {
+	public final static int MAX_CHANNEL_LANE_NUMBER = 8;
+
 	private final StandardBar standardBar = new StandardBar();
 	private final FantasiaMenuBar menuBar = new FantasiaMenuBar();
 	private final JPanel rootPane = new RootPane();
@@ -165,12 +167,20 @@ public class MainFrame extends StdMainFrame {
 			addChannelsPane(mainPane.getChannelsPane(i));
 			getChannelsPane(i).addListSelectionListener(pianoKeyboardPane);
 		}
-		
+
+		PropertyChangeListener l = new PropertyChangeListener() {
+			public void
+			propertyChange(PropertyChangeEvent e) {
+				onChangeChannelLaneCount();
+			}
+		};
+
+		preferences().addPropertyChangeListener("channelLanes.count", l);
 		
 		int h = preferences().getIntProperty("midiKeyboard.height");
 		setMidiKeyboardHeight(h);
 		
-		PropertyChangeListener l = new PropertyChangeListener() {
+		l = new PropertyChangeListener() {
 			public void
 			propertyChange(PropertyChangeEvent e) {
 				int h = preferences().getIntProperty("midiKeyboard.height");
@@ -301,6 +311,51 @@ public class MainFrame extends StdMainFrame {
 		if(getLSConsolePane() != null) getLSConsolePane().disconnect();
 		
 		super.onWindowClose();
+	}
+
+	private void
+	onChangeChannelLaneCount() {
+		int newCount = preferences().getIntProperty("channelLanes.count");
+		if(newCount < 1 || newCount > MAX_CHANNEL_LANE_NUMBER) return;
+		if(newCount == getChannelsPaneCount()) return;
+		int current = getChannelsPaneIndex(getSelectedChannelsPane());
+
+		if(newCount > getChannelsPaneCount()) {
+			int d = newCount - getChannelsPaneCount();
+			for(int i = 0; i < d; i++) {
+				JSChannelsPane p = mainPane.addChannelsPane();
+				addChannelsPane(p);
+				p.addListSelectionListener(pianoKeyboardPane);
+			}
+		} else {
+			int d = getChannelsPaneCount() - newCount;
+			for(int i = 0; i < d; i++) {
+				int idx = getChannelsPaneCount() - 1 - i;
+				if(getChannelsPane(idx).getChannelCount() > 0) {
+					String s;
+					s = i18n.getError("MainFrame.notEmptyChannelLane!", idx + 1);
+					HF.showErrorMessage(s);
+					return;
+				}
+			}
+
+			for(int i = 0; i < d; i++) {
+				int idx = getChannelsPaneCount() - 1;
+				JSChannelsPane p = getChannelsPane(idx);
+				removeChannelsPane(p);
+				p.removeListSelectionListener(pianoKeyboardPane);
+				mainPane.removeChannelsPane(idx);
+			}
+		}
+
+		if(newCount == 1) {
+			mainPane.getButtonsPanel().setVisible(false);
+		} else if(!mainPane.getButtonsPanel().isVisible()) {
+			mainPane.getButtonsPanel().setVisible(true);
+		}
+		mainPane.getButtonsPanel().setButtonNumber(newCount);
+		if(current < 0 || current >= getChannelsPaneCount()) current = 0;
+		setSelectedChannelsPane(getChannelsPane(current));
 	}
 	
 	@Override

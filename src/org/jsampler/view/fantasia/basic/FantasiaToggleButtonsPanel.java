@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -56,21 +56,26 @@ public class FantasiaToggleButtonsPanel extends FantasiaSubPanel {
 	FantasiaToggleButtonsPanel(int buttonNumber, boolean dark) {
 		super(true, false, false);
 		this.dark = dark;
-		
-		if(buttonNumber < 2) {
-			throw new IllegalArgumentException("buttonNumber should be greater than 1");
+		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+		setButtonNumber(buttonNumber);
+	}
+
+	public void
+	setButtonNumber(int number) {
+		if(number < 1) {
+			throw new IllegalArgumentException("button number should be greater than 0");
 		}
-		
+
+		buttons.removeAllElements();
 		buttons.add(new FirstButton());
-		for(int i = 1; i < buttonNumber - 1; i++) {
+		for(int i = 1; i < number - 1; i++) {
 			buttons.add(new MiddleButton());
 		}
-		buttons.add(new LastButton());
-		
-		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-		
+		if(number > 1) buttons.add(new LastButton());
+
+		removeAll();
+
 		for(JToggleButton btn : buttons) {
-			btn.setText("  3  ");
 			buttonGroup.add(btn);
 			add(btn);
 		}

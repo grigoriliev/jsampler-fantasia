@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -21,8 +21,6 @@
  */
 
 package org.jsampler.view.fantasia;
-
-import java.util.prefs.Preferences;
 
 import org.jsampler.view.std.StdPrefs;
 
@@ -82,6 +80,7 @@ public class FantasiaPrefs extends StdPrefs {
 		if("midiKeyboard.height".equals(name)) return 85;
 		if("midiKeyboard.firstKey".equals(name)) return 0;
 		if("midiKeyboard.lastKey".equals(name)) return 127;
+		if("channelLanes.count".equals(name)) return 4;
 		
 		return super.getDefaultIntValue(name);
 	}

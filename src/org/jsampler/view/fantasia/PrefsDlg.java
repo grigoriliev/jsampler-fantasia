@@ -36,8 +36,11 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
+import javax.swing.SpinnerNumberModel;
 
 import net.sf.juife.EnhancedDialog;
 import net.sf.juife.JuifeUtils;
@@ -355,11 +358,18 @@ class ChannelsPropsPane extends JPanel {
 	
 	private final JCheckBox checkShowStreamVoiceCount =
 		new JCheckBox(i18n.getLabel("ChannelsPropsPane.checkShowStreamVoiceCount"));
+
+	private final JLabel lChannelLaneNumber =
+		new JLabel(i18n.getLabel("ChannelsPropsPane.lChannelLaneNumber"));
+
+	private JSpinner spChannelLaneNumber;
 	
 	ChannelsPropsPane() {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
+		add(createChannelLanesPane());
 		add(createSmallViewPane());
+
 		JPanel p = new JPanel();
 		p.setLayout(new BorderLayout());
 		add(p);
@@ -375,6 +385,9 @@ class ChannelsPropsPane extends JPanel {
 		
 		b = checkShowStreamVoiceCount.isSelected();
 		preferences().setBoolProperty("channel.smallView.showStreamVoiceCount", b);
+
+		int i = Integer.parseInt(spChannelLaneNumber.getValue().toString());
+		preferences().setIntProperty("channelLanes.count", i);
 	}
 	
 	private JPanel
@@ -402,6 +415,33 @@ class ChannelsPropsPane extends JPanel {
 		p.setMaximumSize(new Dimension(Short.MAX_VALUE, p.getPreferredSize().height));
 		
 		return p;
+	}
+
+	private JPanel
+	createChannelLanesPane() {
+		int max = MainFrame.MAX_CHANNEL_LANE_NUMBER;
+
+		int i = preferences().getIntProperty("channelLanes.count");
+		if(i < 1 || i > max) i = max;
+		spChannelLaneNumber = new JSpinner(new SpinnerNumberModel(i, 1, max, 1));
+
+		JPanel p = new JPanel();
+		p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
+		p.add(lChannelLaneNumber);
+		p.add(Box.createRigidArea(new Dimension(5, 0)));
+		p.add(spChannelLaneNumber);
+		p.setAlignmentX(LEFT_ALIGNMENT);
+		p.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
+
+		JPanel p2 = new JPanel();
+		p2.setLayout(new BoxLayout(p2, BoxLayout.X_AXIS));
+		String s = i18n.getLabel("ChannelsPropsPane.channelLanes");
+		p2.setBorder(BorderFactory.createTitledBorder(s));
+		p2.setMaximumSize(new Dimension(Short.MAX_VALUE, p.getPreferredSize().height));
+		p2.add(p);
+		p2.setAlignmentX(LEFT_ALIGNMENT);
+
+		return p2;
 	}
 }
 

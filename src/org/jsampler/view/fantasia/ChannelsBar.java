@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -132,7 +132,7 @@ public class ChannelsBar extends PixmapPane {
 		
 		btnVolume.setIcon(Res.iconVolume14);
 		btnVolume.setIconTextGap(2);
-		btnVolume.setHorizontalAlignment(btnVolume.LEFT);
+		btnVolume.setHorizontalAlignment(JButton.LEFT);
 		d = btnVolume.getPreferredSize();
 		d.width = 65;
 		btnVolume.setPreferredSize(d);
@@ -146,7 +146,7 @@ public class ChannelsBar extends PixmapPane {
 		
 		add(Box.createRigidArea(new Dimension(2, 0)));
 		add(createVSeparator());
-		add(Box.createRigidArea(new Dimension(8, 0)));
+		add(Box.createRigidArea(new Dimension(6, 0)));
 		
 		buttonsPanel.setAlignmentY(CENTER_ALIGNMENT);
 		add(buttonsPanel);

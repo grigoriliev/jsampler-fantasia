@@ -32,8 +32,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import java.util.logging.Level;
-
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComponent;
@@ -96,6 +94,8 @@ public class InstrumentsDbFrame extends JFrame {
 	InstrumentsDbFrame() {
 		setTitle(i18n.getLabel("InstrumentsDbFrame.title"));
 		if(Res.iconAppIcon != null) setIconImage(Res.iconAppIcon.getImage());
+
+		((ViewConfig)CC.getViewConfig()).restoreMenuProperties();
 		
 		instrumentsDbTree = new FantasiaInstrumentsDbTree(CC.getInstrumentsDbTreeModel());
 		
@@ -117,6 +117,10 @@ public class InstrumentsDbFrame extends JFrame {
 		splitPane.setDividerSize(3);
 		splitPane.setDividerLocation(200);
 		
+		// fix for moving the menu bar on top of the screen
+		// when running on Mac OS and third party plugin is used
+		((ViewConfig)CC.getViewConfig()).setNativeMenuProperties();
+
 		addMenu();
 		
 		pack();

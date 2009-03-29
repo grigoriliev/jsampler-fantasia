@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -753,8 +753,9 @@ public class DefaultSamplerModel implements SamplerModel {
 	@Override
 	public void
 	addChannel(SamplerChannel channel) {
-		DefaultSamplerChannelModel model = new DefaultSamplerChannelModel(channel);
-		channelModels.add(model);
+		DefaultSamplerChannelModel model;
+		model = (channel == null) ? null : new DefaultSamplerChannelModel(channel);
+		if(model != null) channelModels.add(model);
 		fireSamplerChannelAdded(model);
 	}
 	
@@ -1369,10 +1370,12 @@ public class DefaultSamplerModel implements SamplerModel {
 	
 	private class Handler implements ListListener<MidiInstrumentMap> {
 		/** Invoked when a new map is added to a list. */
+		@Override
 		public void
 		entryAdded(ListEvent<MidiInstrumentMap> e) { updateDefaultMap(); }
 		
 		/** Invoked when a map is removed from a list. */
+		@Override
 		public void
 		entryRemoved(ListEvent<MidiInstrumentMap> e) { updateDefaultMap(); }
 		

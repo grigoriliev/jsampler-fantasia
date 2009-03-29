@@ -54,9 +54,9 @@ public class UpdateChannels extends EnhancedTask {
 		SamplerModel sm = CC.getSamplerModel();
 		Integer[] chnIDs = CC.getClient().getSamplerChannelIDs();
 		
-		boolean found = false;
+		boolean found = false, changed = false;
 		
-		boolean oldValue = CC.getSamplerModel().getChannelListIsAdjusting();
+		boolean isAdjustingOld = CC.getSamplerModel().getChannelListIsAdjusting();
 		
 		javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
 			public void
@@ -74,7 +74,10 @@ public class UpdateChannels extends EnhancedTask {
 				}
 			}
 			
-			if(!found) sm.removeChannelById(m.getChannelId());
+			if(!found) {
+				sm.removeChannelById(m.getChannelId());
+				changed = true;
+			}
 			found = false;
 		}
 		
@@ -89,8 +92,8 @@ public class UpdateChannels extends EnhancedTask {
 		
 		if(v.size() > 0) sm.addChannel(v.elementAt(v.size() - 1));
 		else if(!CC.getSamplerModel().getChannelListIsAdjusting()) {
-			// FIXME: no change after
-			// CC.getSamplerModel().setChannelListIsAdjusting(false);
+			if(!isAdjustingOld && !changed); // do nothing if nothing is changed
+			else sm.addChannel(null); // fire dummy event to end an adjusting sequence
 		}
 	}
 

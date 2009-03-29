@@ -344,6 +344,7 @@ public class PianoKeyboardPane extends FantasiaPanel
 	
 	@Override public void
 	channelAdded(SamplerChannelListEvent e) {
+		if(CC.getSamplerModel().getChannelListIsAdjusting()) return;
 		updateDisplay();
 	}
 	

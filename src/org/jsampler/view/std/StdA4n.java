@@ -66,11 +66,14 @@ public class StdA4n {
 	exportSamplerConfig() {
 		File f = StdUtils.showSaveLscpFileChooser();
 		if(f == null) return;
-		if(f.exists()) {
+
+		boolean b = preferences().getBoolProperty("nativeFileChoosers");
+		// On Mac OS the native file chooser asks whether to replace a file
+		if(f.exists() && !(CC.isMacOS() && b)) {
 			String msg = i18n.getMessage("StdA4n.overwriteFile?");
 			if(!HF.showYesNoDialog(CC.getMainFrame(), msg)) return;
 		}
-	
+
 		try {
 			FileOutputStream fos = new FileOutputStream(f);
 			fos.write(CC.exportSessionToLscpScript().getBytes("US-ASCII"));
@@ -86,7 +89,9 @@ public class StdA4n {
 		File f = StdUtils.showSaveLscpFileChooser();
 		if(f == null) return;
 
-		if(f.exists()) {
+		boolean b = preferences().getBoolProperty("nativeFileChoosers");
+		// On Mac OS the native file chooser asks whether to replace a file
+		if(f.exists() && !(CC.isMacOS() && b)) {
 			String msg = i18n.getMessage("StdA4n.overwriteFile?");
 			if(!HF.showYesNoDialog(CC.getMainFrame(), msg)) return;
 		}

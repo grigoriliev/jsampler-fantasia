@@ -43,6 +43,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.jsampler.CC;
 import org.jsampler.JSampler;
+import org.jsampler.LSConsoleModel;
 import org.jsampler.SamplerChannelModel;
 import org.jsampler.Server;
 
@@ -231,6 +232,13 @@ public abstract class JSMainFrame extends JFrame {
 	 * @param manualSelect Determines whether the server should be manually selected.
 	 */
 	public abstract Server getServer(boolean manualSelect);
+
+	/**
+	 * Gets the LS Console model.
+	 * @return The LS Console model or <code>null</code>.
+	 */
+	public LSConsoleModel
+	getLSConsoleModel() { return null; }
 	
 	/**
 	 * Sets the <code>JSChannelsPane</code> to be selected.

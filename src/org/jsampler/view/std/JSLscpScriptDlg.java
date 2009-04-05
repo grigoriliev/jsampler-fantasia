@@ -126,7 +126,9 @@ public class JSLscpScriptDlg extends JDialog {
 		File f = StdUtils.showSaveLscpFileChooser(this);
 		if(f == null) return;
 
-		if(f.exists()) {
+		boolean b = preferences().getBoolProperty("nativeFileChoosers");
+		// On Mac OS the native file chooser asks whether to replace a file
+		if(f.exists() && !(CC.isMacOS() && b)) {
 			String msg = i18n.getMessage("JSLscpScriptDlg.overwriteFile?");
 			if(!HF.showYesNoDialog(CC.getMainFrame(), msg)) return;
 		}

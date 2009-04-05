@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -42,14 +42,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.StringReader;
 
 import java.util.logging.Level;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -108,8 +106,6 @@ public class JSLSConsolePane extends JPanel {
 	private AutoCompleteWindow autoCompleteWindow;
 	
 	private final LSConsoleModel model = new DefaultLSConsoleModel();
-	
-	private final StringBuffer consoleText = new StringBuffer();
 	
 	private boolean processingSearch = false;
 	
@@ -488,6 +484,7 @@ public class JSLSConsolePane extends JPanel {
 		changedUpdate(DocumentEvent e) { getModel().setCommandLineText(tfInput.getText()); }
 		
 		// WindowListener
+		@Override
 		public void
 		windowActivated(WindowEvent e) {
 			if(autocompleteMode == AutocompleteMode.AUTOCOMPLETE) {
@@ -495,9 +492,11 @@ public class JSLSConsolePane extends JPanel {
 			}  else tfSearch.requestFocusInWindow();
 		}
 		
+		@Override
 		public void
 		windowDeactivated(WindowEvent e) { autoCompleteWindow.setVisible(false); }
 			
+		@Override
 		public void
 		windowIconified(WindowEvent e) { autoCompleteWindow.setVisible(false); }
 		

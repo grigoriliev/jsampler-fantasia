@@ -60,10 +60,12 @@ import org.jsampler.event.OrchestraListener;
 
 import org.jsampler.task.*;
 
+import org.jsampler.view.InstrumentsDbTreeModel;
+import org.jsampler.view.JSChannel;
+import org.jsampler.view.JSChannelsPane;
 import org.jsampler.view.JSMainFrame;
 import org.jsampler.view.JSProgress;
 import org.jsampler.view.JSViewConfig;
-import org.jsampler.view.InstrumentsDbTreeModel;
 
 import org.linuxsampler.lscp.AudioOutputChannel;
 import org.linuxsampler.lscp.AudioOutputDevice;
@@ -1095,22 +1097,26 @@ public class CC {
 			out.reset();
 			sb.append("\r\n");
 		}
-		
-		SamplerChannelModel[] channels = getSamplerModel().getChannels();
-		
-		for(int i = 0; i < channels.length; i++) {
-			SamplerChannelModel scm = channels[i];
-			exportChannelToLscpScript(scm.getChannelInfo(), i, lscpClient);
-			sb.append(out.toString());
-			out.reset();
-			
-			sb.append("\r\n");
-			
-			exportFxSendsToLscpScript(scm, i, lscpClient);
-			sb.append(out.toString());
-			out.reset();
-			
-			sb.append("\r\n");
+
+		int chnId = 0;
+		for(JSChannelsPane cp : CC.getMainFrame().getChannelsPaneList()) {
+			for(JSChannel chn : cp.getChannels()) {
+				SamplerChannelModel scm;
+				scm = getSamplerModel().getChannelById(chn.getChannelId());
+				exportChannelToLscpScript(scm.getChannelInfo(), chnId, lscpClient);
+				sb.append(out.toString());
+				out.reset();
+
+				sb.append("\r\n");
+
+				exportFxSendsToLscpScript(scm, chnId, lscpClient);
+				sb.append(out.toString());
+				out.reset();
+
+				sb.append("\r\n");
+
+				chnId++;
+			}
 		}
 		
 		sb.append(getViewConfig().exportSessionViewConfig());
@@ -1208,7 +1214,7 @@ public class CC {
 			int i = chn.getInstrumentIndex();
 			if(s != null) lscpCLient.loadInstrument(s, i, chnId, true);
 			
-			if(chn.isMuted()) lscpCLient.setChannelMute(chnId, true);
+			if(chn.isMuted() && !chn.isMutedBySolo()) lscpCLient.setChannelMute(chnId, true);
 			if(chn.isSoloChannel()) lscpCLient.setChannelSolo(chnId, true);
 		} catch(Exception e) {
 			getLogger().log(Level.FINE, HF.getErrorMessage(e), e);

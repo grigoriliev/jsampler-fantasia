@@ -807,7 +807,8 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 	protected void
 	setLSConsoleShown(boolean b) { cbmiLSConsoleShown.setSelected(b); }
 	
-	protected LSConsoleModel
+	@Override
+	public LSConsoleModel
 	getLSConsoleModel() { return lsConsolePane.getModel(); }
 	
 	protected JSBackendLogFrame

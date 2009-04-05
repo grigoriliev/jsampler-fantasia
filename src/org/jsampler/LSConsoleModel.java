@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -154,4 +154,7 @@ public interface LSConsoleModel {
 	
 	/** Browses to the last line of the command history. */
 	public void browseCommandHistoryLast();
+
+	/** Disconnects and ends the session */
+	public void quit();
 }

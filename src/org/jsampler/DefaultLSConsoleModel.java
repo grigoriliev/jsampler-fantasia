@@ -380,6 +380,10 @@ public class DefaultLSConsoleModel implements LSConsoleModel {
 		return tmpVector.toArray(new String[tmpVector.size()]);
 	}
 	
+	@Override
+	public void
+	quit() { disconnect(); }
+	
 	/** Notifies listeners that the text in the command line has changed. */
 	private void
 	fireCommandLineTextChanged(String oldCmdLine) {

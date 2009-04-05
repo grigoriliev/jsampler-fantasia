@@ -751,7 +751,8 @@ public class MainFrame extends StdMainFrame {
 	public Timer
 	getGuiTimer() { return guiTimer; }
 	
-	protected LSConsoleModel
+	@Override
+	public LSConsoleModel
 	getLSConsoleModel() { return getLSConsolePane().getModel(); }
 	
 	protected LSConsolePane

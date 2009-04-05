@@ -71,7 +71,12 @@ public class Global {
 		/** The entry point of the task. */
 		@Override
 		public void
-		exec() throws Exception { CC.getClient().disconnect(); }
+		exec() throws Exception {
+			CC.getClient().disconnect();
+			if(CC.getMainFrame().getLSConsoleModel() != null) {
+				CC.getMainFrame().getLSConsoleModel().quit();
+			}
+		}
 	}
 	
 	/**

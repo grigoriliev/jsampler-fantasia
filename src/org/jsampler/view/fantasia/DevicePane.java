@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -104,26 +104,24 @@ public class DevicePane extends JPanel {
 		
 		optionsPane.setAlignmentX(LEFT_ALIGNMENT);
 		
-		initCollasiblePane(optionsPane);
+		initCollapsiblePane(optionsPane);
 		
 		mainPane.add(optionsPane);
 		
-		JPanel p2 = new JPanel();
-		
 		confirmPane.setContentPane(confirmRemovalPane);
 		confirmPane.setAlignmentX(LEFT_ALIGNMENT);
-		initCollasiblePane(confirmPane);
+		initCollapsiblePane(confirmPane);
 		
 		mainPane.add(confirmPane);
 		
 		add(mainPane);
 		
-		initCollasiblePane(mainPane);
+		initCollapsiblePane(mainPane);
 		mainPane.setCollapsed(false);
 	}
 	
 	private void
-	initCollasiblePane(final JXCollapsiblePane pane) {
+	initCollapsiblePane(final JXCollapsiblePane pane) {
 		pane.setAnimated(false);
 		pane.setCollapsed(true);
 		pane.setAnimated(preferences().getBoolProperty(ANIMATED));

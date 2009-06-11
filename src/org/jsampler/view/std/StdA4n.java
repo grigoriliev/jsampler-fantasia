@@ -42,7 +42,7 @@ import javax.swing.event.ListSelectionListener;
 import org.jsampler.CC;
 import org.jsampler.HF;
 import org.jsampler.JSPrefs;
-
+import org.jsampler.JSUtils;
 import org.jsampler.SamplerChannelModel;
 
 import org.jsampler.view.JSChannel;
@@ -76,7 +76,7 @@ public class StdA4n {
 
 		try {
 			FileOutputStream fos = new FileOutputStream(f);
-			fos.write(CC.exportSessionToLscpScript().getBytes("US-ASCII"));
+			fos.write(JSUtils.exportSessionToLscpScript().getBytes("US-ASCII"));
 			fos.close();
 		} catch(Exception x) {
 			CC.getLogger().log(Level.FINE, HF.getErrorMessage(x), x);
@@ -86,7 +86,7 @@ public class StdA4n {
 	
 	protected void
 	exportMidiInstrumentMaps() {
-		File f = StdUtils.showSaveLscpFileChooser();
+		File f = StdUtils.showSaveMidiMapsChooser();
 		if(f == null) return;
 
 		boolean b = preferences().getBoolProperty("nativeFileChoosers");
@@ -95,10 +95,36 @@ public class StdA4n {
 			String msg = i18n.getMessage("StdA4n.overwriteFile?");
 			if(!HF.showYesNoDialog(CC.getMainFrame(), msg)) return;
 		}
+
+		String ext = "";
+		int i = f.getName().lastIndexOf('.');
+		if(i != -1) {
+			ext = f.getName().substring(i).toLowerCase();
+		}
 		
 		try {
-			FileOutputStream fos = new FileOutputStream(f);
-			fos.write(CC.exportInstrMapsToLscpScript().getBytes("US-ASCII"));
+			FileOutputStream fos;
+			if(ext.equals(".lscp")) {
+				fos = new FileOutputStream(f);
+				fos.write(JSUtils.exportInstrMapsToLscpScript().getBytes("US-ASCII"));
+			} else if(ext.equals(".txt")) {
+				fos = new FileOutputStream(f);
+				fos.write(JSUtils.exportInstrMapsToText().getBytes("US-ASCII"));
+			} else if(ext.equals(".htm") || ext.equals(".html")) {
+				fos = new FileOutputStream(f);
+				fos.write(JSUtils.exportInstrMapsToHtml().getBytes("US-ASCII"));
+			} else {
+				f = new File(f.getAbsolutePath() + ".lscp");
+				if(f.exists()) {
+					String s = i18n.getError("StdA4n.fileExists", f.getAbsolutePath());
+					HF.showErrorMessage(s);
+					return;
+				}
+				
+				fos = new FileOutputStream(f);
+				fos.write(JSUtils.exportInstrMapsToLscpScript().getBytes("US-ASCII"));
+			}
+
 			fos.close();
 		} catch(Exception x) {
 			CC.getLogger().log(Level.FINE, HF.getErrorMessage(x), x);

@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -24,11 +24,9 @@ package org.jsampler.view.classic;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.GraphicsEnvironment;
-import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -44,7 +42,6 @@ import java.util.Locale;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.DefaultButtonModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -52,16 +49,14 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
 
 import net.sf.juife.EnhancedDialog;
 import net.sf.juife.JuifeUtils;
-import net.sf.juife.LinkButton;
 
 import org.jsampler.CC;
 import org.jsampler.HF;
 import org.jsampler.JSI18n;
-import org.jsampler.JSampler;
+import org.jsampler.JSUtils;
 import org.jsampler.LSConsoleModel;
 import org.jsampler.Prefs;
 
@@ -306,11 +301,12 @@ class GeneralPane extends JPanel {
 		
 		String s = jSamplerHomePane.getJSamplerHome();
 		if(s.length() > 0 && !s.equals(CC.getJSamplerHome())) {
-			CC.changeJSamplerHome(s);
+			JSUtils.changeJSamplerHome(s);
 		}
 	}
 	
 	private class RecentScriptsPane extends JSGeneralProps.RecentScriptsPane {
+		@Override
 		protected void
 		clearRecentScripts() {
 			((MainFrame)CC.getMainFrame()).clearRecentScripts();
@@ -644,18 +640,21 @@ class ViewPane extends JPanel {
 		public Locale
 		getLocale() { return locale; }
 		
+		@Override
 		public String
 		toString() { return locale.getDisplayLanguage(JSI18n.i18n.getCurrentLocale()); }
 	}
 }
 
 class ConsolePane extends JSLSConsolePropsPane {
+	@Override
 	protected void
 	clearConsoleHistory() {
 		MainFrame mainFrame = (MainFrame)CC.getMainFrame();
 		mainFrame.getLSConsoleModel().clearCommandHistory();
 	}
 	
+	@Override
 	protected void
 	apply() {
 		super.apply();

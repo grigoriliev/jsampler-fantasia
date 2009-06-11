@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -63,6 +63,7 @@ public class PixmapToggleButton extends JToggleButton {
 		Dimension d = new Dimension(defaultIcon.getIconWidth(), defaultIcon.getIconHeight());
 		setPreferredSize(d);
 		setMaximumSize(d);
+		setMinimumSize(d);
 		
 		setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 	}

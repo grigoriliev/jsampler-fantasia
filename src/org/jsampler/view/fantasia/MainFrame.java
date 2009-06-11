@@ -67,6 +67,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.jsampler.CC;
 import org.jsampler.HF;
+import org.jsampler.JSUtils;
 import org.jsampler.LSConsoleModel;
 import org.jsampler.Server;
 
@@ -693,7 +694,7 @@ public class MainFrame extends StdMainFrame {
 		chooser.setVisible(true);
 		if(chooser.isCancelled()) return;
 		
-		CC.changeJSamplerHome(chooser.getJSamplerHome());
+		JSUtils.changeJSamplerHome(chooser.getJSamplerHome());
 	}
 	
 	@Override

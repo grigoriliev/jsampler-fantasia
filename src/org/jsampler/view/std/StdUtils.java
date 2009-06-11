@@ -37,7 +37,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.net.URI;
 
 import java.text.NumberFormat;
@@ -59,7 +58,6 @@ import org.jsampler.HF;
 import org.jsampler.JSPrefs;
 
 import org.jsampler.view.JSFileFilter;
-import org.jsampler.view.LscpFileFilter;
 import static org.jsampler.view.std.StdI18n.i18n;
 import static org.jsampler.view.std.StdPrefs.*;
 
@@ -229,7 +227,20 @@ public class StdUtils {
 	private static File
 	showLscpFileChooser(boolean openDialog, Window owner) {
 		return showFileChooser (
-			openDialog, owner, false, new LscpFileFilter(), "lastScriptLocation"
+			openDialog, owner, false, new JSFileFilter.Lscp(), "lastScriptLocation"
+		);
+	}
+
+	public static File
+	showSaveMidiMapsChooser() {
+		JSFileFilter filter = new JSFileFilter.MidiMaps();
+
+		JSFileFilter[] filters = {
+			new JSFileFilter.Lscp(), new JSFileFilter.Text(), new JSFileFilter.Html()
+		};
+
+		return showFileChooser (
+			false, CC.getMainFrame(), false, filter, filters, "lastScriptLocation"
 		);
 	}
 
@@ -250,6 +261,21 @@ public class StdUtils {
 		boolean       dirChooser,
 		JSFileFilter  filter,
 		String        locationProperty
+	) {
+		JSFileFilter[] filters = (filter == null) ? new JSFileFilter[0] : new JSFileFilter[1];
+		if(filter != null) filters[0] = filter;
+		
+		return showFileChooser(openDialog, owner, dirChooser, filter, filters, locationProperty);
+	}
+
+	private static File
+	showFileChooser (
+		boolean         openDialog,
+		Window          owner,
+		boolean         dirChooser,
+		JSFileFilter    filter,
+		JSFileFilter[]  choosableFilters,
+		String          locationProperty
 	) {
 		boolean nativeFileChooser = preferences().getBoolProperty("nativeFileChoosers");
 		String oldPath = null;
@@ -277,12 +303,33 @@ public class StdUtils {
 			}
 		} else {
 			JFileChooser fc = new JFileChooser(oldPath);
-			if(filter != null) fc.setFileFilter(filter);
+			for(JSFileFilter ff : choosableFilters) {
+				fc.addChoosableFileFilter(ff);
+			}
+			if(choosableFilters.length > 0) fc.setFileFilter(choosableFilters[0]);
+			
 			if(dirChooser) fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 			int result;
 			if(openDialog) result = fc.showOpenDialog(owner);
 			else result = fc.showSaveDialog(owner);
-			if(result == JFileChooser.APPROVE_OPTION) f = fc.getSelectedFile();
+			if(result == JFileChooser.APPROVE_OPTION) {
+				f = fc.getSelectedFile();
+			}
+
+			if(result == JFileChooser.APPROVE_OPTION && !openDialog) {
+				Object o = fc.getFileFilter();
+				for(JSFileFilter ff : choosableFilters) {
+					if(ff == o) {
+						String fn = f.getName().toLowerCase();
+						String ext = ff.getExtension().toLowerCase();
+						if(fn.endsWith(ext)) break;
+
+						fn = f.getAbsolutePath() + ff.getExtension();
+						f = new File(fn);
+						break;
+					}
+				}
+			}
 		}
 
 		if(f == null) return null;

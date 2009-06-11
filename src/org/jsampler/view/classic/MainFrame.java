@@ -43,7 +43,6 @@ import java.util.Vector;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -61,6 +60,7 @@ import net.sf.juife.NavigationPage;
 
 import org.jsampler.CC;
 import org.jsampler.HF;
+import org.jsampler.JSUtils;
 import org.jsampler.LSConsoleModel;
 import org.jsampler.OrchestraModel;
 import org.jsampler.Server;
@@ -69,7 +69,6 @@ import org.jsampler.task.Global;
 
 import org.jsampler.view.JSChannel;
 import org.jsampler.view.JSChannelsPane;
-import org.jsampler.view.LscpFileFilter;
 
 import org.jsampler.view.std.JSBackendLogFrame;
 import org.jsampler.view.std.JSConnectDlg;
@@ -1147,16 +1146,9 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 	
 	protected void
 	runScript() {
-		String s = preferences().getStringProperty("lastScriptLocation");
-		JFileChooser fc = new JFileChooser(s);
-		fc.setFileFilter(new LscpFileFilter());
-		int result = fc.showOpenDialog(this);
-		if(result != JFileChooser.APPROVE_OPTION) return;
-		
-		String path = fc.getCurrentDirectory().getAbsolutePath();
-		preferences().setStringProperty("lastScriptLocation", path);
-					
-		runScript(fc.getSelectedFile());
+		File f = StdUtils.showOpenLscpFileChooser();
+		if(f == null) return;
+		runScript(f);
 	}
 	
 	@Override
@@ -1228,7 +1220,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		chooser.setVisible(true);
 		if(chooser.isCancelled()) return;
 		
-		CC.changeJSamplerHome(chooser.getJSamplerHome());
+		JSUtils.changeJSamplerHome(chooser.getJSamplerHome());
 	}
 	
 	@Override

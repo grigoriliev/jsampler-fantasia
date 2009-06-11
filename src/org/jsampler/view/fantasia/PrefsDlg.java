@@ -46,6 +46,7 @@ import net.sf.juife.EnhancedDialog;
 import net.sf.juife.JuifeUtils;
 
 import org.jsampler.CC;
+import org.jsampler.JSUtils;
 import org.jsampler.LSConsoleModel;
 
 import org.jsampler.view.std.JSAdvancedGeneralPropsDlg;
@@ -263,7 +264,7 @@ class GeneralPane extends JPanel {
 		
 		String s = jSamplerHomePane.getJSamplerHome();
 		if(s.length() > 0 && !s.equals(CC.getJSamplerHome())) {
-			CC.changeJSamplerHome(s);
+			JSUtils.changeJSamplerHome(s);
 		}
 	}
 	

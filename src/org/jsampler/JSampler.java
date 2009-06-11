@@ -99,7 +99,7 @@ public class JSampler {
 			CC.addConnectionEstablishedListener(new ConnectionEstablishedListener());
 		}
 		
-		CC.checkJSamplerHome();
+		JSUtils.checkJSamplerHome();
 		CC.loadOrchestras();
 		CC.loadServerList();
 		CC.connect();

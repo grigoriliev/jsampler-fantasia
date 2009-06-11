@@ -68,6 +68,9 @@ CVS HEAD
     maximum voices and disk streams
     (choose Edit/Preferences, then click the `General' tab)
 
+  * Added support for exporting the MIDI instrument maps
+    as text file or web page
+
   * Updated LscpTree
 
   * The scripts in the `scripts' directory now pass the command-line

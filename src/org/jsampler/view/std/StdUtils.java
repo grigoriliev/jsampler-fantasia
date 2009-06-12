@@ -236,7 +236,8 @@ public class StdUtils {
 		JSFileFilter filter = new JSFileFilter.MidiMaps();
 
 		JSFileFilter[] filters = {
-			new JSFileFilter.Lscp(), new JSFileFilter.Text(), new JSFileFilter.Html()
+			new JSFileFilter.Lscp(), new JSFileFilter.Text(), new JSFileFilter.Html(),
+			new JSFileFilter.Rgd()
 		};
 
 		return showFileChooser (

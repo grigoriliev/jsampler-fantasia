@@ -113,6 +113,15 @@ public class StdA4n {
 			} else if(ext.equals(".htm") || ext.equals(".html")) {
 				fos = new FileOutputStream(f);
 				fos.write(JSUtils.exportInstrMapsToHtml().getBytes("US-ASCII"));
+			} else if(ext.equals(".rgd")) {
+				byte[] data = JSUtils.exportInstrMapsToRGD();
+				if(data == null) {
+					String s = i18n.getError("StdA4n.rgdExportFailed");
+					HF.showErrorMessage(s);
+					return;
+				}
+				fos = new FileOutputStream(f);
+				fos.write(data);
 			} else {
 				f = new File(f.getAbsolutePath() + ".lscp");
 				if(f.exists()) {

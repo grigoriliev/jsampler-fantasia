@@ -27,6 +27,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.text.DateFormat;
 import java.util.logging.Level;
+import java.util.zip.GZIPOutputStream;
 
 import org.jsampler.view.JSChannel;
 import org.jsampler.view.JSChannelsPane;
@@ -39,6 +40,9 @@ import org.linuxsampler.lscp.MidiInputDevice;
 import org.linuxsampler.lscp.MidiPort;
 import org.linuxsampler.lscp.Parameter;
 import org.linuxsampler.lscp.SamplerChannel;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import static org.jsampler.CC.preferences;
 import static org.jsampler.JSI18n.i18n;
@@ -303,6 +307,89 @@ public class JSUtils {
 		s = s.replaceAll(">", "&gt;");
 
 		return s;
+	}
+
+	public static byte[]
+	exportInstrMapsToRGD() {
+		Document doc = DOMUtils.createEmptyDocument();
+
+		Element rgd = doc.createElement("rosegarden-data");
+		rgd.setAttribute("version", "1.7.2");
+		doc.appendChild(rgd);
+
+		Element studio = doc.createElement("studio");
+		studio.setAttribute("thrufilter", "0");
+		studio.setAttribute("recordfilter", "0");
+		rgd.appendChild(studio);
+
+		MidiInstrumentMap[] maps = CC.getSamplerModel().getMidiInstrumentMaps();
+		for(int i = 0; i < maps.length; i++) {
+			Element dev = doc.createElement("device");
+			dev.setAttribute("id", String.valueOf(i));
+			dev.setAttribute("name", "LinuxSampler: " + maps[i].getName());
+			dev.setAttribute("type", "midi");
+			studio.appendChild(dev);
+
+			Element el = doc.createElement("librarian");
+			el.setAttribute("name", "Grigor Iliev");
+			el.setAttribute("email", "grigor@grigoriliev.com");
+			dev.appendChild(el);
+
+			exportInstrumentsToRGD(maps[i], dev);
+		}
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		DOMUtils.writeObject(doc, baos);
+
+		// Hack to insert the file name in the archive
+		byte[] data2 = null;
+		try {
+			ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
+			GZIPOutputStream gzos = new GZIPOutputStream(baos2);
+			gzos.write(baos.toByteArray());
+			gzos.finish();
+			byte[] data = baos2.toByteArray();
+			data[3] = 8; // File name
+			byte[] fn = "x-rosegarden-device".getBytes("US-ASCII");
+			int fnsize = fn.length;
+			data2 = new byte[data.length + fnsize + 1];
+			
+			for(int i = 0; i < 10; i++) data2[i] = data[i];
+			for(int i = 0; i < fnsize; i++) data2[i + 10] = fn[i];
+			data2[10 + fnsize] = 0;
+			for(int i = 10; i < data.length; i++) data2[i + fnsize + 1] = data[i];
+			
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		//////////////
+
+		return data2;
+	}
+
+	private static void
+	exportInstrumentsToRGD(MidiInstrumentMap map, Element el) {
+		int bank = -1;
+		int bnkOffset = preferences().getIntProperty(JSPrefs.FIRST_MIDI_BANK_NUMBER);
+		Element elBank = null;
+
+		for(MidiInstrument i : map.getAllMidiInstruments()) {
+			int newBank = i.getInfo().getMidiBank();
+			if(newBank != bank) {
+				bank = newBank;
+				elBank = el.getOwnerDocument().createElement("bank");
+				elBank.setAttribute("name", "Bank " + (bank + bnkOffset));
+				elBank.setAttribute("msb", String.valueOf((bank >> 7) & 0x7f));
+				elBank.setAttribute("lsb", String.valueOf(bank & 0x7f));
+				el.appendChild(elBank);
+			}
+
+			Element elProgram = el.getOwnerDocument().createElement("program");
+			elProgram.setAttribute("id", String.valueOf(i.getInfo().getMidiProgram()));
+			elProgram.setAttribute("name", i.getName());
+
+			elBank.appendChild(elProgram);
+		}
 	}
 
 	public static String

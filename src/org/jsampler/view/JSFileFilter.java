@@ -126,9 +126,17 @@ public abstract class JSFileFilter extends FileFilter implements FilenameFilter 
 		getDescription() { return "Web Pages (*.html)"; }
 	}
 
+	public static class Rgd extends JSFileFilter {
+		public
+		Rgd() { super(".rgd"); }
+
+		public String
+		getDescription() { return "Rosegarden Device File (*.rgd)"; }
+	}
+
 
 	public static class MidiMaps extends JSFileFilter {
-		private static final String[] exts = { ".lscp", ".txt", ".html" };
+		private static final String[] exts = { ".lscp", ".txt", ".html", "rgd" };
 
 		public
 		MidiMaps() { super(exts); }

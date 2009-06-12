@@ -69,7 +69,7 @@ CVS HEAD
     (choose Edit/Preferences, then click the `General' tab)
 
   * Added support for exporting the MIDI instrument maps
-    as text file or web page
+    as text file, web page or Rosegarden device file
 
   * Updated LscpTree
 

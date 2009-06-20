@@ -1160,7 +1160,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		FileReader fr;
 		try { fr = new FileReader(script); }
 		catch(FileNotFoundException e) {
-			HF.showErrorMessage(i18n.getMessage("FileNotFound!"));
+			HF.showErrorMessage(i18n.getError("fileNotFound!", script.getAbsolutePath()));
 			return;
 		}
 		

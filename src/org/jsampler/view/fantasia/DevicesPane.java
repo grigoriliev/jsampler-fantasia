@@ -75,6 +75,9 @@ public class DevicesPane extends FantasiaPanel {
 				audioDevicesTaskPane.setAnimated(b);
 			}
 		});
+
+		taskPaneContainer.setBackgroundPainter(null);
+		taskPaneContainer.setOpaque(false);
 		
 		taskPaneContainer.add(midiDevicesTaskPane);
 		taskPaneContainer.add(audioDevicesTaskPane);
@@ -88,8 +91,6 @@ public class DevicesPane extends FantasiaPanel {
 		fsp = new FantasiaSubPanel(false, true, false);
 		fsp.add(audioDevicesPane);
 		audioDevicesTaskPane.add(fsp);
-		
-		taskPaneContainer.setOpaque(false);
 	}
 	
 	public MidiDevicesPane

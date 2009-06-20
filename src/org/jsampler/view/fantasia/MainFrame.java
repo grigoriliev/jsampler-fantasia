@@ -785,7 +785,7 @@ public class MainFrame extends StdMainFrame {
 		FileReader fr;
 		try { fr = new FileReader(script); }
 		catch(FileNotFoundException e) {
-			HF.showErrorMessage(i18n.getError("fileNotFound!"));
+			HF.showErrorMessage(i18n.getError("fileNotFound!", script.getAbsolutePath()));
 			return;
 		}
 		

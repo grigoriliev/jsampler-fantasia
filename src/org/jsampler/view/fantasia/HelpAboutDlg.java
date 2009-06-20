@@ -60,7 +60,7 @@ import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
  */
 public class HelpAboutDlg extends InformationDialog {
 	private JLabel lProductName =
-		new JLabel("<html>\n<font size=+1>JSampler Fantasia (version 0.8a cvs_6)</font>");
+		new JLabel("<html>\n<font size=+1>JSampler Fantasia (version 0.8a cvs_8)</font>");
 	
 	private JLabel lAuthor = new JLabel(i18n.getLabel("HelpAboutDlg.lAuthor"));
 	private LinkButton btnAuthor = new Lnkbutton(i18n.getLabel("HelpAboutDlg.btnAuthor"));

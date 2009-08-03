@@ -38,7 +38,7 @@ public class JSampler {
 	public final static String NAME = "JSampler";
 	
 	/** The application version. */
-	public final static String VERSION = "0.8a";
+	public final static String VERSION = "0.9";
 	
 	public static String[] scripts;
 	

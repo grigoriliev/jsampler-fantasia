@@ -2,7 +2,7 @@
 #
 #   JSampler - a java front-end for LinuxSampler
 #
-#   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+#   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
 #
 #   This file is part of JSampler.
 #
@@ -24,7 +24,7 @@
 # Set the JAVA_HOME variable to specify the java distribution to be used.
 #JAVA_HOME=
 
-FANTASIA=Fantasia-0.8a.jar
+FANTASIA=Fantasia-0.9.jar
 
 # If you want to run Fantasia-0.8a.jar from a different directory
 # you must define FANTASIA_PATH to point to Fantasia-0.8a.jar location.

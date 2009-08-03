@@ -37,7 +37,7 @@
 	<dict>
 		<key>ClassPath</key>
 		<array>
-			<string>$JAVAROOT/Fantasia-0.8a.jar</string>
+			<string>$JAVAROOT/Fantasia-0.9.jar</string>
 		</array>
 		<key>JVMVersion</key>
 		<string>1.6*</string>

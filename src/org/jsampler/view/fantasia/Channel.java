@@ -119,8 +119,7 @@ public class Channel extends JSChannel {
 	
 	private static void
 	mouseMoved() {
-		//TODO: do this for all channels panes
-		JSChannelsPane cp = CC.getMainFrame().getChannelsPane(0);
+		JSChannelsPane cp = CC.getMainFrame().getSelectedChannelsPane();
 		for(int i = 0; i < cp.getChannelCount(); i++) {
 			mouseMoved((Channel)cp.getChannel(i));
 		}

@@ -1,11 +1,11 @@
 <project name="JSampler" default="build-fantasia" basedir=".">
     <description>This buildfile is used to build JSampler distributions</description>
     
-    <property name="jlscp.version" value="0.7a"/>
+    <property name="jlscp.version" value="0.8"/>
     <property name="jlscp.srcdir" value="lib/required/jlscp/src"/>
     <property name="juife.version" value="0.4a"/>
     <property name="juife.srcdir" value="lib/required/juife/src"/>
-    <property name="JSampler.version" value="0.8a"/>
+    <property name="JSampler.version" value="0.9"/>
     
     <target name="build-jsclassic" depends="clean-jsclassic,build-manifest">
         <manifest file="dist/build/views.mf">
@@ -92,7 +92,7 @@
         <unjar src="lib/required/swingx.jar" dest="dist/build">
         </unjar>
 
-        <condition property="mac-src" value="org/jsampler/view/fantasia/MacOSApplicationHandler.java">
+        <condition property="mac-src" value="org/jsampler/view/fantasia/MacOSApplicationHandler.java" else="">
             <not><os name="mac" /></not>
         </condition>
 

@@ -114,10 +114,10 @@
       <ulink
       url="http://downloads.sourceforge.net/jsampler/JS_Classic-0.8a.jar">JS
       Classic</ulink> and <ulink
-      url="http://downloads.sourceforge.net/jsampler/Fantasia-0.8a.jar">Fantasia</ulink>.</para>
+      url="http://downloads.sourceforge.net/jsampler/Fantasia-0.9.jar">Fantasia</ulink>.</para>
 
       <para>The source code is available in the <ulink
-      url="http://downloads.sourceforge.net/jsampler/JSampler-0.8a.tar.bz2">JSampler
+      url="http://downloads.sourceforge.net/jsampler/JSampler-0.9.tar.bz2">JSampler
       package</ulink>, which also contains this manual and startup scripts
       that can be used to run a particular JSampler distribution.</para>
 
@@ -197,7 +197,7 @@ locate bin/java</command></literallayout></para>
 
       <para>There are scripts In the <code>scripts</code> directory of the
       <ulink
-      url="http://downloads.sourceforge.net/jsampler/JSampler-0.8a.tar.bz2">JSampler
+      url="http://downloads.sourceforge.net/jsampler/JSampler-0.9.tar.bz2">JSampler
       package</ulink> that, with a little adjustments (if needed), can be used
       to run a JSampler distribution. Copy them to a desired location and edit
       with your preferred editor.</para>
@@ -292,14 +292,14 @@ locate bin/java</command></literallayout></para>
       directory:</para>
 
       <para><literallayout><command>cd /home/me/soft
-wget -c http://downloads.sourceforge.net/jlscp/jlscp-0.7a.tar.bz2
-tar -xjf jlscp-0.7a.tar.bz2
+wget -c http://downloads.sourceforge.net/jlscp/jlscp-0.8.tar.bz2
+tar -xjf jlscp-0.8.tar.bz2
 wget -c http://downloads.sourceforge.net/juife/juife-0.4a.tar.bz2
 tar -xjf juife-0.4a.tar.bz2
 cvs -z3 -d:pserver:anonymous@cvs.linuxsampler.org:/var/cvs/linuxsampler co jsampler
 cd jsampler
 mkdirhier lib/required
-cp ../jlscp-0.5a/lib/jlscp.jar lib/required/jlscp.jar
+cp ../jlscp-0.8/lib/jlscp.jar lib/required/jlscp.jar
 cp ../juife-0.4a/lib/juife.jar lib/required/juife.jar</command></literallayout></para>
 
       <tip>
@@ -622,9 +622,9 @@ cp ../juife-0.4a/lib/juife.jar lib/required/juife.jar</command></literallayout><
       <title>Adding Instruments To The Instruments Database</title>
 
       <para>Choose <guimenu>Window</guimenu>/<guimenu>Instruments
-      Database</guimenu> to bring up the Instruments Database window, or
-      click the corresponding tool button. Initialy, the instruments database
-      is empty, so you should manually create the desired directories and add
+      Database</guimenu> to bring up the Instruments Database window, or click
+      the corresponding tool button. Initialy, the instruments database is
+      empty, so you should manually create the desired directories and add
       instruments to them.</para>
 
       <para>To create a new directory, select the directory, in which the new
@@ -642,7 +642,7 @@ cp ../juife-0.4a/lib/juife.jar lib/required/juife.jar</command></literallayout><
     </section>
 
     <section>
-      <title>Manging Instruments And Directories</title>
+      <title>Managing Instruments And Directories</title>
 
       <para>Basic commands:</para>
 

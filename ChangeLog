@@ -1,4 +1,4 @@
-CVS HEAD
+JSampler v0.9: 2009-08-03
   * Implemented a backend list with option to manually choose a backend
     to connect on startup(Edit/Preferences, then click the `Backend' tab)
     and option to change the backend without restarting JSampler

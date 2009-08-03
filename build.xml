@@ -151,7 +151,7 @@
             <package name="org.jsampler.view"/>
             <doctitle>JSampler ${JSampler.version} API specification</doctitle>
             <header><![CDATA[<b>JSampler</b><br><font size=-1>v${JSampler.version}</font>]]></header>
-            <bottom><![CDATA[<font size=-1>Copyright &copy; 2007 Grigor Iliev. All rights reserved.</font>]]></bottom>
+            <bottom><![CDATA[<font size=-1>Copyright &copy; 2009 Grigor Iliev. All rights reserved.</font>]]></bottom>
         </javadoc>
     </target>
     
@@ -184,7 +184,7 @@
 	    
             <section name="org/linuxsampler/lscp/">
                 <attribute name="Specification-Title" value="A java LinuxSampler control protocol API"/>
-                <attribute name="Specification-Version" value="1.2"/>
+                <attribute name="Specification-Version" value="1.4"/>
                 <attribute name="Specification-Vendor" value="Grigor Iliev"/>
                 <attribute name="Implementation-Title" value="org.linuxsampler.lscp"/>
                 <attribute name="Implementation-Version" value="${jlscp.version}"/>
@@ -202,7 +202,7 @@
 
             <section name="org/jsampler/">
                 <attribute name="Specification-Title" value="A java front-end for LinuxSampler"/>
-                <attribute name="Specification-Version" value="0.8"/>
+                <attribute name="Specification-Version" value="0.9"/>
                 <attribute name="Specification-Vendor" value="Grigor Iliev"/>
                 <attribute name="Implementation-Title" value="org.jsampler"/>
                 <attribute name="Implementation-Version" value="${JSampler.version}"/>

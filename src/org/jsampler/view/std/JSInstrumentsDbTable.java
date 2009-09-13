@@ -32,6 +32,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import java.util.LinkedList;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
@@ -46,7 +47,6 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -77,15 +77,16 @@ import org.jsampler.event.SamplerChannelListEvent;
 import org.jsampler.event.SamplerChannelListListener;
 
 import org.jsampler.task.InstrumentsDb;
+import org.jsampler.task.Midi;
 
 import org.jsampler.view.DbClipboard;
 import org.jsampler.view.DbDirectoryTreeNode;
 import org.jsampler.view.InstrumentsDbTableModel;
 
-import org.jsampler.view.JSChannelsPane;
-
 import org.linuxsampler.lscp.DbDirectoryInfo;
 import org.linuxsampler.lscp.DbInstrumentInfo;
+import org.linuxsampler.lscp.MidiInstrumentEntry;
+import org.linuxsampler.lscp.MidiInstrumentInfo;
 
 import static org.jsampler.view.InstrumentsDbTableModel.ColumnType;
 import static org.jsampler.view.std.StdI18n.i18n;
@@ -694,18 +695,81 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 			
 			JSAddMidiInstrumentDlg dlg;
 			Window w = JuifeUtils.getWindow(JSInstrumentsDbTable.this);
-				
+
+			boolean b = instruments.length > 1;
+			boolean apply2all = false;
+			float volume = 1.0f;
+			MidiInstrumentInfo.LoadMode loadMode = MidiInstrumentInfo.LoadMode.DEFAULT;
+			final LinkedList<MidiInstrumentInfo> instrs = new LinkedList<MidiInstrumentInfo>();
+
 			for(DbInstrumentInfo i : instruments) {
-				if(w instanceof Dialog) {
-					dlg = new JSAddMidiInstrumentDlg((Dialog)w, midiMap, i);
-				} else if(w instanceof Frame) {
-					dlg = new JSAddMidiInstrumentDlg((Frame)w, midiMap, i);
+				if(!apply2all) {
+					if(w instanceof Dialog) {
+						dlg = new JSAddMidiInstrumentDlg((Dialog)w, midiMap, i, b);
+					} else if(w instanceof Frame) {
+						dlg = new JSAddMidiInstrumentDlg((Frame)w, midiMap, i, b);
+					} else {
+						dlg = new JSAddMidiInstrumentDlg((Frame)null, midiMap, i, b);
+					}
+
+					dlg.setVisible(true);
+					if(dlg.isApplyToAllSelected()) {
+						if(dlg.isCancelled()) break;
+
+						apply2all = true;
+						volume = dlg.getVolume();
+						loadMode = dlg.getLoadMode();
+					}
 				} else {
-					dlg = new JSAddMidiInstrumentDlg((Frame)null, midiMap, i);
+					final MidiInstrumentInfo instrInfo = new MidiInstrumentInfo();
+					instrInfo.setName(i.getName());
+					instrInfo.setFilePath(i.getFilePath());
+					instrInfo.setInstrumentIndex(i.getInstrumentIndex());
+					instrInfo.setEngine(i.getEngine());
+					instrInfo.setVolume(volume);
+					instrInfo.setLoadMode(loadMode);
+
+					instrs.add(instrInfo);
 				}
-				
-				dlg.setVisible(true);
 			}
+
+			if(instrs.isEmpty()) return;
+
+			addToMap(instrs);
+		}
+
+		private void
+		addToMap(final LinkedList<MidiInstrumentInfo> instrs) {
+			CC.scheduleInTaskQueue(new Runnable() {
+				public void
+				run() { addToMap0(instrs); }
+			});
+		}
+
+		private void
+		addToMap0(final LinkedList<MidiInstrumentInfo> instrs) {
+			if(instrs.isEmpty()) return;
+
+			MidiInstrumentEntry e = midiMap.getAvailableEntry();
+			if(e == null) {
+				CC.getLogger().info("No available MIDI entry");
+				return;
+			}
+
+			int id = midiMap.getMapId();
+			int b = e.getMidiBank();
+			int p = e.getMidiProgram();
+			final Midi.MapInstrument t = new Midi.MapInstrument(id, b, p, instrs.pop());
+
+			t.addTaskListener(new TaskListener() {
+				public void
+				taskPerformed(TaskEvent e) {
+					CC.scheduleTask(new Midi.UpdateInstruments(midiMap.getMapId()));
+					addToMap(instrs);
+				}
+			});
+
+			CC.getTaskQueue().add(t);
 		}
 	}
 	

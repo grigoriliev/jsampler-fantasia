@@ -135,6 +135,9 @@ public class MainFrame extends StdMainFrame {
 	private final JCheckBoxMenuItem cbmiMidiKeyboardVisible =
 			new JCheckBoxMenuItem(i18n.getMenuLabel("view.midiKeyboard"));
 	
+	private final JCheckBoxMenuItem cbmiAlwaysOnTop =
+			new JCheckBoxMenuItem(i18n.getMenuLabel("view.alwaysOnTop"));
+
 	private final Timer guiTimer = new Timer(1000, null);
 	
 	/** Creates a new instance of <code>MainFrame</code> */
@@ -524,8 +527,6 @@ public class MainFrame extends StdMainFrame {
 		cbmiRightSidePaneVisible.setSelected(b);
 		showDevicesPane(b);
 		
-		m.addSeparator();
-		
 		m.add(cbmiMidiKeyboardVisible);
 		
 		cbmiMidiKeyboardVisible.addActionListener(new ActionListener() {
@@ -538,6 +539,24 @@ public class MainFrame extends StdMainFrame {
 		b = preferences().getBoolProperty("midiKeyboard.visible");
 		cbmiMidiKeyboardVisible.setSelected(b);
 		setMidiKeyboardVisible(b);
+
+		m.addSeparator();
+
+		cbmiAlwaysOnTop.setAccelerator(KeyStroke.getKeyStroke (
+			KeyEvent.VK_T, modKey | KeyEvent.SHIFT_MASK
+		));
+		m.add(cbmiAlwaysOnTop);
+
+		cbmiAlwaysOnTop.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) {
+				setWindowAlwaysOnTop(cbmiAlwaysOnTop.getState());
+			}
+		});
+
+		b = preferences().getBoolProperty("mainFrame.alwaysOnTop");
+		cbmiAlwaysOnTop.setSelected(b);
+		setWindowAlwaysOnTop(b);
 		
 		
 		// Channels
@@ -935,6 +954,16 @@ public class MainFrame extends StdMainFrame {
 		
 		rootPane.validate();
 		rootPane.repaint();
+	}
+
+	private void
+	setWindowAlwaysOnTop(boolean b) {
+		preferences().setBoolProperty("mainFrame.alwaysOnTop", b);
+		setAlwaysOnTop(b);
+
+		if(cbmiAlwaysOnTop.isSelected() != b) {
+			cbmiAlwaysOnTop.setSelected(b);
+		}
 	}
 	
 	public void

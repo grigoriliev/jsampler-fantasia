@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -23,7 +23,6 @@
 package org.jsampler.view.std;
 
 import java.awt.Dialog;
-import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -32,6 +31,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -78,20 +78,24 @@ public class JSAddMidiInstrumentDlg extends OkCancelDialog {
 	private final JComboBox cbProgram = new JComboBox();
 	private final JSlider slVolume = new JSlider(0, 100, 100);
 	private final JComboBox cbLoadMode = new JComboBox();
+
+	private final JCheckBox checkApplyToAll =
+		new JCheckBox(i18n.getLabel("JSAddMidiInstrumentDlg.checkApplyToAll"));
 	
 	private MidiInstrumentMap map;
 	private Instrument instr;
 	
 	private int mbBase;
 	private int mpBase;
+
+	private boolean bShowApplyToAll;
 	
 	/**
 	 * Creates a new instance of <code>JSAddMidiInstrumentDlg</code>
 	 */
 	public
 	JSAddMidiInstrumentDlg(Frame owner, MidiInstrumentMap map, Instrument instr) {
-		super(owner, i18n.getLabel("JSAddMidiInstrumentDlg.title"));
-		initAddMidiInstrumentDlg(map, instr);
+		this(owner, map, instr, false);
 	}
 	
 	/**
@@ -99,7 +103,30 @@ public class JSAddMidiInstrumentDlg extends OkCancelDialog {
 	 */
 	public
 	JSAddMidiInstrumentDlg(Dialog owner, MidiInstrumentMap map, Instrument instr) {
+		this(owner, map, instr, false);
+	}
+
+	/**
+	 * Creates a new instance of <code>JSAddMidiInstrumentDlg</code>
+	 * @param showApplyToAll Determines whether to show additional check box
+	 * for remembering the user decision and applying to all selected instruments
+	 */
+	public
+	JSAddMidiInstrumentDlg(Frame owner, MidiInstrumentMap map, Instrument instr, boolean showApplyToAll) {
 		super(owner, i18n.getLabel("JSAddMidiInstrumentDlg.title"));
+		bShowApplyToAll = showApplyToAll;
+		initAddMidiInstrumentDlg(map, instr);
+	}
+
+	/**
+	 * Creates a new instance of <code>JSAddMidiInstrumentDlg</code>
+	 * @param showApplyToAll Determines whether to show additional check box
+	 * for remembering the user decision and applying to all selected instruments
+	 */
+	public
+	JSAddMidiInstrumentDlg(Dialog owner, MidiInstrumentMap map, Instrument instr, boolean showApplyToAll) {
+		super(owner, i18n.getLabel("JSAddMidiInstrumentDlg.title"));
+		bShowApplyToAll = showApplyToAll;
 		initAddMidiInstrumentDlg(map, instr);
 	}
 	
@@ -172,9 +199,18 @@ public class JSAddMidiInstrumentDlg extends OkCancelDialog {
 		c.gridy = 4;
 		gridbag.setConstraints(cbLoadMode, c);
 		mainPane.add(cbLoadMode);
+
+		if(bShowApplyToAll) {
+			c.gridx = 0;
+			c.gridy = 5;
+			c.gridwidth = 2;
+			gridbag.setConstraints(checkApplyToAll, c);
+			mainPane.add(checkApplyToAll);
+		}
 		
 		c.gridx = 1;
 		c.gridy = 1;
+		c.gridwidth = 1;
 		c.insets = new Insets(3, 3, 24, 3);
 		gridbag.setConstraints(slVolume, c);
 		mainPane.add(slVolume);
@@ -279,6 +315,22 @@ public class JSAddMidiInstrumentDlg extends OkCancelDialog {
 	/** Gets the selected load mode. */
 	public MidiInstrumentInfo.LoadMode
 	getLoadMode() { return (MidiInstrumentInfo.LoadMode) cbLoadMode.getSelectedItem(); }
+
+	public MidiInstrumentInfo
+	getMidiInstrumentInfo() {
+		MidiInstrumentInfo instrInfo = new MidiInstrumentInfo();
+		instrInfo.setName(getInstrumentName());
+		instrInfo.setFilePath(instr.getFilePath());
+		instrInfo.setInstrumentIndex(instr.getInstrumentIndex());
+		instrInfo.setEngine(instr.getEngine());
+		instrInfo.setVolume(getVolume());
+		instrInfo.setLoadMode(getLoadMode());
+
+		return instrInfo;
+	}
+
+	public boolean
+	isApplyToAllSelected() { return checkApplyToAll.isSelected(); }
 	
 	protected void
 	onOk() {
@@ -288,13 +340,7 @@ public class JSAddMidiInstrumentDlg extends OkCancelDialog {
 		preferences().setIntProperty("lastUsedMidiBank", getMidiBank());
 		preferences().setIntProperty("lastUsedMidiProgram", getMidiProgram());
 		
-		MidiInstrumentInfo instrInfo = new MidiInstrumentInfo();
-		instrInfo.setName(getInstrumentName());
-		instrInfo.setFilePath(instr.getFilePath());
-		instrInfo.setInstrumentIndex(instr.getInstrumentIndex());
-		instrInfo.setEngine(instr.getEngine());
-		instrInfo.setVolume(getVolume());
-		instrInfo.setLoadMode(getLoadMode());
+		MidiInstrumentInfo instrInfo = getMidiInstrumentInfo();
 		
 		int id = map.getMapId();
 		int b = getMidiBank();

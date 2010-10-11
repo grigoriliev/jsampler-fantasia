@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2010 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -38,7 +38,7 @@ public class JSampler {
 	public final static String NAME = "JSampler";
 	
 	/** The application version. */
-	public final static String VERSION = "0.9";
+	public final static String VERSION = "0.9cvs1";
 	
 	public static String[] scripts;
 	
@@ -85,8 +85,7 @@ public class JSampler {
 	private static void
 	initGUI() {
 		JSViews.parseManifest();
-		JSViews.setView(JSViews.getDefaultView());
-		
+
 		SwingUtilities.invokeLater(new Runnable() {
 			public void
 			run() { initGUI0(); }
@@ -95,6 +94,7 @@ public class JSampler {
 	
 	private static void
 	initGUI0() {
+		JSViews.setView(JSViews.getDefaultView());
 		if(scripts != null) {
 			CC.addConnectionEstablishedListener(new ConnectionEstablishedListener());
 		}

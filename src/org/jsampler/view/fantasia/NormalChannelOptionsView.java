@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2010 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -65,6 +65,8 @@ import org.linuxsampler.lscp.AudioOutputDevice;
 import org.linuxsampler.lscp.MidiInputDevice;
 import org.linuxsampler.lscp.MidiPort;
 import org.linuxsampler.lscp.SamplerChannel;
+
+import org.pushingpixels.substance.api.SubstanceLookAndFeel;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 
@@ -141,8 +143,15 @@ public class NormalChannelOptionsView extends JPanel implements ChannelOptionsVi
 		p2.add(Box.createRigidArea(new Dimension(3, 0)));
 		
 		o = cbMidiPort.getRenderer();
-		if(o instanceof JLabel) ((JLabel )o).setHorizontalAlignment(SwingConstants.CENTER);
-		
+		if(o instanceof JLabel) ((JLabel )o).setHorizontalAlignment(SwingConstants.LEFT);
+
+		cbMidiPort.addActionListener(new ActionListener() {
+			public void
+			actionPerformed(ActionEvent e) {
+				updateCbMidiPortToolTipText();
+			}
+		});
+
 		cbMidiPort.setPreferredSize(new Dimension(62, 18));
 		cbMidiPort.setMinimumSize(cbMidiPort.getPreferredSize());
 		cbMidiPort.setMaximumSize(cbMidiPort.getPreferredSize());
@@ -426,12 +435,22 @@ public class NormalChannelOptionsView extends JPanel implements ChannelOptionsVi
 	}
 	
 	private void
+	updateCbMidiPortToolTipText() {
+		if(cbMidiPort.getSelectedItem() == null) {
+			cbMidiPort.setToolTipText(null);
+			return;
+		}
+		
+		cbMidiPort.setToolTipText(cbMidiPort.getSelectedItem().toString());
+	}
+
+	private void
 	updateCbInstrumentMapToolTipText() {
 		if(cbInstrumentMap.getSelectedItem() != defaultMap) {
 			cbInstrumentMap.setToolTipText(null);
 			return;
 		}
-		
+
 		MidiInstrumentMap m = CC.getSamplerModel().getDefaultMidiInstrumentMap();
 		if(m != null) {
 			String s = i18n.getLabel("Channel.ttDefault", m.getName());
@@ -499,6 +518,11 @@ public class NormalChannelOptionsView extends JPanel implements ChannelOptionsVi
 			
 			int p = channel.getModel().getChannelInfo().getMidiInputPort();
 			cbMidiPort.setSelectedItem(p >= 0 && p < ports.length ? ports[p] : null);
+
+			cbMidiPort.putClientProperty (
+				SubstanceLookAndFeel.COMBO_POPUP_PROTOTYPE,
+				new FantasiaComboBox.WidestComboPopupPrototype()
+			);
 			
 			cbMidiChannel.setEnabled(true);
 			int c = channel.getModel().getChannelInfo().getMidiInputChannel();

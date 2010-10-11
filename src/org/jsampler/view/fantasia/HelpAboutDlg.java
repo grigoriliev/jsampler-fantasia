@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2010 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -50,7 +50,7 @@ import net.sf.juife.LinkButton;
 
 import org.jsampler.view.std.StdUtils;
 
-import org.jvnet.substance.SubstanceLookAndFeel;
+import org.pushingpixels.substance.api.SubstanceLookAndFeel;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 
@@ -60,7 +60,7 @@ import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
  */
 public class HelpAboutDlg extends InformationDialog {
 	private JLabel lProductName =
-		new JLabel("<html>\n<font size=+1>JSampler Fantasia (version 0.9)</font>");
+		new JLabel("<html>\n<font size=+1>JSampler Fantasia (version 0.9cvs1)</font>");
 	
 	private JLabel lAuthor = new JLabel(i18n.getLabel("HelpAboutDlg.lAuthor"));
 	private LinkButton btnAuthor = new Lnkbutton(i18n.getLabel("HelpAboutDlg.btnAuthor"));

@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2010 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -33,7 +33,8 @@ import javax.swing.plaf.basic.BasicComboBoxEditor;
 
 import org.jsampler.view.fantasia.Res;
 
-import org.jvnet.substance.SubstanceLookAndFeel;
+import org.pushingpixels.substance.api.SubstanceLookAndFeel;
+import org.pushingpixels.substance.api.combo.ComboPopupPrototypeCallback;
 
 /**
  *
@@ -42,17 +43,32 @@ import org.jvnet.substance.SubstanceLookAndFeel;
 public class FantasiaComboBox extends JComboBox {
 	public
 	FantasiaComboBox() {
-		setUI(new FantasiaComboBoxUI());
 		setOpaque(true);
 		setBackground(new java.awt.Color(0x818181));
 		setBorder(BorderFactory.createEmptyBorder());
 		setRenderer(new FantasiaListCellRenderer());
-		putClientProperty(SubstanceLookAndFeel.COLORIZATION_FACTOR, 1.0);
+		//putClientProperty(SubstanceLookAndFeel.COLORIZATION_FACTOR, 1.0);
 		//putClientProperty(SubstanceLookAndFeel.FLAT_PROPERTY, Boolean.TRUE);
 		//putClientProperty(SubstanceLookAndFeel.PAINT_ACTIVE_PROPERTY, Boolean.TRUE);
 	}
+
+	@Override
+	public void
+	updateUI() { setUI(new FantasiaComboBoxUI(this)); }
 	
-	
+	public static class WidestComboPopupPrototype implements ComboPopupPrototypeCallback {
+		@Override
+		public Object
+		getPopupPrototypeDisplayValue(JComboBox jc) {
+			Object prototype = "";
+			for(int i = 0; i < jc.getItemCount(); i++) {
+				if(jc.getItemAt(i).toString().length() > prototype.toString().length()) {
+					prototype = jc.getItemAt(i);
+				}
+			}
+			return prototype;
+		}
+	}
 }
 
 class FantasiaComboBoxEditor extends BasicComboBoxEditor {

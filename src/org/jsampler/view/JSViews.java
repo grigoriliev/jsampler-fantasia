@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2010 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -22,8 +22,6 @@
 
 
 package org.jsampler.view;
-
-import java.net.URL;
 
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -117,11 +115,7 @@ public class JSViews {
 			return;
 		}
 		
-		final ViewEntry e = entry;
-		SwingUtilities.invokeLater(new Runnable() {
-			public void
-			run() { setView0(e); }
-		});
+		setView0(entry);
 	}
 	
 	private static void

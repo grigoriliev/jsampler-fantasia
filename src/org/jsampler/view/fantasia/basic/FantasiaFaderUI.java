@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2010 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -24,6 +24,7 @@ package org.jsampler.view.fantasia.basic;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
@@ -31,6 +32,8 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 
 import java.awt.geom.Arc2D;
 import java.awt.geom.Line2D;
@@ -45,9 +48,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import javax.swing.plaf.basic.BasicSliderUI;
-
-import org.jvnet.substance.utils.RolloverControlListener;
-import org.jvnet.substance.utils.Trackable;
 
 /**
  *
@@ -369,5 +369,205 @@ public class FantasiaFaderUI extends BasicSliderUI implements Trackable {
 		if(d != null) return d;
 		return slider.getOrientation() == JSlider.VERTICAL ?
 			new Dimension(27, 20) : new Dimension(17, 27);
+	}
+}
+
+
+
+/*
+ * Copyright (c) 2005-2009 Substance Kirill Grouchnikov. All Rights Reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *  o Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ *
+ *  o Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ *  o Neither the name of Substance Kirill Grouchnikov nor the names of
+ *    its contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+/** @author Kirill Grouchnikov */
+interface Trackable { public boolean isInside(MouseEvent me); }
+
+/**
+ * Control listener for rollover effects. Tracks the mouse motion interaction
+ * for the associated {@link org.jvnet.substance.utils.Trackable} control. This
+ * class is <b>for internal use only</b>.
+ *
+ * @author Kirill Grouchnikov
+ */
+class RolloverControlListener implements MouseListener,
+		MouseMotionListener {
+	/**
+	 * If the mouse pointer is currently inside the designated area (fetched
+	 * from the associated {@link #trackableUI}), <code>this</code> flag is
+	 * <code>true</code>.
+	 */
+	private boolean isMouseInside;
+
+	/**
+	 * Surrogate model for tracking control status.
+	 */
+	private ButtonModel model;
+
+	/**
+	 * Object that is queried for mouse events. This object is responsible for
+	 * handling the designated (hot-spot) area of the associated control.
+	 */
+	private Trackable trackableUI;
+
+	/**
+	 * Simple constructor.
+	 *
+	 * @param trackableUI
+	 *            Object that is queried for mouse events.
+	 * @param model
+	 *            Surrogate model for tracking control status.
+	 */
+	public RolloverControlListener(Trackable trackableUI, ButtonModel model) {
+		this.trackableUI = trackableUI;
+		this.model = model;
+		this.isMouseInside = false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see java.awt.event.MouseListener#mouseEntered(java.awt.event.MouseEvent)
+	 */
+	public void mouseEntered(MouseEvent e) {
+		Component component = (Component) e.getSource();
+		if (!component.isEnabled())
+			return;
+		boolean isInside = this.trackableUI.isInside(e);
+		// boolean isInsideChanged = (this.isMouseInside != isInside);
+		this.isMouseInside = isInside;
+		this.model.setRollover(isInside);
+		this.model.setEnabled(component.isEnabled());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see java.awt.event.MouseListener#mouseExited(java.awt.event.MouseEvent)
+	 */
+	public void mouseExited(MouseEvent e) {
+		Component component = (Component) e.getSource();
+		if (!component.isEnabled())
+			return;
+		// boolean isInsideChanged = (this.isMouseInside != false);
+		this.isMouseInside = false;
+		this.model.setRollover(false);
+		this.model.setEnabled(component.isEnabled());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * java.awt.event.MouseListener#mouseReleased(java.awt.event.MouseEvent)
+	 */
+	public void mouseReleased(MouseEvent e) {
+		// System.out.println("mouse released [" + e.getX() + ":" + e.getY() +
+		// "]");
+		Component component = (Component) e.getSource();
+		if (!component.isEnabled())
+			return;
+		boolean isInside = this.trackableUI.isInside(e);
+		// boolean isInsideChanged = (this.isMouseInside != isInside);
+		this.isMouseInside = isInside;
+		this.model.setRollover(this.isMouseInside);
+		this.model.setPressed(false);
+		this.model.setArmed(false);
+		this.model.setSelected(false);
+		this.model.setEnabled(component.isEnabled());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see java.awt.event.MouseListener#mousePressed(java.awt.event.MouseEvent)
+	 */
+	public void mousePressed(MouseEvent e) {
+		// System.out.println("mouse pressed [" + e.getX() + ":" + e.getY() +
+		// "]");
+		Component component = (Component) e.getSource();
+		if (!component.isEnabled())
+			return;
+		boolean isInside = this.trackableUI.isInside(e);
+		// boolean isInsideChanged = (this.isMouseInside != isInside);
+		this.isMouseInside = isInside;
+		this.model.setRollover(this.isMouseInside);
+		if (this.isMouseInside) {
+			this.model.setPressed(true);
+			this.model.setArmed(true);
+			this.model.setSelected(true);
+		}
+		this.model.setEnabled(component.isEnabled());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * java.awt.event.MouseMotionListener#mouseDragged(java.awt.event.MouseEvent
+	 * )
+	 */
+	public void mouseDragged(MouseEvent e) {
+		// System.out.println("mouse dragged [" + e.getX() + ":" + e.getY() +
+		// "]");
+		Component component = (Component) e.getSource();
+		if (!component.isEnabled())
+			return;
+		boolean isInside = this.trackableUI.isInside(e);
+		// boolean isInsideChanged = (this.isMouseInside != isInside);
+		this.isMouseInside = isInside;
+		this.model.setEnabled(component.isEnabled());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * java.awt.event.MouseMotionListener#mouseMoved(java.awt.event.MouseEvent)
+	 */
+	public void mouseMoved(MouseEvent e) {
+		// System.out.println("mouse moved [" + e.getX() + ":" + e.getY() +
+		// "]");
+		Component component = (Component) e.getSource();
+		if (!component.isEnabled())
+			return;
+		boolean isInside = this.trackableUI.isInside(e);
+		// System.out.println("inside");
+		// boolean isInsideChanged = (this.isMouseInside != isInside);
+		this.isMouseInside = isInside;
+		this.model.setRollover(isInside);
+		this.model.setEnabled(component.isEnabled());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see java.awt.event.MouseListener#mouseClicked(java.awt.event.MouseEvent)
+	 */
+	public void mouseClicked(MouseEvent e) {
 	}
 }

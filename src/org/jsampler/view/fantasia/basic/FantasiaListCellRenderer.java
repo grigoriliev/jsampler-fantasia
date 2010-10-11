@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2010 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -27,12 +27,14 @@ import java.awt.Graphics2D;
 import java.awt.Insets;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JList;
 
 import org.jsampler.view.fantasia.Res;
+import org.jsampler.view.std.StdUtils;
 
-import org.jvnet.substance.api.renderers.SubstanceDefaultListCellRenderer;
+import org.pushingpixels.substance.api.renderers.SubstanceDefaultListCellRenderer;
 
 /**
  *
@@ -59,9 +61,10 @@ public class FantasiaListCellRenderer extends SubstanceDefaultListCellRenderer {
 		return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 	}
 	
-	static class FantasiaRenderer extends JLabel {
+	public static class FantasiaRenderer extends JLabel {
 		private static java.awt.Color textColor = new java.awt.Color(0xFFA300);
 		private static Insets pixmapInsets = new Insets(3, 5, 6, 5);
+		private static ImageIcon bgImage = null;
 		
 		FantasiaRenderer() {
 			setOpaque(false);
@@ -69,6 +72,10 @@ public class FantasiaListCellRenderer extends SubstanceDefaultListCellRenderer {
 			setForeground(new java.awt.Color(0xFFA300));
 			setBackground(new java.awt.Color(0x818181));
 			setFont(Res.fontScreen);
+
+			if(bgImage == null) bgImage = StdUtils.createImageIcon (
+				Res.gfxCbLabelBg.getImage(), new java.awt.Color(0x818181)
+			);
 		}
 		
 		@Override
@@ -81,7 +88,7 @@ public class FantasiaListCellRenderer extends SubstanceDefaultListCellRenderer {
 				java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON
 			);
 			
-			PixmapPane.paintComponent(this, g, Res.gfxCbLabelBg, pixmapInsets);
+			PixmapPane.paintComponent(this, g, bgImage, pixmapInsets);
 			super.paintComponent(g);
 		}
 		

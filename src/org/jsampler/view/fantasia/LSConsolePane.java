@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2010 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -22,14 +22,11 @@
 
 package org.jsampler.view.fantasia;
 
-import java.awt.Color;
 import java.awt.Window;
 
 import javax.swing.Action;
 
 import org.jsampler.view.std.JSLSConsolePane;
-
-import org.jvnet.substance.SubstanceLookAndFeel;
 
 /**
  *
@@ -46,6 +43,7 @@ public class LSConsolePane extends JSLSConsolePane {
 		getLSConsoleTextPane().putClientProperty("substancelaf.noExtraElements", Boolean.TRUE);
 	}
 	
+	@Override
 	protected void
 	quitSession() {
 		super.quitSession();

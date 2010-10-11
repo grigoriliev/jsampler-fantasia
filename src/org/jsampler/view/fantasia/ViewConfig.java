@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2010 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -38,9 +38,8 @@ import org.jsampler.view.BasicIconSet;
 import org.jsampler.view.JSMainFrame;
 import org.jsampler.view.JSViewConfig;
 
-import org.jvnet.substance.api.SubstanceConstants;
-import org.jvnet.substance.SubstanceLookAndFeel;
-import org.jvnet.substance.skin.SubstanceRavenGraphiteLookAndFeel;
+import org.pushingpixels.substance.api.SubstanceConstants;
+import org.pushingpixels.substance.api.SubstanceLookAndFeel;
 
 /**
  *
@@ -63,7 +62,7 @@ public class ViewConfig extends JSViewConfig {
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 				nativeMenuPropsMap = getMenuProperties();
 			}
-			UIManager.setLookAndFeel(new SubstanceRavenGraphiteLookAndFeel());
+			UIManager.setLookAndFeel(new SubstanceFantasiaLookAndFeel());
 			UIManager.put(SubstanceLookAndFeel.WATERMARK_VISIBLE, Boolean.FALSE);
 			
 			UIManager.put (

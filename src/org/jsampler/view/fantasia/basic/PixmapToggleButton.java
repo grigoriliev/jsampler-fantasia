@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2010 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -29,10 +29,7 @@ import java.awt.Insets;
 import javax.swing.ImageIcon;
 import javax.swing.JToggleButton;
 
-import org.jvnet.lafwidget.animation.FadeConfigurationManager;
-import org.jvnet.lafwidget.animation.FadeKind;
-
-import org.jvnet.substance.SubstanceLookAndFeel;
+import javax.swing.plaf.basic.BasicToggleButtonUI;
 
 
 /**
@@ -50,12 +47,11 @@ public class PixmapToggleButton extends JToggleButton {
 		this.selectedIcon = selectedIcon;
 		
 		setContentAreaFilled(false);
+		setOpaque(false);
 		setFocusPainted(false);
+		setBorder(javax.swing.BorderFactory.createEmptyBorder());
 		setMargin(new Insets(0, 0, 0, 0));
-		putClientProperty(SubstanceLookAndFeel.BUTTON_PAINT_NEVER_PROPERTY, Boolean.TRUE);
-		putClientProperty(SubstanceLookAndFeel.BUTTON_NO_MIN_SIZE_PROPERTY, Boolean.TRUE);
-		FadeConfigurationManager.getInstance().disallowFades(FadeKind.ROLLOVER, this);
-		
+
 		setIcon(defaultIcon);
 		setSelectedIcon(selectedIcon);
 		setRolloverEnabled(false);
@@ -67,4 +63,8 @@ public class PixmapToggleButton extends JToggleButton {
 		
 		setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 	}
+
+	@Override
+	public void
+	updateUI() { setUI(new BasicToggleButtonUI()); }
 }

@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2010 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -24,49 +24,65 @@ package org.jsampler.view.fantasia.basic;
 
 import javax.swing.Icon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.plaf.basic.BasicComboBoxUI;
 
 import javax.swing.plaf.basic.ComboPopup;
 
 import org.jsampler.view.fantasia.Res;
 
+import org.pushingpixels.substance.internal.utils.combo.SubstanceComboPopup;
+
 /**
  *
  * @author Grigor Iliev
  */
-public class FantasiaComboBoxUI extends org.jvnet.substance.SubstanceComboBoxUI {
+public class FantasiaComboBoxUI extends BasicComboBoxUI {
+	private JComboBox combo;
 	
 	/** Creates a new instance of <code>FantasiaComboBoxUI</code> */
 	public
-	FantasiaComboBoxUI() {
+	FantasiaComboBoxUI(JComboBox combo) {
+		super();
+		this.combo = combo;
+		currentValuePane.setBackground(combo.getBackground());
 	}
 	
 	@Override
 	public JButton
 	createArrowButton() {
-		JButton btn = new Button();
+		JButton btn = new ArrowButton();
 		return btn;
 	}
 	
 	@Override
 	protected ComboPopup
 	createPopup() {
-		ComboPopup popup = super.createPopup();
-		popup.getList().setFont(popup.getList().getFont().deriveFont(10.0f));
+		ComboPopup cp = new SubstanceComboPopup(combo);
+		cp.getList().setFont(cp.getList().getFont().deriveFont(10.0f));
 		
-		return popup;
+		return cp;
 	}
 	
-	private class Button extends PixmapButton {
-		Button() {
+	public class ArrowButton extends PixmapButton {
+		ArrowButton() {
 			super(Res.gfxCbArrow);
 			super.setIcon(Res.gfxCbArrow);
 			super.setRolloverIcon(Res.gfxCbArrowRO);
-			setDisabledIcon(Res.gfxCbArrowDisabled);
+			super.setDisabledIcon(Res.gfxCbArrowDisabled);
 			setBackground(new java.awt.Color(0x818181));
 		}
 		
 		@Override
 		public void
 		setIcon(Icon icon) { }
+
+		@Override
+		public void
+		setRolloverIcon(Icon icon) { }
+
+		@Override
+		public void
+		setDisabledIcon(Icon icon) { }
 	}
 }

@@ -326,6 +326,8 @@ public class PianoKeyboardPane extends FantasiaPanel
 		}
 		index = channel.getChannelInfo().getInstrumentIndex();
 		updateInstrumentInfo();
+
+		//modWheel.SetChannel(channel);
 	}
 	
 	private void
@@ -340,6 +342,7 @@ public class PianoKeyboardPane extends FantasiaPanel
 		}
 		
 		updateDisplay();
+		//modWheel.SetChannel(null);
 	}
 	
 	@Override public void
@@ -378,36 +381,8 @@ public class PianoKeyboardPane extends FantasiaPanel
 		
 		Paint oldPaint = g2.getPaint();
 		Composite oldComposite = g2.getComposite();
-		
-		Insets insets = this.getInsets();
-		double x1 = insets.left;
-		double y1 = insets.top;
-		
-		double w = getSize().getWidth();
-		double x2 = w - insets.right - 1;
-		double h = getSize().getHeight();
-		double y2 = h - insets.bottom - 1;
-		
-		FantasiaPainter.paintGradient(g2, x1, y1, x2, y2 - 10, color1, color2);
-		
-		g2.setRenderingHint (
-			RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF
-		);
-		
-		double y3 = y2 - 10;
-		if(y3 < 0) y3 = 0;
-		
-		Rectangle2D.Double rect = new Rectangle2D.Double(x1, y3, x2 - x1 + 1, 11);
-		
-		GradientPaint gr = new GradientPaint (
-			0.0f, (float)y3, color2,
-			0.0f, (float)h, color3
-		);
-		
-		g2.setPaint(gr);
-		g2.fill(rect);
-		
-		drawOutBorder(g2, x1, y1, x2, y2);
+
+		FantasiaPainter.paintSurface1(this, g);
 		
 		double prX = pianoRoll.getLocation().getX();
 		double prY = pianoRoll.getLocation().getY();
@@ -418,36 +393,6 @@ public class PianoKeyboardPane extends FantasiaPanel
 		
 		g2.setPaint(oldPaint);
 		g2.setComposite(oldComposite);
-	}
-	
-	private void
-	drawOutBorder(Graphics2D g2, double x1, double y1, double x2, double y2) {
-		AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.40f);
-		g2.setComposite(ac);
-		
-		g2.setPaint(Color.WHITE);
-		Line2D.Double l = new Line2D.Double(x1, y1, x2, y1);
-		g2.draw(l);
-		
-		g2.setComposite(ac.derive(0.20f));
-		l = new Line2D.Double(x1, y1 + 1, x2, y1 + 1);
-		g2.draw(l);
-		
-		g2.setComposite(ac.derive(0.255f));
-		
-		l = new Line2D.Double(x1, y1, x1, y2);
-		g2.draw(l);
-		
-		g2.setComposite(ac.derive(0.40f));
-		g2.setPaint(Color.BLACK);
-		
-		//l = new Line2D.Double(x1, y2, x2, y2);
-		//g2.draw(l);
-		
-		g2.setComposite(ac.derive(0.20f));
-		
-		l = new Line2D.Double(x2, y1, x2, y2);
-		g2.draw(l);
 	}
 	
 	private void

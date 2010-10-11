@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2010 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -21,17 +21,23 @@
  */
 package org.jsampler.view.std;
 
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.Dialog;
 import java.awt.FileDialog;
 import java.awt.Frame;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.Window;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
+import java.awt.image.BufferedImage;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -44,6 +50,7 @@ import java.text.NumberFormat;
 import java.util.Vector;
 import java.util.logging.Level;
 
+import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JSlider;
@@ -430,5 +437,22 @@ public class StdUtils {
 			tip.setTipText(s);
 			tip.repaint();
 		}
+	}
+
+	/**
+	 * Applies the specified color as background to
+	 * the specified image and returns the newly created image.
+	 */
+	public static ImageIcon
+	createImageIcon(Image img, Color bgColor) {
+		BufferedImage img2 = new BufferedImage (
+			img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_RGB
+		);
+
+		Graphics2D g = img2.createGraphics();
+		g.drawImage(img, 0, 0, bgColor, null);
+		g.dispose();
+
+		return new ImageIcon(Toolkit.getDefaultToolkit().createImage(img2.getSource()));
 	}
 }

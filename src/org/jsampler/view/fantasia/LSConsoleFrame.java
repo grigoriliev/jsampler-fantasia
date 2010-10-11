@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2010 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -22,31 +22,24 @@
 
 package org.jsampler.view.fantasia;
 
-import java.awt.Dimension;
-import java.awt.Rectangle;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 
-import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
 import org.jsampler.CC;
+import org.jsampler.view.std.JSFrame;
 import org.jsampler.view.std.JSLscpScriptDlg;
-import org.jsampler.view.std.StdUtils;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
-import static org.jsampler.view.fantasia.FantasiaPrefs.preferences;
 
 /**
  *
  * @author Grigor Iliev
  */
-public class LSConsoleFrame extends JFrame {
+public class LSConsoleFrame extends JSFrame {
 	private final JMenuBar menuBar = new JMenuBar();
 	private final LSConsolePane lsConsolePane = new LSConsolePane(this);
 	
@@ -55,18 +48,12 @@ public class LSConsoleFrame extends JFrame {
 	 */
 	public
 	LSConsoleFrame() {
-		setTitle(i18n.getLabel("LSConsoleFrame.title"));
+		super(i18n.getLabel("LSConsoleFrame.title"), "LSConsoleFrame");
 		if(Res.iconAppIcon != null) setIconImage(Res.iconLSConsole.getImage());
 		
 		add(lsConsolePane);
 		addMenu();
 		pack();
-		setSavedSize();
-		
-		addWindowListener(new WindowAdapter() {
-			public void
-			windowClosing(WindowEvent we) { onWindowClose(); }
-		});
 	}
 	
 	private void
@@ -136,47 +123,6 @@ public class LSConsoleFrame extends JFrame {
 
 		if(CC.getViewConfig().isUsingScreenMenuBar()) {
 			((ViewConfig)CC.getViewConfig()).restoreMenuProperties();
-		}
-	}
-	
-	/** Invoked when this window is about to close. */
-	private void
-	onWindowClose() {
-		boolean b = (getExtendedState() & MAXIMIZED_BOTH) == MAXIMIZED_BOTH;
-		preferences().setBoolProperty("LSConsoleFrame.windowMaximized", b);
-		if(b) return;
-		
-		StdUtils.saveWindowBounds("LSConsoleFrame", getBounds());
-	}
-	
-	private void
-	setDefaultSize() {
-		Dimension dimension = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-		double width = dimension.getWidth();
-		double height = dimension.getHeight();
-		setBounds(100, 100, (int) width - 200, (int) height - 200);
-	}
-	
-	private void
-	setSavedSize() {
-		Rectangle r = StdUtils.getWindowBounds("LSConsoleFrame");
-		if(r == null) {
-			setDefaultSize();
-			return;
-		}
-		
-		setBounds(r);
-	}
-	
-	@Override
-	public void
-	setVisible(boolean b) {
-		if(b == isVisible()) return;
-		
-		super.setVisible(b);
-		
-		if(b && preferences().getBoolProperty("LSConsoleFrame.windowMaximized")) {
-			setExtendedState(getExtendedState() | MAXIMIZED_BOTH);
 		}
 	}
 	

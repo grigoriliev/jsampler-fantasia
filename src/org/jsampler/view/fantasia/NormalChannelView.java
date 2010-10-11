@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2010 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -59,7 +59,7 @@ import net.sf.juife.Dial;
 import org.jsampler.CC;
 import org.jsampler.view.fantasia.basic.*;
 
-import org.jvnet.substance.utils.SubstanceImageCreator;
+import org.pushingpixels.substance.internal.utils.SubstanceImageCreator;
 
 import org.linuxsampler.lscp.SamplerChannel;
 import org.linuxsampler.lscp.SamplerEngine;

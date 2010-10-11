@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2010 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -26,12 +26,17 @@ import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Composite;
 import java.awt.GradientPaint;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Insets;
 import java.awt.Paint;
+import java.awt.RenderingHints;
 
 import java.awt.geom.Area;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
+
+import javax.swing.JComponent;
 
 /**
  *
@@ -746,5 +751,85 @@ public class FantasiaPainter {
 		
 		g2.setPaint(oldPaint);
 		g2.setComposite(oldComposite);
+	}
+
+	private static Color surface1Color1 = new Color(0x7a7a7a);
+	private static Color surface1Color2 = new Color(0x5e5e5e);
+	private static Color surface1Color3 = new Color(0x2e2e2e);
+
+	/**
+	 * Used to paint the MIDI keyboard
+	 */
+	public static void
+	paintSurface1(JComponent c, Graphics g) {
+		Graphics2D g2 = (Graphics2D)g;
+
+		Paint oldPaint = g2.getPaint();
+		Composite oldComposite = g2.getComposite();
+		Object aa = g2.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+
+		Insets insets = c.getInsets();
+		double x1 = insets.left;
+		double y1 = insets.top;
+
+		double w = c.getSize().getWidth();
+		double x2 = w - insets.right - 1;
+		double h = c.getSize().getHeight();
+		double y2 = h - insets.bottom - 1;
+
+		g2.setRenderingHint (
+			RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF
+		);
+
+		FantasiaPainter.paintGradient(g2, x1, y1, x2, y2 - 10, surface1Color1, surface1Color2);
+
+		double y3 = y2 - 10;
+		if(y3 < 0) y3 = 0;
+
+		Rectangle2D.Double rect = new Rectangle2D.Double(x1, y3, x2 - x1 + 1, 11);
+
+		GradientPaint gr = new GradientPaint (
+			0.0f, (float)y3, surface1Color2,
+			0.0f, (float)h, surface1Color3
+		);
+
+		g2.setPaint(gr);
+		g2.fill(rect);
+
+		drawSurface1OutBorder(g2, x1, y1, x2, y2);
+
+		g2.setPaint(oldPaint);
+		g2.setComposite(oldComposite);
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, aa);
+	}
+
+	private static void
+	drawSurface1OutBorder(Graphics2D g2, double x1, double y1, double x2, double y2) {
+		AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.40f);
+		g2.setComposite(ac);
+
+		g2.setPaint(Color.WHITE);
+		Line2D.Double l = new Line2D.Double(x1, y1, x2, y1);
+		g2.draw(l);
+
+		g2.setComposite(ac.derive(0.20f));
+		l = new Line2D.Double(x1, y1 + 1, x2, y1 + 1);
+		g2.draw(l);
+
+		g2.setComposite(ac.derive(0.255f));
+
+		l = new Line2D.Double(x1, y1, x1, y2);
+		g2.draw(l);
+
+		g2.setComposite(ac.derive(0.40f));
+		g2.setPaint(Color.BLACK);
+
+		//l = new Line2D.Double(x1, y2, x2, y2);
+		//g2.draw(l);
+
+		g2.setComposite(ac.derive(0.20f));
+
+		l = new Line2D.Double(x2, y1, x2, y2);
+		g2.draw(l);
 	}
 }

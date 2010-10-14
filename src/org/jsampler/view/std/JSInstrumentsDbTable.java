@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2010 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -1232,7 +1232,7 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 			instrumentMenu.addSeparator();
 			
 			s = i18n.getMenuLabel("instrumentsdb.actions.loadInstrument");
-			loadInstrumentMenu = new JMenu(s);
+			loadInstrumentMenu = CC.getViewConfig().createMultiColumnMenu(s);
 			instrumentMenu.add(loadInstrumentMenu);
 			registerLoadInstrumentMenus(loadInstrumentMenu);
 			

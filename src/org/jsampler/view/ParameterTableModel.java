@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2010 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -38,8 +38,6 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.SpinnerNumberModel;
@@ -54,6 +52,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableCellEditor;
+import org.jsampler.CC;
 
 import org.jsampler.event.ParameterEvent;
 import org.jsampler.event.ParameterListener;
@@ -381,7 +380,7 @@ public class ParameterTableModel extends AbstractTableModel {
 	
 	class StringListCellEditor extends AbstractCellEditor implements TableCellEditor {
 		private final JButton editor = new JButton();
-		private final JPopupMenu menu = new JPopupMenu();
+		private final JPopupMenu menu = CC.getViewConfig().createMultiColumnPopupMenu();
 		private final Vector<JCheckBoxMenuItem> menuItems = new Vector<JCheckBoxMenuItem>();
 		
 		StringListCellEditor() {
@@ -434,10 +433,10 @@ public class ParameterTableModel extends AbstractTableModel {
 			int column
 		) {
 			StringListParameter slp = (StringListParameter)parameters[row];
-            if(slp.getPossibilities().length == 0) {
-                editor.setText("");
-                return editor;
-            }
+			if(slp.getPossibilities().length == 0) {
+				editor.setText("");
+				return editor;
+			}
 			String[] poss = slp.getPossibilities()[0];
 			String[] vals = (String[])value;
 			

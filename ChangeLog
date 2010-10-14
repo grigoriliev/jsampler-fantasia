@@ -2,6 +2,13 @@
   * Added check box "Remember decision and apply to all selected instruments"
     to the "Map MIDI instrument" dialog when adding multiple selection
 
+  * Add/Edit Instrument dialog and New MIDI Instrument wizard
+    are now resizable
+
+  * Using multicolumn menus for:
+    - loading instruments from Instruments Database
+    - selecting values in string list parameters
+
   * Fantasia:
     - Added option to keep Fantasia always on top (View/Always On Top)
     - Migrated to substance 6.1

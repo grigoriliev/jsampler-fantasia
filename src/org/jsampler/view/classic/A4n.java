@@ -158,7 +158,9 @@ public class A4n extends StdA4n {
 			JSNewMidiInstrumentWizard wizard =
 				new JSNewMidiInstrumentWizard(Res.iconFolderOpen16);
 			
-			wizard.getWizardDialog().setResizable(false);
+			wizard.setMinimumSize(wizard.getPreferredSize());
+			javax.swing.JDialog wizardDlg = wizard.getWizardDialog();
+			wizardDlg.setMinimumSize(wizardDlg.getPreferredSize());
 			
 			if(prefs.getBoolProperty("NewMidiInstrumentWizard.skip1")) {
 				if(wizard.getModel().getCurrentPage() == null) {

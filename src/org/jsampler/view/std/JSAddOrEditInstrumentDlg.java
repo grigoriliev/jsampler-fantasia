@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2010 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -91,6 +91,7 @@ public class JSAddOrEditInstrumentDlg extends OkCancelDialog {
 	 */
 	public JSAddOrEditInstrumentDlg(OrchestraInstrument instr) {
 		super(CC.getMainFrame(), i18n.getLabel("JSAddOrEditInstrumentDlg.title"));
+		setResizable(true);
 		
 		instrument = instr;
 		
@@ -98,7 +99,11 @@ public class JSAddOrEditInstrumentDlg extends OkCancelDialog {
 		String[] files = preferences().getStringListProperty("recentInstrumentFiles");
 		for(String s : files) cbPath.addItem(s);
 		cbPath.setSelectedItem(null);
-		
+
+		cbPath.setMinimumSize (
+			new Dimension(200, cbPath.getMinimumSize().height)
+		);
+
 		cbPath.setPreferredSize (
 			new Dimension(200, cbPath.getPreferredSize().height)
 		);
@@ -197,6 +202,8 @@ public class JSAddOrEditInstrumentDlg extends OkCancelDialog {
 		
 		updateInfo();
 		updateState();
+
+		setMinimumSize(getPreferredSize());
 	}
 	
 	protected JSPrefs

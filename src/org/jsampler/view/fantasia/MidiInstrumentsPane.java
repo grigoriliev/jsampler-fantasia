@@ -227,7 +227,9 @@ public class MidiInstrumentsPane extends JPanel {
 			
 			JSNewMidiInstrumentWizard wizard =
 				new JSNewMidiInstrumentWizard(Res.iconBrowse16, map);
-			wizard.getWizardDialog().setResizable(false);
+			wizard.setMinimumSize(wizard.getPreferredSize());
+			javax.swing.JDialog wizardDlg = wizard.getWizardDialog();
+			wizardDlg.setMinimumSize(wizardDlg.getPreferredSize());
 			wizard.putClientProperty(Wizard.BACK_BUTTON_ICON, Res.iconBack16);
 			wizard.putClientProperty(Wizard.NEXT_BUTTON_ICON, Res.iconNext16);
 			Color c = new Color(0x626262);

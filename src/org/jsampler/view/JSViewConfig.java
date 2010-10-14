@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2010 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -22,6 +22,7 @@
 
 package org.jsampler.view;
 
+import javax.swing.JPopupMenu;
 import java.awt.event.KeyEvent;
 
 import java.beans.PropertyChangeEvent;
@@ -141,4 +142,13 @@ public abstract class JSViewConfig {
 		String s = System.getProperty("apple.laf.useScreenMenuBar");
 		return (s != null && "true".equalsIgnoreCase(s)) ? true : false;
 	}
+
+	/**  Constructs a new multicolumn menu with the supplied string as its text. */
+	public javax.swing.JMenu
+	createMultiColumnMenu(String s) { return new net.sf.juife.MultiColumnMenu(s); }
+
+	/**  Constructs a new multicolumn popup menu. */
+	public JPopupMenu
+	createMultiColumnPopupMenu()
+	{ return new net.sf.juife.MultiColumnMenu.PopupMenu(); }
 }

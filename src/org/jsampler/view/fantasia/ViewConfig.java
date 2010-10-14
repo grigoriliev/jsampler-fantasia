@@ -27,6 +27,7 @@ import java.util.Map;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JPopupMenu;
 import javax.swing.UIManager;
 
 import org.jsampler.CC;
@@ -37,6 +38,7 @@ import org.jsampler.view.InstrumentsDbTreeView;
 import org.jsampler.view.BasicIconSet;
 import org.jsampler.view.JSMainFrame;
 import org.jsampler.view.JSViewConfig;
+import org.jsampler.view.fantasia.basic.MultiColumnMenu;
 
 import org.pushingpixels.substance.api.SubstanceConstants;
 import org.pushingpixels.substance.api.SubstanceLookAndFeel;
@@ -280,4 +282,15 @@ public class ViewConfig extends JSViewConfig {
 	@Override
 	public boolean
 	getInstrumentsDbSupport() { return true; }
+	
+	/**  Constructs a new multicolumn menu with the supplied string as its text. */
+	@Override
+	public javax.swing.JMenu
+	createMultiColumnMenu(String s) { return new MultiColumnMenu(s); }
+	
+	/**  Constructs a new multicolumn popup menu. */
+	@Override
+	public JPopupMenu
+	createMultiColumnPopupMenu()
+	{ return new MultiColumnMenu.FantasiaPopupMenu(); }
 }

@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2010 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -508,7 +508,7 @@ public class StdA4n {
 			chnPane = CC.getMainFrame().getChannelsPane(i);
 			count++;
 			String s = "instrumentsdb.actions.loadInstrument.onPanel";
-			JMenu m = new JMenu(i18n.getMenuLabel(s, i + 1));
+			JMenu m = CC.getViewConfig().createMultiColumnMenu(i18n.getMenuLabel(s, i + 1));
 			for(int j = 0; j < chnPane.getChannelCount(); j++) {
 				SamplerChannelModel chn = chnPane.getChannel(j).getModel();
 				m.add(new JMenuItem(factory.createLoadInstrumentAction(chn, true)));

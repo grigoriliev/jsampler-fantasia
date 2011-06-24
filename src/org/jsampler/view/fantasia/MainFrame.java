@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -118,6 +118,7 @@ public class MainFrame extends StdMainFrame {
 	//private final StatusBar statusBar = new StatusBar();
 	
 	private final LSConsoleFrame lsConsoleFrame = new LSConsoleFrame();
+	private SamplerBrowserFrame samplerBrowserFrame = null;
 	private final Vector<String> recentScripts = new Vector<String>();
 	
 	private final JSBackendLogFrame backendLogFrame = new JSBackendLogFrame();
@@ -614,6 +615,10 @@ public class MainFrame extends StdMainFrame {
 		mi = new JMenuItem(a4n.windowInstrumentsDb);
 		mi.setIcon(null);
 		m.add(mi);
+
+		mi = new JMenuItem(a4n.windowSamplerBrowser);
+		mi.setIcon(null);
+		m.add(mi);
 		
 		m.addSeparator();
 		
@@ -782,6 +787,12 @@ public class MainFrame extends StdMainFrame {
 	
 	protected LSConsoleFrame
 	getLSConsoleFrame() { return lsConsoleFrame; }
+
+	protected SamplerBrowserFrame
+	getSamplerBrowserFrame() {
+		if(samplerBrowserFrame == null) samplerBrowserFrame = new SamplerBrowserFrame();
+		return samplerBrowserFrame;
+	}
 	
 	public JSBackendLogFrame
 	getBackendLogFrame() { return backendLogFrame; }

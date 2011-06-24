@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -19,22 +19,28 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  *   MA  02111-1307  USA
  */
+package org.jsampler.view;
 
-package org.jsampler.event;
+import javax.swing.JTree;
 
 /**
- * The listener interface that is notified when the audio device settings have changed.
+ *
  * @author Grigor Iliev
  */
-public interface AudioDeviceListener extends java.util.EventListener {
+public class AbstractSamplerTree extends JTree {
 	/**
-	 * Invoked when when the settings of a particular audio device have changed.
+	 * Creates a new instance of <code>AbstractSamplerTree</code>
+	 * using the specified tree model.
+	 * 
+	 * @param model The model to be used by this tree.
 	 */
-	public void settingsChanged(AudioDeviceEvent e);
+	public
+	AbstractSamplerTree(SamplerTreeModel model) {
+		setModel(model);
+		//setRootVisible(false);
+	}
 	
-	/** Invoked when when a new send effect chain is added to the audio device. */
-	public void sendEffectChainAdded(AudioDeviceEvent e);
-	
-	/** Invoked when when a send effect chain is removed from the audio device. */
-	public void sendEffectChainRemoved(AudioDeviceEvent e);
+	@Override
+	public SamplerTreeModel
+	getModel() { return (SamplerTreeModel) super.getModel(); }
 }

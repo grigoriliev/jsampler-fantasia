@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -25,6 +25,7 @@ package org.jsampler;
 import org.jsampler.event.AudioDeviceListener;
 
 import org.linuxsampler.lscp.AudioOutputDevice;
+import org.linuxsampler.lscp.Effect;
 import org.linuxsampler.lscp.Parameter;
 
 
@@ -107,4 +108,45 @@ public interface AudioDeviceModel {
 	 * @param prm The parameter to be set.
 	 */
 	public void setBackendChannelParameter(int channel, Parameter prm);
+	
+	/** Gets the current number of send effect chains. */
+	public int getSendEffectChainCount();
+	
+	/** Gets the effect chain at the specified position. */
+	public EffectChain getSendEffectChain(int chainIdx);
+	
+	public EffectChain getSendEffectChainById(int chainId);
+	
+	/**
+	 * Adds the specified send effect chain to the audio output device.
+	 */
+	public void addSendEffectChain(EffectChain chain);
+	
+	/** Schedules a new task for removing the specified send effect chain. */
+	public void removeBackendSendEffectChain(int chainId);
+	
+	/**
+	 * Removes the specified send effect chain from the audio output device.
+	 */
+	public void removeSendEffectChain(int chainId);
+	
+	public void removeAllSendEffectChains();
+	
+	/**
+	 * Schedules a new task for adding a new send effect chain and
+	 * assigning it to the specified audio output device.
+	 */
+	public void addBackendSendEffectChain();
+	
+	/**
+	 * Schedules a new task for creating new effect instances and inserting them
+	 * in the specified send effect chain at the specified position.
+	 */
+	public void addBackendEffectInstances(Effect[] effects, int chainId, int index);
+	
+	/**
+	 * Schedules a new task for removing the specified
+	 * effect instance from the specified send effect chain.
+	 */
+	public void removeBackendEffectInstance(int chainId, int instanceId);
 }

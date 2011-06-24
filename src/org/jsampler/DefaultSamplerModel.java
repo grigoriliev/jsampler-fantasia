@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -74,6 +74,8 @@ public class DefaultSamplerModel implements SamplerModel {
 	private final Vector<AudioDeviceModel> audioDeviceModels = new Vector<AudioDeviceModel>();
 	private final Vector<MidiDeviceModel> midiDeviceModels = new Vector<MidiDeviceModel>();
 	private final Vector<MidiInstrumentMap> midiInstrMaps = new Vector<MidiInstrumentMap>();
+	
+	private final EffectList effects = new EffectList();
 	
 	private final Vector<SamplerListener> listeners = new Vector<SamplerListener>();
 	private final Vector<ListListener<MidiInstrumentMap>> mapsListeners =
@@ -671,6 +673,10 @@ public class DefaultSamplerModel implements SamplerModel {
 	public void
 	setEngines(SamplerEngine[] engines) { this.engines = engines; }
 	
+	/** Gets the list of internal effects */
+	public EffectList
+	getEffects() { return effects; }
+	
 	/**
 	 * Gets the model of the sampler channel in the specified position.
 	 * @param index The position of the channel to return.
@@ -828,7 +834,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	@Override
 	public void
 	removeAllChannels() {
-		if(channelModels.size() == 0) return;
+		if(channelModels.isEmpty()) return;
 		
 		setChannelListIsAdjusting(true);
 		for(int i = channelModels.size() - 1; i > 0; i--) {

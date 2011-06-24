@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -493,6 +493,9 @@ public interface SamplerModel {
 	 * @param volume The new volume value.
 	 */
 	public void setBackendVolume(float volume);
+	
+	/** Gets the list of internal effects */
+	public EffectList getEffects();
 	
 	/**
 	 * Schedules a new task for resetting the sampler.

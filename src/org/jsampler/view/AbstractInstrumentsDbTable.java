@@ -23,12 +23,6 @@
 package org.jsampler.view;
 
 import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
 import java.util.Comparator;
 import java.util.List;
 import java.util.Vector;
@@ -36,16 +30,11 @@ import java.util.Vector;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.JViewport;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
 
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.RowSorterEvent;
 import javax.swing.event.RowSorterListener;
-import javax.swing.event.TableColumnModelEvent;
-import javax.swing.event.TableColumnModelListener;
 
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;

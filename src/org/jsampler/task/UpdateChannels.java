@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -21,8 +21,6 @@
  */
 
 package org.jsampler.task;
-
-import java.util.Vector;
 
 import org.jsampler.CC;
 import org.jsampler.SamplerChannelModel;
@@ -45,6 +43,7 @@ public class UpdateChannels extends EnhancedTask {
 	UpdateChannels() {
 		setTitle("UpdateChannels_task");
 		setDescription(i18n.getMessage("UpdateChannels.description"));
+		//setCalculateElapsedTime(true);
 	}
 	
 	/** The entry point of the task. */
@@ -80,17 +79,14 @@ public class UpdateChannels extends EnhancedTask {
 			}
 			found = false;
 		}
+
+		SamplerChannel[] chns = CC.getClient().getSamplerChannels(chnIDs);
 		
-		Vector<SamplerChannel> v = new Vector<SamplerChannel>();
-		for(int id : chnIDs) {
-			if(id >= 0) v.add(CC.getClient().getSamplerChannelInfo(id));
-		}
-		
-		for(int i = 0; i < v.size() - 1; i++) sm.addChannel(v.elementAt(i));
+		for(int i = 0; i < chns.length - 1; i++) sm.addChannel(chns[i]);
 		
 		manageAutoUpdate(false);
 		
-		if(v.size() > 0) sm.addChannel(v.elementAt(v.size() - 1));
+		if(chns.length > 0) sm.addChannel(chns[chns.length - 1]);
 		else if(!CC.getSamplerModel().getChannelListIsAdjusting()) {
 			if(!isAdjustingOld && !changed); // do nothing if nothing is changed
 			else sm.addChannel(null); // fire dummy event to end an adjusting sequence

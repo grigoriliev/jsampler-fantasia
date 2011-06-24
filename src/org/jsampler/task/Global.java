@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -22,13 +22,16 @@
 
 package org.jsampler.task;
 
+import org.jsampler.AudioDeviceModel;
 import org.jsampler.CC;
+import org.jsampler.EffectChain;
+import org.jsampler.SamplerModel;
 
+import org.linuxsampler.lscp.Effect;
+import org.linuxsampler.lscp.Instrument;
 import org.linuxsampler.lscp.SamplerEngine;
 import org.linuxsampler.lscp.ServerInfo;
-import org.linuxsampler.lscp.Instrument;
 
-import org.jsampler.SamplerModel;
 
 import static org.jsampler.JSI18n.i18n;
 
@@ -39,7 +42,7 @@ import static org.jsampler.JSI18n.i18n;
  */
 public class Global {
 	
-	/** Forbits the instantiation of this class. */
+	/** Forbids the instantiation of this class. */
 	private Global() { }
 
 	/**
@@ -310,6 +313,69 @@ public class Global {
 		public void
 		exec() throws Exception {
 			setResult(CC.getClient().getFileInstrumentInfo(filename, instrIdx));
+		}
+	}
+
+	/**
+	 * This task retrieves the list of internal effects, available to the sampler.
+	 */
+	public static class GetEffects extends EnhancedTask<Effect[]> {
+		/** Creates a new instance of <code>GetEffects</code>. */
+		public
+		GetEffects() {
+			setTitle("Global.GetEffects_task");
+			setDescription(i18n.getMessage("Global.GetEffects.desc"));
+		}
+	
+		/** The entry point of the task. */
+		@Override
+		public void
+		exec() throws Exception { setResult(CC.getClient().getEffects()); }
+	}
+
+	/**
+	 * This task updates the send effect chains and the effect instances in those chains.
+	 */
+	public static class UpdateSendEffectChains extends EnhancedTask {
+		private final int audioDeviceId;
+		
+		/** Creates a new instance of <code>UpdateSendEffectChains</code>. */
+		public
+		UpdateSendEffectChains() { this(-1); }
+		
+		/** Creates a new instance of <code>UpdateSendEffectChains</code>. */
+		public
+		UpdateSendEffectChains(int audioDeviceId) {
+			this.audioDeviceId = audioDeviceId;
+			setTitle("Global.UpdateSendEffectChains_task");
+			setDescription(i18n.getMessage("Global.UpdateSendEffectChains.desc"));
+		}
+	
+		/** The entry point of the task. */
+		@Override
+		public void
+		exec() throws Exception {
+			// TODO: synchornization
+			
+			if(audioDeviceId < 0) {
+				Integer[] aodIDs = CC.getClient().getAudioOutputDeviceIDs();
+				for(int id : aodIDs) { updateSendEffectChains(id); }
+			} else {
+				updateSendEffectChains(audioDeviceId);
+			}
+		}
+		
+		private void
+		updateSendEffectChains(int devId) throws Exception {
+			org.linuxsampler.lscp.EffectChain[] chains =
+				CC.getClient().getSendEffectChains(devId);
+			
+			AudioDeviceModel adm = CC.getSamplerModel().getAudioDeviceById(devId);
+			adm.removeAllSendEffectChains();
+			
+			for(org.linuxsampler.lscp.EffectChain c : chains) {
+				adm.addSendEffectChain(new EffectChain(c));
+			}
 		}
 	}
 	

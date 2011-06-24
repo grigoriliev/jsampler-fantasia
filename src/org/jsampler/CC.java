@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -305,6 +305,12 @@ public class CC {
 		
 		getClient().removeChannelMidiDataListener(getHandler());
 		getClient().addChannelMidiDataListener(getHandler());
+		
+		getClient().removeSendEffectChainCountListener(getHandler());
+		getClient().addSendEffectChainCountListener(getHandler());
+		
+		getClient().removeSendEffectChainInfoListener(getHandler());
+		getClient().addSendEffectChainInfoListener(getHandler());
 		
 		CC.addConnectionEstablishedListener(new ActionListener() {
 			public void
@@ -740,6 +746,14 @@ public class CC {
 			}
 		});
 		
+		final Global.GetEffects gfx = new Global.GetEffects();
+		gfx.addTaskListener(new TaskListener() {
+			public void
+			taskPerformed(TaskEvent e) {
+				if(!gfx.doneWithErrors()) model.getEffects().setEffects(gfx.getResult());
+			}
+		});
+		
 		final UpdateChannels uc = new UpdateChannels();
 		uc.addTaskListener(new TaskListener() {
 			public void
@@ -770,15 +784,18 @@ public class CC {
 					return;
 				}
 				
+				// Don't change order!!!
 				getTaskQueue().add(gsi);
 				getTaskQueue().add(gaod);
 				getTaskQueue().add(gmid);
 				getTaskQueue().add(ge);
 				getTaskQueue().add(gv);
 				getTaskQueue().add(mgim);
+				getTaskQueue().add(gfx);
 				getTaskQueue().add(new Midi.UpdateDevices());
 				getTaskQueue().add(new Audio.UpdateDevices());
 				addTask(uc);
+				getTaskQueue().add(new Global.UpdateSendEffectChains());
 				
 				int vl = preferences().getIntProperty(JSPrefs.GLOBAL_VOICE_LIMIT);
 				int sl = preferences().getIntProperty(JSPrefs.GLOBAL_STREAM_LIMIT);
@@ -971,7 +988,8 @@ public class CC {
 		FxSendCountListener, FxSendInfoListener, StreamCountListener, VoiceCountListener,
 		TotalStreamCountListener, TotalVoiceCountListener, TaskQueueListener,
 		OrchestraListener, ListListener<OrchestraModel>, MidiInstrumentCountListener,
-		MidiInstrumentInfoListener, GlobalInfoListener, ChannelMidiDataListener {
+		MidiInstrumentInfoListener, GlobalInfoListener, ChannelMidiDataListener,
+		SendEffectChainCountListener, SendEffectChainInfoListener {
 		
 		/** Invoked when the number of channels has changed. */
 		@Override
@@ -1243,12 +1261,26 @@ public class CC {
 				CC.getLogger().log(Level.INFO, "Failed!", x);
 			}
 		}
+		
+		@Override
+		public void
+		sendEffectChainCountChanged(SendEffectChainCountEvent e) {
+			getTaskQueue().add(new Audio.UpdateSendEffectChains(e.getAudioDeviceId()));
+		}
+		
+		public void sendEffectChainInfoChanged(SendEffectChainInfoEvent e) {
+			if(e.getInstanceCount() == -1) return;
+			
+			getTaskQueue().add (
+				new Audio.UpdateEffectInstances(e.getAudioDeviceId(), e.getChainId())
+			);
+		}
 	}
 	
 	private static void
 	fireChannelMidiDataEvent(ChannelMidiDataEvent e) {
 		SamplerChannelModel chn;
-		chn = CC.getSamplerModel().getChannelById(e.getChannelId());
+		chn = getSamplerModel().getChannelById(e.getChannelId());
 		if(chn == null) {
 			CC.getLogger().info("Unknown channel ID: " + e.getChannelId());
 		}

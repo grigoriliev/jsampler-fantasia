@@ -31,6 +31,7 @@ public class LscpTree {
 
 	static {
 		LscpNode add = new LscpNode("ADD");
+		LscpNode append = new LscpNode("APPEND");
 		LscpNode clear = new LscpNode("CLEAR", new LscpNode("MIDI_INSTRUMENTS", true, false));
 		LscpNode copy = new LscpNode("COPY");
 		LscpNode create = new LscpNode("CREATE");
@@ -39,6 +40,7 @@ public class LscpTree {
 		LscpNode find = new LscpNode("FIND");
 		LscpNode format = new LscpNode("FORMAT", new LscpNode("INSTRUMENTS_DB", true, false));
 		LscpNode get = new LscpNode("GET");
+		LscpNode insert = new LscpNode("INSERT");
 		LscpNode list = new LscpNode("LIST");
 		LscpNode load = new LscpNode("LOAD");
 		LscpNode map = new LscpNode("MAP", new LscpNode("MIDI_INSTRUMENT", true));
@@ -52,19 +54,20 @@ public class LscpTree {
 		LscpNode unsubscribe = new LscpNode("UNSUBSCRIBE");
 		
 		LscpNode[] cmds = {
-			add, clear, copy, create, destroy, edit, find, format, get, list, load,
-			map, move, quit, remove, reset, set, subscribe, unmap, unsubscribe
+			add, append, clear, copy, create, destroy, edit, find, format, get, insert,
+			list, load, map, move, quit, remove, reset, set, subscribe, unmap, unsubscribe
 		};
 		
 		rootNode = new LscpNode("", cmds);
 		
 		// ADD command
-		LscpNode[] nodes = new LscpNode[4];
+		LscpNode[] nodes = new LscpNode[5];
 		nodes[0] = new LscpNode("CHANNEL", true, false);
 		nodes[1] = new LscpNode("DB_INSTRUMENT_DIRECTORY");
 		LscpNode addDbInstr = new LscpNode("DB_INSTRUMENTS", true);
 		nodes[2] = addDbInstr;
 		nodes[3] = new LscpNode("MIDI_INSTRUMENT_MAP", true);
+		nodes[4] = new LscpNode("SEND_EFFECT_CHAIN", true);
 		add.setChildren(nodes);
 		
 		// ADD DB_INSTRUMENTS command
@@ -83,6 +86,11 @@ public class LscpTree {
 		nodes[2] = new LscpNode("RECURSIVE", true);
 		addDbInstrnNonModal.setChildren(nodes);
 		
+		// APPEND command
+		nodes = new LscpNode[1];
+		nodes[0] = new LscpNode("SEND_EFFECT_CHAIN", new LscpNode("EFFECT", true));
+		append.setChildren(nodes);
+		
 		// COPY command
 		nodes = new LscpNode[2];
 		nodes[0] = new LscpNode("DB_INSTRUMENT", true);
@@ -90,17 +98,19 @@ public class LscpTree {
 		copy.setChildren(nodes);
 		
 		// CREATE command
-		nodes = new LscpNode[3];
+		nodes = new LscpNode[4];
 		nodes[0] = new LscpNode("AUDIO_OUTPUT_DEVICE", true);
-		nodes[1] = new LscpNode("FX_SEND", true);
-		nodes[2] = new LscpNode("MIDI_INPUT_DEVICE", true);
+		nodes[1] = new LscpNode("EFFECT_INSTANCE", true);
+		nodes[2] = new LscpNode("FX_SEND", true);
+		nodes[3] = new LscpNode("MIDI_INPUT_DEVICE", true);
 		create.setChildren(nodes);
 		
 		// DESTROY command
-		nodes = new LscpNode[3];
+		nodes = new LscpNode[4];
 		nodes[0] = new LscpNode("AUDIO_OUTPUT_DEVICE", true);
-		nodes[1] = new LscpNode("FX_SEND", true);
-		nodes[2] = new LscpNode("MIDI_INPUT_DEVICE", true);
+		nodes[1] = new LscpNode("EFFECT_INSTANCE", true);
+		nodes[2] = new LscpNode("FX_SEND", true);
+		nodes[3] = new LscpNode("MIDI_INPUT_DEVICE", true);
 		destroy.setChildren(nodes);
 		
 		//EDIT command
@@ -120,7 +130,7 @@ public class LscpTree {
 		find.setChildren(nodes);
 		
 		// GET command
-		nodes = new LscpNode[34];
+		nodes = new LscpNode[41];
 		nodes[0] = new LscpNode("AUDIO_OUTPUT_CHANNEL", new LscpNode("INFO", true));
 		nodes[1] = new LscpNode("AUDIO_OUTPUT_CHANNEL_PARAMETER", new LscpNode("INFO", true));
 		nodes[2] = new LscpNode("AUDIO_OUTPUT_DEVICE", new LscpNode("INFO", true));
@@ -128,35 +138,42 @@ public class LscpTree {
 		nodes[4] = new LscpNode("AUDIO_OUTPUT_DRIVER", new LscpNode("INFO", true));
 		nodes[5] = new LscpNode("AUDIO_OUTPUT_DRIVER_PARAMETER", new LscpNode("INFO", true));
 		nodes[6] = new LscpNode("AVAILABLE_AUDIO_OUTPUT_DRIVERS", true, false);
-		nodes[7] = new LscpNode("AVAILABLE_ENGINES", true, false);
-		nodes[8] = new LscpNode("AVAILABLE_MIDI_INPUT_DRIVERS", true, false);
+		nodes[7] = new LscpNode("AVAILABLE_EFFECTS", true, false);
+		nodes[8] = new LscpNode("AVAILABLE_ENGINES", true, false);
+		nodes[9] = new LscpNode("AVAILABLE_MIDI_INPUT_DRIVERS", true, false);
 		LscpNode getChn = new LscpNode("CHANNEL");
-		nodes[9] = getChn;
-		nodes[10] = new LscpNode("CHANNELS", true, false);
-		nodes[11] = new LscpNode("DB_INSTRUMENT", new LscpNode("INFO", true));
-		nodes[12] = new LscpNode("DB_INSTRUMENT_DIRECTORIES", true);
-		nodes[13] = new LscpNode("DB_INSTRUMENT_DIRECTORY", new LscpNode("INFO", true));
-		nodes[14] = new LscpNode("DB_INSTRUMENTS", true);
-		nodes[15] = new LscpNode("DB_INSTRUMENTS_JOB", new LscpNode("INFO", true));
-		nodes[16] = new LscpNode("ENGINE", new LscpNode("INFO", true));
+		nodes[10] = getChn;
+		nodes[11] = new LscpNode("CHANNELS", true, false);
+		nodes[12] = new LscpNode("DB_INSTRUMENT", new LscpNode("INFO", true));
+		nodes[13] = new LscpNode("DB_INSTRUMENT_DIRECTORIES", true);
+		nodes[14] = new LscpNode("DB_INSTRUMENT_DIRECTORY", new LscpNode("INFO", true));
+		nodes[15] = new LscpNode("DB_INSTRUMENTS", true);
+		nodes[16] = new LscpNode("DB_INSTRUMENTS_JOB", new LscpNode("INFO", true));
+		nodes[17] = new LscpNode("EFFECT", new LscpNode("INFO", true));
+		nodes[18] = new LscpNode("EFFECT_INSTANCE", new LscpNode("INFO", true));
+		nodes[19] = new LscpNode("EFFECT_INSTANCE_INPUT_CONTROL", new LscpNode("INFO", true));
+		nodes[20] = new LscpNode("EFFECT_INSTANCES", true, false);
+		nodes[21] = new LscpNode("ENGINE", new LscpNode("INFO", true));
 		LscpNode getFile = new LscpNode("FILE");
-		nodes[17] = getFile;
-		nodes[18] = new LscpNode("FX_SEND", new LscpNode("INFO", true));
-		nodes[19] = new LscpNode("FX_SENDS");
-		nodes[20] = new LscpNode("MIDI_INPUT_DEVICE", new LscpNode("INFO", true));
-		nodes[21] = new LscpNode("MIDI_INPUT_DEVICES", true, false);
-		nodes[22] = new LscpNode("MIDI_INPUT_DRIVER", new LscpNode("INFO", true));
-		nodes[23] = new LscpNode("MIDI_INPUT_DRIVER_PARAMETER", new LscpNode("INFO", true));
-		nodes[24] = new LscpNode("MIDI_INPUT_PORT", new LscpNode("INFO", true));
-		nodes[25] = new LscpNode("MIDI_INPUT_PORT_PARAMETER", new LscpNode("INFO", true));
-		nodes[26] = new LscpNode("MIDI_INSTRUMENT", new LscpNode("INFO", true));
-		nodes[27] = new LscpNode("MIDI_INSTRUMENT_MAP", new LscpNode("INFO", true));
-		nodes[28] = new LscpNode("MIDI_INSTRUMENT_MAPS", true, false);
-		nodes[29] = new LscpNode("MIDI_INSTRUMENTS", new LscpNode("ALL", true, false), true);
-		nodes[30] = new LscpNode("SERVER", new LscpNode("INFO", true, false));
-		nodes[31] = new LscpNode("STREAMS", true, false);
-		nodes[32] = new LscpNode("VOICES", true, false);
-		nodes[33] = new LscpNode("VOLUME", true, false);
+		nodes[22] = getFile;
+		nodes[23] = new LscpNode("FX_SEND", new LscpNode("INFO", true));
+		nodes[24] = new LscpNode("FX_SENDS");
+		nodes[25] = new LscpNode("MIDI_INPUT_DEVICE", new LscpNode("INFO", true));
+		nodes[26] = new LscpNode("MIDI_INPUT_DEVICES", true, false);
+		nodes[27] = new LscpNode("MIDI_INPUT_DRIVER", new LscpNode("INFO", true));
+		nodes[28] = new LscpNode("MIDI_INPUT_DRIVER_PARAMETER", new LscpNode("INFO", true));
+		nodes[29] = new LscpNode("MIDI_INPUT_PORT", new LscpNode("INFO", true));
+		nodes[30] = new LscpNode("MIDI_INPUT_PORT_PARAMETER", new LscpNode("INFO", true));
+		nodes[31] = new LscpNode("MIDI_INSTRUMENT", new LscpNode("INFO", true));
+		nodes[32] = new LscpNode("MIDI_INSTRUMENT_MAP", new LscpNode("INFO", true));
+		nodes[33] = new LscpNode("MIDI_INSTRUMENT_MAPS", true, false);
+		nodes[34] = new LscpNode("MIDI_INSTRUMENTS", new LscpNode("ALL", true, false), true);
+		nodes[35] = new LscpNode("DB_INSTRUMENT_DIRECTORY", new LscpNode("INFO", true));
+		nodes[36] = new LscpNode("SEND_EFFECT_CHAIN", new LscpNode("INFO", true));
+		nodes[37] = new LscpNode("SEND_EFFECT_CHAINS", true);
+		nodes[38] = new LscpNode("STREAMS", true, false);
+		nodes[39] = new LscpNode("VOICES", true, false);
+		nodes[40] = new LscpNode("VOLUME", true, false);
 		get.setChildren(nodes);
 		
 		// GET CHANNEL command
@@ -180,20 +197,28 @@ public class LscpTree {
 		nodes[1] = new LscpNode("INSTRUMENTS", true);
 		getFile.setChildren(nodes);
 		
+		// INSERT command
+		nodes = new LscpNode[1];
+		nodes[0] = new LscpNode("SEND_EFFECT_CHAIN", new LscpNode("EFFECT", true));
+		insert.setChildren(nodes);
+		
 		// LIST command
-		nodes = new LscpNode[12];
+		nodes = new LscpNode[15];
 		nodes[0] = new LscpNode("AUDIO_OUTPUT_DEVICES", true, false);
 		nodes[1] = new LscpNode("AVAILABLE_AUDIO_OUTPUT_DRIVERS", true, false);
-		nodes[2] = new LscpNode("AVAILABLE_ENGINES", true, false);
-		nodes[3] = new LscpNode("AVAILABLE_MIDI_INPUT_DRIVERS", true, false);
-		nodes[4] = new LscpNode("CHANNELS", true, false);
-		nodes[5] = new LscpNode("DB_INSTRUMENT_DIRECTORIES", true);
-		nodes[6] = new LscpNode("DB_INSTRUMENTS", true);
-		nodes[7] = new LscpNode("FILE", new LscpNode("INSTRUMENTS", true));
-		nodes[8] = new LscpNode("FX_SENDS");
-		nodes[9] = new LscpNode("MIDI_INPUT_DEVICES", true, false);
-		nodes[10] = new LscpNode("MIDI_INSTRUMENT_MAPS", true, false);
-		nodes[11] = new LscpNode("MIDI_INSTRUMENTS", true);
+		nodes[2] = new LscpNode("AVAILABLE_EFFECTS", true, false);
+		nodes[3] = new LscpNode("AVAILABLE_ENGINES", true, false);
+		nodes[4] = new LscpNode("AVAILABLE_MIDI_INPUT_DRIVERS", true, false);
+		nodes[5] = new LscpNode("CHANNELS", true, false);
+		nodes[6] = new LscpNode("DB_INSTRUMENT_DIRECTORIES", true);
+		nodes[7] = new LscpNode("DB_INSTRUMENTS", true);
+		nodes[8] = new LscpNode("EFFECT_INSTANCES", true, false);
+		nodes[9] = new LscpNode("FILE", new LscpNode("INSTRUMENTS", true));
+		nodes[10] = new LscpNode("FX_SENDS");
+		nodes[11] = new LscpNode("MIDI_INPUT_DEVICES", true, false);
+		nodes[12] = new LscpNode("MIDI_INSTRUMENT_MAPS", true, false);
+		nodes[13] = new LscpNode("MIDI_INSTRUMENTS", true);
+		nodes[14] = new LscpNode("SEND_EFFECT_CHAINS", true);
 		list.setChildren(nodes);
 		
 		// LOAD command
@@ -209,15 +234,16 @@ public class LscpTree {
 		move.setChildren(nodes);
 		
 		// REMOVE command
-		nodes = new LscpNode[4];
+		nodes = new LscpNode[5];
 		nodes[0] = new LscpNode("CHANNEL", true);
 		nodes[1] = new LscpNode("DB_INSTRUMENT", true);
 		nodes[2] = new LscpNode("DB_INSTRUMENT_DIRECTORY", new LscpNode("FORCE", true), true);
 		nodes[3] = new LscpNode("MIDI_INSTRUMENT_MAP", new LscpNode("ALL", true, false), true);
+		nodes[4] = new LscpNode("SEND_EFFECT_CHAIN", new LscpNode("EFFECT", true), true);
 		remove.setChildren(nodes);
 		
 		// SET command
-		nodes = new LscpNode[13];
+		nodes = new LscpNode[14];
 		nodes[0] = new LscpNode("AUDIO_OUTPUT_CHANNEL_PARAMETER", true);
 		nodes[1] = new LscpNode("AUDIO_OUTPUT_DEVICE_PARAMETER", true);
 		LscpNode setChn = new LscpNode("CHANNEL");
@@ -227,14 +253,15 @@ public class LscpTree {
 		LscpNode setDbDir = new LscpNode("DB_INSTRUMENT_DIRECTORY");
 		nodes[4] = setDbDir;
 		nodes[5] = new LscpNode("ECHO", true);
+		nodes[6] = new LscpNode("EFFECT_INSTANCE_INPUT_CONTROL", new LscpNode("VALUE", true));
 		LscpNode setFxSend = new LscpNode("FX_SEND");
-		nodes[6] = setFxSend;
-		nodes[7] = new LscpNode("MIDI_INPUT_DEVICE_PARAMETER", true);
-		nodes[8] = new LscpNode("MIDI_INPUT_PORT_PARAMETER", true);
-		nodes[9] = new LscpNode("MIDI_INSTRUMENT_MAP", new LscpNode("NAME", true));
-		nodes[10] = new LscpNode("STREAMS", true);
-		nodes[11] = new LscpNode("VOICES", true);
-		nodes[12] = new LscpNode("VOLUME", true);
+		nodes[7] = setFxSend;
+		nodes[8] = new LscpNode("MIDI_INPUT_DEVICE_PARAMETER", true);
+		nodes[9] = new LscpNode("MIDI_INPUT_PORT_PARAMETER", true);
+		nodes[10] = new LscpNode("MIDI_INSTRUMENT_MAP", new LscpNode("NAME", true));
+		nodes[11] = new LscpNode("STREAMS", true);
+		nodes[12] = new LscpNode("VOICES", true);
+		nodes[13] = new LscpNode("VOLUME", true);
 		set.setChildren(nodes);
 		
 		// SET CHANNEL command
@@ -275,7 +302,7 @@ public class LscpTree {
 		setFxSend.setChildren(nodes);
 		
 		// SUBSCRIBE command
-		nodes = new LscpNode[26];
+		nodes = new LscpNode[30];
 		nodes[0] = new LscpNode("AUDIO_OUTPUT_DEVICE_COUNT", true, false);
 		nodes[1] = new LscpNode("AUDIO_OUTPUT_DEVICE_INFO", true, false);
 		nodes[2] = new LscpNode("BUFFER_FILL", true, false);
@@ -288,24 +315,28 @@ public class LscpTree {
 		nodes[9] = new LscpNode("DB_INSTRUMENT_INFO", true, false);
 		nodes[10] = new LscpNode("DB_INSTRUMENTS_JOB_INFO", true, false);
 		nodes[11] = new LscpNode("DEVICE_MIDI", true, false);
-		nodes[12] = new LscpNode("FX_SEND_COUNT", true, false);
-		nodes[13] = new LscpNode("FX_SEND_INFO", true, false);
-		nodes[14] = new LscpNode("GLOBAL_INFO", true, false);
-		nodes[15] = new LscpNode("MIDI_INPUT_DEVICE_COUNT", true, false);
-		nodes[16] = new LscpNode("MIDI_INPUT_DEVICE_INFO", true, false);
-		nodes[17] = new LscpNode("MIDI_INSTRUMENT_COUNT", true, false);
-		nodes[18] = new LscpNode("MIDI_INSTRUMENT_INFO", true, false);
-		nodes[19] = new LscpNode("MIDI_INSTRUMENT_MAP_COUNT", true, false);
-		nodes[20] = new LscpNode("MIDI_INSTRUMENT_MAP_INFO", true, false);
-		nodes[21] = new LscpNode("MISCELLANEOUS", true, false);
-		nodes[22] = new LscpNode("STREAM_COUNT", true, false);
-		nodes[23] = new LscpNode("TOTAL_STREAM_COUNT", true, false);
-		nodes[24] = new LscpNode("TOTAL_VOICE_COUNT", true, false);
-		nodes[25] = new LscpNode("VOICE_COUNT", true, false);
+		nodes[12] = new LscpNode("EFFECT_INSTANCE_COUNT", true, false);
+		nodes[13] = new LscpNode("EFFECT_INSTANCE_INFO", true, false);
+		nodes[14] = new LscpNode("FX_SEND_COUNT", true, false);
+		nodes[15] = new LscpNode("FX_SEND_INFO", true, false);
+		nodes[16] = new LscpNode("GLOBAL_INFO", true, false);
+		nodes[17] = new LscpNode("MIDI_INPUT_DEVICE_COUNT", true, false);
+		nodes[18] = new LscpNode("MIDI_INPUT_DEVICE_INFO", true, false);
+		nodes[19] = new LscpNode("MIDI_INSTRUMENT_COUNT", true, false);
+		nodes[20] = new LscpNode("MIDI_INSTRUMENT_INFO", true, false);
+		nodes[21] = new LscpNode("MIDI_INSTRUMENT_MAP_COUNT", true, false);
+		nodes[22] = new LscpNode("MIDI_INSTRUMENT_MAP_INFO", true, false);
+		nodes[23] = new LscpNode("MISCELLANEOUS", true, false);
+		nodes[24] = new LscpNode("SEND_EFFECT_CHAIN_COUNT", true, false);
+		nodes[25] = new LscpNode("SEND_EFFECT_CHAIN_INFO", true, false);
+		nodes[26] = new LscpNode("STREAM_COUNT", true, false);
+		nodes[27] = new LscpNode("TOTAL_STREAM_COUNT", true, false);
+		nodes[28] = new LscpNode("TOTAL_VOICE_COUNT", true, false);
+		nodes[29] = new LscpNode("VOICE_COUNT", true, false);
 		subscribe.setChildren(nodes);
 		
 		// UNSUBSCRIBE command
-		nodes = new LscpNode[25];
+		nodes = new LscpNode[30];
 		nodes[0] = new LscpNode("AUDIO_OUTPUT_DEVICE_COUNT", true, false);
 		nodes[1] = new LscpNode("AUDIO_OUTPUT_DEVICE_INFO", true, false);
 		nodes[2] = new LscpNode("BUFFER_FILL", true, false);
@@ -318,19 +349,24 @@ public class LscpTree {
 		nodes[9] = new LscpNode("DB_INSTRUMENT_INFO", true, false);
 		nodes[10] = new LscpNode("DB_INSTRUMENTS_JOB_INFO", true, false);
 		nodes[11] = new LscpNode("DEVICE_MIDI", true, false);
-		nodes[12] = new LscpNode("FX_SEND_COUNT", true, false);
-		nodes[13] = new LscpNode("FX_SEND_INFO", true, false);
-		nodes[14] = new LscpNode("GLOBAL_INFO", true, false);
-		nodes[15] = new LscpNode("MIDI_INPUT_DEVICE_COUNT", true, false);
-		nodes[16] = new LscpNode("MIDI_INPUT_DEVICE_INFO", true, false);
-		nodes[17] = new LscpNode("MIDI_INSTRUMENT_COUNT", true, false);
-		nodes[18] = new LscpNode("MIDI_INSTRUMENT_INFO", true, false);
-		nodes[19] = new LscpNode("MIDI_INSTRUMENT_MAP_COUNT", true, false);
-		nodes[20] = new LscpNode("MIDI_INSTRUMENT_MAP_INFO", true, false);
-		nodes[21] = new LscpNode("MISCELLANEOUS", true, false);
-		nodes[22] = new LscpNode("STREAM_COUNT", true, false);
-		nodes[23] = new LscpNode("TOTAL_VOICE_COUNT", true, false);
-		nodes[24] = new LscpNode("VOICE_COUNT", true, false);
+		nodes[12] = new LscpNode("EFFECT_INSTANCE_COUNT", true, false);
+		nodes[13] = new LscpNode("EFFECT_INSTANCE_INFO", true, false);
+		nodes[14] = new LscpNode("FX_SEND_COUNT", true, false);
+		nodes[15] = new LscpNode("FX_SEND_INFO", true, false);
+		nodes[16] = new LscpNode("GLOBAL_INFO", true, false);
+		nodes[17] = new LscpNode("MIDI_INPUT_DEVICE_COUNT", true, false);
+		nodes[18] = new LscpNode("MIDI_INPUT_DEVICE_INFO", true, false);
+		nodes[19] = new LscpNode("MIDI_INSTRUMENT_COUNT", true, false);
+		nodes[20] = new LscpNode("MIDI_INSTRUMENT_INFO", true, false);
+		nodes[21] = new LscpNode("MIDI_INSTRUMENT_MAP_COUNT", true, false);
+		nodes[22] = new LscpNode("MIDI_INSTRUMENT_MAP_INFO", true, false);
+		nodes[23] = new LscpNode("MISCELLANEOUS", true, false);
+		nodes[24] = new LscpNode("SEND_EFFECT_CHAIN_COUNT", true, false);
+		nodes[25] = new LscpNode("SEND_EFFECT_CHAIN_INFO", true, false);
+		nodes[26] = new LscpNode("STREAM_COUNT", true, false);
+		nodes[27] = new LscpNode("TOTAL_STREAM_COUNT", true, false);
+		nodes[28] = new LscpNode("TOTAL_VOICE_COUNT", true, false);
+		nodes[29] = new LscpNode("VOICE_COUNT", true, false);
 		unsubscribe.setChildren(nodes);
 	}
 	

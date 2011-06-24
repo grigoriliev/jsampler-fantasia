@@ -305,6 +305,12 @@ public class AudioDevicePane extends DevicePane {
 			
 			if(cbChannel.getModel().getSize() > 0) cbChannel.setSelectedIndex(idx);
 		}
+	
+		/** Invoked when when a new send effect chain is added to the audio device. */
+		@Override public void sendEffectChainAdded(AudioDeviceEvent e) { }
+	
+		/** Invoked when when a send effect chain is removed from the audio device. */
+		@Override public void sendEffectChainRemoved(AudioDeviceEvent e) { }
 		
 		@Override
 		public void

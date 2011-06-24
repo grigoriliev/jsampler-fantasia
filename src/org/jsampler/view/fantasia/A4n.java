@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -278,6 +278,27 @@ public class A4n extends StdA4n {
 			}
 
 			instrumentsDbFrame.setVisible(true);
+		}
+	}
+	
+	public final Action windowSamplerBrowser  = new WindowSamplerBrowser();
+
+	private class WindowSamplerBrowser extends AbstractAction {
+		WindowSamplerBrowser() {
+			super(i18n.getMenuLabel("window.SamplerBrowser"));
+			putValue(SHORT_DESCRIPTION, i18n.getMenuLabel("window.SamplerBrowser.tt"));
+			//putValue(Action.SMALL_ICON, Res.iconLSConsole32);
+		}
+
+		@Override
+		public void
+		actionPerformed(ActionEvent e) {
+			SamplerBrowserFrame browser =
+				((MainFrame)CC.getMainFrame()).getSamplerBrowserFrame();
+
+			if(browser.isVisible()) browser.setVisible(false);
+
+			browser.setVisible(true);
 		}
 	}
 	

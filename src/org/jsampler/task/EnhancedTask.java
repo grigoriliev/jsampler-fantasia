@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -22,6 +22,7 @@
 
 package org.jsampler.task;
 
+import java.util.Date;
 import java.util.logging.Level;
 
 import net.sf.juife.AbstractTask;
@@ -43,6 +44,8 @@ public abstract class EnhancedTask<R> extends AbstractTask<R> {
 	private boolean stopped = false;
 	private boolean silent = false;
 	private boolean showErrorDetails;
+	private boolean calculateElapsedTime = false;
+	private long elapsedTime = -1;
 	
 	public
 	EnhancedTask() { this(false); }
@@ -54,8 +57,18 @@ public abstract class EnhancedTask<R> extends AbstractTask<R> {
 
 	public void
 	run() {
-		try { exec(); }
-		catch(java.net.SocketException x) {
+		try {
+			if(getCalculateElapsedTime()) {
+				elapsedTime = new Date().getTime();
+			}
+
+			exec();
+
+			if(getCalculateElapsedTime()) {
+				elapsedTime = new Date().getTime() - elapsedTime;
+			}
+			if(getCalculateElapsedTime()) System.out.println("time: " + getElapsedTime());
+		} catch(java.net.SocketException x) {
 			setErrorCode(SOCKET_ERROR);
 			setErrorMessage(i18n.getError("SOCKET_ERROR"));
 			CC.getLogger().log(Level.FINE, getErrorMessage(), x);
@@ -71,7 +84,7 @@ public abstract class EnhancedTask<R> extends AbstractTask<R> {
 	exec() throws Exception { }
 
 	public void
-	onError(Exception e) { }
+	onError(Exception e) { e.printStackTrace(); }
 	
 	/**
 	 * Marks that the execution of this task was interrupted.
@@ -95,7 +108,7 @@ public abstract class EnhancedTask<R> extends AbstractTask<R> {
 	isSilent() { return silent; }
 	
 	/**
-	 * DSets whether an error message should be shown
+	 * Sets whether an error message should be shown
 	 * if the execution of the task fail.
 	 */
 	public void
@@ -116,4 +129,16 @@ public abstract class EnhancedTask<R> extends AbstractTask<R> {
 			}
 		}
 	}
+
+	/** Determines whether to calculate the elapsed time for this task. */
+	public boolean
+	getCalculateElapsedTime() { return calculateElapsedTime; }
+
+	/** Sets whether to calculate the elapsed time for this task. */
+	public void
+	setCalculateElapsedTime(boolean b) { calculateElapsedTime = b; }
+
+	/** Gets the elapsed time for this task. */
+	public long
+	getElapsedTime() { return elapsedTime; }
 }

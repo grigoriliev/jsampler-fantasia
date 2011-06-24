@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -19,22 +19,33 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  *   MA  02111-1307  USA
  */
+package org.jsampler;
 
-package org.jsampler.event;
+import java.util.ArrayList;
+
+import org.linuxsampler.lscp.Effect;
 
 /**
- * The listener interface that is notified when the audio device settings have changed.
+ * TODO: The set of available internal effects can change at runtime.
  * @author Grigor Iliev
  */
-public interface AudioDeviceListener extends java.util.EventListener {
-	/**
-	 * Invoked when when the settings of a particular audio device have changed.
-	 */
-	public void settingsChanged(AudioDeviceEvent e);
+public class EffectList {
+	private ArrayList<Effect> effects = new ArrayList<Effect>();
 	
-	/** Invoked when when a new send effect chain is added to the audio device. */
-	public void sendEffectChainAdded(AudioDeviceEvent e);
+	public
+	EffectList() {
+		
+	}
 	
-	/** Invoked when when a send effect chain is removed from the audio device. */
-	public void sendEffectChainRemoved(AudioDeviceEvent e);
+	public void
+	setEffects(Effect[] fxS) {
+		effects.clear();
+		for(Effect e : fxS) effects.add(e);
+	}
+	
+	public Effect
+	getEffect(int idx) { return effects.get(idx); }
+	
+	public int
+	getEffectCount() { return effects.size(); }
 }

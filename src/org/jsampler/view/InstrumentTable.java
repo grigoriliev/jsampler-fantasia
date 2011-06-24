@@ -47,9 +47,6 @@ import org.jsampler.DefaultOrchestraModel;
 import org.jsampler.HF;
 import org.jsampler.OrchestraInstrument;
 
-import org.jsampler.event.OrchestraAdapter;
-import org.jsampler.event.OrchestraEvent;
-
 import static javax.swing.KeyStroke.*;
 
 

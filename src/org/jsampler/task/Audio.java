@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -22,12 +22,17 @@
 
 package org.jsampler.task;
 
+import java.util.ArrayList;
+
 import org.jsampler.AudioDeviceModel;
 import org.jsampler.CC;
+import org.jsampler.EffectChain;
 import org.jsampler.SamplerModel;
 
 import org.linuxsampler.lscp.AudioOutputDevice;
 import org.linuxsampler.lscp.AudioOutputDriver;
+import org.linuxsampler.lscp.EffectInstance;
+import org.linuxsampler.lscp.Effect;
 import org.linuxsampler.lscp.Parameter;
 
 import static org.jsampler.JSI18n.i18n;
@@ -38,7 +43,7 @@ import static org.jsampler.JSI18n.i18n;
  * @author Grigor Iliev
  */
 public class Audio {
-	/** Forbits the instantiation of this class. */
+	/** Forbids the instantiation of this class. */
 	private Audio() { }
 
 	/**
@@ -266,6 +271,243 @@ public class Audio {
 		public void
 		exec() throws Exception {
 			CC.getClient().setAudioOutputChannelCount(deviceId, channels);
+		}
+	}
+
+	/**
+	 * This task adds a send effect chain to the specified audio output device.
+	 */
+	public static class AddSendEffectChain extends EnhancedTask<Integer> {
+		private int audioDeviceId;
+	
+		/**
+		 * Creates a new instance of <code>AddSendEffectChain</code>.
+		 * @param audioDeviceId The numerical ID of the audio output device.
+		 */
+		public
+		AddSendEffectChain(int audioDeviceId) {
+			setTitle("Audio.AddSendEffectChain_task");
+			setDescription(i18n.getMessage("Audio.AddSendEffectChain.desc"));
+		
+			this.audioDeviceId = audioDeviceId;
+		}
+	
+		/** The entry point of the task. */
+		@Override
+		public void
+		exec() throws Exception {
+			Integer chainId = CC.getClient().addSendEffectChain(audioDeviceId);
+			setResult(chainId);
+		}
+	}
+
+	/**
+	 * This task removes the specified send effect chain of the specified audio output device.
+	 */
+	public static class RemoveSendEffectChain extends EnhancedTask {
+		private int audioDeviceId;
+		private int chainId;
+	
+		/**
+		 * Creates a new instance of <code>RemoveSendEffectChain</code>.
+		 * @param audioDeviceId The numerical ID of the audio output device.
+		 * @param chainId The numerical ID of the send effect chain to remove.
+		 */
+		public
+		RemoveSendEffectChain(int audioDeviceId, int chainId) {
+			setTitle("Audio.RemoveSendEffectChain_task");
+			setDescription(i18n.getMessage("Audio.RemoveSendEffectChain.desc"));
+		
+			this.audioDeviceId = audioDeviceId;
+			this.chainId = chainId;
+		}
+	
+		/** The entry point of the task. */
+		@Override
+		public void
+		exec() throws Exception {
+			AudioDeviceModel adm = CC.getSamplerModel().getAudioDevice(audioDeviceId);
+			EffectChain chain = adm.getSendEffectChainById(chainId);
+			
+			for(int i = chain.getEffectInstanceCount() - 1; i >= 0; i--) {
+				CC.getClient().removeEffectInstanceFromChain (
+					audioDeviceId, chainId, i
+				);
+				
+				int iid = chain.getEffectInstance(i).getInstanceId();
+				CC.getClient().destroyEffectInstance(iid);
+			}
+			CC.getClient().removeSendEffectChain(audioDeviceId, chainId);
+		}
+	}
+
+	/**
+	 * This task creates new effect instances and inserts them
+	 * in the specified send effect chain at the specified position.
+	 */
+	public static class AddNewEffectInstances extends EnhancedTask {
+		private Effect[] effects;
+		private int audioDeviceId;
+		private int chainId;
+		private int index;
+	
+		/**
+		 * Creates a new instance of <code>AddNewEffectInstances</code>.
+		 * @param audioDeviceId The numerical ID of the audio output device.
+		 * @param chainId The numerical ID of the send effect chain.
+		 * @param index The position in the chain where the newly created
+		 * effect instances should be inserted to. Use -1 to append.
+		 */
+		public
+		AddNewEffectInstances(Effect[] effects, int audioDeviceId, int chainId, int index) {
+			setTitle("Audio.AddNewEffectInstances_task");
+			setDescription(i18n.getMessage("Audio.AddNewEffectInstances.desc"));
+		
+			this.effects = effects;
+			this.audioDeviceId = audioDeviceId;
+			this.chainId = chainId;
+			this.index = index;
+		}
+	
+		/** The entry point of the task. */
+		@Override
+		public void
+		exec() throws Exception {
+			for(Effect e : effects) {
+				int ei = CC.getClient().createEffectInstance(e);
+				if(index != -1) {
+					CC.getClient().insertEffectInstance(audioDeviceId, chainId, index, ei);
+				} else {
+					CC.getClient().appendEffectInstance(audioDeviceId, chainId, ei);
+				}
+			}
+		}
+	}
+
+	/**
+	 * This task removes the specified effect instance from the specified send effect chain.
+	 */
+	public static class RemoveEffectInstance extends EnhancedTask {
+		private int audioDeviceId;
+		private int chainId;
+		private int instanceId;
+	
+		/**
+		 * Creates a new instance of <code>RemoveEffectInstance</code>.
+		 * @param audioDeviceId The numerical ID of the audio output device.
+		 * @param chainId The numerical ID of the send effect chain.
+		 * @param instanceId The numerical ID of the effect instance to remove.
+		 */
+		public
+		RemoveEffectInstance(int audioDeviceId, int chainId, int instanceId) {
+			setTitle("Audio.RemoveEffectInstance_task");
+			setDescription(i18n.getMessage("Audio.RemoveEffectInstance.desc"));
+		
+			this.audioDeviceId = audioDeviceId;
+			this.chainId = chainId;
+			this.instanceId = instanceId;
+		}
+	
+		/** The entry point of the task. */
+		@Override
+		public void
+		exec() throws Exception {
+			AudioDeviceModel adm = CC.getSamplerModel().getAudioDevice(audioDeviceId);
+			EffectChain chain = adm.getSendEffectChainById(chainId);
+			
+			CC.getClient().removeEffectInstanceFromChain (
+				audioDeviceId, chainId, chain.getIndex(instanceId)
+			);
+				
+			CC.getClient().destroyEffectInstance(instanceId);
+			
+		}
+	}
+
+
+	/**
+	 * This task updates the send effect chain list of an audio output device.
+	 */
+	public static class UpdateSendEffectChains extends EnhancedTask {
+		private int devId;
+		
+		/**
+		 * Creates new instance of <code>UpdateSendEffectChains</code>.
+		 * @param devId The id of the device.
+		 */
+		public
+		UpdateSendEffectChains(int devId) {
+			setTitle("Audio.UpdateSendEffectChains_task");
+			setDescription(i18n.getMessage("Audio.UpdateSendEffectChains.desc", devId));
+		
+			this.devId = devId;
+		}
+	
+		/** The entry point of the task. */
+		@Override
+		public void
+		exec() throws Exception {
+			AudioDeviceModel m = CC.getSamplerModel().getAudioDeviceById(devId);
+			
+			Integer[] idS = CC.getClient().getSendEffectChainIDs(devId);
+			
+			ArrayList<Integer> removedChains = new ArrayList<Integer>();
+			
+			for(int i = 0; i < m.getSendEffectChainCount(); i++) {
+				boolean found = false;
+				for(int j = 0; j < idS.length; j++) {
+					if(idS[j] != null && m.getSendEffectChain(i).getChainId() == idS[j]) {
+						found = true;
+						idS[j] = null;
+					}
+				}
+				if(!found) removedChains.add(m.getSendEffectChain(i).getChainId());
+			}
+			
+			for(int i : removedChains) m.removeSendEffectChain(i);
+			
+			for(int i = 0; i < idS.length; i++) {
+				if(idS[i] != null)  {
+					m.addSendEffectChain (
+					new EffectChain(CC.getClient().getSendEffectChainInfo(devId, idS[i]))
+					);
+				}
+			}
+		}
+	}
+
+	/**
+	 * This task updates the list of effect instances.
+	 */
+	public static class UpdateEffectInstances extends EnhancedTask {
+		private int audioDeviceId;
+		private int chainId;
+	
+		/**
+		 * Creates a new instance of <code>UpdateEffectInstances</code>.
+		 * @param audioDeviceId The numerical ID of the audio output device.
+		 * @param chainId The numerical ID of the send effect chain.
+		 */
+		public
+		UpdateEffectInstances(int audioDeviceId, int chainId) {
+			setTitle("Audio.UpdateEffectInstances_task");
+			setDescription(i18n.getMessage("Audio.UpdateEffectInstances.desc"));
+		
+			this.audioDeviceId = audioDeviceId;
+			this.chainId = chainId;
+		}
+	
+		/** The entry point of the task. */
+		@Override
+		public void
+		exec() throws Exception {
+			setSilent(true);
+			
+			EffectChain c = new EffectChain (
+				CC.getClient().getSendEffectChainInfo(audioDeviceId, chainId)
+			);
+			AudioDeviceModel m = CC.getSamplerModel().getAudioDeviceById(audioDeviceId);
+			m.getSendEffectChainById(chainId).setEffectInstances(c.getEffectInstances());
 		}
 	}
 

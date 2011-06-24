@@ -19,57 +19,44 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  *   MA  02111-1307  USA
  */
-
 package org.jsampler.event;
 
-import org.jsampler.AudioDeviceModel;
-import org.jsampler.EffectChain;
-
+import org.linuxsampler.lscp.EffectChain;
+import org.linuxsampler.lscp.EffectInstance;
 
 /**
- * A semantic event which indicates changes of an audio device settings.
+ *
  * @author Grigor Iliev
  */
-public class AudioDeviceEvent extends java.util.EventObject {
-	private AudioDeviceModel audioDeviceModel;
-	
+public class EffectChainEvent extends java.util.EventObject {
 	private EffectChain chain;
+	private EffectInstance[] instances;
 	
 	/**
-	 * Constructs an <code>AudioDeviceEvent</code> object.
+	 * Constructs an <code>EffectChainEvent</code> object.
 	 *
 	 * @param source The object that originated the event.
-	 * @param audioDeviceModel The model of the audio device for which this event occurs.
+	 * @param audioDeviceModel The model of the audio device to which
+	 * the specified effect chain belongs
+	 * @param chain The effect chain.
+	 * @param instances The new list of effect stances.
 	 */
 	public
-	AudioDeviceEvent(Object source, AudioDeviceModel audioDeviceModel) {
-		this(source, audioDeviceModel, null);
-	}
-	
-	/**
-	 * Constructs an <code>AudioDeviceEvent</code> object.
-	 *
-	 * @param source The object that originated the event.
-	 * @param audioDeviceModel The model of the audio device for which this event occurs.
-	 */
-	public
-	AudioDeviceEvent(Object source, AudioDeviceModel audioDeviceModel, EffectChain chain) {
+	EffectChainEvent( Object source, EffectChain chain, EffectInstance[] instances ) {
 		super(source);
-		this.audioDeviceModel = audioDeviceModel;
 		this.chain = chain;
+		this.instances = instances;
 	}
-	
-	/**
-	 * Gets the audio device model for which this event occurs.
-	 * @return The audio device model for which this event occurs.
-	 */
-	public AudioDeviceModel
-	getAudioDeviceModel() { return audioDeviceModel; }
 	
 	/**
 	 * Depending on the event provides the newly added effect chain when
-	 * a new chain is added or the removed effect chain when a chain is removed.
+	 * a new chain is added, the removed effect chain when a chain is removed
+	 * and the chain which is changed when an effect chain change event occurs.
 	 */
 	public EffectChain
 	getEffectChain() { return chain; }
+	
+	/** Provides the new list of effect instances. */
+	public EffectInstance[]
+	getEffectInstances() { return instances; }
 }

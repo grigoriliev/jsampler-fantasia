@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -63,8 +63,8 @@ import org.jsampler.AudioDeviceModel;
 import org.jsampler.CC;
 import org.jsampler.HF;
 
+import org.jsampler.event.AudioDeviceAdapter;
 import org.jsampler.event.AudioDeviceEvent;
-import org.jsampler.event.AudioDeviceListener;
 import org.jsampler.event.ListEvent;
 import org.jsampler.event.ListListener;
 import org.jsampler.event.ParameterEvent;
@@ -213,8 +213,8 @@ public class AudioDevicesPage extends NavigationPage {
 	private Handler
 	getHandler() { return handler; }
 	
-	private class Handler implements ActionListener, ListSelectionListener,
-							AudioDeviceListener, ParameterListener {
+	private class Handler extends AudioDeviceAdapter implements ActionListener,
+							ListSelectionListener, ParameterListener {
 		public void
 		actionPerformed(ActionEvent e) {
 			Object obj = cbChannels.getSelectedItem();
@@ -534,7 +534,7 @@ class AudioDevicesTableModel extends AbstractTableModel {
 	}
 ///////
 	
-	private class Handler implements AudioDeviceListener, ListListener<AudioDeviceModel> {
+	private class Handler extends AudioDeviceAdapter implements ListListener<AudioDeviceModel> {
 		/**
 		 * Invoked when a new audio device is created.
 		 * @param e An <code>AudioDeviceListEvent</code>

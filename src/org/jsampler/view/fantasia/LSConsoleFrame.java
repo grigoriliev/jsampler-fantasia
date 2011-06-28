@@ -53,7 +53,6 @@ public class LSConsoleFrame extends JSFrame {
 		
 		add(lsConsolePane);
 		addMenu();
-		pack();
 	}
 	
 	private void

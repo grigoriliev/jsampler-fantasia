@@ -497,6 +497,10 @@ public interface SamplerModel {
 	/** Gets the list of internal effects */
 	public EffectList getEffects();
 	
+	public EffectInstance getEffectInstanceById(int instanceId);
+	
+	public void updateEffectInstance(EffectInstanceInfo instance);
+	
 	/**
 	 * Schedules a new task for resetting the sampler.
 	 */

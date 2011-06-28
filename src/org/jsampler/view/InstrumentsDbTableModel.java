@@ -22,8 +22,6 @@
 
 package org.jsampler.view;
 
-import java.text.NumberFormat;
-
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Vector;

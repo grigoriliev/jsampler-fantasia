@@ -31,24 +31,16 @@ import org.linuxsampler.lscp.Effect;
  *
  * @author Grigor Iliev
  */
-public class EffectTable extends JTable {
-	private final String tablePrefix;
+public class EffectTable extends JSTable<EffectTableModel> {
 	
 	public
 	EffectTable() { this("EffectTable"); }
 	
 	EffectTable(String tablePrefix) {
-		super(new EffectTableModel());
-		this.tablePrefix = tablePrefix;
-		
-		loadColumnWidths();
+		super(new EffectTableModel(), tablePrefix);
 		
 		setAutoCreateRowSorter(true);
 	}
-	
-	@Override
-	public EffectTableModel
-	getModel() { return (EffectTableModel)super.getModel(); }
 	
 	/**
 	 * Gets the selected effects.
@@ -66,34 +58,4 @@ public class EffectTable extends JTable {
 		
 		return effects;
 	}
-		
-	public void
-	loadColumnWidths() { loadColumnWidths(tablePrefix); }
-	
-	public void
-	loadColumnWidths(String prefix) {
-		TableColumnModel tcm = getColumnModel();
-		
-		for(int i = 0; i < getModel().getColumnCount(); i++) {
-			String s = prefix + ": column " + i;
-			int w = preferences().getIntProperty(s);
-			if(w > 0) tcm.getColumn(i).setPreferredWidth(w);
-		}
-	}
-	
-	public void
-	saveColumnWidths() { saveColumnWidths(tablePrefix); }
-	
-	public void
-	saveColumnWidths(String prefix) {
-		TableColumnModel tcm = getColumnModel();
-		
-		for(int i = 0; i < getModel().getColumnCount(); i++) {
-			String s = prefix + ": column " + i;
-			preferences().setIntProperty(s, tcm.getColumn(i).getWidth());
-		}
-	}
-	
-	private JSPrefs
-	preferences() { return CC.getViewConfig().preferences(); }
 }

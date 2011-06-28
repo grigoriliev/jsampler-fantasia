@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2010 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -91,6 +91,8 @@ public abstract class JSViewConfig {
 	 * Provides UI information for instruments database tables.
 	 */
 	public abstract InstrumentsDbTableView getInstrumentsDbTableView();
+	
+	public abstract SamplerBrowserView getSamplerBrowserView();
 	
 	public abstract BasicIconSet getBasicIconSet();
 	

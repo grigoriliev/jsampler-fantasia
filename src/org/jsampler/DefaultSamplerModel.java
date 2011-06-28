@@ -676,6 +676,34 @@ public class DefaultSamplerModel implements SamplerModel {
 	/** Gets the list of internal effects */
 	public EffectList
 	getEffects() { return effects; }
+		
+	@Override
+	public EffectInstance
+	getEffectInstanceById(int instanceId) {
+		for(int i = 0; i < getAudioDeviceCount(); i++) {
+			AudioDeviceModel m = getAudioDevice(i);
+			for(int j = 0; j < m.getSendEffectChainCount(); j++) {
+				EffectInstance ei =
+					m.getSendEffectChain(j).getEffectInstanceById(instanceId);
+				
+				if(ei != null) return ei;
+			}
+		}
+		
+		return null;
+	}
+	
+	@Override
+	public void
+	updateEffectInstance(EffectInstanceInfo instance) {
+		EffectInstance ei = getEffectInstanceById(instance.getInstanceId());
+		if(ei == null) {
+			CC.getLogger().info("Unknow effect instance: " + instance.getInstanceId());
+			return;
+		}
+		
+		ei.setInfo(instance);
+	}
 	
 	/**
 	 * Gets the model of the sampler channel in the specified position.

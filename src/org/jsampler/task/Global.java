@@ -28,6 +28,7 @@ import org.jsampler.EffectChain;
 import org.jsampler.SamplerModel;
 
 import org.linuxsampler.lscp.Effect;
+import org.linuxsampler.lscp.EffectChainInfo;
 import org.linuxsampler.lscp.Instrument;
 import org.linuxsampler.lscp.SamplerEngine;
 import org.linuxsampler.lscp.ServerInfo;
@@ -367,13 +368,12 @@ public class Global {
 		
 		private void
 		updateSendEffectChains(int devId) throws Exception {
-			org.linuxsampler.lscp.EffectChain[] chains =
-				CC.getClient().getSendEffectChains(devId);
+			EffectChainInfo[] chains = CC.getClient().getSendEffectChains(devId);
 			
 			AudioDeviceModel adm = CC.getSamplerModel().getAudioDeviceById(devId);
 			adm.removeAllSendEffectChains();
 			
-			for(org.linuxsampler.lscp.EffectChain c : chains) {
+			for(EffectChainInfo c : chains) {
 				adm.addSendEffectChain(new EffectChain(c));
 			}
 		}

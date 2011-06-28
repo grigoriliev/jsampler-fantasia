@@ -312,6 +312,9 @@ public class CC {
 		getClient().removeSendEffectChainInfoListener(getHandler());
 		getClient().addSendEffectChainInfoListener(getHandler());
 		
+		getClient().removeEffectInstanceInfoListener(getHandler());
+		getClient().addEffectInstanceInfoListener(getHandler());
+		
 		CC.addConnectionEstablishedListener(new ActionListener() {
 			public void
 			actionPerformed(ActionEvent e) {
@@ -989,7 +992,7 @@ public class CC {
 		TotalStreamCountListener, TotalVoiceCountListener, TaskQueueListener,
 		OrchestraListener, ListListener<OrchestraModel>, MidiInstrumentCountListener,
 		MidiInstrumentInfoListener, GlobalInfoListener, ChannelMidiDataListener,
-		SendEffectChainCountListener, SendEffectChainInfoListener {
+		SendEffectChainCountListener, SendEffectChainInfoListener, EffectInstanceInfoListener {
 		
 		/** Invoked when the number of channels has changed. */
 		@Override
@@ -1274,6 +1277,11 @@ public class CC {
 			getTaskQueue().add (
 				new Audio.UpdateEffectInstances(e.getAudioDeviceId(), e.getChainId())
 			);
+		}
+		
+		public void
+		effectInstanceInfoChanged(EffectInstanceInfoEvent e) {
+			getTaskQueue().add(new Audio.UpdateEffectInstanceInfo(e.getEffectInstanceId()));
 		}
 	}
 	

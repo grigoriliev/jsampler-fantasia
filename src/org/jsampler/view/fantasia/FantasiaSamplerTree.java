@@ -19,45 +19,46 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  *   MA  02111-1307  USA
  */
-package org.jsampler.view.std;
+package org.jsampler.view.fantasia;
 
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-
-import javax.swing.tree.TreeSelectionModel;
-
-import org.jsampler.view.AbstractSamplerTree;
+import java.awt.Component;
+import javax.swing.JTree;
 import org.jsampler.view.SamplerTreeModel;
-
+import org.jsampler.view.std.JSSamplerTree;
+import org.pushingpixels.substance.api.renderers.SubstanceDefaultTreeCellRenderer;
 import static org.jsampler.view.SamplerTreeModel.*;
 
 /**
  *
  * @author Grigor Iliev
  */
-public class JSSamplerTree extends AbstractSamplerTree implements SamplerBrowser.ContextMenuOwner {
-	/**
-	 * Creates a new instance of <code>JSSamplerTree</code>.
-	 */
+public class FantasiaSamplerTree extends JSSamplerTree {
 	public
-	JSSamplerTree(SamplerTreeModel model) {
+	FantasiaSamplerTree(SamplerTreeModel model) {
 		super(model);
-		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-		
-		addMouseListener(new MouseAdapter() {
-			public void
-			mousePressed(MouseEvent e) {
-				if(e.getButton() != e.BUTTON3) return;
-				setSelectionPath(getClosestPathForLocation(e.getX(), e.getY()));
-			}
-		});
-		
-		addMouseListener(new SamplerBrowser.ContextMenu(this));
+		CellRenderer renderer = new CellRenderer();
+		setCellRenderer(renderer);
 	}
 	
-	@Override
-	public Object
-	getSelectedItem() {
-		return getSelectionModel().getSelectionPath().getLastPathComponent();
+	private class CellRenderer extends SubstanceDefaultTreeCellRenderer {
+		public Component
+		getTreeCellRendererComponent (
+			JTree tree,
+			Object value,
+			boolean sel,
+			boolean expanded,
+			boolean leaf,
+			int row,
+			boolean hasFocus
+		) {
+			super.getTreeCellRendererComponent (
+				tree, value, sel,expanded, leaf, row,hasFocus
+			);
+			
+			javax.swing.Icon icon = getView().getIcon(value, expanded);
+			if(icon != null) setIcon(icon);
+			
+			return this;
+		}
 	}
 }

@@ -31,7 +31,8 @@ import org.jsampler.SamplerModel;
 
 import org.linuxsampler.lscp.AudioOutputDevice;
 import org.linuxsampler.lscp.AudioOutputDriver;
-import org.linuxsampler.lscp.EffectInstance;
+import org.linuxsampler.lscp.EffectChainInfo;
+import org.linuxsampler.lscp.EffectInstanceInfo;
 import org.linuxsampler.lscp.Effect;
 import org.linuxsampler.lscp.Parameter;
 
@@ -503,11 +504,69 @@ public class Audio {
 		exec() throws Exception {
 			setSilent(true);
 			
-			EffectChain c = new EffectChain (
-				CC.getClient().getSendEffectChainInfo(audioDeviceId, chainId)
-			);
+			EffectChainInfo c =
+				CC.getClient().getSendEffectChainInfo(audioDeviceId, chainId);
+			
 			AudioDeviceModel m = CC.getSamplerModel().getAudioDeviceById(audioDeviceId);
-			m.getSendEffectChainById(chainId).setEffectInstances(c.getEffectInstances());
+			m.getSendEffectChainById(chainId).setEffectInstances(c);
+		}
+	}
+
+
+	/**
+	 * This task updates the setting of an effect instance.
+	 */
+	public static class UpdateEffectInstanceInfo extends EnhancedTask {
+		private int instanceId;
+		
+		/**
+		 * Creates new instance of <code>UpdateEffectInstanceInfo</code>.
+		 * @param instanceId The id of the effect instance, which settings should be updated.
+		 */
+		public
+		UpdateEffectInstanceInfo(int instanceId) {
+			setTitle("Audio.UpdateEffectInstanceInfo_task");
+			setDescription(i18n.getMessage("Audio.UpdateEffectInstanceInfo.desc", instanceId));
+		
+			this.instanceId = instanceId;
+		}
+	
+		/** The entry point of the task. */
+		@Override
+		public void
+		exec() throws Exception {
+			EffectInstanceInfo ei = CC.getClient().getEffectInstanceInfo(instanceId);
+			CC.getSamplerModel().updateEffectInstance(ei);
+		}
+	}
+
+
+	/**
+	 * This task changes the value of an effect instance parameter.
+	 */
+	public static class SetEffectInstanceParameter extends EnhancedTask {
+		private int instanceId;
+		private int prmIndex;
+		private float newValue;
+		
+		/**
+		 * Creates new instance of <code>SetEffectInstanceParameter</code>.
+		 */
+		public
+		SetEffectInstanceParameter(int instanceId, int prmIndex, float newValue) {
+			setTitle("Audio.SetEffectInstanceParameter_task");
+			setDescription(i18n.getMessage("Audio.SetEffectInstanceParameter.desc"));
+		
+			this.instanceId = instanceId;
+			this.prmIndex = prmIndex;
+			this.newValue = newValue;
+		}
+	
+		/** The entry point of the task. */
+		@Override
+		public void
+		exec() throws Exception {
+			CC.getClient().setEffectInstanceParameter(instanceId, prmIndex, newValue);
 		}
 	}
 

@@ -26,23 +26,25 @@ import java.util.Arrays;
 import javax.swing.SwingUtilities;
 import org.jsampler.event.EffectChainEvent;
 import org.jsampler.event.EffectChainListener;
-import org.linuxsampler.lscp.EffectInstance;
+import org.linuxsampler.lscp.EffectChainInfo;
+import org.linuxsampler.lscp.EffectInstanceInfo;
+
 
 /**
  *
  * @author Grigor Iliev
  */
-public class EffectChain extends org.linuxsampler.lscp.EffectChain {
+public class EffectChain {
+	private int chainId = -1;
+	private final ArrayList<EffectInstance> effectInstances = new ArrayList<EffectInstance>();
+	
 	private final ArrayList<EffectChainListener> listeners = new ArrayList<EffectChainListener>();
 	
 	public
-	EffectChain(org.linuxsampler.lscp.EffectChain chain) {
+	EffectChain(EffectChainInfo chain) {
 		setChainId(chain.getChainId());
 		
-		effectInstances = new EffectInstance[chain.getEffectInstanceCount()];
-		for(int i = 0; i < chain.getEffectInstanceCount(); i++) {
-			effectInstances[i] = chain.getEffectInstance(i);
-		}
+		setEffectInstances(chain);
 	}
 	
 	/**
@@ -51,40 +53,68 @@ public class EffectChain extends org.linuxsampler.lscp.EffectChain {
 	 * @param l The <code>EffectChainListener</code> to register.
 	 */
 	public void
-	addAudioDeviceListener(EffectChainListener l) { listeners.add(l); }
+	addEffectChainListener(EffectChainListener l) { listeners.add(l); }
 	
 	/**
 	 * Removes the specified listener.
 	 * @param l The <code>EffectChainListener</code> to remove.
 	 */
 	public void
-	removeAudioDeviceListener(EffectChainListener l) { listeners.remove(l); }
+	removeEffectChainListener(EffectChainListener l) { listeners.remove(l); }
+	
+	/**
+	 * Gets the numerical ID of the chain.
+	 * @return The numerical ID of the chain or -1 if the ID is not set.
+	 */
+	public int
+	getChainId() { return chainId; }
+	
+	/** Sets the numerical ID of the chain. */
+	public void
+	setChainId(int id) { chainId = id; }
 	
 	public EffectInstance[]
 	getEffectInstances() {
-		return Arrays.copyOf(effectInstances, effectInstances.length);
+		return effectInstances.toArray(new EffectInstance[0]);
 	}
 	
 	public void
-	setEffectInstances(EffectInstance[] instances) {
-		effectInstances = instances;
-		fireEffectInstanceListChanged(instances);
+	setEffectInstances(EffectChainInfo chain) {
+		effectInstances.clear();
+		for(int i = 0; i < chain.getEffectInstanceCount(); i++) {
+			effectInstances.add(new EffectInstance(chain.getEffectInstance(i)));
+		}
+		fireEffectInstanceListChanged();
 		
 	}
 	
 	public int
+	getEffectInstanceCount() { return effectInstances.size(); }
+	
+	public EffectInstance
+	getEffectInstance(int idx) { return effectInstances.get(idx); }
+	
+	public int
 	getIndex(int instanceId) {
-		for(int i = 0; i < effectInstances.length; i++) {
-			if(effectInstances[i].getInstanceId() == instanceId) {
+		for(int i = 0; i < effectInstances.size(); i++) {
+			if(effectInstances.get(i).getInstanceId() == instanceId) {
 				return i;
 			}
 		}
 		return -1; 
 	}
 	
+	public EffectInstance
+	getEffectInstanceById(int instanceId) {
+		int idx = getIndex(instanceId);
+		if(idx == -1) return null;
+		
+		return effectInstances.get(idx);
+	}
+	
 	private void
-	fireEffectInstanceListChanged(EffectInstance[] instances) {
-		final EffectChainEvent e = new EffectChainEvent(this, this, instances);
+	fireEffectInstanceListChanged() {
+		final EffectChainEvent e = new EffectChainEvent(this, this);
 		SwingUtilities.invokeLater(new Runnable() {
 			public void
 			run() { fireEffectInstanceListChanged(e); }

@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -19,20 +19,30 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  *   MA  02111-1307  USA
  */
-
 package org.jsampler.event;
 
+import org.jsampler.EffectInstance;
+
 /**
- * The listener interface that is notified when the audio device settings have changed.
+ *
  * @author Grigor Iliev
  */
-public interface AudioDeviceListener extends java.util.EventListener {
-	/** Invoked when when the settings of a particular audio device have changed. */
-	public void settingsChanged(AudioDeviceEvent e);
+public class EffectInstanceEvent extends java.util.EventObject {
+	private EffectInstance effectInstance;
 	
-	/** Invoked when when a new send effect chain is added to the audio device. */
-	public void sendEffectChainAdded(AudioDeviceEvent e);
+	/**
+	 * Constructs an <code>EffectInstanceEvent</code> object.
+	 *
+	 * @param source The object that originated the event.
+	 * @param effectInstance The effect instance.
+	 */
+	public
+	EffectInstanceEvent(Object source, EffectInstance effectInstance) {
+		super(source);
+		this.effectInstance = effectInstance;
+	}
 	
-	/** Invoked when when a send effect chain is removed from the audio device. */
-	public void sendEffectChainRemoved(AudioDeviceEvent e);
+	/** Gets the newly updated effect instance*/
+	public EffectInstance
+	getEffectInstance() { return effectInstance; }
 }

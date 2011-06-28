@@ -191,12 +191,12 @@ public class ParameterTableModel extends AbstractTableModel {
 		} if(p.getType() == ParameterType.INT_LIST) {
 			
 		} if(p.getType() == ParameterType.STRING_LIST) {
-            // TODO: string list editor with no possibilities
+			// TODO: string list editor with no possibilities
 			/*StringListParameter slp = (StringListParameter)p;
 			if(slp.hasPossibilities()) {
 				
 			}*/
-            return stringListEditor;
+			return stringListEditor;
 		} else if(p.hasPossibilities()) {
 			JComboBox cb = new JComboBox(p.getPossibilities());
 			cb.setSelectedItem(null);

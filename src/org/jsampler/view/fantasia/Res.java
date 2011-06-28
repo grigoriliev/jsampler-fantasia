@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -222,6 +222,9 @@ public class Res {
 	
 	public final static ImageIcon gfxBtnScrollRightRO
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_scroll_right_ro.png"));
+
+	public final static ImageIcon gfxJackSoket
+		= new ImageIcon(Res.class.getResource("res/gfx/jack_socket.png"));
 	
 	
 	public final static ImageIcon iconAppIcon
@@ -277,6 +280,39 @@ public class Res {
 	
 	public final static ImageIcon iconPreferences16
 		= new ImageIcon(Res.class.getResource("res/icons/preferences16.png"));
+	
+	public final static ImageIcon iconSampler16
+		= new ImageIcon(Res.class.getResource("res/icons/sampler16.png"));
+	
+	public final static ImageIcon iconAudioDevsOpen16
+		= new ImageIcon(Res.class.getResource("res/icons/au-devs-folder_open16.png"));
+	
+	public final static ImageIcon iconAudioDevsClose16
+		= new ImageIcon(Res.class.getResource("res/icons/au-devs-folder16.png"));
+	
+	public final static ImageIcon iconAudioDev16
+		= new ImageIcon(Res.class.getResource("res/icons/au-dev16.png"));
+	
+	public final static ImageIcon iconEffectsOpen16
+		= new ImageIcon(Res.class.getResource("res/icons/effects-folder_open16.png"));
+	
+	public final static ImageIcon iconEffectsClose16
+		= new ImageIcon(Res.class.getResource("res/icons/effects-folder16.png"));
+	
+	public final static ImageIcon iconEffect16
+		= new ImageIcon(Res.class.getResource("res/icons/effect16.png"));
+	
+	public final static ImageIcon iconEffectInstance16
+		= new ImageIcon(Res.class.getResource("res/icons/effect-instance16.png"));
+	
+	public final static ImageIcon iconEffectChain16
+		= new ImageIcon(Res.class.getResource("res/icons/effect-chain16.png"));
+	
+	public final static ImageIcon iconEffectChainsOpen16
+		= new ImageIcon(Res.class.getResource("res/icons/chains-folder_open16.png"));
+	
+	public final static ImageIcon iconEffectChainsClose16
+		= new ImageIcon(Res.class.getResource("res/icons/chains-folder16.png"));
 	
 	public final static ImageIcon iconVolume22
 		= new ImageIcon(Res.class.getResource("res/icons/volume22.png"));

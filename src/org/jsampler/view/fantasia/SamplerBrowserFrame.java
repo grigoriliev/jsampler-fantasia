@@ -22,21 +22,22 @@
 package org.jsampler.view.fantasia;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 
-import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.TreePath;
 
 import org.jsampler.CC;
 import org.jsampler.view.SamplerTreeModel;
+import org.jsampler.view.SamplerTreeModel.TreeNodeBase;
 import org.jsampler.view.std.JSFrame;
-import org.jsampler.view.std.JSSamplerTree;
+import org.jsampler.view.std.JSSamplerTable;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
-import static org.jsampler.view.fantasia.FantasiaPrefs.preferences;
 
 /**
  *
@@ -49,7 +50,8 @@ public class SamplerBrowserFrame extends JSFrame {
 	private final JSplitPane splitPane;
 	private final MainPane mainPane;
 	
-	private final JSSamplerTree samplerTree = new JSSamplerTree(new SamplerTreeModel());
+	private final FantasiaSamplerTree samplerTree = new FantasiaSamplerTree(new SamplerTreeModel());
+	private final JSSamplerTable samplerTable = new JSSamplerTable(samplerTree);
 	
 	/**
 	 * Creates a new instance of <code>InstrumentsDbFrame</code>
@@ -90,12 +92,24 @@ public class SamplerBrowserFrame extends JSFrame {
 	private void
 	addMenu() { }
 	
-	class MainPane extends JPanel {
+	class MainPane extends JPanel implements TreeSelectionListener {
 		MainPane() {
 			setLayout(new BorderLayout());
-			JLabel l = new JLabel("Not implemented yet");
-			l.setHorizontalAlignment(l.CENTER);
-			add(l);
+			add(new JScrollPane(samplerTable));
+			
+			samplerTree.getSelectionModel().addTreeSelectionListener(this);
+			TreePath path = samplerTree.getSelectionPath();
+			if(path != null) samplerTable.setNode((TreeNodeBase)path.getLastPathComponent());
+		}
+		
+		public void
+		valueChanged(TreeSelectionEvent e) {
+			if(e.getNewLeadSelectionPath() == null) {
+				samplerTable.setNode(null);
+				return;
+			}
+			
+			samplerTable.setNode((TreeNodeBase)e.getNewLeadSelectionPath().getLastPathComponent());
 		}
 	}
 	

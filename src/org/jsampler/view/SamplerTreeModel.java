@@ -21,27 +21,32 @@
  */
 package org.jsampler.view;
 
-import javax.swing.event.TreeModelEvent;
-import javax.swing.tree.TreePath;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Vector;
+import javax.swing.SwingConstants;
+import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 
 import org.jsampler.AudioDeviceModel;
 import org.jsampler.CC;
 import org.jsampler.EffectChain;
-import org.jsampler.event.AudioDeviceAdapter;
+import org.jsampler.EffectInstance;
 import org.jsampler.event.AudioDeviceEvent;
+import org.jsampler.event.AudioDeviceListener;
 import org.jsampler.event.EffectChainEvent;
 import org.jsampler.event.EffectChainListener;
+import org.jsampler.event.EffectInstanceEvent;
+import org.jsampler.event.EffectInstanceListener;
 import org.jsampler.event.ListEvent;
 import org.jsampler.event.ListListener;
 
 import org.linuxsampler.lscp.Effect;
-import org.linuxsampler.lscp.EffectInstance;
+import org.linuxsampler.lscp.EffectParameter;
 
 import static org.jsampler.JSI18n.i18n;
 
@@ -186,7 +191,7 @@ public class SamplerTreeModel implements TreeModel {
 	private EventHandler
 	getHandler() { return eventHandler; }
 	
-	private class EventHandler extends AudioDeviceAdapter implements ListListener<AudioDeviceModel> {
+	private class EventHandler implements ListListener<AudioDeviceModel>, AudioDeviceListener {
 		
 	
 		/** Invoked when a new entry is added to a list. */
@@ -198,6 +203,9 @@ public class SamplerTreeModel implements TreeModel {
 				new AudioDeviceTreeNode(SamplerTreeModel.this, audioDevices, e.getEntry());
 			audioDevices.addChild(node);
 			fireNodeInserted(node, audioDevices.getIndex(node));
+			
+			root.firePropertyChange("SamplerTreeModel.update", null, null);
+			audioDevices.firePropertyChange("SamplerTreeModel.update", null, null);
 		}
 	
 		/** Invoked when an entry is removed from a list. */
@@ -212,6 +220,22 @@ public class SamplerTreeModel implements TreeModel {
 			fireNodeRemoved(audioDevices, node, i);
 			
 			e.getEntry().removeAudioDeviceListener(getHandler());
+			
+			root.firePropertyChange("SamplerTreeModel.update", null, null);
+			audioDevices.firePropertyChange("SamplerTreeModel.update", null, null);
+		}
+		
+		@Override
+		public void
+		settingsChanged(AudioDeviceEvent e) {
+			audioDevices.firePropertyChange("SamplerTreeModel.update", null, null);
+			
+			TreeNodeBase node =
+				audioDevices.getChildById(e.getAudioDeviceModel().getDeviceId());
+			
+			if(node != null) {
+				node.firePropertyChange("SamplerTreeModel.update", null, null);
+			}
 		}
 		
 		/** Invoked when a new send effect chain is added to the audio device. */
@@ -226,10 +250,17 @@ public class SamplerTreeModel implements TreeModel {
 				return;
 			}
 			
-			SendEffectChainTreeNode child =
-				new SendEffectChainTreeNode(SamplerTreeModel.this, node, e.getEffectChain());
-			node.addChild(child);
-			fireNodeInserted(child, node.getIndex(child));
+			SendEffectChainsTreeNode chainsNode = node.getSendEffectChainsTreeNode();
+			
+			SendEffectChainTreeNode child = new SendEffectChainTreeNode (
+				SamplerTreeModel.this, chainsNode, e.getEffectChain()
+			);
+			
+			chainsNode.addChild(child);
+			fireNodeInserted(child, chainsNode.getIndex(child));
+			
+			node.firePropertyChange("SamplerTreeModel.update", null, null);
+			chainsNode.firePropertyChange("SamplerTreeModel.update", null, null);
 		}
 	
 		/** Invoked when when a send effect chain is removed from the audio device. */
@@ -244,28 +275,77 @@ public class SamplerTreeModel implements TreeModel {
 				return;
 			}
 			
-			SendEffectChainTreeNode child = node.getChildById(e.getEffectChain().getChainId());
+			SendEffectChainsTreeNode chainsNode = node.getSendEffectChainsTreeNode();
+			
+			SendEffectChainTreeNode child = chainsNode.getChildById(e.getEffectChain().getChainId());
 			if(child == null)  {
 				CC.getLogger().warning("Missing send effect chain node. This is a bug!");
 				return;
 			}
 			
-			int idx = node.getIndex(child);
-			node.removeChildAt(idx);
-			fireNodeRemoved(node, child, idx);
+			e.getEffectChain().removeEffectChainListener(child);
+			child.uninstallListeners();
+			
+			int idx = chainsNode.getIndex(child);
+			chainsNode.removeChildAt(idx);
+			fireNodeRemoved(chainsNode, child, idx);
+			
+			node.firePropertyChange("SamplerTreeModel.update", null, null);
+			chainsNode.firePropertyChange("SamplerTreeModel.update", null, null);
+		}
+	}
+	
+	public static abstract class TreeNodeBase<T extends TreeNodeBase>
+					extends PropertyChangeSupport implements TreeNode {
+		
+		public TreeNodeBase() { super(new Object()); }
+		
+		public abstract T getChildAt(int index);
+		public abstract boolean isLeaf();
+		
+		/** Gets the number of columns for the corresponding table model. */
+		public int
+		getColumnCount() { return 1; }
+		
+		/** Gets the number of rows for the corresponding table model. */
+		public int
+		getRowCount() { return 1; }
+		
+		/**
+		 * Gets the value for the cell at <code>row</code> and
+		 * <code>col</code> for the corresponding table model.
+		 */
+		public Object
+		getValueAt(int row, int col) { return "Not implemented yet"; }
+		
+		/** Gets the name of the column for the corresponding table model. */
+		public String
+		getColumnName(int col) { return " "; }
+		
+		/** Gets the number of items this node contains. */
+		public int
+		getItemCount() { return getRowCount(); }
+		
+		public String
+		getItemCountString() { return String.valueOf(getItemCount()); }
+		
+		/** Determines the alignment for the cells in the specified column. */
+		public int
+		getHorizontalAlignment(int column) {
+			return column == 0 ? SwingConstants.LEFT : SwingConstants.CENTER;
 		}
 	}
 
-	public static class AbstractTreeNode<T extends TreeNode> implements TreeNode {
+	public static class AbstractTreeNode<T extends TreeNodeBase> extends TreeNodeBase<T> {
 		protected final SamplerTreeModel treeModel;
-		private final TreeNode parent;
+		private final TreeNodeBase parent;
 		private final Vector<T> children = new Vector<T>();
 	
 		public
 		AbstractTreeNode(SamplerTreeModel treeModel) { this(treeModel, null); }
 	
 		public
-		AbstractTreeNode(SamplerTreeModel treeModel, TreeNode parent) {
+		AbstractTreeNode(SamplerTreeModel treeModel, TreeNodeBase parent) {
 			this.parent = parent;
 			this.treeModel = treeModel;
 		}
@@ -280,7 +360,7 @@ public class SamplerTreeModel implements TreeModel {
 		getChildCount() { return children.size(); }
 	
 		@Override
-		public TreeNode
+		public TreeNodeBase
 		getParent() { return parent; }
 	
 		@Override
@@ -310,7 +390,7 @@ public class SamplerTreeModel implements TreeModel {
 		removeAllChildren() { children.removeAllElements(); }
 	}
 
-	public static class AbstractTreeLeaf<T extends TreeNode> implements TreeNode {
+	public static class AbstractTreeLeaf<T extends TreeNodeBase> extends TreeNodeBase<T> {
 		private final T parent;
 	
 		public
@@ -321,7 +401,7 @@ public class SamplerTreeModel implements TreeModel {
 	
 		// Tree node model methods
 		@Override
-		public TreeNode
+		public T
 		getChildAt(int index) { return null; }
 	
 		@Override
@@ -350,7 +430,48 @@ public class SamplerTreeModel implements TreeModel {
 		///////
 	}
 
-	public static class SamplerTreeNode extends AbstractTreeNode {
+	public static class StandardTreeNode<T extends TreeNodeBase> extends AbstractTreeNode<T> {
+		public
+		StandardTreeNode(SamplerTreeModel treeModel) { this(treeModel, null); }
+	
+		public
+		StandardTreeNode(SamplerTreeModel treeModel, TreeNodeBase parent) {
+			super(treeModel, parent);
+		}
+		
+		/** Gets the number of columns for the corresponding table model. */
+		@Override
+		public int
+		getColumnCount() { return 3; }
+		
+		/** Gets the number of rows for the corresponding table model. */
+		@Override
+		public int
+		getRowCount() { return getChildCount(); }
+		
+		/**
+		 * Gets the value for the cell at <code>row</code> and
+		 * <code>col</code> for the corresponding table model.
+		 */
+		@Override
+		public Object
+		getValueAt(int row, int col) {
+			if(col == 0) return getChildAt(row);
+			if(col == 1) return getChildAt(row).getItemCountString();
+			return "";
+		}
+		
+		/** Gets the name of the column for the corresponding table model. */
+		@Override
+		public String
+		getColumnName(int col) {
+			if(col == 0) return i18n.getLabel("SamplerTreeModel.tableColumn.name");
+			if(col == 1) return i18n.getLabel("SamplerTreeModel.tableColumn.itemCount");
+			return " ";
+		}
+	}
+
+	public static class SamplerTreeNode extends StandardTreeNode {
 		public
 		SamplerTreeNode(SamplerTreeModel treeModel) {
 			super(treeModel);
@@ -363,7 +484,7 @@ public class SamplerTreeModel implements TreeModel {
 
 	public static class AudioDevicesTreeNode extends AbstractTreeNode<AudioDeviceTreeNode> {
 		public
-		AudioDevicesTreeNode(SamplerTreeModel treeModel, TreeNode parent) {
+		AudioDevicesTreeNode(SamplerTreeModel treeModel, TreeNodeBase parent) {
 			super(treeModel, parent);
 		}
 	
@@ -375,18 +496,83 @@ public class SamplerTreeModel implements TreeModel {
 		
 			return null;
 		}
+		
+		/** Gets the number of columns for the corresponding table model. */
+		@Override
+		public int
+		getColumnCount() { return 5; }
+		
+		/** Gets the number of rows for the corresponding table model. */
+		@Override
+		public int
+		getRowCount() { return getChildCount(); }
+		
+		/**
+		 * Gets the value for the cell at <code>row</code> and
+		 * <code>col</code> for the corresponding table model.
+		 */
+		@Override
+		public Object
+		getValueAt(int row, int col) {
+			AudioDeviceModel m = getChildAt(row).getAudioDevice();
+			if(col == 0) return getChildAt(row);
+			if(col == 1) return m.getDeviceInfo().getDriverName();
+			if(col == 2) return m.getDeviceInfo().getSampleRate();
+			if(col == 3) return m.getDeviceInfo().getChannelCount();
+			return "";
+		}
+		
+		/** Gets the name of the column for the corresponding table model. */
+		@Override
+		public String
+		getColumnName(int col) {
+			if(col == 0) return i18n.getLabel("SamplerTreeModel.tableColumn.dev");
+			if(col == 1) return i18n.getLabel("SamplerTreeModel.tableColumn.drv");
+			if(col == 2) return i18n.getLabel("SamplerTreeModel.tableColumn.smplrate");
+			if(col == 3) return i18n.getLabel("SamplerTreeModel.tableColumn.chns");
+			return " ";
+		}
 	
 		@Override
 		public String
 		toString() { return i18n.getLabel("AudioDevicesTreeNode.toString"); }
 	}
 
-	public static class AudioDeviceTreeNode extends AbstractTreeNode<SendEffectChainTreeNode> {
+	public static class AudioDeviceTreeNode extends StandardTreeNode {
 		private final AudioDeviceModel audioDevice;
+		private final SendEffectChainsTreeNode effectChains;
 	
 		public
 		AudioDeviceTreeNode (
-			SamplerTreeModel treeModel, TreeNode parent, AudioDeviceModel audioDevice
+			SamplerTreeModel treeModel, TreeNodeBase parent, AudioDeviceModel audioDevice
+		) {
+			super(treeModel, parent);
+			this.audioDevice = audioDevice;
+			
+			effectChains = new SendEffectChainsTreeNode(treeModel, this, audioDevice);
+			addChild(effectChains);
+		}
+	
+		public AudioDeviceModel
+		getAudioDevice() { return audioDevice; }
+	
+		public int
+		getAudioDeviceId() { return audioDevice.getDeviceId(); }
+		
+		public SendEffectChainsTreeNode
+		getSendEffectChainsTreeNode() { return effectChains; }
+	
+		@Override
+		public String
+		toString() { return i18n.getLabel("AudioDeviceTreeNode.toString", getAudioDeviceId()); }
+	}
+
+	public static class SendEffectChainsTreeNode extends StandardTreeNode<SendEffectChainTreeNode> {
+		private final AudioDeviceModel audioDevice;
+	
+		public
+		SendEffectChainsTreeNode (
+			SamplerTreeModel treeModel, TreeNodeBase parent, AudioDeviceModel audioDevice
 		) {
 			super(treeModel, parent);
 			this.audioDevice = audioDevice;
@@ -414,7 +600,7 @@ public class SamplerTreeModel implements TreeModel {
 	
 		@Override
 		public String
-		toString() { return i18n.getLabel("AudioDeviceTreeNode.toString", getAudioDeviceId()); }
+		toString() { return i18n.getLabel("SendEffectChainsTreeNode.toString"); }
 	}
 
 	public static class SendEffectChainTreeNode extends AbstractTreeNode<EffectInstanceTreeNode>
@@ -423,11 +609,11 @@ public class SamplerTreeModel implements TreeModel {
 	
 		public
 		SendEffectChainTreeNode (
-			SamplerTreeModel treeModel, AudioDeviceTreeNode parent, EffectChain chain
+			SamplerTreeModel treeModel, SendEffectChainsTreeNode parent, EffectChain chain
 		) {
 			super(treeModel, parent);
 			this.chain = chain;
-			chain.addAudioDeviceListener(this);
+			chain.addEffectChainListener(this);
 			updateEffectInstanceList();
 		}
 		///////
@@ -443,7 +629,49 @@ public class SamplerTreeModel implements TreeModel {
 		 * send effect chain represented by this tree node belongs.
 		 */
 		public AudioDeviceModel
-		getAudioDevice() { return ((AudioDeviceTreeNode)getParent()).getAudioDevice(); }
+		getAudioDevice() { return ((SendEffectChainsTreeNode)getParent()).getAudioDevice(); }
+		
+		/** Gets the number of columns for the corresponding table model. */
+		@Override
+		public int
+		getColumnCount() { return 5; }
+		
+		/** Gets the number of rows for the corresponding table model. */
+		@Override
+		public int
+		getRowCount() { return getChildCount(); }
+		
+		/**
+		 * Gets the value for the cell at <code>row</code> and
+		 * <code>col</code> for the corresponding table model.
+		 */
+		@Override
+		public Object
+		getValueAt(int row, int col) {
+			EffectInstance e = getChildAt(row).effectInstance;
+			if(col == 0) return getChildAt(row);
+			if(col == 1) return e.getInfo().getSystem();
+			if(col == 2) return e.getInfo().getModule();
+			if(col == 3) return e.getInfo().getName();
+			return "";
+		}
+		
+		/** Gets the name of the column for the corresponding table model. */
+		@Override
+		public String
+		getColumnName(int col) {
+			if(col == 0) return i18n.getLabel("SamplerTreeModel.tableColumn.effect");
+			if(col == 1) return i18n.getLabel("SamplerTreeModel.tableColumn.type");
+			if(col == 2) return i18n.getLabel("SamplerTreeModel.tableColumn.file");
+			if(col == 3) return i18n.getLabel("SamplerTreeModel.tableColumn.id");
+			return " ";
+		}
+		
+		@Override
+		public int
+		getHorizontalAlignment(int column) {
+			return column == 1 ? SwingConstants.CENTER : SwingConstants.LEFT;
+		}
 	
 		@Override
 		public String
@@ -454,41 +682,153 @@ public class SamplerTreeModel implements TreeModel {
 		effectInstanceListChanged(EffectChainEvent e) {
 			updateEffectInstanceList();
 			treeModel.fireNodeStructureChanged(this);
+			
+			firePropertyChange("SamplerTreeModel.update", null, null);
+			getParent().firePropertyChange("SamplerTreeModel.update", null, null);
 		}
 		
 		private void
 		updateEffectInstanceList() {
+			uninstallListeners();
+			
 			removeAllChildren();
 			for(int i = 0; i < chain.getEffectInstanceCount(); i++) {
 				EffectInstance ei = chain.getEffectInstance(i);
-				addChild(new EffectInstanceTreeNode(this, ei));
+				addChild(new EffectInstanceTreeNode(treeModel, this, ei));
 			}
 			
-			
+			installListeners();
+		}
+		
+		public void
+		installListeners() {
+			for(int i = 0; i < getChildCount(); i++) {
+				getChildAt(i).effectInstance.addEffectInstanceListener(getChildAt(i));
+			}
+		}
+		
+		public void
+		uninstallListeners() {
+			for(int i = 0; i < getChildCount(); i++) {
+				getChildAt(i).effectInstance.removeEffectInstanceListener(getChildAt(i));
+			}
 		}
 	}
 
-	public static class EffectInstanceTreeNode extends AbstractTreeLeaf<SendEffectChainTreeNode> {
+	public static class EffectInstanceTreeNode extends AbstractTreeNode implements EffectInstanceListener {
 		private final EffectInstance effectInstance;
+		private EffectParameter[] params;
 		
 		public
-		EffectInstanceTreeNode(SendEffectChainTreeNode parent, EffectInstance ei) {
-			super(parent);
+		EffectInstanceTreeNode (
+			SamplerTreeModel treeModel, SendEffectChainTreeNode parent, EffectInstance ei
+		) {
+			super(treeModel, parent);
 			effectInstance = ei;
+			params = ei.getInfo().getParameters();
 		}
+	
+		@Override
+		public SendEffectChainTreeNode
+		getParent() { return (SendEffectChainTreeNode)super.getParent(); }
 		
 		public int
 		getInstanceId() { return effectInstance.getInstanceId(); }
+		
+		/** Gets the number of columns for the corresponding table model. */
+		@Override
+		public int
+		getColumnCount() { return 3; }
+		
+		/** Gets the number of rows for the corresponding table model. */
+		@Override
+		public int
+		getRowCount() { return params.length; }
+		
+		/**
+		 * Gets the value for the cell at <code>row</code> and
+		 * <code>col</code> for the corresponding table model.
+		 */
+		@Override
+		public Object
+		getValueAt(int row, int col) {
+			if(col == 0) return effectInstance.getInfo().getParameter(row);
+			if(col == 1) return effectInstance.getInfo().getParameter(row).getValue();
+			return "";
+		}
+		
+		/** Gets the name of the column for the corresponding table model. */
+		@Override
+		public String
+		getColumnName(int col) {
+			if(col == 0) return i18n.getLabel("SamplerTreeModel.tableColumn.name");
+			if(col == 1) return i18n.getLabel("SamplerTreeModel.tableColumn.value");
+			return " ";
+		}
+		
+		@Override
+		public int
+		getHorizontalAlignment(int column) {
+			return column == 1 ? SwingConstants.RIGHT : SwingConstants.LEFT;
+		}
+		
+		@Override
+		public void
+		effectInstanceChanged(EffectInstanceEvent e) {
+			firePropertyChange("SamplerTreeModel.update", null, null);
+		}
 	
 		@Override
 		public String
-		toString() { return effectInstance.getDescription(); }
+		toString() { return effectInstance.getInfo().getDescription(); }
 	}
 
 	public static class InternalEffectsTreeNode extends AbstractTreeNode<InternalEffectTreeNode> {
 		public
-		InternalEffectsTreeNode(SamplerTreeModel treeModel, TreeNode parent) {
+		InternalEffectsTreeNode(SamplerTreeModel treeModel, TreeNodeBase parent) {
 			super(treeModel, parent);
+		}
+		
+		/** Gets the number of columns for the corresponding table model. */
+		@Override
+		public int
+		getColumnCount() { return 5; }
+		
+		/** Gets the number of rows for the corresponding table model. */
+		@Override
+		public int
+		getRowCount() { return getChildCount(); }
+		
+		/**
+		 * Gets the value for the cell at <code>row</code> and
+		 * <code>col</code> for the corresponding table model.
+		 */
+		@Override
+		public Object
+		getValueAt(int row, int col) {
+			Effect e = getChildAt(row).effect;
+			if(col == 0) return getChildAt(row);
+			if(col == 1) return e.getSystem();
+			if(col == 2) return e.getModule();
+			if(col == 3) return e.getName();
+			return "";
+		}
+		
+		/** Gets the name of the column for the corresponding table model. */
+		@Override
+		public String
+		getColumnName(int col) {
+			if(col == 0) return i18n.getLabel("SamplerTreeModel.tableColumn.effect");
+			if(col == 1) return i18n.getLabel("SamplerTreeModel.tableColumn.type");
+			if(col == 2) return i18n.getLabel("SamplerTreeModel.tableColumn.file");
+			if(col == 3) return i18n.getLabel("SamplerTreeModel.tableColumn.id");
+			return " ";
+		}
+		
+		@Override
+		public int
+		getHorizontalAlignment(int column) {
+			return column == 1 ? SwingConstants.CENTER : SwingConstants.LEFT;
 		}
 	
 		@Override
@@ -500,7 +840,7 @@ public class SamplerTreeModel implements TreeModel {
 		private final Effect effect;
 		
 		public
-		InternalEffectTreeNode(TreeNode parent, Effect effect) {
+		InternalEffectTreeNode(TreeNodeBase parent, Effect effect) {
 			super(parent);
 			this.effect = effect;
 		}

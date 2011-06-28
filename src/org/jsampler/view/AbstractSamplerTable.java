@@ -21,8 +21,6 @@
  */
 package org.jsampler.view;
 
-import javax.swing.JTree;
-import javax.swing.tree.TreePath;
 import org.jsampler.CC;
 import org.jsampler.view.SamplerTreeModel.TreeNodeBase;
 
@@ -30,43 +28,38 @@ import org.jsampler.view.SamplerTreeModel.TreeNodeBase;
  *
  * @author Grigor Iliev
  */
-public class AbstractSamplerTree extends JTree {
-	private SamplerBrowserView view = null;
+public class AbstractSamplerTable extends JSTable<SamplerTableModel> {
+	//private final DefaultCellEditor nameEditor;
 	
-	
-	/**
-	 * Creates a new instance of <code>AbstractSamplerTree</code>
-	 * using the specified tree model.
-	 * 
-	 * @param model The model to be used by this tree.
-	 */
 	public
-	AbstractSamplerTree(SamplerTreeModel model) {
-		setModel(model);
-		setView(CC.getViewConfig().getSamplerBrowserView());
-		//setRootVisible(false);
+	AbstractSamplerTable() {
+		super(new SamplerTableModel());
+		setFillsViewportHeight(true);
+		getTableHeader().setReorderingAllowed(false);
 		
-		setSelectedNode((TreeNodeBase)getModel().getRoot());
+		
 	}
 	
-	@Override
-	public SamplerTreeModel
-	getModel() { return (SamplerTreeModel) super.getModel(); }
+	public TreeNodeBase
+	getNode() { return getModel().getNode(); }
 	
-	/** Sets the view to be used for retrieving UI information. */
 	public void
-	setView(SamplerBrowserView view) {
-		this.view = view;
+	setNode(TreeNodeBase node) {
+		saveColumnWidths();
+		getModel().setNode(node);
+		setTablePrefix(node != null ? node.getClass().getName() : null);
+		loadColumnWidths();
+	}
+	
+	public TreeNodeBase
+	getSelectedNode() {
+		int idx = getSelectedRow();
+		if(idx == -1) return null;
+		idx = convertRowIndexToModel(idx);
+		return getModel().getNodeAt(idx);
 	}
 	
 	/** Gets the view used to retrieve UI information. */
 	public SamplerBrowserView
-	getView() { return view; }
-	
-	public void
-	setSelectedNode(TreeNodeBase node) {
-		if(node == null || node.isLeaf()) return;
-		Object[] objs = getModel().getPathToRoot(node);
-		setSelectionPath(new TreePath(objs));
-	}
+	getView() { return CC.getViewConfig().getSamplerBrowserView(); }
 }

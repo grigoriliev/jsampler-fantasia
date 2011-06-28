@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2010 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -43,6 +43,8 @@ import org.jsampler.view.fantasia.basic.MultiColumnMenu;
 import org.pushingpixels.substance.api.SubstanceConstants;
 import org.pushingpixels.substance.api.SubstanceLookAndFeel;
 
+import static org.jsampler.view.SamplerTreeModel.*;
+
 /**
  *
  * @author Grigor Iliev
@@ -50,6 +52,7 @@ import org.pushingpixels.substance.api.SubstanceLookAndFeel;
 public class ViewConfig extends JSViewConfig {
 	private InstrumentsDbTreeView instrumentsDbTreeView = new TreeView();
 	private InstrumentsDbTableView instrumentsDbTableView = new TableView();
+	private SamplerBrowserView samplerBrowserView = new SamplerBrowserView();
 	private BasicIconSet basicIconSet = new IconSet();
 
 	private Map nativeMenuPropsMap = null;
@@ -206,6 +209,10 @@ public class ViewConfig extends JSViewConfig {
 	getInstrumentsDbTableView() { return instrumentsDbTableView; }
 	
 	@Override
+	public org.jsampler.view.SamplerBrowserView
+	getSamplerBrowserView() { return samplerBrowserView; }
+	
+	@Override
 	public BasicIconSet
 	getBasicIconSet() { return basicIconSet; }
 	
@@ -277,6 +284,83 @@ public class ViewConfig extends JSViewConfig {
 		@Override
 		public Icon
 		getQuestion32Icon() { return Res.iconQuestion32; }
+	}
+	
+	private class SamplerBrowserView implements org.jsampler.view.SamplerBrowserView {
+		@Override
+		public Icon
+		getSamplerIcon() { return Res.iconSampler16; }
+		
+		@Override
+		public Icon
+		getAudioDevicesOpenIcon() { return Res.iconAudioDevsOpen16; }
+		
+		@Override
+		public Icon
+		getAudioDevicesCloseIcon() { return Res.iconAudioDevsClose16; }
+		
+		@Override
+		public Icon
+		getAudioDeviceIcon() { return Res.iconAudioDev16; }
+		
+		@Override
+		public Icon
+		getEffectsOpenIcon() { return Res.iconEffectsOpen16; }
+		
+		@Override
+		public Icon
+		getEffectsCloseIcon() { return Res.iconEffectsClose16; }
+		
+		@Override
+		public Icon
+		getEffectIcon() { return Res.iconEffect16; }
+		
+		@Override
+		public Icon
+		getEffectInstanceIcon() { return Res.iconEffectInstance16; }
+		
+		@Override
+		public Icon
+		getEffectChainIcon() { return Res.iconEffectChain16; }
+		
+		@Override
+		public Icon
+		getEffectChainsOpenIcon() { return Res.iconEffectChainsOpen16; }
+		
+		@Override
+		public Icon
+		getEffectChainsCloseIcon() { return Res.iconEffectChainsClose16; }
+		
+		@Override
+		public Icon
+		getIcon(Object value, boolean b) {
+			if(value instanceof SamplerTreeNode) return getSamplerIcon();
+			
+			if(value instanceof AudioDevicesTreeNode) {
+				if(b) return getAudioDevicesOpenIcon();
+				else return getAudioDevicesCloseIcon();
+			}
+			
+			if(value instanceof AudioDeviceTreeNode) return getAudioDeviceIcon();
+			
+			if(value instanceof SendEffectChainsTreeNode) {
+				if(b) return getEffectChainsOpenIcon();
+				else return getEffectChainsCloseIcon();
+			}
+			
+			if(value instanceof SendEffectChainTreeNode) return getEffectChainIcon();
+			
+			if(value instanceof EffectInstanceTreeNode) return getEffectInstanceIcon();
+			
+			if(value instanceof InternalEffectsTreeNode) {
+				if(b) return getEffectsOpenIcon();
+				else return getEffectsCloseIcon();
+			}
+			
+			if(value instanceof InternalEffectTreeNode) return getEffectIcon();
+						
+			return null;
+		}
 	}
 	
 	@Override

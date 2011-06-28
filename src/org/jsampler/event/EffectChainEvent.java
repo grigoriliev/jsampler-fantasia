@@ -21,8 +21,7 @@
  */
 package org.jsampler.event;
 
-import org.linuxsampler.lscp.EffectChain;
-import org.linuxsampler.lscp.EffectInstance;
+import org.jsampler.EffectChain;
 
 /**
  *
@@ -30,22 +29,17 @@ import org.linuxsampler.lscp.EffectInstance;
  */
 public class EffectChainEvent extends java.util.EventObject {
 	private EffectChain chain;
-	private EffectInstance[] instances;
 	
 	/**
 	 * Constructs an <code>EffectChainEvent</code> object.
 	 *
 	 * @param source The object that originated the event.
-	 * @param audioDeviceModel The model of the audio device to which
-	 * the specified effect chain belongs
 	 * @param chain The effect chain.
-	 * @param instances The new list of effect stances.
 	 */
 	public
-	EffectChainEvent( Object source, EffectChain chain, EffectInstance[] instances ) {
+	EffectChainEvent(Object source, EffectChain chain) {
 		super(source);
 		this.chain = chain;
-		this.instances = instances;
 	}
 	
 	/**
@@ -55,8 +49,4 @@ public class EffectChainEvent extends java.util.EventObject {
 	 */
 	public EffectChain
 	getEffectChain() { return chain; }
-	
-	/** Provides the new list of effect instances. */
-	public EffectInstance[]
-	getEffectInstances() { return instances; }
 }

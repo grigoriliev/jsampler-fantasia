@@ -222,9 +222,6 @@ public class Res {
 	
 	public final static ImageIcon gfxBtnScrollRightRO
 		= new ImageIcon(Res.class.getResource("res/gfx/btn_scroll_right_ro.png"));
-
-	public final static ImageIcon gfxJackSoket
-		= new ImageIcon(Res.class.getResource("res/gfx/jack_socket.png"));
 	
 	
 	public final static ImageIcon iconAppIcon

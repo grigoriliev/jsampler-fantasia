@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -281,6 +281,15 @@ public class Res {
 	public final static ImageIcon iconSampler16
 		= new ImageIcon(Res.class.getResource("res/icons/sampler16.png"));
 	
+	public final static ImageIcon iconSamplerChannel16
+		= new ImageIcon(Res.class.getResource("res/icons/schannel16.png"));
+	
+	public final static ImageIcon iconFxSend16
+		= new ImageIcon(Res.class.getResource("res/icons/fx-send16.png"));
+	
+	public final static ImageIcon iconDestEffect16
+		= new ImageIcon(Res.class.getResource("res/icons/dest-effect16.png"));
+	
 	public final static ImageIcon iconAudioDevsOpen16
 		= new ImageIcon(Res.class.getResource("res/icons/au-devs-folder_open16.png"));
 	
@@ -301,6 +310,9 @@ public class Res {
 	
 	public final static ImageIcon iconEffectInstance16
 		= new ImageIcon(Res.class.getResource("res/icons/effect-instance16.png"));
+	
+	public final static ImageIcon iconEffectInstanceLnk16
+		= new ImageIcon(Res.class.getResource("res/icons/effect-instance-lnk16.png"));
 	
 	public final static ImageIcon iconEffectChain16
 		= new ImageIcon(Res.class.getResource("res/icons/effect-chain16.png"));

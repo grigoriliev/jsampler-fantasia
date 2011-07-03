@@ -182,6 +182,8 @@ public abstract class StdChannelsPane extends JSChannelsPane implements ListSele
 		listModel.add(channel);
 		chnList.setSelectedComponent(channel, true);
 		scrollToBottom();
+		
+		firePropertyChange("channelAdded", null, channelModel);
 	}
 	
 	protected abstract JSChannel createChannel(SamplerChannelModel channelModel);
@@ -201,6 +203,8 @@ public abstract class StdChannelsPane extends JSChannelsPane implements ListSele
 		);
 		
 		chnList.ensureIndexIsVisible(listModel.getSize() - 1);
+		
+		firePropertyChange("channelsAdded", null, chns);
 	}
 		
 	/**
@@ -210,7 +214,11 @@ public abstract class StdChannelsPane extends JSChannelsPane implements ListSele
 	 */
 	@Override
 	public void
-	removeChannel(JSChannel chn) { listModel.remove(chn); }
+	removeChannel(JSChannel chn) {
+		listModel.remove(chn);
+		
+		firePropertyChange("channelRemoved", null, chn);
+	}
 	
 	/**
 	 * Gets the first channel in this channels pane.
@@ -310,6 +318,8 @@ public abstract class StdChannelsPane extends JSChannelsPane implements ListSele
 			model.remove(i);
 		}
 		
+		firePropertyChange("channelsRemoved", null, null);
+		
 		return l.length;
 	}
 	
@@ -367,6 +377,8 @@ public abstract class StdChannelsPane extends JSChannelsPane implements ListSele
 		
 		chnList.setSelectionInterval(0, chns.length - 1);
 		chnList.ensureIndexIsVisible(0);
+				
+		firePropertyChange("channelsPositionChanged", null, chns);
 	}
 	
 	@Override
@@ -387,6 +399,8 @@ public abstract class StdChannelsPane extends JSChannelsPane implements ListSele
 		
 		chnList.setSelectedIndices(si);
 		chnList.ensureIndexIsVisible(si[0]);
+				
+		firePropertyChange("channelsPositionChanged", null, chns);
 	}
 	
 	@Override
@@ -405,6 +419,8 @@ public abstract class StdChannelsPane extends JSChannelsPane implements ListSele
 		for(int i = 0; i < si.length; i++) si[i] += 1;
 		chnList.setSelectedIndices(si);
 		chnList.ensureIndexIsVisible(si[si.length - 1]);
+				
+		firePropertyChange("channelsPositionChanged", null, chns);
 	}
 	
 	@Override
@@ -426,6 +442,8 @@ public abstract class StdChannelsPane extends JSChannelsPane implements ListSele
 			listModel.getSize() - chns.length, listModel.getSize() - 1
 		);
 		chnList.ensureIndexIsVisible(listModel.getSize() - 1);
+				
+		firePropertyChange("channelsPositionChanged", null, chns);
 	}
 	
 	@Override

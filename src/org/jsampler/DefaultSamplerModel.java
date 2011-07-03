@@ -256,6 +256,22 @@ public class DefaultSamplerModel implements SamplerModel {
 	}
 	
 	/**
+	 * Gets the index of the audio device with ID <code>deviceId</code>.
+	 * @param deviceId The ID of the audio device whose
+	 * position in the audio device list should be obtained.
+	 * @return The zero-based position of the specified audio device
+	 * in the audio device list or <code>-1</code> 
+	 * if there is no audio device with ID <code>deviceId</code>.
+	 */
+	public int getAudioDeviceIndex(int deviceId) {
+		for(int i = 0; i < audioDeviceModels.size(); i++) {
+			if(audioDeviceModels.get(i).getDeviceId() == deviceId) return i;
+		}
+		
+		return -1;
+	}
+	
+	/**
 	 * Gets the current number of audio devices.
 	 * @return The current number of audio devices.
 	 */

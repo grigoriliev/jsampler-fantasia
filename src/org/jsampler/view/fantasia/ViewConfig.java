@@ -30,6 +30,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JPopupMenu;
 import javax.swing.UIManager;
 
+import org.jsampler.AudioDeviceModel;
 import org.jsampler.CC;
 import org.jsampler.JSPrefs;
 
@@ -37,8 +38,9 @@ import org.jsampler.view.InstrumentsDbTableView;
 import org.jsampler.view.InstrumentsDbTreeView;
 import org.jsampler.view.BasicIconSet;
 import org.jsampler.view.JSMainFrame;
-import org.jsampler.view.JSViewConfig;
 import org.jsampler.view.fantasia.basic.MultiColumnMenu;
+import org.jsampler.view.std.JSDestEffectChooser;
+import org.jsampler.view.std.StdViewConfig;
 
 import org.pushingpixels.substance.api.SubstanceConstants;
 import org.pushingpixels.substance.api.SubstanceLookAndFeel;
@@ -49,7 +51,7 @@ import static org.jsampler.view.SamplerTreeModel.*;
  *
  * @author Grigor Iliev
  */
-public class ViewConfig extends JSViewConfig {
+public class ViewConfig extends StdViewConfig {
 	private InstrumentsDbTreeView instrumentsDbTreeView = new TreeView();
 	private InstrumentsDbTableView instrumentsDbTableView = new TableView();
 	private SamplerBrowserView samplerBrowserView = new SamplerBrowserView();
@@ -293,6 +295,46 @@ public class ViewConfig extends JSViewConfig {
 		
 		@Override
 		public Icon
+		getOpenIcon() { return Res.iconFolderOpen16; }
+		
+		@Override
+		public Icon
+		getCloseIcon() { return Res.iconFolder16; }
+		
+		@Override
+		public Icon
+		getChannelLaneOpenIcon() { return Res.iconFolderOpen16; }
+		
+		@Override
+		public Icon
+		getChannelLaneCloseIcon() { return Res.iconFolder16; }
+		
+		@Override
+		public Icon
+		getSamplerChannelIcon() { return Res.iconSamplerChannel16; }
+		
+		@Override
+		public Icon
+		getFxSendsOpenIcon() { return Res.iconFolderOpen16; }
+		
+		@Override
+		public Icon
+		getFxSendsCloseIcon() { return Res.iconFolder16; }
+		
+		@Override
+		public Icon
+		getFxSendIcon() { return Res.iconFxSend16; }
+		
+		@Override
+		public Icon
+		getDestEffectDirIcon() { return Res.iconDestEffect16; }
+		
+		@Override
+		public Icon
+		getDestEffectIcon() { return Res.iconEffectInstanceLnk16; }
+		
+		@Override
+		public Icon
 		getAudioDevicesOpenIcon() { return Res.iconAudioDevsOpen16; }
 		
 		@Override
@@ -336,10 +378,32 @@ public class ViewConfig extends JSViewConfig {
 		getIcon(Object value, boolean b) {
 			if(value instanceof SamplerTreeNode) return getSamplerIcon();
 			
+			if(value instanceof SamplerChannelDirTreeNode) {
+				if(b) return getOpenIcon();
+				else return getCloseIcon();
+			}
+			
+			if(value instanceof ChannelLaneTreeNode) {
+				if(b) return getChannelLaneOpenIcon();
+				else return getChannelLaneCloseIcon();
+			}
+			
+			if(value instanceof SamplerChannelTreeNode) return getSamplerChannelIcon();
+			
+			if(value instanceof FxSendDirTreeNode) {
+				if(b) return getFxSendsOpenIcon();
+				else return getFxSendsCloseIcon();
+			}
+			
+			if(value instanceof FxSendTreeNode) return getFxSendIcon();
+			
 			if(value instanceof AudioDevicesTreeNode) {
 				if(b) return getAudioDevicesOpenIcon();
 				else return getAudioDevicesCloseIcon();
 			}
+			
+			if(value instanceof DestEffectDirTreeNode) return getDestEffectDirIcon();
+			if(value instanceof DestEffectTreeNode) return getDestEffectIcon();
 			
 			if(value instanceof AudioDeviceTreeNode) return getAudioDeviceIcon();
 			
@@ -377,4 +441,8 @@ public class ViewConfig extends JSViewConfig {
 	public JPopupMenu
 	createMultiColumnPopupMenu()
 	{ return new MultiColumnMenu.FantasiaPopupMenu(); }
+	
+	@Override
+	public DestEffectChooser
+	createDestEffectChooser(AudioDeviceModel dev) { return new DestEffectChooser(dev); }
 }

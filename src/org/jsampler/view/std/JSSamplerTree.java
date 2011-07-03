@@ -60,4 +60,8 @@ public class JSSamplerTree extends AbstractSamplerTree implements SamplerBrowser
 	getSelectedItem() {
 		return getSelectionModel().getSelectionPath().getLastPathComponent();
 	}
+	
+	@Override
+	public Object
+	getSelectedParent() { return null; }
 }

@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import org.jsampler.AudioDeviceModel;
 import org.jsampler.CC;
 import org.jsampler.EffectChain;
+import org.jsampler.SamplerChannelModel;
 import org.jsampler.SamplerModel;
 
 import org.linuxsampler.lscp.AudioOutputDevice;
@@ -327,8 +328,19 @@ public class Audio {
 		@Override
 		public void
 		exec() throws Exception {
-			AudioDeviceModel adm = CC.getSamplerModel().getAudioDevice(audioDeviceId);
+			AudioDeviceModel adm = CC.getSamplerModel().getAudioDeviceById(audioDeviceId);
 			EffectChain chain = adm.getSendEffectChainById(chainId);
+			
+			for(int i = 0; i < CC.getSamplerModel().getChannelCount(); i++) {
+				SamplerChannelModel c = CC.getSamplerModel().getChannel(i);
+				for(int j = 0; j < c.getFxSendCount(); j++) {
+					if(c.getFxSend(j).getDestChainId() == chainId) {
+						CC.getClient().removeFxSendEffect (
+							c.getChannelId(), c.getFxSend(j).getFxSendId()
+						);
+					}
+				}
+			}
 			
 			for(int i = chain.getEffectInstanceCount() - 1; i >= 0; i--) {
 				CC.getClient().removeEffectInstanceFromChain (
@@ -413,7 +425,7 @@ public class Audio {
 		@Override
 		public void
 		exec() throws Exception {
-			AudioDeviceModel adm = CC.getSamplerModel().getAudioDevice(audioDeviceId);
+			AudioDeviceModel adm = CC.getSamplerModel().getAudioDeviceById(audioDeviceId);
 			EffectChain chain = adm.getSendEffectChainById(chainId);
 			
 			CC.getClient().removeEffectInstanceFromChain (

@@ -196,6 +196,21 @@ public class DefaultAudioDeviceModel implements AudioDeviceModel {
 	}
 	
 	/**
+	 * Gets the index of the send effect chain with ID <code>chainId</code>.
+	 * @param chainId The ID of the send effect chain.
+	 * @return The zero-based position of the specified send effect chain
+	 * in the send effect chain list or <code>-1</code> 
+	 * if there is no send effect chain with ID <code>chainId</code>.
+	 */
+	public int getSendEffectChainIndex(int chainId) {
+		for(int i = 0; i < getSendEffectChainCount(); i++) {
+			if(getSendEffectChain(i).getChainId() == chainId) return i;
+		}
+		
+		return -1;
+	}
+	
+	/**
 	 * Adds the specified send effect chain to the specified audio output device.
 	 */
 	@Override

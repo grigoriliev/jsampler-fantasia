@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -889,6 +889,8 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		miList.insertElementAt(new JMenuItem(new A4n.MoveChannelsTo(chnPane)), idx);
 		
 		updateTabsMenu();
+		
+		firePropertyChange("channelLaneInserted", null, chnPane);
 	}
 	
 	/**

@@ -137,5 +137,7 @@ public class ChannelsPane extends StdChannelsPane {
 		}
 		listModel.add(channel);
 		chnList.setSelectedComponent(channel, true);
+		
+		firePropertyChange("channelAdded", null, channelModel);
 	}
 }

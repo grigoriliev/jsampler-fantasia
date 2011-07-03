@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -110,6 +110,8 @@ public class ChannelsPane extends JSChannelsPane implements ListSelectionListene
 		if(channel.getChannelInfo().getEngine() == null) channel.expandChannel();
 		chnList.setSelectedComponent(channel, true);
 		scrollToBottom();
+		
+		firePropertyChange("channelAdded", null, channelModel);
 	}
 	
 	/**
@@ -127,6 +129,8 @@ public class ChannelsPane extends JSChannelsPane implements ListSelectionListene
 		);
 		
 		chnList.ensureIndexIsVisible(listModel.getSize() - 1);
+		
+		firePropertyChange("channelsAdded", null, chns);
 	}
 		
 	/**
@@ -136,7 +140,11 @@ public class ChannelsPane extends JSChannelsPane implements ListSelectionListene
 	 */
 	@Override
 	public void
-	removeChannel(JSChannel chn) { listModel.remove(chn); }
+	removeChannel(JSChannel chn) {
+		listModel.remove(chn);
+		
+		firePropertyChange("channelRemoved", null, chn);
+	}
 	
 	/**
 	 * Gets the first channel in this channels pane.
@@ -235,6 +243,8 @@ public class ChannelsPane extends JSChannelsPane implements ListSelectionListene
 			if(i == -1) break;
 			model.remove(i);
 		}
+		
+		firePropertyChange("channelsRemoved", null, null);
 		
 		return l.length;
 	}
@@ -340,6 +350,8 @@ public class ChannelsPane extends JSChannelsPane implements ListSelectionListene
 		
 		chnList.setSelectionInterval(0, chns.length - 1);
 		chnList.ensureIndexIsVisible(0);
+				
+		firePropertyChange("channelsPositionChanged", null, chns);
 	}
 	
 	@Override
@@ -360,6 +372,8 @@ public class ChannelsPane extends JSChannelsPane implements ListSelectionListene
 		
 		chnList.setSelectedIndices(si);
 		chnList.ensureIndexIsVisible(si[0]);
+				
+		firePropertyChange("channelsPositionChanged", null, chns);
 	}
 	
 	@Override
@@ -378,6 +392,8 @@ public class ChannelsPane extends JSChannelsPane implements ListSelectionListene
 		for(int i = 0; i < si.length; i++) si[i] += 1;
 		chnList.setSelectedIndices(si);
 		chnList.ensureIndexIsVisible(si[si.length - 1]);
+				
+		firePropertyChange("channelsPositionChanged", null, chns);
 	}
 	
 	@Override
@@ -399,6 +415,8 @@ public class ChannelsPane extends JSChannelsPane implements ListSelectionListene
 			listModel.getSize() - chns.length, listModel.getSize() - 1
 		);
 		chnList.ensureIndexIsVisible(listModel.getSize() - 1);
+				
+		firePropertyChange("channelsPositionChanged", null, chns);
 	}
 	
 	private void
@@ -472,6 +490,7 @@ public class ChannelsPane extends JSChannelsPane implements ListSelectionListene
 		}
 	}
 	
+	@Override
 	public void
 	processChannelSelection(JSChannel c, boolean controlDown, boolean shiftDown) {
 		

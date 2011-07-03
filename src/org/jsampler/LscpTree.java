@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -234,12 +234,13 @@ public class LscpTree {
 		move.setChildren(nodes);
 		
 		// REMOVE command
-		nodes = new LscpNode[5];
+		nodes = new LscpNode[6];
 		nodes[0] = new LscpNode("CHANNEL", true);
 		nodes[1] = new LscpNode("DB_INSTRUMENT", true);
 		nodes[2] = new LscpNode("DB_INSTRUMENT_DIRECTORY", new LscpNode("FORCE", true), true);
-		nodes[3] = new LscpNode("MIDI_INSTRUMENT_MAP", new LscpNode("ALL", true, false), true);
-		nodes[4] = new LscpNode("SEND_EFFECT_CHAIN", new LscpNode("EFFECT", true), true);
+		nodes[3] = new LscpNode("FX_SEND", new LscpNode("EFFECT", true), true);
+		nodes[4] = new LscpNode("MIDI_INSTRUMENT_MAP", new LscpNode("ALL", true, false), true);
+		nodes[5] = new LscpNode("SEND_EFFECT_CHAIN", new LscpNode("EFFECT", true), true);
 		remove.setChildren(nodes);
 		
 		// SET command
@@ -294,11 +295,12 @@ public class LscpTree {
 		setDbDir.setChildren(nodes);
 		
 		// SET FX_SEND command
-		nodes = new LscpNode[4];
+		nodes = new LscpNode[5];
 		nodes[0] = new LscpNode("AUDIO_OUTPUT_CHANNEL", true);
-		nodes[1] = new LscpNode("LEVEL", true);
-		nodes[2] = new LscpNode("MIDI_CONTROLLER", true);
-		nodes[3] = new LscpNode("NAME", true);
+		nodes[1] = new LscpNode("EFFECT", true);
+		nodes[2] = new LscpNode("LEVEL", true);
+		nodes[3] = new LscpNode("MIDI_CONTROLLER", true);
+		nodes[4] = new LscpNode("NAME", true);
 		setFxSend.setChildren(nodes);
 		
 		// SUBSCRIBE command

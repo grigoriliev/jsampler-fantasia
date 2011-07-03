@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -714,6 +714,28 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	public void
 	sendBackendMidiData(MidiDataEvent.Type type, int arg1, int arg2) {
 		CC.getTaskQueue().add(new Channel.SendMidiMsg(getChannelId(), type, arg1, arg2));
+	}
+	
+	/**
+	 * Sets destination effect on the specified effect send.
+	 * @param fxSend The numerical ID of the effect send.
+	 */
+	public void
+	setBackendFxSendEffect(int fxSend, int chainId, int chainPos) {
+		CC.getTaskQueue().add (
+			new Channel.SetFxSendEffect(getChannelId(), fxSend, chainId, chainPos)
+		);
+	}
+	
+	/**
+	 * Removes the destination effect of the specified effect send.
+	 * @param fxSend The numerical ID of the effect send.
+	 */
+	public void
+	removeBackendFxSendEffect(int fxSend) {
+		CC.getTaskQueue().add (
+			new Channel.SetFxSendEffect(getChannelId(), fxSend, -1, -1)
+		);
 	}
 	
 	/** Notifies listeners that the sampler channel settings has changed. */

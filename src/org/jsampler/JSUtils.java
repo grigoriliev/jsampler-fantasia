@@ -425,8 +425,10 @@ public class JSUtils {
 		}
 
 		AudioDeviceModel[] aDevs = CC.getSamplerModel().getAudioDevices();
+		int fxInsts = 0;
+		
 		for(int i = 0; i < aDevs.length; i++) {
-			exportAudioDeviceToLscpScript(aDevs[i].getDeviceInfo(), i, lscpClient);
+			fxInsts += exportAudioDeviceToLscpScript(aDevs[i], i, fxInsts, lscpClient);
 			sb.append(out.toString());
 			out.reset();
 			sb.append("\r\n");
@@ -488,9 +490,16 @@ public class JSUtils {
 		}
 	}
 
-	private static void
-	exportAudioDeviceToLscpScript(AudioOutputDevice aod, int devId, Client lscpCLient) {
+	/**
+	 * @param fxInsts The current number of created effect instances.
+	 * @return The number of effect instances in this audio device.
+	 */
+	private static int
+	exportAudioDeviceToLscpScript(AudioDeviceModel model, int devId, int fxInsts, Client lscpCLient) {
+		int effectInstances = 0;
+		
 		try {
+			AudioOutputDevice aod = model.getDeviceInfo();
 			String s = aod.getDriverName();
 			lscpCLient.createAudioOutputDevice(s, aod.getAllParameters());
 
@@ -503,9 +512,25 @@ public class JSUtils {
 					else lscpCLient.setAudioOutputChannelParameter(devId, i, p);
 				}
 			}
+			
+			for(int i = 0; i < model.getSendEffectChainCount(); i++) {
+				lscpCLient.addSendEffectChain(devId);
+				EffectChain chain = model.getSendEffectChain(i);
+				for(int j = 0; j < chain.getEffectInstanceCount(); j++) {
+					EffectInstance ei = chain.getEffectInstance(j);
+					String sys = ei.getInfo().getSystem();
+					String mod = ei.getInfo().getModule();
+					String name = ei.getInfo().getName();
+					lscpCLient.createEffectInstance(sys, mod, name);
+					int fxInstanceId = fxInsts + effectInstances++;
+					lscpCLient.appendEffectInstance(devId, i, fxInstanceId);
+				}
+			}
 		} catch(Exception e) {
 			CC.getLogger().log(Level.FINE, HF.getErrorMessage(e), e);
 		}
+		
+		return effectInstances;
 	}
 
 	private static void
@@ -576,6 +601,16 @@ public class JSUtils {
 				Integer[] r = f.getAudioOutputRouting();
 				for(int j = 0; j < r.length; j++) {
 					lscpClient.setFxSendAudioOutputChannel(chnId, i, j, r[j]);
+				}
+				
+				int chainId = f.getDestChainId();
+				int chainPos = f.getDestChainPos();
+				
+				if(chainId != -1) {
+					int aid = scm.getChannelInfo().getAudioOutputDevice();
+					AudioDeviceModel m = CC.getSamplerModel().getAudioDeviceById(aid);
+					int idx = m.getSendEffectChainIndex(chainId);
+					lscpClient.setFxSendEffect(chnId, i, idx, chainPos);
 				}
 			}
 		} catch(Exception e) {

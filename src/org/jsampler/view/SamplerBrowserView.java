@@ -29,6 +29,16 @@ import javax.swing.Icon;
  */
 public interface SamplerBrowserView {
 	public Icon getSamplerIcon();
+	public Icon getOpenIcon();
+	public Icon getCloseIcon();
+	public Icon getChannelLaneOpenIcon();
+	public Icon getChannelLaneCloseIcon();
+	public Icon getSamplerChannelIcon();
+	public Icon getFxSendsOpenIcon();
+	public Icon getFxSendsCloseIcon();
+	public Icon getFxSendIcon();
+	public Icon getDestEffectDirIcon();
+	public Icon getDestEffectIcon();
 	public Icon getAudioDevicesOpenIcon();
 	public Icon getAudioDevicesCloseIcon();
 	public Icon getAudioDeviceIcon();

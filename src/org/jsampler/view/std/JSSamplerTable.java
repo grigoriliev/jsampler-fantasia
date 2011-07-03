@@ -22,11 +22,15 @@
 package org.jsampler.view.std;
 
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JTable;
+import javax.swing.KeyStroke;
 import javax.swing.table.TableCellRenderer;
 import org.jsampler.view.AbstractSamplerTable;
 import org.jsampler.view.SamplerTreeModel.TreeNodeBase;
@@ -57,7 +61,7 @@ public class JSSamplerTable extends AbstractSamplerTable implements SamplerBrows
 				
 				if(e.getClickCount() < 2) return;
 				
-				samplerTree.setSelectedNode(getSelectedNode());
+				openNode();
 			}
 		});
 		
@@ -82,6 +86,36 @@ public class JSSamplerTable extends AbstractSamplerTable implements SamplerBrows
 		});
 		
 		addMouseListener(new SamplerBrowser.ContextMenu(this));
+		
+		installKeyboardListeners();
+	}
+	
+	private void
+	openNode() {
+		TreeNodeBase node = getSelectedNode();
+		if(node == null) return;
+		if(node.isLink()) {
+			samplerTree.setSelectedNode(node.getLink());
+		}else if(node.isLeaf()) {
+			node.edit();
+		} else {
+			samplerTree.setSelectedNode(node);
+		}
+	}
+
+	private void
+	installKeyboardListeners() {
+		getInputMap().put (
+			KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
+			"OpenNode"
+		);
+		
+		getActionMap().put ("OpenNode", new AbstractAction() {
+			public void
+			actionPerformed(ActionEvent e) {
+				openNode();
+			}
+		});
 	}
 	
 	@Override
@@ -98,6 +132,10 @@ public class JSSamplerTable extends AbstractSamplerTable implements SamplerBrows
 		idx = convertRowIndexToModel(idx);
 		return getModel().getValueAt(idx, 0);
 	}
+	
+	@Override
+	public Object
+	getSelectedParent() { return getNode(); }
 	
 	
 	class SamplerTableCellRenderer extends JLabel implements TableCellRenderer {

@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -517,7 +517,7 @@ public class Channel {
 	}
 
 	/**
-	 * This taks sets the volume of a specific sampler channel.
+	 * This task sets the volume of a specific sampler channel.
 	 */
 	public static class SetVolume extends EnhancedTask {
 		private int channel;
@@ -820,7 +820,7 @@ public class Channel {
 	}
 
 	/**
-	 * This taks changes the name of a specific effect send.
+	 * This task changes the name of a specific effect send.
 	 */
 	public static class SetFxSendName extends EnhancedTask {
 		private int channel;
@@ -852,7 +852,7 @@ public class Channel {
 	}
 	
 	/**
-	 * This taks sets the MIDI controller of a specific effect send.
+	 * This task sets the MIDI controller of a specific effect send.
 	 */
 	public static class SetFxSendAudioOutputChannel extends EnhancedTask {
 		private int channel;
@@ -892,7 +892,7 @@ public class Channel {
 	}
 	
 	/**
-	 * This taks sets the volume of a specific effect send.
+	 * This task sets the volume of a specific effect send.
 	 */
 	public static class SetFxSendLevel extends EnhancedTask {
 		private int channel;
@@ -924,9 +924,49 @@ public class Channel {
 			CC.getClient().setFxSendLevel(channel, fxSend, volume);
 		}
 	}
+	
+	/**
+	 * This task (re)assigns the destination effect of a specific effect send.
+	 */
+	public static class SetFxSendEffect extends EnhancedTask {
+		private int channel;
+		private int fxSend;
+		private int chainId;
+		private int chainPos;
+	
+		/**
+		 * Creates new instance of <code>SetFxSendEffect</code>.
+		 * @param channel The sampler channel number.
+		 * @param fxSend The numerical ID of the effect send.
+		 * @param chainId The numerical ID of the effect chain. If -1 is
+		 * specified the destination effect is removed.
+		 */
+		public
+		SetFxSendEffect(int channel, int fxSend, int chainId, int chainPos) {
+			setTitle("Channel.SetFxSendEffect_task");
+			String s = i18n.getMessage("Channel.SetFxSendEffect.desc", channel, fxSend);
+			setDescription(s);
+		
+			this.channel = channel;
+			this.fxSend = fxSend;
+			this.chainId = chainId;
+			this.chainPos = chainPos;
+		}
+	
+		/** The entry point of the task. */
+		@Override
+		public void
+		exec() throws Exception {
+			if(chainId == -1) {
+				CC.getClient().removeFxSendEffect(channel, fxSend);
+			} else {
+				CC.getClient().setFxSendEffect(channel, fxSend, chainId, chainPos);
+			}
+		}
+	}
 
 	/**
-	 * This taks sets the MIDI controller of a specific effect send.
+	 * This task sets the MIDI controller of a specific effect send.
 	 */
 	public static class SetFxSendMidiController extends EnhancedTask {
 		private int channel;

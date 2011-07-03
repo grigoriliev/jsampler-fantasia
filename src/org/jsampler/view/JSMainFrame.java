@@ -170,7 +170,10 @@ public abstract class JSMainFrame extends JFrame {
 	 * @param chnPane The <code>JSChannelsPane</code> to be added.
 	 */
 	public void
-	addChannelsPane(JSChannelsPane chnPane) { chnPaneList.add(chnPane); }
+	addChannelsPane(JSChannelsPane chnPane) {
+		chnPaneList.add(chnPane);
+		firePropertyChange("channelLaneAdded", null, chnPane);
+	}
 	
 	/**
 	 * Removes the specified <code>JSChannelsPane</code> from the view.
@@ -181,7 +184,11 @@ public abstract class JSMainFrame extends JFrame {
 	 * is actually removed from the view, <code>false</code> otherwise.
 	 */
 	public boolean
-	removeChannelsPane(JSChannelsPane chnPane) { return chnPaneList.remove(chnPane); }
+	removeChannelsPane(JSChannelsPane chnPane) {
+		boolean b = chnPaneList.remove(chnPane);
+		firePropertyChange("channelLaneRemoved", null, chnPane);
+		return b;
+	}
 	
 	/**
 	 * Gets the current number of <code>JSChannelsPane</code>s added to the view.
@@ -201,7 +208,7 @@ public abstract class JSMainFrame extends JFrame {
 	
 	/**
 	 * Inserts the specified <code>JSChannelsPane</code> at the specified position
-	 * in the view and in the code>JSChannelsPane</code> list.
+	 * in the view and in the <code>JSChannelsPane</code> list.
 	 * Where and how this pane will be shown depends on the view/GUI implementation.
 	 * Note that some GUI implementation may have only one pane containing sampler channels.
 	 * @param pane The <code>JSChannelsPane</code> to be inserted.
@@ -312,7 +319,7 @@ public abstract class JSMainFrame extends JFrame {
 	}
 	
 	/**
-	 * Removes the first occurence of a channel with numerical ID <code>id</code>.
+	 * Removes the first occurrence of a channel with numerical ID <code>id</code>.
 	 * This method is invoked when a sampler channel is removed in the back-end.
 	 * @return The removed channel or <code>null</code>
 	 * if there is no channel with numerical ID <code>id</code>.
@@ -325,6 +332,7 @@ public abstract class JSMainFrame extends JFrame {
 			for(JSChannel c : cp.getChannels()) {
 				if(c.getChannelId() == id) {
 					cp.removeChannel(c);
+					firePropertyChange("channelRemoved", null, c);
 					return c;
 				}
 			}
@@ -357,7 +365,7 @@ public abstract class JSMainFrame extends JFrame {
 	}
 	
 	/**
-	 * Returns a string in the format <code>channelPaneNumber/channelNumber</code>,
+	 * Returns a string in the format <code>channelPaneNumber.channelNumber</code>,
 	 * where <code>channelPaneNumber</code> is the one-based number of the channels
 	 * pane containing the specified channel and <code>channelNumber</code> is the
 	 * one-based number of the channel's position in the channels pane.

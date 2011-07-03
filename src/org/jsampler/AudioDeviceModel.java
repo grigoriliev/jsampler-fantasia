@@ -118,6 +118,15 @@ public interface AudioDeviceModel {
 	public EffectChain getSendEffectChainById(int chainId);
 	
 	/**
+	 * Gets the index of the send effect chain with ID <code>chainId</code>.
+	 * @param chainId The ID of the send effect chain.
+	 * @return The zero-based position of the specified send effect chain
+	 * in the send effect chain list or <code>-1</code> 
+	 * if there is no send effect chain with ID <code>chainId</code>.
+	 */
+	public int getSendEffectChainIndex(int chainId);
+	
+	/**
 	 * Adds the specified send effect chain to the audio output device.
 	 */
 	public void addSendEffectChain(EffectChain chain);

@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -327,6 +327,18 @@ public interface SamplerChannelModel {
 	 * @param level The new volume value.
 	 */
 	public void setBackendFxSendLevel(int fxSend, float level);
+	
+	/**
+	 * Sets destination effect on the specified effect send.
+	 * @param fxSend The numerical ID of the effect send.
+	 */
+	public void setBackendFxSendEffect(int fxSend, int chainId, int chainPos);
+	
+	/**
+	 * Removes the destination effect of the specified effect send.
+	 * @param fxSend The numerical ID of the effect send.
+	 */
+	public void removeBackendFxSendEffect(int fxSend);
 	
 	/**
 	 * Sends a MIDI data message to this sampler channel.

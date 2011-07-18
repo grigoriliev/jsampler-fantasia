@@ -6,6 +6,7 @@
     <property name="juife.version" value="0.4a"/>
     <property name="juife.srcdir" value="lib/required/juife/src"/>
     <property name="JSampler.version" value="0.9"/>
+    <property name="osx.java.stub" value="/System/Library/Frameworks/JavaVM.framework/Versions/Current/Resources/MacOS/JavaApplicationStub"/>
     
     <target name="build-jsclassic" depends="clean-jsclassic,build-manifest">
         <manifest file="dist/build/views.mf">
@@ -129,7 +130,7 @@
             <fileset file="./res/fantasia/osx/PkgInfo"/>
         </copy>
         <copy todir="./dist/Fantasia.app/Contents/MacOS">
-            <fileset file="/System/Library/Frameworks/JavaVM.framework/Versions/Current/Resources/MacOS/JavaApplicationStub"/>
+            <fileset file="${osx.java.stub}"/>
         </copy>
         <chmod file="./dist/Fantasia.app/Contents/MacOS/JavaApplicationStub" perm="755" />
         <copy todir="./dist/Fantasia.app/Contents/Resources/Java">

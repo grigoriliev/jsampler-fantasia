@@ -12,6 +12,8 @@
 
   * Using multicolumn menus for:
     - loading instruments from Instruments Database
+    - adding instruments to MIDI maps from Instruments Database
+    - adding instruments to orchestras from Instruments Database
     - selecting values in string list parameters
 
   * Fantasia:

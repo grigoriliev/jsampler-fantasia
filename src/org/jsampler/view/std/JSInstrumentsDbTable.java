@@ -1236,13 +1236,13 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 			instrumentMenu.add(loadInstrumentMenu);
 			registerLoadInstrumentMenus(loadInstrumentMenu);
 			
-			addToMidiMapMenu =
-				new JMenu(i18n.getMenuLabel("instrumentsdb.actions.addToMidiMap"));
+			s = i18n.getMenuLabel("instrumentsdb.actions.addToMidiMap");
+			addToMidiMapMenu = CC.getViewConfig().createMultiColumnMenu(s);
 			instrumentMenu.add(addToMidiMapMenu);
 			registerAddToMidiMapMenu(addToMidiMapMenu);
 			
 			s = i18n.getMenuLabel("instrumentsdb.actions.addToOrchestra");
-			addToOrchestraMenu = new JMenu(s);
+			addToOrchestraMenu = CC.getViewConfig().createMultiColumnMenu(s);
 			instrumentMenu.add(addToOrchestraMenu);
 			registerAddToOrchestraMenu(addToOrchestraMenu);
 			

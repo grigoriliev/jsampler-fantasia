@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -36,11 +36,11 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import net.sf.juife.OkCancelDialog;
-import org.jsampler.HF;
+import net.sf.juife.swing.OkCancelDialog;
 
 import org.jsampler.CC;
 import org.jsampler.Server;
+import org.jsampler.view.swing.SHF;
 
 import static org.jsampler.view.std.StdI18n.i18n;
 
@@ -168,12 +168,12 @@ public class JSAddServerDlg extends OkCancelDialog {
 		String s = tfPort.getText();
 		try { p = Integer.parseInt(s); }
 		catch(Exception x) {
-			HF.showErrorMessage(i18n.getError("JSAddServerDlg.invalidPort", s), this);
+			SHF.showErrorMessage(i18n.getError("JSAddServerDlg.invalidPort", s), this);
 			return;
 		}
 		
 		if(p < 0 || p > 0xffff) {
-			HF.showErrorMessage(i18n.getError("JSAddServerDlg.invalidPort", s), this);
+			SHF.showErrorMessage(i18n.getError("JSAddServerDlg.invalidPort", s), this);
 			return;
 		}
 		

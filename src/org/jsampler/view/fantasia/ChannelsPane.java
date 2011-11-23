@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -30,10 +30,10 @@ import javax.swing.BoxLayout;
 import org.jsampler.CC;
 import org.jsampler.SamplerChannelModel;
 
-import org.jsampler.view.JSChannel;
 import org.jsampler.view.SessionViewConfig.ChannelConfig;
 
 import org.jsampler.view.std.StdChannelsPane;
+import org.jsampler.view.swing.SwingChannel;
 
 
 /**
@@ -97,7 +97,7 @@ public class ChannelsPane extends StdChannelsPane {
 	}
 	
 	@Override
-	protected JSChannel
+	protected SwingChannel
 	createChannel(SamplerChannelModel channelModel) {
 		return new Channel(channelModel, listener);
 	}

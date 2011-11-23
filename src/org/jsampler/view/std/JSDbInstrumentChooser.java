@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -46,12 +46,13 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import net.sf.juife.OkCancelDialog;
+import net.sf.juife.swing.OkCancelDialog;
 
 import org.jsampler.CC;
 
-import org.jsampler.view.DbDirectoryTreeNode;
-import org.jsampler.view.InstrumentsDbTreeModel;
+import org.jsampler.view.swing.DbDirectoryTreeNode;
+import org.jsampler.view.swing.InstrumentsDbTreeModel;
+import org.jsampler.view.swing.SHF;
 
 import org.linuxsampler.lscp.DbInstrumentInfo;
 import org.linuxsampler.lscp.Parser;
@@ -65,7 +66,7 @@ import static org.jsampler.view.std.StdI18n.i18n;
  */
 public class JSDbInstrumentChooser extends OkCancelDialog implements ListSelectionListener {
 	protected JSInstrumentsDbTree instrumentsDbTree =
-		createInstrumentsDbTree(CC.getInstrumentsDbTreeModel());
+		createInstrumentsDbTree(SHF.getInstrumentsDbTreeModel());
 	
 	protected JSInstrumentsDbTable instrumentsDbTable =
 		new JSInstrumentsDbTable(instrumentsDbTree, "DbInstrumentChooser.");
@@ -228,13 +229,13 @@ public class JSDbInstrumentChooser extends OkCancelDialog implements ListSelecti
 			add(btnGoForward);
 			add(btnGoUp);
 			
-			javax.swing.Icon i = CC.getViewConfig().getBasicIconSet().getReload16Icon();
+			javax.swing.Icon i = SHF.getViewConfig().getBasicIconSet().getReload16Icon();
 			instrumentsDbTable.reloadAction.putValue(Action.SMALL_ICON, i);
 			add(btnReload);
 			
 			addSeparator();
 			
-			i = CC.getViewConfig().getBasicIconSet().getPreferences16Icon();
+			i = SHF.getViewConfig().getBasicIconSet().getPreferences16Icon();
 			btnPreferences.setIcon(i);
 			add(btnPreferences);
 			

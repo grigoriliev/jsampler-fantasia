@@ -65,8 +65,10 @@ import javax.swing.Timer;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import net.sf.juife.event.GenericEvent;
+import net.sf.juife.event.GenericListener;
+
 import org.jsampler.CC;
-import org.jsampler.HF;
 import org.jsampler.JSUtils;
 import org.jsampler.LSConsoleModel;
 import org.jsampler.Server;
@@ -85,18 +87,19 @@ import org.jsampler.view.std.JSQuitDlg;
 import org.jsampler.view.std.JSamplerHomeChooser;
 import org.jsampler.view.std.StdMainFrame;
 import org.jsampler.view.std.StdUtils;
+import org.jsampler.view.swing.SHF;
 
 import static org.jsampler.view.fantasia.A4n.a4n;
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jsampler.view.fantasia.FantasiaPrefs.preferences;
-import static org.jsampler.view.std.StdPrefs.*;
+import static org.jsampler.JSPrefs.*;
 
 
 /**
  *
  * @author Grigor Iliev
  */
-public class MainFrame extends StdMainFrame {
+public class MainFrame extends StdMainFrame<ChannelsPane> {
 	public final static int MAX_CHANNEL_LANE_NUMBER = 8;
 
 	private final StandardBar standardBar = new StandardBar();
@@ -328,7 +331,7 @@ public class MainFrame extends StdMainFrame {
 		if(newCount > getChannelsPaneCount()) {
 			int d = newCount - getChannelsPaneCount();
 			for(int i = 0; i < d; i++) {
-				JSChannelsPane p = mainPane.addChannelsPane();
+				ChannelsPane p = mainPane.addChannelsPane();
 				addChannelsPane(p);
 				p.addListSelectionListener(pianoKeyboardPane);
 			}
@@ -339,14 +342,14 @@ public class MainFrame extends StdMainFrame {
 				if(getChannelsPane(idx).getChannelCount() > 0) {
 					String s;
 					s = i18n.getError("MainFrame.notEmptyChannelLane!", idx + 1);
-					HF.showErrorMessage(s);
+					SHF.showErrorMessage(s);
 					return;
 				}
 			}
 
 			for(int i = 0; i < d; i++) {
 				int idx = getChannelsPaneCount() - 1;
-				JSChannelsPane p = getChannelsPane(idx);
+				ChannelsPane p = getChannelsPane(idx);
 				removeChannelsPane(p);
 				p.removeListSelectionListener(pianoKeyboardPane);
 				mainPane.removeChannelsPane(idx);
@@ -637,9 +640,9 @@ public class MainFrame extends StdMainFrame {
 		
 		mi2.setEnabled(CC.getBackendProcess() != null);
 		
-		CC.addBackendProcessListener(new ActionListener() {
+		CC.addBackendProcessListener(new GenericListener() {
 			public void
-			actionPerformed(ActionEvent e) {
+			jobDone(GenericEvent e) {
 				mi2.setEnabled(CC.getBackendProcess() != null);
 			}
 		});
@@ -661,7 +664,7 @@ public class MainFrame extends StdMainFrame {
 		menuBar.add(m);
 	}
 	
-	public static class ToPanelMenu extends FantasiaMenu implements ListSelectionListener {
+	public static class ToPanelMenu extends FantasiaMenu implements org.jsampler.event.ListSelectionListener {
 		public
 		ToPanelMenu() {
 			super(i18n.getMenuLabel("channels.toPanel"));
@@ -678,7 +681,7 @@ public class MainFrame extends StdMainFrame {
 		
 		@Override
 		public void
-		valueChanged(ListSelectionEvent e) {
+		valueChanged(org.jsampler.event.ListSelectionEvent e) {
 			setEnabled(CC.getMainFrame().getSelectedChannelsPane().hasSelectedChannel());
 		}
 	}
@@ -696,17 +699,18 @@ public class MainFrame extends StdMainFrame {
 	 */
 	@Override
 	public void
-	insertChannelsPane(JSChannelsPane pane, int idx) {
+	insertChannelsPane(ChannelsPane pane, int idx) {
 		
+		//firePropertyChange("channelLaneInserted", null, pane);
 	}
 	
 	@Override
-	public JSChannelsPane
+	public ChannelsPane
 	getSelectedChannelsPane() { return mainPane.getSelectedChannelsPane(); }
 	
 	@Override
 	public void
-	setSelectedChannelsPane(JSChannelsPane pane) {
+	setSelectedChannelsPane(ChannelsPane pane) {
 		mainPane.setSelectedChannelsPane(pane);
 		fireChannelsPaneSelectionChanged();
 	}
@@ -815,7 +819,7 @@ public class MainFrame extends StdMainFrame {
 		FileReader fr;
 		try { fr = new FileReader(script); }
 		catch(FileNotFoundException e) {
-			HF.showErrorMessage(i18n.getError("fileNotFound!", script.getAbsolutePath()));
+			SHF.showErrorMessage(i18n.getError("fileNotFound!", script.getAbsolutePath()));
 			return;
 		}
 		
@@ -832,7 +836,7 @@ public class MainFrame extends StdMainFrame {
 				s = br.readLine();
 			}
 		} catch(Exception e) {
-			HF.showErrorMessage(e);
+			SHF.showErrorMessage(e);
 			return;
 		}
 		

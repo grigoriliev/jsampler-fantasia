@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -70,7 +70,7 @@ import org.jsampler.event.EffectSendsListener;
 
 import org.jsampler.task.Channel;
 
-import org.jsampler.view.FxSendTable;
+import org.jsampler.view.swing.FxSendTable;
 
 import org.linuxsampler.lscp.FxSend;
 

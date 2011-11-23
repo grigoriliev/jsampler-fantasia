@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -39,10 +39,10 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 
 import org.jsampler.CC;
-import org.jsampler.HF;
 import org.jsampler.view.JSProgress;
+import org.jsampler.view.swing.SHF;
 
-import net.sf.juife.JuifeUtils;
+import net.sf.juife.swing.JuifeUtils;
 
 import static org.jsampler.view.std.StdI18n.i18n;
 
@@ -97,7 +97,7 @@ public class JSProgressDlg extends JDialog implements JSProgress {
 		pack();
 		setResizable(false);
 		
-		setLocation(JuifeUtils.centerLocation(this, CC.getMainFrame()));
+		setLocation(JuifeUtils.centerLocation(this, SHF.getMainFrame()));
 	}
 	
 	private void
@@ -107,7 +107,7 @@ public class JSProgressDlg extends JDialog implements JSProgress {
 			String s;
 			if(i == 1) s = i18n.getMessage("JSProgressDlg.cancel?");
 			else s = i18n.getMessage("JSProgressDlg.cancel2?", i);
-			if(!HF.showYesNoDialog(CC.getMainFrame(), s)) {
+			if(!SHF.showYesNoDialog(SHF.getMainFrame(), s)) {
 				CC.getTaskQueue().start();
 				return;
 			}
@@ -136,14 +136,14 @@ public class JSProgressDlg extends JDialog implements JSProgress {
 		setSize(d);
 		setResizable(false);
 		
-		setLocation(JuifeUtils.centerLocation(this, CC.getMainFrame()));
+		setLocation(JuifeUtils.centerLocation(this, SHF.getMainFrame()));
 	}
 	
 	/** Starts to indicate that an operation is ongoing. */
 	@Override
 	public void
 	start() {
-		setLocation(JuifeUtils.centerLocation(this, CC.getMainFrame()));
+		setLocation(JuifeUtils.centerLocation(this, SHF.getMainFrame()));
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			public void

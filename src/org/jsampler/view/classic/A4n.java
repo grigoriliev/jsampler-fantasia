@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -31,17 +31,18 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 
 import org.jsampler.CC;
-import org.jsampler.HF;
 
 import org.jsampler.view.JSChannel;
 import org.jsampler.view.JSChannelsPane;
-import org.jsampler.view.JSMainFrame;
 import org.jsampler.view.std.JSAddMidiInstrumentMapDlg;
 
 import org.jsampler.view.std.JSNewMidiDeviceDlg;
 import org.jsampler.view.std.JSNewAudioDeviceDlg;
 import org.jsampler.view.std.JSNewMidiInstrumentWizard;
 import org.jsampler.view.std.StdA4n;
+import org.jsampler.view.swing.SHF;
+import org.jsampler.view.swing.SwingChannelsPane;
+import org.jsampler.view.swing.SwingMainFrame;
 
 import static org.jsampler.view.classic.ClassicI18n.i18n;
 
@@ -67,6 +68,7 @@ public class A4n extends StdA4n {
 		removeChannels.putValue(Action.SMALL_ICON, Res.iconDelete24);
 	}
 	
+	@Override
 	protected ClassicPrefs
 	preferences() {
 		return ClassicPrefs.preferences();
@@ -75,7 +77,7 @@ public class A4n extends StdA4n {
 	private static boolean
 	verifyConnection() {
 		if(!CC.getClient().isConnected()) {
-			HF.showErrorMessage(i18n.getError("notConnected"));
+			SHF.showErrorMessage(i18n.getError("notConnected"));
 			return false;
 		}
 		
@@ -94,7 +96,7 @@ public class A4n extends StdA4n {
 		
 		public void
 		actionPerformed(ActionEvent e) {
-			new SamplerInfoDlg(CC.getMainFrame()).setVisible(true);
+			new SamplerInfoDlg(SHF.getMainFrame()).setVisible(true);
 		}
 	}
 	
@@ -186,7 +188,7 @@ public class A4n extends StdA4n {
 		
 		public void
 		actionPerformed(ActionEvent e) {
-			((MainFrame)CC.getMainFrame()).runScript();
+			((MainFrame)SHF.getMainFrame()).runScript();
 		}
 	}
 	
@@ -203,7 +205,7 @@ public class A4n extends StdA4n {
 		public void
 		actionPerformed(ActionEvent e) {
 			if(!verifyConnection()) return;
-			new JSNewMidiDeviceDlg(CC.getMainFrame()).setVisible(true);
+			new JSNewMidiDeviceDlg(SHF.getMainFrame()).setVisible(true);
 		}
 	}
 	
@@ -220,7 +222,7 @@ public class A4n extends StdA4n {
 		public void
 		actionPerformed(ActionEvent e) {
 			if(!verifyConnection()) return;
-			new JSNewAudioDeviceDlg(CC.getMainFrame()).setVisible(true);
+			new JSNewAudioDeviceDlg(SHF.getMainFrame()).setVisible(true);
 		}
 	}
 
@@ -236,7 +238,7 @@ public class A4n extends StdA4n {
 		}
 		
 		public void
-		actionPerformed(ActionEvent e) { new PrefsDlg(CC.getMainFrame()).setVisible(true); }
+		actionPerformed(ActionEvent e) { new PrefsDlg(SHF.getMainFrame()).setVisible(true); }
 	}
 	
 // VIEW
@@ -278,9 +280,9 @@ public class A4n extends StdA4n {
 	
 	public static class
 	MoveChannelsTo extends AbstractAction implements PropertyChangeListener {
-		private final JSChannelsPane pane;
+		private final SwingChannelsPane pane;
 		
-		MoveChannelsTo(JSChannelsPane pane) {
+		MoveChannelsTo(SwingChannelsPane pane) {
 			super(pane.getTitle());
 			
 			this.pane = pane;
@@ -338,7 +340,7 @@ public class A4n extends StdA4n {
 		
 		public void
 		actionPerformed(ActionEvent e) {
-			new NewChannelsTabDlg(CC.getMainFrame()).setVisible(true);
+			new NewChannelsTabDlg(SHF.getMainFrame()).setVisible(true);
 		}
 	}
 	
@@ -352,7 +354,7 @@ public class A4n extends StdA4n {
 		
 		public void
 		actionPerformed(ActionEvent e) {
-			new ChangeTabTitleDlg(CC.getMainFrame()).setVisible(true);
+			new ChangeTabTitleDlg(SHF.getMainFrame()).setVisible(true);
 		}
 	}
 	
@@ -366,7 +368,7 @@ public class A4n extends StdA4n {
 		
 		public void
 		actionPerformed(ActionEvent e) {
-			((MainFrame)CC.getMainFrame()).moveTab2Beginning();
+			((MainFrame)SHF.getMainFrame()).moveTab2Beginning();
 		}
 	}
 	
@@ -380,7 +382,7 @@ public class A4n extends StdA4n {
 		}
 		
 		public void
-		actionPerformed(ActionEvent e) { ((MainFrame)CC.getMainFrame()).moveTab2Left(); }
+		actionPerformed(ActionEvent e) { ((MainFrame)SHF.getMainFrame()).moveTab2Left(); }
 	}
 	
 	private static class MoveTab2Right extends AbstractAction {
@@ -393,7 +395,7 @@ public class A4n extends StdA4n {
 		}
 		
 		public void
-		actionPerformed(ActionEvent e) { ((MainFrame)CC.getMainFrame()).moveTab2Right(); }
+		actionPerformed(ActionEvent e) { ((MainFrame)SHF.getMainFrame()).moveTab2Right(); }
 	}
 	
 	private static class MoveTab2End extends AbstractAction {
@@ -405,7 +407,7 @@ public class A4n extends StdA4n {
 		}
 		
 		public void
-		actionPerformed(ActionEvent e) { ((MainFrame)CC.getMainFrame()).moveTab2End(); }
+		actionPerformed(ActionEvent e) { ((MainFrame)SHF.getMainFrame()).moveTab2End(); }
 	}
 	
 	private static class CloseChannelsTab extends AbstractAction {
@@ -419,7 +421,7 @@ public class A4n extends StdA4n {
 		
 		public void
 		actionPerformed(ActionEvent e) {
-			JSMainFrame frm = CC.getMainFrame();
+			SwingMainFrame frm = SHF.getMainFrame();
 			JSChannelsPane chnPane = frm.getSelectedChannelsPane();
 			if(chnPane.getChannelCount() > 0) {
 				CloseTabDlg dlg = new CloseTabDlg(frm);
@@ -461,9 +463,9 @@ public class A4n extends StdA4n {
 		actionPerformed(ActionEvent e) {
 			if(!CC.verifyConnection()) return;
 			
-			if(CC.getInstrumentsDbTreeModel() == null) {
+			if(SHF.getInstrumentsDbTreeModel() == null) {
 				String s = i18n.getMessage("A4n.noInstrumentsDbSupport!");
-				HF.showErrorMessage(s, CC.getMainFrame());
+				SHF.showErrorMessage(s, SHF.getMainFrame());
 				return;
 			}
 			
@@ -488,7 +490,7 @@ public class A4n extends StdA4n {
 		
 		public void
 		actionPerformed(ActionEvent e) {
-			new HelpAboutDlg(CC.getMainFrame()).setVisible(true);
+			new HelpAboutDlg(SHF.getMainFrame()).setVisible(true);
 		}
 	}
 }

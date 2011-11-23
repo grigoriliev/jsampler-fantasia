@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2010 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -64,9 +64,10 @@ import org.jsampler.CC;
 import org.jsampler.HF;
 import org.jsampler.JSPrefs;
 
-import org.jsampler.view.JSFileFilter;
+import org.jsampler.view.swing.JSFileFilter;
+import org.jsampler.view.swing.SHF;
 import static org.jsampler.view.std.StdI18n.i18n;
-import static org.jsampler.view.std.StdPrefs.*;
+import static org.jsampler.JSPrefs.*;
 
 
 /**
@@ -131,7 +132,7 @@ public class StdUtils {
 		if(Desktop.isDesktopSupported()) return true;
 		
 		String s = i18n.getError("StdUtils.DesktopApiNotSupported");
-		HF.showErrorMessage(s, CC.getMainFrame());
+		SHF.showErrorMessage(s);
 		
 		return false;
 	}
@@ -228,7 +229,7 @@ public class StdUtils {
 
 	private static File
 	showLscpFileChooser(boolean openDialog) {
-		return showLscpFileChooser(openDialog, CC.getMainFrame());
+		return showLscpFileChooser(openDialog, SHF.getMainFrame());
 	}
 
 	private static File
@@ -248,7 +249,7 @@ public class StdUtils {
 		};
 
 		return showFileChooser (
-			false, CC.getMainFrame(), false, filter, filters, "lastScriptLocation"
+			false, SHF.getMainFrame(), false, filter, filters, "lastScriptLocation"
 		);
 	}
 
@@ -298,7 +299,7 @@ public class StdUtils {
 			FileDialog dlg;
 			if(owner instanceof Frame) dlg = new FileDialog((Frame)owner);
 			else if(owner instanceof Dialog) dlg = new FileDialog((Dialog)owner);
-			else dlg = new FileDialog(CC.getMainFrame());
+			else dlg = new FileDialog(SHF.getMainFrame());
 			dlg.setDirectory(oldPath);
 			dlg.setMode(openDialog ? FileDialog.LOAD : FileDialog.SAVE);
 			if(filter != null) dlg.setFilenameFilter(filter);

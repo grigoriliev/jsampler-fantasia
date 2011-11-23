@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -46,7 +46,7 @@ import javax.swing.KeyStroke;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import net.sf.juife.JuifeUtils;
+import net.sf.juife.swing.JuifeUtils;
 
 import org.jsampler.CC;
 import org.jsampler.DefaultOrchestraModel;
@@ -60,7 +60,7 @@ import org.jsampler.event.ListListener;
 import org.jsampler.event.SamplerChannelListEvent;
 import org.jsampler.event.SamplerChannelListListener;
 
-import org.jsampler.view.InstrumentTable;
+import org.jsampler.view.swing.InstrumentTable;
 
 import static org.jsampler.view.std.StdI18n.i18n;
 
@@ -396,9 +396,9 @@ public class JSOrchestraPane extends JPanel {
 			
 			CC.getSamplerModel().addMidiInstrumentMapListListener(l);
 			
-			CC.getMainFrame().addChannelsPaneSelectionListener(new ListSelectionListener() {
+			CC.getMainFrame().addChannelsPaneSelectionListener(new org.jsampler.event.ListSelectionListener() {
 				public void
-				valueChanged(ListSelectionEvent e) {
+				valueChanged(org.jsampler.event.ListSelectionEvent e) {
 					updateLoadInstrumentMenu(mLoadInstrument);
 				}
 			});

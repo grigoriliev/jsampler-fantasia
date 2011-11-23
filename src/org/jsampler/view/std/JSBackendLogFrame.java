@@ -42,6 +42,7 @@ import javax.swing.text.StyledDocument;
 
 import org.jsampler.CC;
 import org.jsampler.HF;
+import org.jsampler.view.swing.SHF;
 
 import static org.jsampler.view.std.StdI18n.i18n;
 
@@ -56,7 +57,7 @@ public class JSBackendLogFrame extends JSFrame {
 	public
 	JSBackendLogFrame() {
 		super(i18n.getLabel("JSBackendLogFrame.title"), "JSBackendLogFrame");
-		ImageIcon i = CC.getViewConfig().getBasicIconSet().getApplicationIcon();
+		ImageIcon i = (ImageIcon)SHF.getViewConfig().getBasicIconSet().getApplicationIcon();
 		if(i != null) setIconImage(i.getImage());
 		
 		add(new JScrollPane(backendLogPane));

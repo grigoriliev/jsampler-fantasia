@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2010 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -22,10 +22,9 @@
 
 package org.jsampler;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.SwingUtilities;
+import net.sf.juife.PDUtils;
+import net.sf.juife.event.GenericEvent;
+import net.sf.juife.event.GenericListener;
 
 import org.jsampler.view.JSViews;
 
@@ -38,7 +37,7 @@ public class JSampler {
 	public final static String NAME = "JSampler";
 	
 	/** The application version. */
-	public final static String VERSION = "0.9cvs1";
+	public final static String VERSION = "0.9cvs2";
 	
 	public static String[] scripts;
 	
@@ -86,7 +85,7 @@ public class JSampler {
 	initGUI() {
 		JSViews.parseManifest();
 
-		SwingUtilities.invokeLater(new Runnable() {
+		PDUtils.runOnUiThread(new Runnable() {
 			public void
 			run() { initGUI0(); }
 		});
@@ -105,17 +104,15 @@ public class JSampler {
 		CC.connect();
 	}
 	
-	private static class ConnectionEstablishedListener implements ActionListener, Runnable {
-		@Override
+	private static class ConnectionEstablishedListener implements GenericListener, Runnable {
 		public void
-		actionPerformed(ActionEvent e) {
+		jobDone(GenericEvent e) {
 			if(scripts == null) return;
 			for(String s : scripts) CC.getMainFrame().runScript(s);
 			scripts = null;
-			SwingUtilities.invokeLater(this);
+			PDUtils.runOnUiThread(this);
 		}
 		
-		@Override
 		public void
 		run() { CC.removeConnectionEstablishedListener(this); }
 	}

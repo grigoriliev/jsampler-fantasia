@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -41,9 +41,8 @@ import javax.swing.JToolBar;
 import javax.swing.plaf.basic.BasicButtonUI;
 import javax.swing.plaf.basic.BasicLabelUI;
 
-import org.jsampler.view.InstrumentsDbTreeModel;
-
 import org.jsampler.view.fantasia.basic.FantasiaPainter;
+import org.jsampler.view.swing.InstrumentsDbTreeModel;
 
 import org.jsampler.view.std.JSDbInstrumentChooser;
 import org.jsampler.view.std.JSInstrumentChooser;

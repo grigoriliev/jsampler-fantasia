@@ -23,7 +23,9 @@ package org.jsampler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import javax.swing.SwingUtilities;
+
+import net.sf.juife.PDUtils;
+
 import org.jsampler.event.EffectChainEvent;
 import org.jsampler.event.EffectChainListener;
 import org.linuxsampler.lscp.EffectChainInfo;
@@ -115,7 +117,7 @@ public class EffectChain {
 	private void
 	fireEffectInstanceListChanged() {
 		final EffectChainEvent e = new EffectChainEvent(this, this);
-		SwingUtilities.invokeLater(new Runnable() {
+		PDUtils.runOnUiThread(new Runnable() {
 			public void
 			run() { fireEffectInstanceListChanged(e); }
 		});

@@ -79,7 +79,7 @@ public class JSUtils {
 	/**
 	 * Changes the JSampler's home directory and moves all files from
 	 * the old JSampler's home directory to the new one. If all files are
-	 * moved succesfully, the old directory is deleted.
+	 * moved successfully, the old directory is deleted.
 	 * @param path The location of the new JSampler's home directory. If
 	 * the last directory in the path doesn't exist, it is created.
 	 */
@@ -87,14 +87,14 @@ public class JSUtils {
 	changeJSamplerHome(String path) {
 		File fNew = new File(path);
 		if(fNew.exists() && fNew.isFile()) {
-			HF.showErrorMessage(i18n.getError("CC.JSamplerHomeIsNotDir!"));
+			CC.getViewConfig().showErrorMessage(i18n.getError("CC.JSamplerHomeIsNotDir!"));
 			return;
 		}
 
 		if(!fNew.exists()) {
 			if(!fNew.mkdir()) {
 				String s = fNew.getAbsolutePath();
-				HF.showErrorMessage(i18n.getError("CC.mkdirFailed", s));
+				CC.getViewConfig().showErrorMessage(i18n.getError("CC.mkdirFailed", s));
 				return;
 			}
 		}
@@ -150,7 +150,7 @@ public class JSUtils {
 			}
 		} catch(Exception e) {
 			CC.getLogger().log(Level.FINE, HF.getErrorMessage(e), e);
-			HF.showErrorMessage(e);
+			CC.getViewConfig().showErrorMessage(e);
 		}
 	}
 
@@ -443,8 +443,8 @@ public class JSUtils {
 		}
 
 		int chnId = 0;
-		for(JSChannelsPane cp : CC.getMainFrame().getChannelsPaneList()) {
-			for(JSChannel chn : cp.getChannels()) {
+		for(Object cp : CC.getMainFrame().getChannelsPaneList()) {
+			for(JSChannel chn : ((JSChannelsPane)cp).getChannels()) {
 				SamplerChannelModel scm;
 				scm = CC.getSamplerModel().getChannelById(chn.getChannelId());
 				exportChannelToLscpScript(scm.getChannelInfo(), chnId, lscpClient);

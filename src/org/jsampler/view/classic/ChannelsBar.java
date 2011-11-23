@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -44,7 +44,7 @@ import org.jsampler.view.std.StdUtils;
 import static org.jsampler.view.classic.A4n.a4n;
 import static org.jsampler.view.classic.ClassicI18n.i18n;
 import static org.jsampler.view.classic.ClassicPrefs.preferences;
-import static org.jsampler.view.std.StdPrefs.*;
+import static org.jsampler.JSPrefs.*;
 
 
 /**

@@ -32,8 +32,8 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.table.TableCellRenderer;
-import org.jsampler.view.AbstractSamplerTable;
-import org.jsampler.view.SamplerTreeModel.TreeNodeBase;
+import org.jsampler.view.swing.AbstractSamplerTable;
+import org.jsampler.view.swing.SamplerTreeModel.TreeNodeBase;
 
 /**
  *

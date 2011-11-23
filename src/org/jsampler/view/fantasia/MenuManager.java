@@ -30,9 +30,6 @@ import javax.swing.ButtonGroup;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.KeyStroke;
 
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
 import org.jsampler.CC;
 
 import static org.jsampler.view.fantasia.A4n.a4n;
@@ -41,7 +38,7 @@ import static org.jsampler.view.fantasia.A4n.a4n;
  *
  * @author Grigor Iliev
  */
-public class MenuManager implements ListSelectionListener {
+public class MenuManager implements org.jsampler.event.ListSelectionListener {
 	private static MenuManager menuManager = null;
 	private final Vector<ChannelViewGroup> channelViewGroups =
 		new Vector<ChannelViewGroup>();
@@ -63,7 +60,7 @@ public class MenuManager implements ListSelectionListener {
 	
 	@Override
 	public void
-	valueChanged(ListSelectionEvent e) {
+	valueChanged(org.jsampler.event.ListSelectionEvent e) {
 		if(e.getValueIsAdjusting()) return;
 		updateChannelViewGroups();
 	}

@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -33,9 +33,9 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import net.sf.juife.OkCancelDialog;
+import net.sf.juife.swing.OkCancelDialog;
 
-import org.jsampler.CC;
+import org.jsampler.view.swing.SHF;
 
 import static org.jsampler.view.std.StdI18n.i18n;
 
@@ -53,7 +53,7 @@ public class JSAddMidiInstrumentMapDlg extends OkCancelDialog {
 	 */
 	public
 	JSAddMidiInstrumentMapDlg() {
-		super(CC.getMainFrame(), i18n.getLabel("JSAddMidiInstrumentMapDlg.title"));
+		super(SHF.getMainFrame(), i18n.getLabel("JSAddMidiInstrumentMapDlg.title"));
 		JPanel p = new JPanel();
 		p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
 		p.add(lName);

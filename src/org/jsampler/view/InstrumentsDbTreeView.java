@@ -22,25 +22,23 @@
 
 package org.jsampler.view;
 
-import javax.swing.Icon;
-
 /**
  * Provides UI information for instruments database trees.
  * @author Grigor Iliev
  */
-public interface InstrumentsDbTreeView {
+public interface InstrumentsDbTreeView<I> {
 	/** Gets the icon used to represent the root node. */
-	public Icon getRootIcon();
+	public I getRootIcon();
 	
 	/** Returns the icon used to represent non-leaf nodes that are not expanded. */
-	public Icon getClosedIcon();
+	public I getClosedIcon();
 	
 	/** Returns the icon used to represent non-leaf nodes that are expanded. */
-	public Icon getOpenIcon();
+	public I getOpenIcon();
 	
 	/** Gets the default instrument icon. */
-	public Icon getInstrumentIcon();
+	public I getInstrumentIcon();
 	
 	/** Gets the icon used for representing GigaSamppler instruments. */
-	public Icon getGigInstrumentIcon();
+	public I getGigInstrumentIcon();
 }

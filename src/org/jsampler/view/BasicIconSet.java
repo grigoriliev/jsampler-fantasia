@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -22,30 +22,27 @@
 
 package org.jsampler.view;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-
 /**
  * Provides the basic icon set.
  * @author Grigor Iliev
  */
-public interface BasicIconSet {
-	public ImageIcon getApplicationIcon();
+public interface BasicIconSet<I> {
+	public I getApplicationIcon();
 	
 	/** Gets the navigation icon Back. */
-	public Icon getBack16Icon();
+	public I getBack16Icon();
 	
 	/** Gets the navigation icon Up. */
-	public Icon getUp16Icon();
+	public I getUp16Icon();
 	
 	/** Gets the navigation icon Forward. */
-	public Icon getForward16Icon();
+	public I getForward16Icon();
 	
-	public Icon getReload16Icon();
+	public I getReload16Icon();
 	
-	public Icon getPreferences16Icon();
+	public I getPreferences16Icon();
 	
-	public Icon getWarning32Icon();
+	public I getWarning32Icon();
 	
-	public Icon getQuestion32Icon();
+	public I getQuestion32Icon();
 }

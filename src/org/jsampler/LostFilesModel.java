@@ -24,9 +24,8 @@ package org.jsampler;
 
 import java.util.Vector;
 
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
+import net.sf.juife.event.GenericEvent;
+import net.sf.juife.event.GenericListener;
 import net.sf.juife.event.TaskEvent;
 import net.sf.juife.event.TaskListener;
 
@@ -38,7 +37,7 @@ import org.jsampler.task.InstrumentsDb.FindLostInstrumentFiles;
  */
 public class LostFilesModel {
 	private final Vector<String> lostFiles = new Vector<String>();
-	private final Vector<ChangeListener> listeners = new Vector<ChangeListener>();
+	private final Vector<GenericListener> listeners = new Vector<GenericListener>();
 	
 	/** Creates a new instance of <code>LostFilesModel</code> */
 	public
@@ -47,17 +46,17 @@ public class LostFilesModel {
 	/**
 	 * Registers the specified listener to be notified when the list
 	 * of lost files is updated.
-	 * @param l The <code>ChangeListener</code> to register.
+	 * @param l The <code>GenericListener</code> to register.
 	 */
 	public void
-	addChangeListener(ChangeListener l) { listeners.add(l); }
+	addChangeListener(GenericListener l) { listeners.add(l); }
 	
 	/**
 	 * Removes the specified listener.
-	 * @param l The <code>ChangeListener</code> to remove.
+	 * @param l The <code>GenericListener</code> to remove.
 	 */
 	public void
-	removeChangeListener(ChangeListener l) { listeners.remove(l); }
+	removeChangeListener(GenericListener l) { listeners.remove(l); }
 	
 	/** Returns a list of all lost files. */
 	public String[]
@@ -105,7 +104,7 @@ public class LostFilesModel {
 	 */
 	private void
 	fireLostFileListUpdated() {
-		ChangeEvent e = new ChangeEvent(this);
-		for(ChangeListener l : listeners) l.stateChanged(e);
+		GenericEvent e = new GenericEvent(this);
+		for(GenericListener l : listeners) l.jobDone(e);
 	}
 }

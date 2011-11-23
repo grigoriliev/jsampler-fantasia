@@ -48,6 +48,7 @@ public class LscpTree {
 		LscpNode quit = new LscpNode("QUIT", true, false);
 		LscpNode remove = new LscpNode("REMOVE");
 		LscpNode reset = new LscpNode("RESET", new LscpNode("CHANNEL"), true, false);
+		LscpNode send = new LscpNode("SEND");
 		LscpNode set = new LscpNode("SET");
 		LscpNode subscribe = new LscpNode("SUBSCRIBE");
 		LscpNode unmap = new LscpNode("UNMAP", new LscpNode("MIDI_INSTRUMENT"), true);
@@ -55,7 +56,7 @@ public class LscpTree {
 		
 		LscpNode[] cmds = {
 			add, append, clear, copy, create, destroy, edit, find, format, get, insert,
-			list, load, map, move, quit, remove, reset, set, subscribe, unmap, unsubscribe
+			list, load, map, move, quit, remove, reset, send, set, subscribe, unmap, unsubscribe
 		};
 		
 		rootNode = new LscpNode("", cmds);
@@ -242,6 +243,11 @@ public class LscpTree {
 		nodes[4] = new LscpNode("MIDI_INSTRUMENT_MAP", new LscpNode("ALL", true, false), true);
 		nodes[5] = new LscpNode("SEND_EFFECT_CHAIN", new LscpNode("EFFECT", true), true);
 		remove.setChildren(nodes);
+		
+		// SEND command
+		nodes = new LscpNode[1];
+		nodes[0] = new LscpNode("CHANNEL", new LscpNode("MIDI_DATA", true));
+		send.setChildren(nodes);
 		
 		// SET command
 		nodes = new LscpNode[14];

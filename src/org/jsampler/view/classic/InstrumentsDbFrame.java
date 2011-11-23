@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -49,21 +49,20 @@ import javax.swing.KeyStroke;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import net.sf.juife.NavigationPage;
-import net.sf.juife.NavigationPane;
+import net.sf.juife.swing.NavigationPage;
+import net.sf.juife.swing.NavigationPane;
 
 import org.jsampler.CC;
-import org.jsampler.HF;
-
 import org.jsampler.task.InstrumentsDb;
-
-import org.jsampler.view.DbDirectoryTreeNode;
 
 import org.jsampler.view.std.JSInstrumentsDbColumnPreferencesDlg;
 import org.jsampler.view.std.JSInstrumentsDbTable;
 import org.jsampler.view.std.JSInstrumentsDbTree;
 import org.jsampler.view.std.JSLostFilesDlg;
 import org.jsampler.view.std.StdUtils;
+
+import org.jsampler.view.swing.DbDirectoryTreeNode;
+import org.jsampler.view.swing.SHF;
 
 import org.linuxsampler.lscp.DbDirectoryInfo;
 import org.linuxsampler.lscp.DbInstrumentInfo;
@@ -95,7 +94,7 @@ public class InstrumentsDbFrame extends JFrame {
 		setTitle(i18n.getLabel("InstrumentsDbFrame.title"));
 		if(Res.appIcon != null) setIconImage(Res.appIcon.getImage());
 		
-		instrumentsDbTree = new JSInstrumentsDbTree(CC.getInstrumentsDbTreeModel());
+		instrumentsDbTree = new JSInstrumentsDbTree(SHF.getInstrumentsDbTreeModel());
 		
 		sidePane = new SidePane();
 		mainPane = new MainPane();
@@ -171,7 +170,7 @@ public class InstrumentsDbFrame extends JFrame {
 			public void
 			actionPerformed(ActionEvent e) {
 				String s = i18n.getMessage("InstrumentsDbFrame.formatDatabase?");
-				if(!HF.showYesNoDialog(InstrumentsDbFrame.this, s)) return;
+				if(!SHF.showYesNoDialog(InstrumentsDbFrame.this, s)) return;
 				CC.getTaskQueue().add(new InstrumentsDb.Format());
 			}
 		});

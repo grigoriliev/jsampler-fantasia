@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -29,8 +29,6 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-
-import java.awt.datatransfer.Transferable;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -74,8 +72,8 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import net.sf.juife.InformationDialog;
-import net.sf.juife.JuifeUtils;
+import net.sf.juife.swing.InformationDialog;
+import net.sf.juife.swing.JuifeUtils;
 
 import org.jsampler.AudioDeviceModel;
 import org.jsampler.CC;
@@ -104,6 +102,7 @@ import org.jsampler.event.SamplerListener;
 import org.jsampler.view.std.JSChannelOutputRoutingDlg;
 import org.jsampler.view.std.JSFxSendsPane;
 import org.jsampler.view.std.JSInstrumentChooser;
+import org.jsampler.view.swing.SHF;
 
 import org.linuxsampler.lscp.AudioOutputDevice;
 import org.linuxsampler.lscp.MidiInputDevice;
@@ -113,14 +112,14 @@ import org.linuxsampler.lscp.SamplerEngine;
 
 import static org.jsampler.view.classic.ClassicI18n.i18n;
 import static org.jsampler.view.classic.ClassicPrefs.preferences;
-import static org.jsampler.view.std.StdPrefs.*;
+import static org.jsampler.JSPrefs.*;
 
 
 /**
  *
  * @author Grigor Iliev
  */
-public class Channel extends org.jsampler.view.JSChannel {
+public class Channel extends org.jsampler.view.swing.SwingChannel {
 	private final static ImageIcon iconEdit;
 	
 	private final static ImageIcon iconMuteOn;
@@ -877,7 +876,7 @@ public class Channel extends org.jsampler.view.JSChannel {
 	
 	private void
 	loadInstrument() {
-		JSInstrumentChooser dlg = ClassicUtils.createInstrumentChooser(CC.getMainFrame());
+		JSInstrumentChooser dlg = ClassicUtils.createInstrumentChooser(SHF.getMainFrame());
 		dlg.setVisible(true);
 		
 		if(dlg.isCancelled()) return;
@@ -1063,7 +1062,7 @@ class ChannelProperties extends JPanel {
 			public void
 			actionPerformed(ActionEvent e) {
 				SamplerChannel c = getModel().getChannelInfo();
-				new JSChannelOutputRoutingDlg(CC.getMainFrame(), c).setVisible(true);
+				new JSChannelOutputRoutingDlg(SHF.getMainFrame(), c).setVisible(true);
 			
 			}
 		});
@@ -1079,7 +1078,7 @@ class ChannelProperties extends JPanel {
 				
 				FxSendsPane p = new FxSendsPane(getModel());
 				int id = getModel().getChannelId();
-				fxSendsDlg = new InformationDialog(CC.getMainFrame(), p);
+				fxSendsDlg = new InformationDialog(SHF.getMainFrame(), p);
 				fxSendsDlg.setTitle(i18n.getLabel("FxSendsDlg.title", id));
 				fxSendsDlg.setModal(false);
 				fxSendsDlg.showCloseButton(false);

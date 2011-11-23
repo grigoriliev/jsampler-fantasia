@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -35,10 +35,10 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import net.sf.juife.EnhancedDialog;
-import net.sf.juife.JuifeUtils;
+import net.sf.juife.swing.EnhancedDialog;
+import net.sf.juife.swing.JuifeUtils;
 
-import org.jsampler.CC;
+import org.jsampler.view.swing.SHF;
 
 import static org.jsampler.view.std.StdI18n.i18n;
 
@@ -54,7 +54,7 @@ public class JSQuitDlg extends EnhancedDialog {
 	/** Creates a new instance of <code>JSQuitDlg</code> */
 	public
 	JSQuitDlg(Icon questionIcon) {
-		super(CC.getMainFrame());
+		super(SHF.getMainFrame());
 		getContentPane().setLayout(new BorderLayout());
 		
 		JLabel l = new JLabel(i18n.getMessage("JSQuitDlg.sureToQuit?"));
@@ -76,7 +76,7 @@ public class JSQuitDlg extends EnhancedDialog {
 		getContentPane().add(btnPane, BorderLayout.SOUTH);
 		pack();
 		
-		setLocation(JuifeUtils.centerLocation(this, CC.getMainFrame()));
+		setLocation(JuifeUtils.centerLocation(this, SHF.getMainFrame()));
 		
 		btnQuit.requestFocus();
 		btnQuit.setMnemonic('q');

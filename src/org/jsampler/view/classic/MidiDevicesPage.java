@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -24,28 +24,19 @@ package org.jsampler.view.classic;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.MediaTracker;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-import java.net.URL;
-
-import java.util.logging.Level;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
@@ -57,12 +48,11 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
 
-import net.sf.juife.InformationDialog;
-import net.sf.juife.JuifeUtils;
-import net.sf.juife.NavigationPage;
+import net.sf.juife.swing.InformationDialog;
+import net.sf.juife.swing.JuifeUtils;
+import net.sf.juife.swing.NavigationPage;
 
 import org.jsampler.CC;
-import org.jsampler.HF;
 import org.jsampler.MidiDeviceModel;
 
 import org.jsampler.event.MidiDeviceEvent;
@@ -72,8 +62,9 @@ import org.jsampler.event.MidiDeviceListener;
 import org.jsampler.event.ParameterEvent;
 import org.jsampler.event.ParameterListener;
 
-import org.jsampler.view.NumberCellEditor;
-import org.jsampler.view.ParameterTable;
+import org.jsampler.view.swing.NumberCellEditor;
+import org.jsampler.view.swing.ParameterTable;
+import org.jsampler.view.swing.SHF;
 
 import org.linuxsampler.lscp.MidiInputDevice;
 import org.linuxsampler.lscp.MidiPort;
@@ -364,7 +355,7 @@ public class MidiDevicesPage extends NavigationPage {
 	
 	private class DevicePropsDlg extends InformationDialog {
 		DevicePropsDlg() {
-			super(CC.getMainFrame(), i18n.getLabel("MidiDevicesPage.DevicePropsDlg"));
+			super(SHF.getMainFrame(), i18n.getLabel("MidiDevicesPage.DevicePropsDlg"));
 			
 			MidiDeviceModel m = getSelectedMidiDeviceModel();
 			ParameterTable table = new ParameterTable();

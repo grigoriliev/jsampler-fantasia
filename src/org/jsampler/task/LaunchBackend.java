@@ -22,7 +22,7 @@
 
 package org.jsampler.task;
 
-import javax.swing.SwingUtilities;
+import net.sf.juife.PDUtils;
 
 import org.jsampler.CC;
 
@@ -55,7 +55,7 @@ public class LaunchBackend extends EnhancedTask {
 	exec() throws Exception {
 		synchronized(monitor) { monitor.wait(delay * 1000); }
 		
-		SwingUtilities.invokeLater(new Runnable() {
+		PDUtils.runOnUiThread(new Runnable() {
 			public void
 			run() { CC.reconnect(); }
 		});

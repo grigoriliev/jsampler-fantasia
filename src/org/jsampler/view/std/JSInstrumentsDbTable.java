@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2010 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -57,15 +57,14 @@ import javax.swing.event.TreeSelectionListener;
 
 import javax.swing.table.TableCellRenderer;
 
-import net.sf.juife.InformationDialog;
-import net.sf.juife.JuifeUtils;
+import net.sf.juife.swing.InformationDialog;
+import net.sf.juife.swing.JuifeUtils;
 import net.sf.juife.Task;
 
 import net.sf.juife.event.TaskEvent;
 import net.sf.juife.event.TaskListener;
 
 import org.jsampler.CC;
-import org.jsampler.HF;
 import org.jsampler.OrchestraInstrument;
 import org.jsampler.MidiInstrumentMap;
 import org.jsampler.OrchestraModel;
@@ -79,16 +78,17 @@ import org.jsampler.event.SamplerChannelListListener;
 import org.jsampler.task.InstrumentsDb;
 import org.jsampler.task.Midi;
 
-import org.jsampler.view.DbClipboard;
-import org.jsampler.view.DbDirectoryTreeNode;
-import org.jsampler.view.InstrumentsDbTableModel;
+import org.jsampler.view.swing.DbClipboard;
+import org.jsampler.view.swing.DbDirectoryTreeNode;
+import org.jsampler.view.swing.InstrumentsDbTableModel;
+import org.jsampler.view.swing.SHF;
 
 import org.linuxsampler.lscp.DbDirectoryInfo;
 import org.linuxsampler.lscp.DbInstrumentInfo;
 import org.linuxsampler.lscp.MidiInstrumentEntry;
 import org.linuxsampler.lscp.MidiInstrumentInfo;
 
-import static org.jsampler.view.InstrumentsDbTableModel.ColumnType;
+import static org.jsampler.view.swing.InstrumentsDbTableModel.ColumnType;
 import static org.jsampler.view.std.StdI18n.i18n;
 
 import static org.linuxsampler.lscp.Parser.*;
@@ -97,7 +97,7 @@ import static org.linuxsampler.lscp.Parser.*;
  *
  * @author Grigor Iliev
  */
-public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsDbTable {
+public class JSInstrumentsDbTable extends org.jsampler.view.swing.AbstractInstrumentsDbTable {
 	private JSInstrumentsDbTree instrumentsDbTree;
 	private InstrumentsDbCellRenderer cellRenderer = new InstrumentsDbCellRenderer();
 	
@@ -204,9 +204,9 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 		CC.getOrchestras().addOrchestraListListener(getHandler());
 		CC.getSamplerModel().addSamplerChannelListListener(getHandler());
 		
-		CC.getMainFrame().addChannelsPaneSelectionListener(new ListSelectionListener() {
+		CC.getMainFrame().addChannelsPaneSelectionListener(new org.jsampler.event.ListSelectionListener() {
 			public void
-			valueChanged(ListSelectionEvent e) {
+			valueChanged(org.jsampler.event.ListSelectionEvent e) {
 				updateLoadInstrumentMenus();
 			}
 		});
@@ -423,9 +423,9 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 	private boolean
 	showYesNoDialog(String s) {
 		Window w = JuifeUtils.getWindow(this);
-		if(w instanceof Dialog) return HF.showYesNoDialog((Dialog)w, s);
-		if(w instanceof Frame) return HF.showYesNoDialog((Frame)w, s);
-		return HF.showYesNoDialog((Frame)null, s);
+		if(w instanceof Dialog) return SHF.showYesNoDialog((Dialog)w, s);
+		if(w instanceof Frame) return SHF.showYesNoDialog((Frame)w, s);
+		return SHF.showYesNoDialog((Frame)null, s);
 	}
 	
 	private class ReloadAction extends AbstractAction implements TreeSelectionListener {
@@ -690,7 +690,7 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 			if(l > 4) {
 				String s = "JSInstrumentsDbTable.confirmAddToMidiMap";
 				s = i18n.getMessage(s, l, midiMap.getName());
-				if(!HF.showYesNoDialog(JSInstrumentsDbTable.this, s)) return;
+				if(!SHF.showYesNoDialog(JSInstrumentsDbTable.this, s)) return;
 			}
 			
 			JSAddMidiInstrumentDlg dlg;
@@ -791,7 +791,7 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 			if(l > 1) {
 				String s = "JSInstrumentsDbTable.confirmAddToOrchestra";
 				s = i18n.getMessage(s, l, orchestraModel.getName());
-				if(!HF.showYesNoDialog(JSInstrumentsDbTable.this, s)) return;
+				if(!SHF.showYesNoDialog(JSInstrumentsDbTable.this, s)) return;
 			}
 			
 			for(DbInstrumentInfo i : instruments) {
@@ -1232,17 +1232,17 @@ public class JSInstrumentsDbTable extends org.jsampler.view.AbstractInstrumentsD
 			instrumentMenu.addSeparator();
 			
 			s = i18n.getMenuLabel("instrumentsdb.actions.loadInstrument");
-			loadInstrumentMenu = CC.getViewConfig().createMultiColumnMenu(s);
+			loadInstrumentMenu = SHF.getViewConfig().createMultiColumnMenu(s);
 			instrumentMenu.add(loadInstrumentMenu);
 			registerLoadInstrumentMenus(loadInstrumentMenu);
 			
 			s = i18n.getMenuLabel("instrumentsdb.actions.addToMidiMap");
-			addToMidiMapMenu = CC.getViewConfig().createMultiColumnMenu(s);
+			addToMidiMapMenu = SHF.getViewConfig().createMultiColumnMenu(s);
 			instrumentMenu.add(addToMidiMapMenu);
 			registerAddToMidiMapMenu(addToMidiMapMenu);
 			
 			s = i18n.getMenuLabel("instrumentsdb.actions.addToOrchestra");
-			addToOrchestraMenu = CC.getViewConfig().createMultiColumnMenu(s);
+			addToOrchestraMenu = SHF.getViewConfig().createMultiColumnMenu(s);
 			instrumentMenu.add(addToOrchestraMenu);
 			registerAddToOrchestraMenu(addToOrchestraMenu);
 			

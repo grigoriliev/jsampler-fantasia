@@ -22,7 +22,9 @@
 package org.jsampler;
 
 import java.util.ArrayList;
-import javax.swing.SwingUtilities;
+
+import net.sf.juife.PDUtils;
+
 import org.jsampler.event.EffectInstanceEvent;
 import org.jsampler.event.EffectInstanceListener;
 import org.jsampler.task.Audio;
@@ -79,7 +81,7 @@ public class EffectInstance {
 	public void
 	fireInstanceInfoChanged() {
 		final EffectInstanceEvent e = new EffectInstanceEvent(this, this);
-		SwingUtilities.invokeLater(new Runnable() {
+		PDUtils.runOnUiThread(new Runnable() {
 			public void
 			run() { fireInstanceInfoChanged(e); }
 		});

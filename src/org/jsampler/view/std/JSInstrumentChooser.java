@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -50,7 +50,7 @@ import javax.swing.JRadioButton;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import net.sf.juife.OkCancelDialog;
+import net.sf.juife.swing.OkCancelDialog;
 
 import net.sf.juife.event.TaskEvent;
 import net.sf.juife.event.TaskListener;
@@ -62,6 +62,7 @@ import org.jsampler.OrchestraModel;
 
 import org.jsampler.task.Global;
 import org.jsampler.task.InstrumentsDb;
+import org.jsampler.view.swing.SHF;
 
 import org.linuxsampler.lscp.Instrument;
 
@@ -113,7 +114,7 @@ public class JSInstrumentChooser extends OkCancelDialog {
 		super(owner, i18n.getLabel("JSInstrumentChooser.title"));
 		
 		btnOk.setEnabled(false);
-		Icon iconBrowse = CC.getViewConfig().getInstrumentsDbTreeView().getOpenIcon();
+		Icon iconBrowse = SHF.getViewConfig().getInstrumentsDbTreeView().getOpenIcon();
 		btnBrowseDb = new JButton(iconBrowse);
 		btnBrowse = new JButton(iconBrowse);
 		

@@ -22,14 +22,13 @@
 
 package org.jsampler;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.Vector;
 
 import java.util.logging.Handler;
@@ -38,15 +37,12 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import java.util.logging.StreamHandler;
 
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
-
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
+import net.sf.juife.PDUtils;
 import net.sf.juife.Task;
 import net.sf.juife.TaskQueue;
 
+import net.sf.juife.event.GenericEvent;
+import net.sf.juife.event.GenericListener;
 import net.sf.juife.event.TaskEvent;
 import net.sf.juife.event.TaskListener;
 import net.sf.juife.event.TaskQueueEvent;
@@ -59,7 +55,7 @@ import org.jsampler.event.OrchestraListener;
 
 import org.jsampler.task.*;
 
-import org.jsampler.view.InstrumentsDbTreeModel;
+import org.jsampler.view.JSChannelsPane;
 import org.jsampler.view.JSMainFrame;
 import org.jsampler.view.JSProgress;
 import org.jsampler.view.JSViewConfig;
@@ -93,11 +89,25 @@ public class CC {
 	private static String jSamplerHome = null;
 	
 	private final static TaskQueue taskQueue = new TaskQueue();
-	private final static Timer timer = new Timer(2000, null);
+	private final static Timer timer = new Timer();
+	private static TimerTask progressTimerTask = null;
 	
 	private static int connectionFailureCount = 0;
 	
-	/** Forbits the instantiation of this class. */
+	static class ProgressTimerTask extends TimerTask {
+		public void run() {
+			PDUtils.runOnUiThread(new Runnable() { public void run() { run0(); } });
+		}
+		
+		private void
+		run0() { CC.getProgressIndicator().start(); }
+	}
+	
+	public static interface Run<A> {
+		public void run(A arg);
+	}
+	
+	/** Forbids the instantiation of this class. */
 	private
 	CC() { }
 	
@@ -163,7 +173,7 @@ public class CC {
 	 * Returns the main window of this application.
 	 * @return The main window of this application.
 	 */
-	public static JSMainFrame
+	public static JSMainFrame<JSChannelsPane>
 	getMainFrame() { return mainFrame; }
 	
 	/**
@@ -232,21 +242,12 @@ public class CC {
 		Logger.getLogger("org.linuxsampler.lscp").addHandler(handler);
 		
 		// Flushing logs on every second
-		new java.util.Timer().schedule(new java.util.TimerTask() {
+		timer.schedule(new java.util.TimerTask() {
 			public void
 			run() { if(handler != null) handler.flush(); }
 		}, 1000, 1000);
 		
 		getLogger().fine("CC.jsStarted");
-		
-		HF.setUIDefaultFont(Prefs.getInterfaceFont());
-		
-		timer.setRepeats(false);
-		
-		timer.addActionListener(new ActionListener() {
-			public void
-			actionPerformed(ActionEvent e) { CC.getProgressIndicator().start(); }
-		});
 		
 		getTaskQueue().addTaskQueueListener(getHandler());
 		
@@ -315,9 +316,9 @@ public class CC {
 		getClient().removeEffectInstanceInfoListener(getHandler());
 		getClient().addEffectInstanceInfoListener(getHandler());
 		
-		CC.addConnectionEstablishedListener(new ActionListener() {
+		CC.addConnectionEstablishedListener(new GenericListener() {
 			public void
-			actionPerformed(ActionEvent e) {
+			jobDone(GenericEvent e) {
 				connectionFailureCount = 0;
 			}
 		});
@@ -340,49 +341,14 @@ public class CC {
 	
 	private static ServerListListener serverListListener = new ServerListListener();
 	
-	private static class ServerListListener implements ChangeListener {
-		@Override
+	private static class ServerListListener implements GenericListener {
 		public void
-		stateChanged(ChangeEvent e) {
-			saveServerList();
-		}
+		jobDone(GenericEvent e) { saveServerList(); }
 	}
 	
-	private static final Vector<ChangeListener> idtmListeners = new Vector<ChangeListener>();
-	private static InstrumentsDbTreeModel instrumentsDbTreeModel = null;
+	private static final 
 	
-	/**
-	 * Gets the tree model of the instruments database.
-	 * If the currently used view doesn't have instruments
-	 * database support the tree model is initialized on first use.
-	 * @return The tree model of the instruments database or
-	 * <code>null</code> if the backend doesn't have instruments database support.
-	 * @see org.jsampler.view.JSViewConfig#getInstrumentsDbSupport
-	 */
-	public static InstrumentsDbTreeModel
-	getInstrumentsDbTreeModel() {
-		if(getSamplerModel().getServerInfo() == null) return null;
-		if(!getSamplerModel().getServerInfo().hasInstrumentsDbSupport()) return null;
-		
-		if(instrumentsDbTreeModel == null) {
-			instrumentsDbTreeModel = new InstrumentsDbTreeModel();
-			for(ChangeListener l : idtmListeners) l.stateChanged(null);
-		}
-		
-		return instrumentsDbTreeModel;
-	}
-	
-	public static void
-	addInstrumentsDbChangeListener(ChangeListener l) {
-		idtmListeners.add(l);
-	}
-	
-	public static void
-	removeInstrumentsDbChangeListener(ChangeListener l) {
-		idtmListeners.remove(l);
-	}
-	
-	private static final LostFilesModel lostFilesModel = new LostFilesModel();
+	LostFilesModel lostFilesModel = new LostFilesModel();
 	
 	public static LostFilesModel
 	getLostFilesModel() { return lostFilesModel; }
@@ -423,7 +389,7 @@ public class CC {
 		
 		try { getOrchestras().readObject(doc.getDocumentElement()); }
 		catch(Exception x) {
-			HF.showErrorMessage(x, "Loading orchestras: ");
+			getViewConfig().showErrorMessage(x, "Loading orchestras: ");
 			return;
 		}
 		
@@ -458,7 +424,7 @@ public class CC {
 			
 			HF.deleteFile("orchestras.xml.bkp");
 		} catch(Exception x) {
-			HF.showErrorMessage(x, "Saving orchestras: ");
+			getViewConfig().showErrorMessage(x, "Saving orchestras: ");
 			return;
 		}
 	}
@@ -508,7 +474,7 @@ public class CC {
 		
 		try { getServerList().readObject(doc.getDocumentElement()); }
 		catch(Exception x) {
-			HF.showErrorMessage(x, "Loading server list: ");
+			getViewConfig().showErrorMessage(x, "Loading server list: ");
 			return;
 		}
 	}
@@ -539,7 +505,7 @@ public class CC {
 			
 			HF.deleteFile("servers.xml.bkp");
 		} catch(Exception x) {
-			HF.showErrorMessage(x, "Saving server list: ");
+			getViewConfig().showErrorMessage(x, "Saving server list: ");
 			return;
 		}
 	}
@@ -573,49 +539,50 @@ public class CC {
 	public static Client
 	getClient() { return lsClient; }
 	
-	private static final Vector<ActionListener> listeners = new Vector<ActionListener>();
+	private static final Vector<GenericListener> listeners = new Vector<GenericListener>();
 	
 	/**
-	 * Registers the specified listener to be notified when reconnecting to LinuxSampler.
+	 * Registers the specified listener to be notified (outside the UI thread)
+	 * when reconnecting to LinuxSampler.
 	 * @param l The <code>ActionListener</code> to register.
 	 */
 	public static void
-	addReconnectListener(ActionListener l) { listeners.add(l); }
+	addReconnectListener(GenericListener l) { listeners.add(l); }
 	
 	/**
 	 * Removes the specified listener.
 	 * @param l The <code>ActionListener</code> to remove.
 	 */
 	public static void
-	removeReconnectListener(ActionListener l) { listeners.remove(l); }
+	removeReconnectListener(GenericListener l) { listeners.remove(l); }
 	
 	private static void
 	fireReconnectEvent() {
-		ActionEvent e = new ActionEvent(CC.class, ActionEvent.ACTION_PERFORMED, null);
-		for(ActionListener l : listeners) l.actionPerformed(e);
+		GenericEvent e = new GenericEvent(CC.class);
+		for(GenericListener l : listeners) l.jobDone(e);
 	}
 	
-	private static final Vector<ActionListener> ceListeners = new Vector<ActionListener>();
+	private static final Vector<GenericListener> ceListeners = new Vector<GenericListener>();
 	
 	/**
-	 * Registers the specified listener to be notified when
+	 * Registers the specified listener to be notified (from the UI thread) when
 	 * jsampler is connected successfully to LinuxSampler.
-	 * @param l The <code>ActionListener</code> to register.
+	 * @param l The <code>GenericListener</code> to register.
 	 */
 	public static void
-	addConnectionEstablishedListener(ActionListener l) { ceListeners.add(l); }
+	addConnectionEstablishedListener(GenericListener l) { ceListeners.add(l); }
 	
 	/**
 	 * Removes the specified listener.
-	 * @param l The <code>ActionListener</code> to remove.
+	 * @param l The <code>GenericListener</code> to remove.
 	 */
 	public static void
-	removeConnectionEstablishedListener(ActionListener l) { ceListeners.remove(l); }
+	removeConnectionEstablishedListener(GenericListener l) { ceListeners.remove(l); }
 	
 	private static void
 	fireConnectionEstablishedEvent() {
-		ActionEvent e = new ActionEvent(CC.class, ActionEvent.ACTION_PERFORMED, null);
-		for(ActionListener l : ceListeners) l.actionPerformed(e);
+		GenericEvent e = new GenericEvent(CC.class);
+		for(GenericListener l : ceListeners) l.jobDone(e);
 	}
 	
 	private static final SamplerModel samplerModel = new DefaultSamplerModel();
@@ -629,6 +596,7 @@ public class CC {
 	
 	/**
 	 * Connects to LinuxSampler.
+	 * The connection can be done asynchronously.
 	 */
 	public static void
 	connect() { initSamplerModel(); }
@@ -669,12 +637,17 @@ public class CC {
 	
 	/**
 	 * This method updates the information about the backend state.
+	 * The update can be done asynchronously.
 	 */
 	private static void
 	initSamplerModel() {
-		Server srv = getMainFrame().getServer();
-		if(srv == null) return;
-		initSamplerModel(srv);
+		getMainFrame().getServer(new Run<Server>() {
+			public void
+			run(Server srv) {
+				if(srv == null) return;
+				initSamplerModel(srv);
+			}
+		});
 	}
 	
 	/**
@@ -696,7 +669,7 @@ public class CC {
 				model.setServerInfo(gsi.getResult());
 				
 				if(CC.getViewConfig().getInstrumentsDbSupport()) {
-					getInstrumentsDbTreeModel();
+					CC.getViewConfig().initInstrumentsDbTreeModel();
 				}
 			}
 		});
@@ -819,10 +792,7 @@ public class CC {
 		});
 		
 		getSamplerModel().reset();
-		if(instrumentsDbTreeModel != null) {
-			instrumentsDbTreeModel.reset();
-			instrumentsDbTreeModel = null;
-		}
+		getViewConfig().resetInstrumentsDbTreeModel();
 		
 		getTaskQueue().removePendingTasks();
 		getTaskQueue().add(ssa);
@@ -855,9 +825,9 @@ public class CC {
 			final String s = JSI18n.i18n.getError("CC.failedToLaunchBackend");
 			CC.getLogger().log(Level.INFO, s, x);
 			
-			SwingUtilities.invokeLater(new Runnable() {
+			PDUtils.runOnUiThread(new Runnable() {
 				public void
-				run() { HF.showErrorMessage(s); }
+				run() { getViewConfig().showErrorMessage(s); }
 			});
 			return;
 		}
@@ -867,7 +837,7 @@ public class CC {
 	
 	private static void
 	retryToConnect() {
-		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+		PDUtils.runOnUiThread(new Runnable() {
 			public void
 			run() { changeBackend(); }
 		});
@@ -875,34 +845,37 @@ public class CC {
 	
 	public static void
 	changeBackend() {
-		Server s = getMainFrame().getServer(true);
-		if(s != null) {
-			connectionFailureCount = 0; // cleared because this change due to user interaction
-			initSamplerModel(s);
-		}
+		getMainFrame().getServer(new Run<Server>() {
+			public void
+			run(Server srv) {
+				if(srv == null) return;
+				connectionFailureCount = 0; // cleared because this change is due to user interaction
+				initSamplerModel(srv);
+			}
+		}, true);
 	}
 	
-	private static final Vector<ActionListener> pListeners = new Vector<ActionListener>();
+	private static final Vector<GenericListener> pListeners = new Vector<GenericListener>();
 	
 	/**
-	 * Registers the specified listener to be notified when
+	 * Registers the specified listener to be notified (from UI thread) when
 	 * backend process is created/terminated.
 	 * @param l The <code>ActionListener</code> to register.
 	 */
 	public static void
-	addBackendProcessListener(ActionListener l) { pListeners.add(l); }
+	addBackendProcessListener(GenericListener l) { pListeners.add(l); }
 	
 	/**
 	 * Removes the specified listener.
 	 * @param l The <code>ActionListener</code> to remove.
 	 */
 	public static void
-	removeBackendProcessListener(ActionListener l) { pListeners.remove(l); }
+	removeBackendProcessListener(GenericListener l) { pListeners.remove(l); }
 	
 	private static void
 	fireBackendProcessEvent() {
-		ActionEvent e = new ActionEvent(CC.class, ActionEvent.ACTION_PERFORMED, null);
-		for(ActionListener l : pListeners) l.actionPerformed(e);
+		GenericEvent e = new GenericEvent(CC.class);
+		for(GenericListener l : pListeners) l.jobDone(e);
 	}
 	
 	private static Process backendProcess = null;
@@ -941,7 +914,6 @@ public class CC {
 	}
 	
 	private static class GetFxSendsListener implements TaskListener {
-		@Override
 		public void
 		taskPerformed(TaskEvent e) {
 			Channel.GetFxSends gfs = (Channel.GetFxSends)e.getSource();
@@ -959,7 +931,7 @@ public class CC {
 		dummy.addTaskListener(new TaskListener() {
 			public void
 			taskPerformed(TaskEvent e) {
-				javax.swing.SwingUtilities.invokeLater(r);
+				PDUtils.runOnUiThread(r);
 			}
 		});
 		
@@ -969,7 +941,7 @@ public class CC {
 	public static boolean
 	verifyConnection() {
 		if(getCurrentServer() == null) {
-			HF.showErrorMessage(i18n.getError("CC.notConnected"));
+			getViewConfig().showErrorMessage(i18n.getError("CC.notConnected"));
 			return false;
 		}
 		
@@ -1159,7 +1131,7 @@ public class CC {
 		
 		/**
 		 * Invoked to indicate that the state of a task queue is changed.
-		 * This method is invoked only from the event-dispatching thread.
+		 * This method is invoked only from the UI thread.
 		 */
 		@Override
 		public void
@@ -1181,10 +1153,17 @@ public class CC {
 				}
 				break;
 			case NOT_IDLE:
-				timer.start();
+				if(progressTimerTask != null) {
+					getLogger().warning("progressTimerTask != null - this is a bug!");
+				}
+				progressTimerTask = new ProgressTimerTask();
+				timer.schedule(progressTimerTask, 2000);
 				break;
 			case IDLE:
-				timer.stop();
+				if(progressTimerTask != null) {
+					progressTimerTask.cancel();
+					progressTimerTask = null;
+				}
 				getProgressIndicator().stop();
 				break;
 			}
@@ -1192,14 +1171,13 @@ public class CC {
 		
 		private void
 		showError(final Task t) {
-			javax.swing.SwingUtilities.invokeLater(new Runnable() {
+			PDUtils.runOnUiThread(new Runnable() {
 				public void
 				run() {
 					if(t.getErrorDetails() == null) {
-						HF.showErrorMessage(t.getErrorMessage());
+						getViewConfig().showErrorMessage(t.getErrorMessage());
 					} else {
 						getMainFrame().showDetailedErrorMessage (
-							getMainFrame(),
 							t.getErrorMessage(),
 							t.getErrorDetails()
 						);
@@ -1256,7 +1234,7 @@ public class CC {
 		public void
 		midiDataArrived(final ChannelMidiDataEvent e) {
 			try {
-				javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
+				PDUtils.runOnUiThreadAndWait(new Runnable() {
 					public void
 					run() { fireChannelMidiDataEvent(e); }
 				});
@@ -1271,7 +1249,9 @@ public class CC {
 			getTaskQueue().add(new Audio.UpdateSendEffectChains(e.getAudioDeviceId()));
 		}
 		
-		public void sendEffectChainInfoChanged(SendEffectChainInfoEvent e) {
+		@Override
+		public void
+		sendEffectChainInfoChanged(SendEffectChainInfoEvent e) {
 			if(e.getInstanceCount() == -1) return;
 			
 			getTaskQueue().add (
@@ -1279,6 +1259,7 @@ public class CC {
 			);
 		}
 		
+		@Override
 		public void
 		effectInstanceInfoChanged(EffectInstanceInfoEvent e) {
 			getTaskQueue().add(new Audio.UpdateEffectInstanceInfo(e.getEffectInstanceId()));
@@ -1325,7 +1306,6 @@ public class CC {
 	
 	private static class MidiDeviceCountListener implements ItemCountListener {
 		/** Invoked when the number of MIDI input devices has changed. */
-		@Override
 		public void
 		itemCountChanged(ItemCountEvent e) {
 			getTaskQueue().add(new Midi.UpdateDevices());

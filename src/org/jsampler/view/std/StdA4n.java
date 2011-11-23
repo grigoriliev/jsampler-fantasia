@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2010 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -36,9 +36,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
 
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
 import org.jsampler.CC;
 import org.jsampler.HF;
 import org.jsampler.JSPrefs;
@@ -47,6 +44,7 @@ import org.jsampler.SamplerChannelModel;
 
 import org.jsampler.view.JSChannel;
 import org.jsampler.view.JSChannelsPane;
+import org.jsampler.view.swing.SHF;
 
 import static org.jsampler.view.std.StdI18n.i18n;
 
@@ -71,7 +69,7 @@ public class StdA4n {
 		// On Mac OS the native file chooser asks whether to replace a file
 		if(f.exists() && !(CC.isMacOS() && b)) {
 			String msg = i18n.getMessage("StdA4n.overwriteFile?");
-			if(!HF.showYesNoDialog(CC.getMainFrame(), msg)) return;
+			if(!SHF.showYesNoDialog(SHF.getMainFrame(), msg)) return;
 		}
 
 		try {
@@ -80,7 +78,7 @@ public class StdA4n {
 			fos.close();
 		} catch(Exception x) {
 			CC.getLogger().log(Level.FINE, HF.getErrorMessage(x), x);
-			HF.showErrorMessage(x);
+			SHF.showErrorMessage(x);
 		}
 	}
 	
@@ -93,7 +91,7 @@ public class StdA4n {
 		// On Mac OS the native file chooser asks whether to replace a file
 		if(f.exists() && !(CC.isMacOS() && b)) {
 			String msg = i18n.getMessage("StdA4n.overwriteFile?");
-			if(!HF.showYesNoDialog(CC.getMainFrame(), msg)) return;
+			if(!SHF.showYesNoDialog(SHF.getMainFrame(), msg)) return;
 		}
 
 		String ext = "";
@@ -117,7 +115,7 @@ public class StdA4n {
 				byte[] data = JSUtils.exportInstrMapsToRGD();
 				if(data == null) {
 					String s = i18n.getError("StdA4n.rgdExportFailed");
-					HF.showErrorMessage(s);
+					SHF.showErrorMessage(s);
 					return;
 				}
 				fos = new FileOutputStream(f);
@@ -126,7 +124,7 @@ public class StdA4n {
 				f = new File(f.getAbsolutePath() + ".lscp");
 				if(f.exists()) {
 					String s = i18n.getError("StdA4n.fileExists", f.getAbsolutePath());
-					HF.showErrorMessage(s);
+					SHF.showErrorMessage(s);
 					return;
 				}
 				
@@ -137,7 +135,7 @@ public class StdA4n {
 			fos.close();
 		} catch(Exception x) {
 			CC.getLogger().log(Level.FINE, HF.getErrorMessage(x), x);
-			HF.showErrorMessage(x);
+			SHF.showErrorMessage(x);
 		}
 	}
 	
@@ -190,7 +188,7 @@ public class StdA4n {
 			if(!CC.verifyConnection()) return;
 			
 			String s = i18n.getMessage("StdA4n.resetSampler?");
-			if(!HF.showYesNoDialog(CC.getMainFrame(), s)) return;
+			if(!SHF.showYesNoDialog(SHF.getMainFrame(), s)) return;
 			CC.getSamplerModel().resetBackend();
 		}
 	}
@@ -337,8 +335,8 @@ public class StdA4n {
 				CC.getMainFrame().getSelectedChannelsPane().getSelectedChannels();
 			
 			if(channels.length > 2) {
-				if(!HF.showYesNoDialog (
-					CC.getMainFrame(),
+				if(!SHF.showYesNoDialog (
+					SHF.getMainFrame(),
 					i18n.getMessage("StdA4n.duplicateChannels?")
 				)) return;
 			}
@@ -365,8 +363,8 @@ public class StdA4n {
 		actionPerformed(ActionEvent e) {
 			JSChannelsPane p = CC.getMainFrame().getSelectedChannelsPane();
 			if(p.getSelectedChannelCount() > 1) 
-				if(!HF.showYesNoDialog (
-					CC.getMainFrame(), i18n.getMessage("StdA4n.removeChannels?")
+				if(!SHF.showYesNoDialog (
+					SHF.getMainFrame(), i18n.getMessage("StdA4n.removeChannels?")
 				)) return;
 			
 			JSChannel[] chnS = p.getSelectedChannels();
@@ -384,7 +382,7 @@ public class StdA4n {
 	}
 	
 	public static class
-	MoveChannelsToPanel extends AbstractAction implements ListSelectionListener {
+	MoveChannelsToPanel extends AbstractAction implements org.jsampler.event.ListSelectionListener {
 		private final JSChannelsPane pane;
 		
 		public
@@ -411,7 +409,7 @@ public class StdA4n {
 		
 		@Override
 		public void
-		valueChanged(ListSelectionEvent e) {
+		valueChanged(org.jsampler.event.ListSelectionEvent e) {
 			setEnabled(CC.getMainFrame().getSelectedChannelsPane() != pane);
 		}
 	
@@ -508,7 +506,7 @@ public class StdA4n {
 			chnPane = CC.getMainFrame().getChannelsPane(i);
 			count++;
 			String s = "instrumentsdb.actions.loadInstrument.onPanel";
-			JMenu m = CC.getViewConfig().createMultiColumnMenu(i18n.getMenuLabel(s, i + 1));
+			JMenu m = SHF.getViewConfig().createMultiColumnMenu(i18n.getMenuLabel(s, i + 1));
 			for(int j = 0; j < chnPane.getChannelCount(); j++) {
 				SamplerChannelModel chn = chnPane.getChannel(j).getModel();
 				m.add(new JMenuItem(factory.createLoadInstrumentAction(chn, true)));

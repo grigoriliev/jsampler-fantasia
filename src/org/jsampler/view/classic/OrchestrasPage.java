@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -25,14 +25,11 @@ package org.jsampler.view.classic;
 import java.awt.Dimension;
 
 import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
-import java.util.logging.Level;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -43,12 +40,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.TransferHandler;
 
-import net.sf.juife.LinkButton;
-import net.sf.juife.NavigationPage;
+import net.sf.juife.swing.LinkButton;
+import net.sf.juife.swing.NavigationPage;
 
 import org.jsampler.CC;
 import org.jsampler.DefaultOrchestraModel;
-import org.jsampler.HF;
 import org.jsampler.OrchestraInstrument;
 import org.jsampler.OrchestraModel;
 
@@ -57,10 +53,10 @@ import org.jsampler.event.OrchestraEvent;
 import org.jsampler.event.ListEvent;
 import org.jsampler.event.ListListener;
 
-import org.jsampler.view.InstrumentTable;
-import org.jsampler.view.InstrumentTableModel;
 import org.jsampler.view.JSChannel;
 import org.jsampler.view.JSChannelsPane;
+import org.jsampler.view.swing.InstrumentTable;
+import org.jsampler.view.swing.SHF;
 
 import static org.jsampler.view.classic.ClassicI18n.i18n;
 
@@ -160,7 +156,7 @@ public class OrchestrasPage extends NavigationPage {
 		}
 		
 		if(chn == null) {
-			HF.showErrorMessage("Select channel!");
+			SHF.showErrorMessage("Select channel!");
 			return;
 		}
 		
@@ -307,7 +303,7 @@ public class OrchestrasPage extends NavigationPage {
 	
 	}
 	
-	private class InstrTableModel extends org.jsampler.view.InstrumentTableModel {
+	private class InstrTableModel extends org.jsampler.view.swing.InstrumentTableModel {
 		/**
 		 * Returns <code>true</code> if the cell at
 		 * <code>row</code> and <code>col</code> is editable.

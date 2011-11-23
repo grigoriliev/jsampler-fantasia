@@ -26,10 +26,10 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.tree.TreeSelectionModel;
 
-import org.jsampler.view.AbstractSamplerTree;
-import org.jsampler.view.SamplerTreeModel;
+import org.jsampler.view.swing.AbstractSamplerTree;
+import org.jsampler.view.swing.SamplerTreeModel;
 
-import static org.jsampler.view.SamplerTreeModel.*;
+import static org.jsampler.view.swing.SamplerTreeModel.*;
 
 /**
  *

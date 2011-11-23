@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -38,14 +38,14 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 
-import net.sf.juife.JuifeUtils;
+import net.sf.juife.swing.JuifeUtils;
 
 import net.sf.juife.event.TaskEvent;
 import net.sf.juife.event.TaskListener;
 
 import org.jsampler.CC;
-import org.jsampler.HF;
 import org.jsampler.task.InstrumentsDb.GetScanJobInfo;
+import org.jsampler.view.swing.SHF;
 
 import org.linuxsampler.lscp.ScanJobInfo;
 
@@ -196,7 +196,7 @@ public class JSAddDbInstrumentsProgressDlg extends JDialog {
 	
 	private void
 	failed0() {
-		HF.showErrorMessage(i18n.getMessage("JSAddDbInstrumentsProgressDlg.failed"), this);
+		SHF.showErrorMessage(i18n.getMessage("JSAddDbInstrumentsProgressDlg.failed"), this);
 		setVisible(false);
 	}
 	

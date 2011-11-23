@@ -34,7 +34,7 @@ import javax.swing.JPopupMenu;
 import org.jsampler.AudioDeviceModel;
 import org.jsampler.CC;
 import org.jsampler.EffectInstance;
-import org.jsampler.view.SamplerTreeModel.*;
+import org.jsampler.view.swing.SamplerTreeModel.*;
 
 import org.linuxsampler.lscp.EffectParameter;
 

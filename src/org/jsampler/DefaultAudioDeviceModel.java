@@ -23,9 +23,8 @@
 package org.jsampler;
 
 import java.util.ArrayList;
-import java.util.Vector;
 
-import javax.swing.SwingUtilities;
+import net.sf.juife.PDUtils;
 
 import org.jsampler.event.AudioDeviceEvent;
 import org.jsampler.event.AudioDeviceListener;
@@ -202,7 +201,9 @@ public class DefaultAudioDeviceModel implements AudioDeviceModel {
 	 * in the send effect chain list or <code>-1</code> 
 	 * if there is no send effect chain with ID <code>chainId</code>.
 	 */
-	public int getSendEffectChainIndex(int chainId) {
+	@Override
+	public int
+	getSendEffectChainIndex(int chainId) {
 		for(int i = 0; i < getSendEffectChainCount(); i++) {
 			if(getSendEffectChain(i).getChainId() == chainId) return i;
 		}
@@ -234,6 +235,7 @@ public class DefaultAudioDeviceModel implements AudioDeviceModel {
 		}
 	}
 	
+	@Override
 	public void
 	removeAllSendEffectChains() {
 		for(int i = effectChains.size() - 1; i >= 0; i--) {
@@ -285,7 +287,7 @@ public class DefaultAudioDeviceModel implements AudioDeviceModel {
 	 */
 	private void
 	fireSettingsChanged() {
-		SwingUtilities.invokeLater(new Runnable() {
+		PDUtils.runOnUiThread(new Runnable() {
 			public void
 			run() {
 				AudioDeviceModel model = DefaultAudioDeviceModel.this;
@@ -306,7 +308,7 @@ public class DefaultAudioDeviceModel implements AudioDeviceModel {
 	
 	private void
 	fireSendEffectChainAdded(final EffectChain chain) {
-		SwingUtilities.invokeLater(new Runnable() {
+		PDUtils.runOnUiThread(new Runnable() {
 			public void
 			run() {
 				AudioDeviceModel m = DefaultAudioDeviceModel.this;
@@ -324,7 +326,7 @@ public class DefaultAudioDeviceModel implements AudioDeviceModel {
 	
 	private void
 	fireSendEffectChainRemoved(final EffectChain chain) {
-		SwingUtilities.invokeLater(new Runnable() {
+		PDUtils.runOnUiThread(new Runnable() {
 			public void
 			run() {
 				AudioDeviceModel m = DefaultAudioDeviceModel.this;

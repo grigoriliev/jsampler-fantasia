@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -22,13 +22,6 @@
 
 package org.jsampler.view;
 
-import java.awt.BorderLayout;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
-import javax.swing.JPanel;
-
 import org.jsampler.SamplerChannelModel;
 import org.linuxsampler.lscp.SamplerChannel;
 
@@ -37,76 +30,32 @@ import org.linuxsampler.lscp.SamplerChannel;
  * This class defines the skeleton of a sampler channel.
  * @author Grigor Iliev
  */
-public abstract class JSChannel extends JPanel {
-	private SamplerChannelModel model;
-	
-	/**
-	 * Creates a new instance of <code>JSChannel</code> using the specified
-	 * non-<code>null</code> channel model.
-	 * @param model The model to be used by this channel.
-	 * @throws IllegalArgumentException If the model is <code>null</code>.
-	 */
-	public
-	JSChannel(SamplerChannelModel model) {
-		super(new BorderLayout());
-		
-		if(model == null) throw new IllegalArgumentException("model must be non null");
-		this.model = model;
-		
-		addPropertyChangeListener("selectionProbablyChanged", new PropertyChangeListener() {
-			public void
-			propertyChange(PropertyChangeEvent e) {
-				boolean b = Boolean.parseBoolean(e.getNewValue().toString());
-				if(isSelected() == b) return;
-				
-				setSelected(b);
-			}
-		});
-	}
-	
+public interface JSChannel {
 	/**
 	 * Gets the model that is currently used by this channel.
 	 * @return model The <code>SamplerChannelModel</code> instance
 	 * which provides information about this channel.
 	 */
-	public SamplerChannelModel
-	getModel() { return model; }
+	public SamplerChannelModel getModel();
 	
 	/**
 	 * Gets the numerical ID of this sampler channel.
 	 * @return The numerical ID of this sampler channel or -1 if the channel's ID is not set.
 	 */
-	public int
-	getChannelId() {
-		return getChannelInfo() == null ? -1 : getChannelInfo().getChannelId();
-	}
+	public int getChannelId();
 	
 	/**
 	 * Gets the current settings of this sampler channel.
 	 * @return <code>SamplerChannel</code> instance containing
 	 * the current settings of this sampler channel.
 	 */
-	public SamplerChannel
-	getChannelInfo() { return getModel().getChannelInfo(); }
-	
-	/**
-	 * Sets the current settings of this sampler channel.
-	 * @param chn A <code>SamplerChannel</code> instance containing
-	 * the new settings for this sampler channel.
-	 *
-	public void
-	setChannelInfo(SamplerChannel chn) {
-		SamplerChannel oldChn = this.chn;
-		this.chn = chn;
-		
-		firePropertyChange("ChannelInfo", oldChn, this.chn);
-	}*/
+	public SamplerChannel getChannelInfo();
 	
 	/**
 	 * Determines whether the channel is selected.
 	 * @return <code>true</code> if the channel is selected, <code>false</code> otherwise.
 	 */
-	public abstract boolean isSelected();
+	public boolean isSelected();
 	
 	/**
 	 * Sets the selection state of this channel.
@@ -114,5 +63,5 @@ public abstract class JSChannel extends JPanel {
 	 * @param select Specifies the new selection state of this channel;
 	 * <code>true</code> to select the channel, <code>false</code> otherwise.
 	 */
-	public abstract void setSelected(boolean select);
+	public void setSelected(boolean select);
 }

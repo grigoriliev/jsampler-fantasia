@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -26,14 +26,12 @@ import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Dimension;
-import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Paint;
-import java.awt.RenderingHints;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -43,7 +41,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
 
 import java.awt.geom.Line2D;
-import java.awt.geom.Rectangle2D;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -55,9 +52,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
-
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import net.sf.juife.event.TaskEvent;
 import net.sf.juife.event.TaskListener;
@@ -73,6 +67,7 @@ import org.jsampler.event.SamplerChannelListEvent;
 import org.jsampler.view.JSChannel;
 import org.jsampler.view.fantasia.basic.*;
 import org.jsampler.view.std.JSPianoRoll;
+import org.jsampler.view.swing.SHF;
 
 import org.linuxsampler.lscp.Instrument;
 import org.linuxsampler.lscp.SamplerChannel;
@@ -89,7 +84,7 @@ import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
  * @author Grigor Iliev
  */
 public class PianoKeyboardPane extends FantasiaPanel
-			       implements ListSelectionListener, SamplerChannelListListener {
+			       implements org.jsampler.event.ListSelectionListener, SamplerChannelListListener {
 	
 	protected final JToggleButton btnPower = new PowerButton();
 	private final FantasiaLabel lDisplay = new FantasiaLabel(" ", true);
@@ -257,7 +252,7 @@ public class PianoKeyboardPane extends FantasiaPanel
 	}
 	
 	@Override public void
-	valueChanged(ListSelectionEvent e) {
+	valueChanged(org.jsampler.event.ListSelectionEvent e) {
 		if(e.getValueIsAdjusting()) return;
 		
 		JSChannel[] chnS = CC.getMainFrame().getSelectedChannelsPane().getSelectedChannels();
@@ -522,7 +517,7 @@ public class PianoKeyboardPane extends FantasiaPanel
 		public void
 		actionPerformed(ActionEvent e) {
 			boolean b = isSelected();
-			MainFrame frm = (MainFrame)CC.getMainFrame();
+			MainFrame frm = (MainFrame)SHF.getMainFrame();
 			if(frm == null) return;
 			frm.setMidiKeyboardVisible(b);
 		}

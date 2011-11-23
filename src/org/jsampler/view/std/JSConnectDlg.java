@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -23,7 +23,6 @@
 package org.jsampler.view.std;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,13 +32,13 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.JTable;
 
-import net.sf.juife.EnhancedDialog;
+import net.sf.juife.swing.EnhancedDialog;
 
 import org.jsampler.CC;
 import org.jsampler.JSPrefs;
 import org.jsampler.Server;
+import org.jsampler.view.swing.SHF;
 
 import static org.jsampler.view.std.StdI18n.i18n;
 
@@ -58,7 +57,7 @@ public class JSConnectDlg extends EnhancedDialog {
 	/** Creates a new instance of <code>JSConnectDlg</code> */
 	public
 	JSConnectDlg() {
-		super(CC.getMainFrame(), i18n.getLabel("JSConnectDlg.title"));
+		super(SHF.getMainFrame(), i18n.getLabel("JSConnectDlg.title"));
 		
 		JPanel mainPane = new JPanel();
 		mainPane.setLayout(new BorderLayout());

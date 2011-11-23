@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -31,44 +31,27 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import java.util.logging.Level;
-
-import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
-import javax.swing.ListSelectionModel;
 import javax.swing.TransferHandler;
 
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import net.sf.juife.JuifeUtils;
-import net.sf.juife.LinkButton;
-import net.sf.juife.NavigationPage;
+import net.sf.juife.swing.LinkButton;
+import net.sf.juife.swing.NavigationPage;
 
-import org.jsampler.CC;
-import org.jsampler.DOMUtils;
-import org.jsampler.DefaultOrchestraModel;
-import org.jsampler.HF;
-import org.jsampler.OrchestraListModel;
-import org.jsampler.OrchestraModel;
-
-import org.jsampler.view.InstrumentTable;
-import org.jsampler.view.InstrumentTableModel;
-import org.jsampler.view.OrchestraTable;
-import org.jsampler.view.OrchestraTableModel;
+import org.jsampler.view.swing.InstrumentTable;
+import org.jsampler.view.swing.OrchestraTable;
 
 import org.jsampler.view.std.JSManageOrchestrasPane;
 import org.jsampler.view.std.JSOrchestraPane;
 
 import static org.jsampler.view.classic.ClassicI18n.i18n;
-import org.jsampler.view.std.JSAddOrEditOrchestraDlg;
 
 
 /**

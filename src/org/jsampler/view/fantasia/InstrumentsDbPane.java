@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -35,13 +35,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 
-import org.jsampler.CC;
-
-import org.jsampler.view.InstrumentsDbTreeModel;
-
-import static org.jsampler.view.fantasia.FantasiaPrefs.preferences;
 import org.jsampler.view.std.JSInstrumentsDbColumnPreferencesDlg;
 import org.jsampler.view.std.JSInstrumentsDbTable;
+import org.jsampler.view.swing.InstrumentsDbTreeModel;
+import org.jsampler.view.swing.SHF;
+
+import static org.jsampler.view.fantasia.FantasiaPrefs.preferences;
 
 
 /**
@@ -57,8 +56,8 @@ public class InstrumentsDbPane extends JPanel {
 	public
 	InstrumentsDbPane() {
 		setLayout(new BorderLayout());
-		if(CC.getInstrumentsDbTreeModel() != null) {
-			instrumentsDbTree = new FantasiaInstrumentsDbTree(CC.getInstrumentsDbTreeModel());
+		if(SHF.getInstrumentsDbTreeModel() != null) {
+			instrumentsDbTree = new FantasiaInstrumentsDbTree(SHF.getInstrumentsDbTreeModel());
 		} else {
 			instrumentsDbTree = new FantasiaInstrumentsDbTree(new InstrumentsDbTreeModel(true));
 		}
@@ -137,7 +136,7 @@ public class InstrumentsDbPane extends JPanel {
 	
 	class PreferencesDlg extends JSInstrumentsDbColumnPreferencesDlg {
 		PreferencesDlg() {
-			super(CC.getMainFrame(), instrumentsTable);
+			super(SHF.getMainFrame(), instrumentsTable);
 		}
 	}
 }

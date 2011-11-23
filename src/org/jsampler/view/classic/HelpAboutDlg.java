@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -39,19 +39,16 @@ import java.net.URL;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
 import javax.swing.JTextField;
 
-import net.sf.juife.InformationDialog;
-import net.sf.juife.JuifeUtils;
-import net.sf.juife.LinkButton;
+import net.sf.juife.swing.InformationDialog;
+import net.sf.juife.swing.LinkButton;
 
-import org.jsampler.HF;
+import org.jsampler.view.swing.SHF;
 
 import static org.jsampler.view.classic.ClassicI18n.i18n;
 
@@ -62,7 +59,7 @@ import static org.jsampler.view.classic.ClassicI18n.i18n;
  */
 public class HelpAboutDlg extends InformationDialog {
 	private JLabel lProductName =
-		new JLabel("<html>\n<font size=+1>JS Classic (version 0.9)</font>");
+		new JLabel("<html>\n<font size=+1>JS Classic (version 0.9cvs2)</font>");
 	
 	private JLabel lAuthor = new JLabel(i18n.getLabel("HelpAboutDlg.lAuthor"));
 	private JTextField tfAuthor = new JTextField(i18n.getLabel("HelpAboutDlg.tfAuthor"));
@@ -320,7 +317,7 @@ public class HelpAboutDlg extends InformationDialog {
 	checkDesktopSupported() {
 		if(Desktop.isDesktopSupported()) return true;
 		
-		HF.showErrorMessage(i18n.getError("HelpAboutDlg.DesktopApiNotSupported"), this);
+		SHF.showErrorMessage(i18n.getError("HelpAboutDlg.DesktopApiNotSupported"), this);
 		
 		return false;
 	}

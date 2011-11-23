@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -48,17 +48,17 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import net.sf.juife.JuifeUtils;
+import net.sf.juife.swing.JuifeUtils;
 
 import org.jsampler.CC;
-import org.jsampler.HF;
 import org.jsampler.JSPrefs;
 
-import org.jsampler.view.ServerTable;
-import org.jsampler.view.ServerTableModel;
+import org.jsampler.view.swing.SHF;
+import org.jsampler.view.swing.ServerTable;
+import org.jsampler.view.swing.ServerTableModel;
 
 import static org.jsampler.view.std.StdI18n.i18n;
-import static org.jsampler.view.std.StdPrefs.*;
+import static org.jsampler.JSPrefs.*;
 
 
 /**
@@ -252,7 +252,7 @@ public class JSConnectionPropsPane extends JPanel {
 			Window w = JuifeUtils.getWindow(this);
 			if(w instanceof Dialog) dlg = new JSAddServerDlg((Dialog)w);
 			else if(w instanceof Frame) dlg = new JSAddServerDlg((Frame)w);
-			else dlg = new JSAddServerDlg(CC.getMainFrame());
+			else dlg = new JSAddServerDlg(SHF.getMainFrame());
 			
 			dlg.setVisible(true);
 			if(dlg.isCancelled()) return;
@@ -265,8 +265,8 @@ public class JSConnectionPropsPane extends JPanel {
 			if(CC.getServerList().getServerCount() < 2) {
 				Window w = JuifeUtils.getWindow(this);
 				String s = i18n.getError("JSConnectionPropsPane.cantRemove");
-				if(w instanceof Dialog) HF.showErrorMessage(s, (Dialog)w);
-				else if(w instanceof Frame) HF.showErrorMessage(s, (Frame)w);
+				if(w instanceof Dialog) SHF.showErrorMessage(s, (Dialog)w);
+				else if(w instanceof Frame) SHF.showErrorMessage(s, (Frame)w);
 				return;
 			}
 			

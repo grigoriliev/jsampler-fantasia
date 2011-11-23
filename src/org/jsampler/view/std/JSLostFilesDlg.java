@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -46,19 +46,20 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import net.sf.juife.InformationDialog;
 import net.sf.juife.Task;
+import net.sf.juife.event.GenericEvent;
+import net.sf.juife.event.GenericListener;
+import net.sf.juife.swing.InformationDialog;
 
 import org.jsampler.CC;
 import org.jsampler.task.InstrumentsDb.SetInstrumentFilePath;
-import org.jsampler.view.LostFilesTable;
+import org.jsampler.view.swing.LostFilesTable;
+import org.jsampler.view.swing.SHF;
 
 import static org.jsampler.view.std.StdI18n.i18n;
 
@@ -127,7 +128,7 @@ public class JSLostFilesDlg extends InformationDialog {
 	private EventHandler
 	getHandler() { return eventHandler; }
 	
-	private class EventHandler implements ListSelectionListener, ChangeListener {
+	private class EventHandler implements ListSelectionListener, GenericListener {
 		@Override
 		public void
 		valueChanged(ListSelectionEvent e) {
@@ -139,7 +140,7 @@ public class JSLostFilesDlg extends InformationDialog {
 		
 		@Override
 		public void
-		stateChanged(ChangeEvent e) {
+		jobDone(GenericEvent e) {
 			boolean b = CC.getLostFilesModel().getLostFileCount() != 0;
 			btnReplace.setEnabled(b);
 		}
@@ -171,7 +172,7 @@ class JSReplaceLostFilesDlg extends InformationDialog {
 		GridBagLayout gridbag = new GridBagLayout();
 		GridBagConstraints c = new GridBagConstraints();
 		
-		Icon iconBrowse = CC.getViewConfig().getInstrumentsDbTreeView().getOpenIcon();
+		Icon iconBrowse = SHF.getViewConfig().getInstrumentsDbTreeView().getOpenIcon();
 		btnBrowse = new JButton(iconBrowse);
 		btnBrowse2 = new JButton(iconBrowse);
 		

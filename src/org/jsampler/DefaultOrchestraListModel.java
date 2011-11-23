@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -53,6 +53,7 @@ public class DefaultOrchestraListModel implements OrchestraListModel {
 	 * Registers the specified listener for receiving event messages.
 	 * @param l The <code>OrchestraListListener</code> to register.
 	 */
+	@Override
 	public void
 	addOrchestraListListener(ListListener<OrchestraModel> l) { listeners.add(l); }
 	
@@ -60,6 +61,7 @@ public class DefaultOrchestraListModel implements OrchestraListModel {
 	 * Removes the specified listener.
 	 * @param l The <code>OrchestraListListener</code> to remove.
 	 */
+	@Override
 	public void
 	removeOrchestraListListener(ListListener<OrchestraModel> l) { listeners.remove(l); }
 	
@@ -67,6 +69,7 @@ public class DefaultOrchestraListModel implements OrchestraListModel {
 	 * Gets the current number of orchestras in the list.
 	 * @return The current number of orchestras in the list.
 	 */
+	@Override
 	public int
 	getOrchestraCount() { return orchestras.size(); }
 	
@@ -75,6 +78,7 @@ public class DefaultOrchestraListModel implements OrchestraListModel {
 	 * @param idx The index of the orchestra to be returned.
 	 * @return The orchestra at the specified position.
 	 */
+	@Override
 	public OrchestraModel
 	getOrchestra(int idx) { return orchestras.get(idx); }
 	
@@ -83,6 +87,7 @@ public class DefaultOrchestraListModel implements OrchestraListModel {
 	 * @param orchestra The model of the orchestra to be added.
 	 * @throws IllegalArgumentException If <code>orchestra</code> is <code>null</code>.
 	 */
+	@Override
 	public void
 	addOrchestra(OrchestraModel orchestra) {
 		insertOrchestra(orchestra, getOrchestraCount());
@@ -95,6 +100,7 @@ public class DefaultOrchestraListModel implements OrchestraListModel {
 	 * @throws IllegalArgumentException If <code>orchestra</code> is <code>null</code>.
 	 * @throws ArrayIndexOutOfBoundsException If the specified index is invalid.
 	 */
+	@Override
 	public void
 	insertOrchestra(OrchestraModel orchestra, int idx) {
 		if(orchestra == null)
@@ -108,6 +114,7 @@ public class DefaultOrchestraListModel implements OrchestraListModel {
 	 * Removes the specified orchestra from the list.
 	 * @param idx The index of the orchestra to remove.
 	 */
+	@Override
 	public void
 	removeOrchestra(int idx) {
 		OrchestraModel orchestraModel = orchestras.get(idx);
@@ -121,6 +128,7 @@ public class DefaultOrchestraListModel implements OrchestraListModel {
 	 * @return <code>true</code> if the specified orchestra was in the list,
 	 * <code>false</code> otherwise.
 	 */
+	@Override
 	public boolean
 	removeOrchestra(OrchestraModel orchestraModel) {
 		boolean b = orchestras.removeElement(orchestraModel);
@@ -129,6 +137,7 @@ public class DefaultOrchestraListModel implements OrchestraListModel {
 	}
 	
 	/** Removes all orchestras from the list. */
+	@Override
 	public void
 	removeAllOrchestras() {
 		for(int i = 0; i < getOrchestraCount(); i++) removeOrchestra(i);
@@ -141,6 +150,7 @@ public class DefaultOrchestraListModel implements OrchestraListModel {
 	 * and -1 if <code>orchestra</code> is <code>null</code> or
 	 * the orchestra list does not contain the specified orchestra.
 	 */
+	@Override
 	public int
 	getOrchestraIndex(OrchestraModel orchestra) {
 		if(orchestra == null) return -1;
@@ -159,6 +169,7 @@ public class DefaultOrchestraListModel implements OrchestraListModel {
 	 * or if the orchestra is already on the top.
 	 * @param orchestra The orchestra to move on top.
 	 */
+	@Override
 	public void
 	moveOrchestraOnTop(OrchestraModel orchestra) {
 		if(orchestra == null) return;
@@ -177,6 +188,7 @@ public class DefaultOrchestraListModel implements OrchestraListModel {
 	 * or if the orchestra is already on the top.
 	 * @param orchestra The orchestra to move up.
 	 */
+	@Override
 	public void
 	moveOrchestraUp(OrchestraModel orchestra) {
 		if(orchestra == null) return;
@@ -195,6 +207,7 @@ public class DefaultOrchestraListModel implements OrchestraListModel {
 	 * or if the orchestra is already at the bottom.
 	 * @param orchestra The orchestra to move down.
 	 */
+	@Override
 	public void
 	moveOrchestraDown(OrchestraModel orchestra) {
 		if(orchestra == null) return;
@@ -212,6 +225,7 @@ public class DefaultOrchestraListModel implements OrchestraListModel {
 	 * or if the orchestra is already at the bottom.
 	 * @param orchestra The orchestra to move at bottom.
 	 */
+	@Override
 	public void
 	moveOrchestraAtBottom(OrchestraModel orchestra) {
 		if(orchestra == null) return;
@@ -229,6 +243,7 @@ public class DefaultOrchestraListModel implements OrchestraListModel {
 	 * @throws IllegalArgumentException If an error occurs while
 	 * reading the content of this orchestra list.
 	 */
+	@Override
 	public void
 	readObject(Node node) {
 		if(
@@ -257,6 +272,7 @@ public class DefaultOrchestraListModel implements OrchestraListModel {
 	 * @param node Specifies the node where the content of this orchestra
 	 * list should be written.
 	 */
+	@Override
 	public void
 	writeObject(Document doc, Node node) {
 		Element el = doc.createElement("orchestras");

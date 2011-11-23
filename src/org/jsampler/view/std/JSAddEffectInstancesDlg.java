@@ -29,12 +29,12 @@ import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.jsampler.CC;
-import org.jsampler.view.EffectTable;
+import org.jsampler.view.swing.EffectTable;
+import org.jsampler.view.swing.SHF;
 
 import org.linuxsampler.lscp.Effect;
 
-import net.sf.juife.OkCancelDialog;
+import net.sf.juife.swing.OkCancelDialog;
 
 import static org.jsampler.view.std.StdI18n.i18n;
 
@@ -46,7 +46,7 @@ public class JSAddEffectInstancesDlg extends OkCancelDialog implements ListSelec
 	public final EffectTable effectTable;
 	public
 	JSAddEffectInstancesDlg() {
-		super(CC.getMainFrame(), i18n.getLabel("JSAddEffectInstancesDlg.title"));
+		super(SHF.getMainFrame(), i18n.getLabel("JSAddEffectInstancesDlg.title"));
 		setName("JSAddEffectInstancesDlg");
 		
 		JPanel p = new JPanel();

@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -24,14 +24,13 @@ package org.jsampler;
 
 import java.util.Vector;
 
-import javax.swing.SwingUtilities;
+import net.sf.juife.PDUtils;
 
 import org.jsampler.event.MidiDeviceEvent;
 import org.jsampler.event.MidiDeviceListener;
 
 import org.jsampler.task.Midi;
 
-import org.linuxsampler.lscp.BoolParameter;
 import org.linuxsampler.lscp.MidiInputDevice;
 import org.linuxsampler.lscp.Parameter;
 
@@ -65,6 +64,7 @@ public class DefaultMidiDeviceModel implements MidiDeviceModel {
 	 * the settings of the MIDI device are changed.
 	 * @param l The <code>MidiDeviceListener</code> to register.
 	 */
+	@Override
 	public void
 	addMidiDeviceListener(MidiDeviceListener l) { listeners.add(l); }
 	
@@ -72,6 +72,7 @@ public class DefaultMidiDeviceModel implements MidiDeviceModel {
 	 * Removes the specified listener.
 	 * @param l The <code>MidiDeviceListener</code> to remove.
 	 */
+	@Override
 	public void
 	removeMidiDeviceListener(MidiDeviceListener l) { listeners.remove(l); }
 	
@@ -80,6 +81,7 @@ public class DefaultMidiDeviceModel implements MidiDeviceModel {
 	 * @return The numerical ID of this MIDI device or
 	 * -1 if the device number is not set.
 	 */
+	@Override
 	public int
 	getDeviceId() { return midiDevice.getDeviceId(); }
 	
@@ -88,6 +90,7 @@ public class DefaultMidiDeviceModel implements MidiDeviceModel {
 	 * @return <code>MidiInputDevice</code> instance providing
 	 * the current settings of the MIDI device represented by this model.
 	 */
+	@Override
 	public MidiInputDevice
 	getDeviceInfo() { return midiDevice; }
 	
@@ -95,6 +98,7 @@ public class DefaultMidiDeviceModel implements MidiDeviceModel {
 	 * Updates the settings of the MIDI device represented by this model.
 	 * @param device The new MIDI device settings.
 	 */
+	@Override
 	public void
 	setDeviceInfo(MidiInputDevice device) {
 		midiDevice = device;
@@ -106,6 +110,7 @@ public class DefaultMidiDeviceModel implements MidiDeviceModel {
 	 * @param active If <code>true</code> the MIDI device is enabled,
 	 * else the device is disabled.
 	 */
+	@Override
 	public void
 	setActive(boolean active) {
 		if(active == getDeviceInfo().isActive()) return;
@@ -118,6 +123,7 @@ public class DefaultMidiDeviceModel implements MidiDeviceModel {
 	 * Determines whether the MIDI device is active.
 	 * @return <code>true</code> if the device is enabled and <code>false</code> otherwise.
 	 */
+	@Override
 	public boolean
 	isActive() { return midiDevice.isActive(); }
 	
@@ -126,6 +132,7 @@ public class DefaultMidiDeviceModel implements MidiDeviceModel {
 	 * @param active If <code>true</code> the MIDI device is enabled,
 	 * else the device is disabled.
 	 */
+	@Override
 	public void
 	setBackendActive(boolean active) {
 		CC.getTaskQueue().add(new Midi.EnableDevice(getDeviceId(), active));
@@ -136,6 +143,7 @@ public class DefaultMidiDeviceModel implements MidiDeviceModel {
 	 * a specific setting of the MIDI input device.
 	 * @param prm The parameter to be set.
 	 */
+	@Override
 	public void
 	setBackendDeviceParameter(Parameter prm) {
 		CC.getTaskQueue().add(new Midi.SetDeviceParameter(getDeviceId(), prm));
@@ -145,6 +153,7 @@ public class DefaultMidiDeviceModel implements MidiDeviceModel {
 	 * Schedules a new task for changing the port number of the MIDI device.
 	 * @param ports The new number of ports.
 	 */
+	@Override
 	public void
 	setBackendPortCount(int ports) {
 		CC.getTaskQueue().add(new Midi.SetPortCount(getDeviceId(), ports));
@@ -156,6 +165,7 @@ public class DefaultMidiDeviceModel implements MidiDeviceModel {
 	 * @param port The port number.
 	 * @param prm The parameter to be set.
 	 */
+	@Override
 	public void
 	setBackendPortParameter(int port, Parameter prm) {
 		CC.getTaskQueue().add(new Midi.SetPortParameter(getDeviceId(), port, prm));
@@ -166,7 +176,7 @@ public class DefaultMidiDeviceModel implements MidiDeviceModel {
 	 */
 	private void
 	fireSettingsChanged() {
-		SwingUtilities.invokeLater(new Runnable() {
+		PDUtils.runOnUiThread(new Runnable() {
 			public void
 			run() {
 				MidiDeviceModel model = DefaultMidiDeviceModel.this;

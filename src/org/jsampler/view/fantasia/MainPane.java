@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -50,6 +50,8 @@ import javax.swing.JToggleButton;
 import org.jsampler.CC;
 import org.jsampler.view.JSChannelsPane;
 import org.jsampler.view.fantasia.basic.*;
+import org.jsampler.view.swing.SHF;
+import org.jsampler.view.swing.SwingChannelsPane;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 
@@ -133,7 +135,7 @@ public class MainPane extends FantasiaPanel {
 		setMaximumSize(new Dimension(420, Short.MAX_VALUE));
 	}
 
-	public JSChannelsPane
+	public ChannelsPane
 	addChannelsPane() {
 		String s = i18n.getButtonLabel("MainPane.ButtonsPanel.tt", channelsPanes.size() + 1);
 		ChannelsPanel cp = new ChannelsPanel(s);
@@ -154,11 +156,11 @@ public class MainPane extends FantasiaPanel {
 		scrollPane.setMaximumSize(new Dimension(w, Short.MAX_VALUE));
 		setMaximumSize(new Dimension(w, Short.MAX_VALUE));
 		
-		if(CC.getMainFrame() != null && !CC.getMainFrame().isResizable()) {
+		if(SHF.getMainFrame() != null && !SHF.getMainFrame().isResizable()) {
 			// this means that there are no visible side panes
 			
-			w = CC.getMainFrame().getPreferredSize().width;
-			CC.getMainFrame().setSize(w, CC.getMainFrame().getHeight());
+			w = SHF.getMainFrame().getPreferredSize().width;
+			SHF.getMainFrame().setSize(w, SHF.getMainFrame().getHeight());
 		}
 		
 		revalidate();
@@ -170,7 +172,7 @@ public class MainPane extends FantasiaPanel {
 		scrollPane.getViewport().scrollRectToVisible(new Rectangle(0, h - 2, 1, 1));
 	}
 	
-	public JSChannelsPane
+	public ChannelsPane
 	getChannelsPane(int index) { return channelsPanes.get(index).getChannelsPane(); }
 	
 	public int
@@ -203,7 +205,7 @@ public class MainPane extends FantasiaPanel {
 		scrollPane.getViewport().setView(chnPanel);
 	}
 	
-	public JSChannelsPane
+	public ChannelsPane
 	getSelectedChannelsPane() {
 		for(int i = 0; i < getChannelsPaneCount(); i++) {
 			if(buttonsPanel.buttons.get(i).isSelected()) {
@@ -246,7 +248,7 @@ public class MainPane extends FantasiaPanel {
 	}
 	
 	private class ChannelsPanel extends FantasiaPanel {
-		private final JSChannelsPane channelsPane;
+		private final ChannelsPane channelsPane;
 		ChannelsPanel(String title) {
 			ActionListener l = new ActionListener() {
 				public void
@@ -270,7 +272,7 @@ public class MainPane extends FantasiaPanel {
 			addMouseListener(getHandler());
 		}
 		
-		public JSChannelsPane
+		public ChannelsPane
 		getChannelsPane() { return channelsPane; }
 	}
 	

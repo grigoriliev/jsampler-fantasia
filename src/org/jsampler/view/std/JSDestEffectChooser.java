@@ -30,11 +30,11 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-import net.sf.juife.OkCancelDialog;
+import net.sf.juife.swing.OkCancelDialog;
 import org.jsampler.AudioDeviceModel;
-import org.jsampler.CC;
-import org.jsampler.view.AbstractTreeModel;
-import org.jsampler.view.SamplerTreeModel.*;
+import org.jsampler.view.swing.AbstractTreeModel;
+import org.jsampler.view.swing.SHF;
+import org.jsampler.view.swing.SamplerTreeModel.*;
 
 import static org.jsampler.view.std.StdI18n.i18n;
 
@@ -50,7 +50,7 @@ public class JSDestEffectChooser  extends OkCancelDialog implements TreeSelectio
 	
 	public
 	JSDestEffectChooser(AudioDeviceModel audioDev) {
-		super(CC.getMainFrame(), i18n.getLabel("JSDestEffectChooser.title"));
+		super(SHF.getMainFrame(), i18n.getLabel("JSDestEffectChooser.title"));
 		setName("JSDestEffectChooser");
 		
 		 

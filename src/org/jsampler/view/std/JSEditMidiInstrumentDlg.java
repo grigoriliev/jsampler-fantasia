@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -39,7 +39,7 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import net.sf.juife.OkCancelDialog;
+import net.sf.juife.swing.OkCancelDialog;
 
 import net.sf.juife.event.TaskEvent;
 import net.sf.juife.event.TaskListener;
@@ -48,6 +48,7 @@ import org.jsampler.CC;
 import org.jsampler.JSPrefs;
 
 import org.jsampler.task.Global;
+import org.jsampler.view.swing.SHF;
 
 import org.linuxsampler.lscp.Instrument;
 import org.linuxsampler.lscp.MidiInstrumentInfo;
@@ -91,7 +92,7 @@ public class JSEditMidiInstrumentDlg extends OkCancelDialog {
 	 * @param instr The instrument whose settings should be edited.
 	 */
 	public JSEditMidiInstrumentDlg(MidiInstrumentInfo instr) {
-		super(CC.getMainFrame(), i18n.getLabel("JSEditMidiInstrumentDlg.title"));
+		super(SHF.getMainFrame(), i18n.getLabel("JSEditMidiInstrumentDlg.title"));
 		
 		this.instrument = instr;
 		

@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -29,7 +29,7 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.JDialog;
 
-import org.jsampler.CC;
+import org.jsampler.view.swing.SHF;
 
 import static org.jsampler.view.classic.ClassicI18n.i18n;
 
@@ -54,7 +54,7 @@ public class LSConsoleDlg extends JDialog {
 		addWindowListener(new WindowAdapter() {
 			public void
 			windowClosing(WindowEvent e) {
-				MainFrame mainFrame = (MainFrame)CC.getMainFrame();
+				MainFrame mainFrame = (MainFrame)SHF.getMainFrame();
 				mainFrame.setLSConsoleShown(false);
 				setVisible(false);
 			}

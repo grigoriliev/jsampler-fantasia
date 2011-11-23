@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2010 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -31,10 +31,11 @@ import java.util.jar.Manifest;
 
 import java.util.logging.Level;
 
-import javax.swing.SwingUtilities;
+import net.sf.juife.PDUtils;
 
 import org.jsampler.CC;
 import org.jsampler.HF;
+import org.jsampler.Prefs;
 
 /**
  * This class provides information about the available views in the current distribution.
@@ -100,7 +101,7 @@ public class JSViews {
 			return;
 		}
 		if(CC.getMainFrame() != null) {
-			SwingUtilities.invokeLater(new Runnable() {
+			PDUtils.runOnUiThread(new Runnable() {
 				public void
 				run() { CC.getMainFrame().setVisible(false); }
 			});
@@ -110,6 +111,7 @@ public class JSViews {
 			CC.setViewConfig (
 				(JSViewConfig)Class.forName(entry.viewConfig).newInstance()
 			);
+			CC.getViewConfig().setUIDefaultFont(Prefs.getInterfaceFont());
 		} catch(Exception e) {
 			CC.getLogger().info(HF.getErrorMessage(e));
 			return;

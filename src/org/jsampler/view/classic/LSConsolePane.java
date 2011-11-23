@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -46,6 +46,7 @@ import org.jsampler.view.std.JSLSConsolePane;
 
 import static org.jsampler.view.classic.ClassicI18n.i18n;
 import org.jsampler.view.std.JSLscpScriptDlg;
+import org.jsampler.view.swing.SHF;
 
 /**
  *
@@ -134,7 +135,7 @@ public class LSConsolePane extends JSLSConsolePane {
 		mi.addActionListener(new ActionListener() {
 			public void
 			actionPerformed(ActionEvent e) {
-				((MainFrame)CC.getMainFrame()).runScript();
+				((MainFrame)SHF.getMainFrame()).runScript();
 			}
 		});
 		
@@ -152,7 +153,7 @@ public class LSConsolePane extends JSLSConsolePane {
 	protected void
 	quitSession() {
 		super.quitSession();
-		((MainFrame)CC.getMainFrame()).setLSConsoleVisible(false);
+		((MainFrame)SHF.getMainFrame()).setLSConsoleVisible(false);
 	}
 	
 	private class LSConsoleViewMode extends AbstractAction {
@@ -160,7 +161,7 @@ public class LSConsolePane extends JSLSConsolePane {
 		
 		public void
 		actionPerformed(ActionEvent e) {
-			MainFrame mainFrame = (MainFrame)CC.getMainFrame();
+			MainFrame mainFrame = (MainFrame)SHF.getMainFrame();
 			mainFrame.setLSConsolePopOut(!mainFrame.isLSConsolePopOut());
 			
 			setName(mainFrame.isLSConsolePopOut());

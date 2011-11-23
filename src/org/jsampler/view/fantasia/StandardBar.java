@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -44,6 +44,7 @@ import javax.swing.JToolBar;
 
 import org.jsampler.CC;
 import org.jsampler.view.fantasia.basic.*;
+import org.jsampler.view.swing.SHF;
 
 import static org.jsampler.view.fantasia.A4n.a4n;
 
@@ -112,7 +113,7 @@ public class StandardBar extends JPanel {
 			public void
 			actionPerformed(ActionEvent e) {
 				boolean b = btnMidiKeyboard.isSelected();
-				MainFrame frm = (MainFrame)CC.getMainFrame();
+				MainFrame frm = (MainFrame)SHF.getMainFrame();
 				if(frm == null) return;
 				frm.setMidiKeyboardVisible(b);
 			}

@@ -26,10 +26,7 @@ import java.util.Vector;
 
 import java.util.logging.Level;
 
-import javax.swing.SwingUtilities;
-
-import javax.swing.event.EventListenerList;
-
+import net.sf.juife.PDUtils;
 import net.sf.juife.Task;
 import net.sf.juife.event.TaskEvent;
 import net.sf.juife.event.TaskListener;
@@ -81,7 +78,14 @@ public class DefaultSamplerModel implements SamplerModel {
 	private final Vector<ListListener<MidiInstrumentMap>> mapsListeners =
 		new Vector<ListListener<MidiInstrumentMap>>();
 	
-	private final EventListenerList listenerList = new EventListenerList();
+	private final Vector<ListListener<AudioDeviceModel>> auDevListListeners =
+			new Vector<ListListener<AudioDeviceModel>>();
+	
+	private final Vector<MidiDeviceListListener> midiDevListListeners =
+			new Vector<MidiDeviceListListener>();
+	
+	private final Vector<SamplerChannelListListener> smplChnListListeners =
+			new Vector<SamplerChannelListListener>();
 	
 	private boolean channelListIsAdjusting = false;
 	
@@ -117,7 +121,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	@Override
 	public void
 	addAudioDeviceListListener(ListListener<AudioDeviceModel> listener) {
-		listenerList.add(ListListener.class, listener);
+		auDevListListeners.add(listener);
 	}
 	
 	/**
@@ -127,7 +131,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	@Override
 	public void
 	removeAudioDeviceListListener(ListListener<AudioDeviceModel> listener) {
-		listenerList.remove(ListListener.class, listener);
+		auDevListListeners.remove(listener);
 	}
 	
 	/**
@@ -137,7 +141,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	@Override
 	public void
 	addMidiDeviceListListener(MidiDeviceListListener listener) {
-		listenerList.add(MidiDeviceListListener.class, listener);
+		midiDevListListeners.add(listener);
 	}
 	
 	/**
@@ -147,7 +151,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	@Override
 	public void
 	removeMidiDeviceListListener(MidiDeviceListListener listener) {
-		listenerList.remove(MidiDeviceListListener.class, listener);
+		midiDevListListeners.remove(listener);
 	}
 	
 	/**
@@ -177,7 +181,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	@Override
 	public void
 	addSamplerChannelListListener(SamplerChannelListListener listener) {
-		listenerList.add(SamplerChannelListListener.class, listener);
+		smplChnListListeners.add(listener);
 	}
 	
 	/**
@@ -187,7 +191,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	@Override
 	public void
 	removeSamplerChannelListListener(SamplerChannelListListener listener) {
-		listenerList.remove(SamplerChannelListListener.class, listener);
+		smplChnListListeners.remove(listener);
 	}
 	
 	/**
@@ -263,7 +267,9 @@ public class DefaultSamplerModel implements SamplerModel {
 	 * in the audio device list or <code>-1</code> 
 	 * if there is no audio device with ID <code>deviceId</code>.
 	 */
-	public int getAudioDeviceIndex(int deviceId) {
+	@Override
+	public int
+	getAudioDeviceIndex(int deviceId) {
 		for(int i = 0; i < audioDeviceModels.size(); i++) {
 			if(audioDeviceModels.get(i).getDeviceId() == deviceId) return i;
 		}
@@ -690,6 +696,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	setEngines(SamplerEngine[] engines) { this.engines = engines; }
 	
 	/** Gets the list of internal effects */
+	@Override
 	public EffectList
 	getEffects() { return effects; }
 		
@@ -1126,7 +1133,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	fireSamplerChannelAdded(SamplerChannelModel channelModel) {
 		final SamplerChannelListEvent e = new SamplerChannelListEvent(this, channelModel);
 			
-		SwingUtilities.invokeLater(new Runnable() {
+		PDUtils.runOnUiThread(new Runnable() {
 			public void
 			run() { fireSamplerChannelAdded(e); }
 		});
@@ -1137,12 +1144,8 @@ public class DefaultSamplerModel implements SamplerModel {
 	private void
 	fireSamplerChannelAdded(SamplerChannelListEvent e) {
 		setModified(true);
-		Object[] listeners = listenerList.getListenerList();
-		
-		for(int i = listeners.length - 2; i >= 0; i -= 2) {
-			if(listeners[i] == SamplerChannelListListener.class) {
-				((SamplerChannelListListener)listeners[i + 1]).channelAdded(e);
-			}
+		for(int i = smplChnListListeners.size() - 1; i >= 0; i--) {
+			smplChnListListeners.get(i).channelAdded(e);
 		}
 	}
 	
@@ -1155,7 +1158,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	fireSamplerChannelRemoved(SamplerChannelModel channelModel) {
 		final SamplerChannelListEvent e = new SamplerChannelListEvent(this, channelModel);
 			
-		SwingUtilities.invokeLater(new Runnable() {
+		PDUtils.runOnUiThread(new Runnable() {
 			public void
 			run() { fireSamplerChannelRemoved(e); }
 		});
@@ -1167,12 +1170,8 @@ public class DefaultSamplerModel implements SamplerModel {
 	private void
 	fireSamplerChannelRemoved(SamplerChannelListEvent e) {
 		setModified(true);
-		Object[] listeners = listenerList.getListenerList();
-		
-		for(int i = listeners.length - 2; i >= 0; i -= 2) {
-			if(listeners[i] == SamplerChannelListListener.class) {
-				((SamplerChannelListListener)listeners[i + 1]).channelRemoved(e);
-			}
+		for(int i = smplChnListListeners.size() - 1; i >= 0; i--) {
+			smplChnListListeners.get(i).channelRemoved(e);
 		}
 	}
 	
@@ -1185,7 +1184,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	fireMidiDeviceAdded(MidiDeviceModel model) {
 		final MidiDeviceListEvent e = new MidiDeviceListEvent(this, model);
 			
-		SwingUtilities.invokeLater(new Runnable() {
+		PDUtils.runOnUiThread(new Runnable() {
 			public void
 			run() { fireMidiDeviceAdded(e); }
 		});
@@ -1196,12 +1195,8 @@ public class DefaultSamplerModel implements SamplerModel {
 	private void
 	fireMidiDeviceAdded(MidiDeviceListEvent e) {
 		setModified(true);
-		Object[] listeners = listenerList.getListenerList();
-		
-		for(int i = listeners.length - 2; i >= 0; i -= 2) {
-			if(listeners[i] == MidiDeviceListListener.class) {
-				((MidiDeviceListListener)listeners[i + 1]).deviceAdded(e);
-			}
+		for(int i = midiDevListListeners.size() - 1; i >= 0; i--) {
+			midiDevListListeners.get(i).deviceAdded(e);
 		}
 	}
 	
@@ -1214,7 +1209,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	fireMidiDeviceRemoved(MidiDeviceModel model) {
 		final MidiDeviceListEvent e = new MidiDeviceListEvent(this, model);
 			
-		SwingUtilities.invokeLater(new Runnable() {
+		PDUtils.runOnUiThread(new Runnable() {
 			public void
 			run() { fireMidiDeviceRemoved(e); }
 		});
@@ -1226,12 +1221,8 @@ public class DefaultSamplerModel implements SamplerModel {
 	private void
 	fireMidiDeviceRemoved(MidiDeviceListEvent e) {
 		setModified(true);
-		Object[] listeners = listenerList.getListenerList();
-		
-		for(int i = listeners.length - 2; i >= 0; i -= 2) {
-			if(listeners[i] == MidiDeviceListListener.class) {
-				((MidiDeviceListListener)listeners[i + 1]).deviceRemoved(e);
-			}
+		for(int i = midiDevListListeners.size() - 1; i >= 0; i--) {
+			midiDevListListeners.get(i).deviceRemoved(e);
 		}
 	}
 	
@@ -1244,7 +1235,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	fireAudioDeviceAdded(AudioDeviceModel model) {
 		final ListEvent<AudioDeviceModel> e = new ListEvent<AudioDeviceModel>(this, model);
 			
-		SwingUtilities.invokeLater(new Runnable() {
+		PDUtils.runOnUiThread(new Runnable() {
 			public void
 			run() { fireAudioDeviceAdded(e); }
 		});
@@ -1256,12 +1247,8 @@ public class DefaultSamplerModel implements SamplerModel {
 	private void
 	fireAudioDeviceAdded(ListEvent<AudioDeviceModel> e) {
 		setModified(true);
-		Object[] listeners = listenerList.getListenerList();
-		
-		for(int i = listeners.length - 2; i >= 0; i -= 2) {
-			if(listeners[i] == ListListener.class) {
-				((ListListener<AudioDeviceModel>)listeners[i + 1]).entryAdded(e);
-			}
+		for(int i = auDevListListeners.size() - 1; i >= 0; i--) {
+			auDevListListeners.get(i).entryAdded(e);
 		}
 	}
 	
@@ -1274,7 +1261,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	fireAudioDeviceRemoved(AudioDeviceModel model) {
 		final ListEvent<AudioDeviceModel> e = new ListEvent<AudioDeviceModel>(this, model);
 			
-		SwingUtilities.invokeLater(new Runnable() {
+		PDUtils.runOnUiThread(new Runnable() {
 			public void
 			run() { fireAudioDeviceRemoved(e); }
 		});
@@ -1287,12 +1274,8 @@ public class DefaultSamplerModel implements SamplerModel {
 	private void
 	fireAudioDeviceRemoved(ListEvent<AudioDeviceModel> e) {
 		setModified(true);
-		Object[] listeners = listenerList.getListenerList();
-		
-		for(int i = listeners.length - 2; i >= 0; i -= 2) {
-			if(listeners[i] == ListListener.class) {
-				((ListListener<AudioDeviceModel>)listeners[i + 1]).entryRemoved(e);
-			}
+		for(int i = auDevListListeners.size() - 1; i >= 0; i--) {
+			auDevListListeners.get(i).entryRemoved(e);
 		}
 	}
 	
@@ -1304,7 +1287,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	fireMidiInstrumentMapAdded(MidiInstrumentMap map) {
 		final ListEvent<MidiInstrumentMap> e = new ListEvent<MidiInstrumentMap>(this, map);
 		
-		SwingUtilities.invokeLater(new Runnable() {
+		PDUtils.runOnUiThread(new Runnable() {
 			public void
 			run() { fireMidiInstrumentMapAdded(e); }
 		});
@@ -1325,7 +1308,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	fireMidiInstrumentMapRemoved(MidiInstrumentMap map) {
 		final ListEvent<MidiInstrumentMap> e = new ListEvent<MidiInstrumentMap>(this, map);
 		
-		SwingUtilities.invokeLater(new Runnable() {
+		PDUtils.runOnUiThread(new Runnable() {
 			public void
 			run() { fireMidiInstrumentMapRemoved(e); }
 		});
@@ -1345,7 +1328,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	fireVolumeChanged() {
 		final SamplerEvent e = new SamplerEvent(this);
 			
-		SwingUtilities.invokeLater(new Runnable() {
+		PDUtils.runOnUiThread(new Runnable() {
 			public void
 			run() { fireVolumeChanged(e); }
 		});
@@ -1368,7 +1351,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	fireTotalStreamCountChanged() {
 		final SamplerEvent e = new SamplerEvent(this);
 			
-		SwingUtilities.invokeLater(new Runnable() {
+		PDUtils.runOnUiThread(new Runnable() {
 			public void
 			run() { fireTotalStreamCountChanged(e); }
 		});
@@ -1390,7 +1373,7 @@ public class DefaultSamplerModel implements SamplerModel {
 	fireTotalVoiceCountChanged() {
 		final SamplerEvent e = new SamplerEvent(this);
 			
-		SwingUtilities.invokeLater(new Runnable() {
+		PDUtils.runOnUiThread(new Runnable() {
 			public void
 			run() { fireTotalVoiceCountChanged(e); }
 		});
@@ -1421,12 +1404,12 @@ public class DefaultSamplerModel implements SamplerModel {
 	private class Handler implements ListListener<MidiInstrumentMap> {
 		/** Invoked when a new map is added to a list. */
 		@Override
-		public void
+	public void
 		entryAdded(ListEvent<MidiInstrumentMap> e) { updateDefaultMap(); }
 		
 		/** Invoked when a map is removed from a list. */
 		@Override
-		public void
+	public void
 		entryRemoved(ListEvent<MidiInstrumentMap> e) { updateDefaultMap(); }
 		
 		private void

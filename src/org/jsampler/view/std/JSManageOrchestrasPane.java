@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-20011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -25,7 +25,6 @@ package org.jsampler.view.std;
 import java.awt.BorderLayout;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -41,11 +40,11 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.jsampler.CC;
-import org.jsampler.HF;
 import org.jsampler.OrchestraModel;
 
-import org.jsampler.view.OrchestraTable;
-import org.jsampler.view.OrchestraTableModel;
+import org.jsampler.view.swing.OrchestraTable;
+import org.jsampler.view.swing.OrchestraTableModel;
+import org.jsampler.view.swing.SHF;
 
 import static org.jsampler.view.std.StdI18n.i18n;
 
@@ -192,7 +191,7 @@ public class JSManageOrchestrasPane extends JPanel {
 			if(om.getInstrumentCount() > 0) {
 				String s;
 				s = i18n.getMessage("JSManageOrchestrasPane.removeOrchestra?");
-				if(!HF.showYesNoDialog(CC.getMainFrame(), s)) return;
+				if(!SHF.showYesNoDialog(SHF.getMainFrame(), s)) return;
 			}
 			
 			int i = orchestraTable.getSelectedRow();

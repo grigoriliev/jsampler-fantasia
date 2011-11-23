@@ -25,7 +25,7 @@ package org.jsampler;
 import java.util.TreeMap;
 import java.util.Vector;
 
-import javax.swing.SwingUtilities;
+import net.sf.juife.PDUtils;
 
 import org.jsampler.event.MidiInstrumentMapEvent;
 import org.jsampler.event.MidiInstrumentMapListener;
@@ -290,7 +290,7 @@ public class MidiInstrumentMap {
 	fireNameChanged() {
 		final MidiInstrumentMapEvent e = new MidiInstrumentMapEvent(this);
 		
-		SwingUtilities.invokeLater(new Runnable() {
+		PDUtils.runOnUiThread(new Runnable() {
 			public void
 			run() { fireNameChanged(e); }
 		});
@@ -312,7 +312,7 @@ public class MidiInstrumentMap {
 		final MidiInstrumentMapEvent e =
 			new MidiInstrumentMapEvent(this, entry, instrument);
 		
-		SwingUtilities.invokeLater(new Runnable() {
+		PDUtils.runOnUiThread(new Runnable() {
 			public void
 			run() { fireInstrumentAdded(e); }
 		});
@@ -336,7 +336,7 @@ public class MidiInstrumentMap {
 		final MidiInstrumentMapEvent e =
 			new MidiInstrumentMapEvent(this, entry, instrument);
 		
-		SwingUtilities.invokeLater(new Runnable() {
+		PDUtils.runOnUiThread(new Runnable() {
 			public void
 			run() { fireInstrumentRemoved(e); }
 		});

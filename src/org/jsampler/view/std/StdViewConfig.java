@@ -23,13 +23,12 @@ package org.jsampler.view.std;
 
 import org.jsampler.AudioDeviceModel;
 import org.jsampler.CC;
-import org.jsampler.view.JSViewConfig;
 
 /**
  *
  * @author Grigor Iliev
  */
-public abstract class StdViewConfig extends JSViewConfig {
+public abstract class StdViewConfig extends org.jsampler.view.swing.ViewConfig {
 	public static StdViewConfig
 	getViewConfig() { return (StdViewConfig)CC.getViewConfig(); }
 	

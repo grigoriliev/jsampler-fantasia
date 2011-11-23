@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -44,11 +44,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 
-import net.sf.juife.ComponentList;
-import net.sf.juife.DefaultComponentListModel;
-
 import net.sf.juife.event.TaskEvent;
 import net.sf.juife.event.TaskListener;
+
+import net.sf.juife.swing.ComponentList;
+import net.sf.juife.swing.DefaultComponentListModel;
 
 import org.jdesktop.swingx.JXCollapsiblePane;
 

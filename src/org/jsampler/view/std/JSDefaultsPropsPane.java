@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -51,7 +51,7 @@ import org.linuxsampler.lscp.AudioOutputDriver;
 import org.linuxsampler.lscp.MidiInputDriver;
 
 import static org.jsampler.view.std.StdI18n.i18n;
-import static org.jsampler.view.std.StdPrefs.*;
+import static org.jsampler.JSPrefs.*;
 
 /**
  *

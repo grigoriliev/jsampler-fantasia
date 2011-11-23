@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -31,9 +31,9 @@ import javax.swing.JScrollPane;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 
-import net.sf.juife.OkCancelDialog;
+import net.sf.juife.swing.OkCancelDialog;
 
-import org.jsampler.CC;
+import org.jsampler.view.swing.SHF;
 
 import static org.jsampler.view.std.StdI18n.i18n;
 
@@ -65,7 +65,7 @@ public class JSDbDirectoryChooser extends OkCancelDialog implements TreeSelectio
 	private void
 	initDbDirectoryChooser() {
 		btnOk.setEnabled(false);
-		instrumentsDbTree = new JSInstrumentsDbTree(CC.getInstrumentsDbTreeModel());
+		instrumentsDbTree = new JSInstrumentsDbTree(SHF.getInstrumentsDbTreeModel());
 		instrumentsDbTree.addTreeSelectionListener(this);
 		
 		JScrollPane sp = new JScrollPane(instrumentsDbTree);

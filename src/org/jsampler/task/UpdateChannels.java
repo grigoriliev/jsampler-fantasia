@@ -28,6 +28,7 @@ import org.jsampler.SamplerModel;
 
 import org.linuxsampler.lscp.SamplerChannel;
 
+import net.sf.juife.PDUtils;
 import net.sf.juife.Task;
 
 import static org.jsampler.JSI18n.i18n;
@@ -57,7 +58,7 @@ public class UpdateChannels extends EnhancedTask {
 		
 		boolean isAdjustingOld = CC.getSamplerModel().getChannelListIsAdjusting();
 		
-		javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
+		PDUtils.runOnUiThreadAndWait(new Runnable() {
 			public void
 			run() {
 				CC.getSamplerModel().setChannelListIsAdjusting(true);
@@ -107,7 +108,7 @@ public class UpdateChannels extends EnhancedTask {
 		}
 		
 		try {
-			javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
+			PDUtils.runOnUiThreadAndWait(new Runnable() {
 				public void
 				run() {
 					CC.getSamplerModel().setChannelListIsAdjusting(false);

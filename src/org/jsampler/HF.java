@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -22,20 +22,11 @@
 
 package org.jsampler;
 
-import java.awt.Component;
-import java.awt.Dialog;
-import java.awt.Font;
-import java.awt.Frame;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
 import java.util.logging.Level;
-
-import javax.swing.JOptionPane;
-import javax.swing.UIManager;
-import javax.swing.plaf.FontUIResource;
 
 import org.linuxsampler.lscp.LSException;
 import org.linuxsampler.lscp.LscpException;
@@ -48,7 +39,6 @@ import static org.jsampler.JSI18n.i18n;
  * @author Grigor Iliev
  */
 public class HF {
-// GUI HELPER FUNCIONS
 	
 	/**
 	 * Returns more meaningful, non-<code>null</code> message.
@@ -66,146 +56,6 @@ public class HF {
 		
 		return msg;
 	}
-	
-	/**
-	 * Shows a dialog with the specified error message.
-	 * @param msg The error message to be shown.
-	 */
-	public static void
-	showErrorMessage(String msg) { showErrorMessage(msg, CC.getMainFrame()); }
-	
-	/**
-	 * Shows a dialog with the specified error message.
-	 * @param parentComponent determines the Frame in which the dialog is displayed
-	 * @param msg The error message to be shown.
-	 */
-	public static void
-	showErrorMessage(String msg, Component parentComponent) {
-		JOptionPane.showMessageDialog (
-			parentComponent, msg,
-			i18n.getError("error"),
-			JOptionPane.ERROR_MESSAGE
-		);
-	}
-	
-	/**
-	 * Shows a dialog with error message obtained by {@link #getErrorMessage} method.
-	 * @param e The <code>Exception</code> from which the error message is obtained.
-	 */
-	public static void
-	showErrorMessage(Exception e) { showErrorMessage(e, CC.getMainFrame()); }
-	
-	/**
-	 * Shows a dialog with error message obtained by {@link #getErrorMessage} method.
-	 * @param e The <code>Exception</code> from which the error message is obtained.
-	 * @param prefix The prefix to be added to the error message.
-	 */
-	public static void
-	showErrorMessage(Exception e, String prefix) {
-		showErrorMessage(e, CC.getMainFrame(), prefix);
-	}
-	
-	/**
-	 * Shows a dialog with error message obtained by {@link #getErrorMessage} method.
-	 * @param e The <code>Exception</code> from which the error message is obtained.
-	 * @param frame The parent <code>Frame</code> for the dialog.
-	 */
-	public static void
-	showErrorMessage(Exception e, Frame frame) {
-		showErrorMessage(e, frame, "");
-	}
-	
-	/**
-	 * Shows a dialog with error message obtained by {@link #getErrorMessage} method.
-	 * @param e The <code>Exception</code> from which the error message is obtained.
-	 * @param frame The parent <code>Frame</code> for the dialog.
-	 * @param prefix The prefix to be added to the error message.
-	 */
-	public static void
-	showErrorMessage(Exception e, Frame frame, String prefix) {
-		String msg = prefix + getErrorMessage(e);
-		
-		CC.getLogger().log(Level.INFO, msg, e);
-			
-		JOptionPane.showMessageDialog (
-			frame, msg,
-			i18n.getError("error"),
-			JOptionPane.ERROR_MESSAGE
-		);
-	}
-	
-	/**
-	 * Shows a dialog with error message obtained by {@link #getErrorMessage} method.
-	 * @param e The <code>Exception</code> from which the error message is obtained.
-	 * @param dlg The parent <code>Dialog</code> from which the dialog is displayed.
-	 */
-	public static void
-	showErrorMessage(Exception e, Dialog dlg) {
-		String msg = getErrorMessage(e);
-		
-		CC.getLogger().log(Level.INFO, msg, e);
-		
-		JOptionPane.showMessageDialog (
-			dlg, msg,
-			i18n.getError("error"),
-			JOptionPane.ERROR_MESSAGE
-		);
-	}
-	
-	/**
-	 * Brings up a question dialog with Yes, No options, empty title and the specified message.
-	 * @param parent The parent <code>Component</code> for the dialog.
-	 * @param message The message to display.
-	 * @return <code>true</code> if the user chooses "yes", <code>false</code> otherwise.
-	 */
-	public static boolean
-	showYesNoDialog(Component parent, String message) {
-		return showYesNoDialog(parent, message, "");
-	}
-	
-	/**
-	 * Brings up a question dialog with Yes, No options, empty title and the specified message.
-	 * @param parent The parent <code>Component</code> for the dialog.
-	 * @param message The message to display.
-	 * @param title The dialog's title.
-	 * @return <code>true</code> if the user chooses "yes", <code>false</code> otherwise.
-	 */
-	public static boolean
-	showYesNoDialog(Component parent, String message, String title) {
-		Object[] options = { i18n.getButtonLabel("yes"), i18n.getButtonLabel("no") };
-		int n = JOptionPane.showOptionDialog (
-			parent,
-			message, title,
-			JOptionPane.YES_NO_OPTION,
-			JOptionPane.QUESTION_MESSAGE,
-			null,
-			options, options[0]
-		);
-		
-		return n == 0;
-	}
-	
-	/**
-	 * Sets the default font to be used in the GUI.
-	 * @param fontName The name of the font to be used as default.
-	 */
-	public static void
-	setUIDefaultFont(String fontName) {
-		if(fontName == null) return;
-		
-		java.util.Enumeration keys = UIManager.getDefaults().keys();
-		while(keys.hasMoreElements()) {
-			Object key = keys.nextElement();
-			Object value = UIManager.get(key);
-			if(value instanceof FontUIResource) {
-				Font f = (FontUIResource)value;
-				FontUIResource fr =
-					new FontUIResource(fontName, f.getStyle(), f.getSize());
-				UIManager.put(key, fr);
-			}
-		}
-	}
-///////
 	
 	/**
 	 * Deletes the specified file, if exists and
@@ -304,5 +154,23 @@ public class HF {
 		float f = vol;
 		f /= 100;
 		return f;
+	}
+	
+	/** Tests whether the application can read/write the specified file. */
+	public static boolean
+	canReadWrite(String file) {
+		File f = new File(file);
+		if(f.isDirectory()) return false;
+		if(f.canRead() && f.canWrite()) return true;
+		return false;
+	}
+	
+	/** Tests whether the application can read/write files in the specified directory. */
+	public static boolean
+	canReadWriteFiles(String dir) {
+		File f = new File(dir);
+		if(!f.isDirectory()) return false;
+		if(f.canRead() && f.canWrite() && f.canExecute()) return true;
+		return false;
 	}
 }

@@ -28,14 +28,14 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 
 import org.jsampler.CC;
-import org.jsampler.HF;
 import org.jsampler.view.JSChannel;
 import org.jsampler.view.std.JSNewAudioDeviceDlg;
 import org.jsampler.view.std.JSNewMidiDeviceDlg;
 import org.jsampler.view.std.StdA4n;
+import org.jsampler.view.swing.SHF;
 
+import static org.jsampler.JSPrefs.*;
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
-import static org.jsampler.view.std.StdPrefs.*;
 
 /**
  *
@@ -69,7 +69,7 @@ public class A4n extends StdA4n {
 		@Override
 		public void
 		actionPerformed(ActionEvent e) {
-			new SamplerInfoDlg(CC.getMainFrame()).setVisible(true);
+			new SamplerInfoDlg(SHF.getMainFrame()).setVisible(true);
 		}
 	}
 	
@@ -86,7 +86,7 @@ public class A4n extends StdA4n {
 		@Override
 		public void
 		actionPerformed(ActionEvent e) {
-			if(!((MainFrame)CC.getMainFrame()).runScript()) return;
+			if(!((MainFrame)SHF.getMainFrame()).runScript()) return;
 			
 			if(preferences().getBoolProperty(SHOW_LS_CONSOLE_WHEN_RUN_SCRIPT)) {
 				windowLSConsole.actionPerformed(null);
@@ -109,7 +109,7 @@ public class A4n extends StdA4n {
 		public void
 		actionPerformed(ActionEvent e) {
 			if(!CC.verifyConnection()) return;
-			new JSNewMidiDeviceDlg(CC.getMainFrame()).setVisible(true);
+			new JSNewMidiDeviceDlg(SHF.getMainFrame()).setVisible(true);
 		}
 	}
 	
@@ -128,7 +128,7 @@ public class A4n extends StdA4n {
 		public void
 		actionPerformed(ActionEvent e) {
 			if(!CC.verifyConnection()) return;
-			new JSNewAudioDeviceDlg(CC.getMainFrame()).setVisible(true);
+			new JSNewAudioDeviceDlg(SHF.getMainFrame()).setVisible(true);
 		}
 	}
 	
@@ -146,7 +146,7 @@ public class A4n extends StdA4n {
 		
 		@Override
 		public void
-		actionPerformed(ActionEvent e) { new PrefsDlg(CC.getMainFrame()).setVisible(true); }
+		actionPerformed(ActionEvent e) { new PrefsDlg(SHF.getMainFrame()).setVisible(true); }
 	}
 	
 	
@@ -230,7 +230,7 @@ public class A4n extends StdA4n {
 		@Override
 		public void
 		actionPerformed(ActionEvent e) {
-			LSConsoleFrame console = ((MainFrame)CC.getMainFrame()).getLSConsoleFrame();
+			LSConsoleFrame console = ((MainFrame)SHF.getMainFrame()).getLSConsoleFrame();
 			
 			if(console.isVisible()) console.setVisible(false);
 			
@@ -254,9 +254,9 @@ public class A4n extends StdA4n {
 		actionPerformed(ActionEvent e) {
 			if(!CC.verifyConnection()) return;
 			
-			if(CC.getInstrumentsDbTreeModel() == null) {
+			if(SHF.getInstrumentsDbTreeModel() == null) {
 				String s = i18n.getMessage("A4n.noInstrumentsDbSupport!");
-				HF.showErrorMessage(s, CC.getMainFrame());
+				SHF.showErrorMessage(s, SHF.getMainFrame());
 				return;
 			}
 			
@@ -294,7 +294,7 @@ public class A4n extends StdA4n {
 		public void
 		actionPerformed(ActionEvent e) {
 			SamplerBrowserFrame browser =
-				((MainFrame)CC.getMainFrame()).getSamplerBrowserFrame();
+				((MainFrame)SHF.getMainFrame()).getSamplerBrowserFrame();
 
 			if(browser.isVisible()) browser.setVisible(false);
 
@@ -313,7 +313,7 @@ public class A4n extends StdA4n {
 		@Override
 		public void
 		actionPerformed(ActionEvent e) {
-			new HelpAboutDlg(CC.getMainFrame()).setVisible(true);
+			new HelpAboutDlg(SHF.getMainFrame()).setVisible(true);
 		}
 	}
 }

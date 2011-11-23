@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -70,6 +70,8 @@ import org.jsampler.view.std.JSFxSendsDlg;
 import org.jsampler.view.std.JSFxSendsPane;
 import org.jsampler.view.std.JSInstrumentChooser;
 import org.jsampler.view.std.JSVolumeEditorPopup;
+import org.jsampler.view.swing.SHF;
+import org.jsampler.view.swing.SwingChannel;
 
 import org.linuxsampler.lscp.SamplerChannel;
 
@@ -84,7 +86,7 @@ import static org.jsampler.view.std.JSVolumeEditorPopup.VolumeType;
  *
  * @author Grigor Iliev
  */
-public class Channel extends JSChannel {
+public class Channel extends SwingChannel {
 	private final JXCollapsiblePane mainPane;
 	private final ChannelOptionsPane optionsPane = new ChannelOptionsPane();
 	
@@ -263,7 +265,7 @@ public class Channel extends JSChannel {
 			}
 		};
 		
-		((MainFrame)CC.getMainFrame()).getGuiTimer().addActionListener(guiListener);
+		((MainFrame)SHF.getMainFrame()).getGuiTimer().addActionListener(guiListener);
 	}
 	
 	private void
@@ -338,7 +340,7 @@ public class Channel extends JSChannel {
 	
 	public void
 	loadInstrument() {
-		JSInstrumentChooser dlg = FantasiaUtils.createInstrumentChooser(CC.getMainFrame());
+		JSInstrumentChooser dlg = FantasiaUtils.createInstrumentChooser(SHF.getMainFrame());
 		dlg.setVisible(true);
 		
 		if(!dlg.isCancelled()) {
@@ -786,7 +788,7 @@ public class Channel extends JSChannel {
 		public void
 		actionPerformed(ActionEvent e) {
 			SamplerChannel c = getChannelInfo();
-			new JSChannelOutputRoutingDlg(CC.getMainFrame(), c).setVisible(true);
+			new JSChannelOutputRoutingDlg(SHF.getMainFrame(), c).setVisible(true);
 		}
 		
 		@Override
@@ -1028,7 +1030,7 @@ public class Channel extends JSChannel {
 			boolean b = preferences().getBoolProperty(CONFIRM_CHANNEL_REMOVAL);
 			if(b) {
 				String s = i18n.getMessage("Channel.remove?", channel.getChannelId());
-				if(!HF.showYesNoDialog(channel, s)) {
+				if(!SHF.showYesNoDialog(channel, s)) {
 					setSelected(true);
 					return;
 				}

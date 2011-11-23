@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -42,8 +42,8 @@ import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.SpinnerNumberModel;
 
-import net.sf.juife.EnhancedDialog;
-import net.sf.juife.JuifeUtils;
+import net.sf.juife.swing.EnhancedDialog;
+import net.sf.juife.swing.JuifeUtils;
 
 import org.jsampler.CC;
 import org.jsampler.JSUtils;
@@ -55,6 +55,7 @@ import org.jsampler.view.std.JSDefaultsPropsPane;
 import org.jsampler.view.std.JSGeneralProps;
 import org.jsampler.view.std.JSLSConsolePropsPane;
 import org.jsampler.view.std.JSViewProps;
+import org.jsampler.view.swing.SHF;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jsampler.view.fantasia.FantasiaPrefs.*;
@@ -260,7 +261,7 @@ class GeneralPane extends JPanel {
 		
 		int size = recentScriptsPane.getRecentScriptsSize();
 		preferences().setIntProperty(RECENT_LSCP_SCRIPTS_SIZE, size);
-		((MainFrame)CC.getMainFrame()).updateRecentScriptsMenu();
+		((MainFrame)SHF.getMainFrame()).updateRecentScriptsMenu();
 		
 		String s = jSamplerHomePane.getJSamplerHome();
 		if(s.length() > 0 && !s.equals(CC.getJSamplerHome())) {
@@ -271,7 +272,7 @@ class GeneralPane extends JPanel {
 	private class RecentScriptsPane extends JSGeneralProps.RecentScriptsPane {
 		protected void
 		clearRecentScripts() {
-			((MainFrame)CC.getMainFrame()).clearRecentScripts();
+			((MainFrame)SHF.getMainFrame()).clearRecentScripts();
 		}
 	}
 }
@@ -449,7 +450,7 @@ class ChannelsPropsPane extends JPanel {
 class ConsolePane extends JSLSConsolePropsPane {
 	protected void
 	clearConsoleHistory() {
-		MainFrame mainFrame = (MainFrame)CC.getMainFrame();
+		MainFrame mainFrame = (MainFrame)SHF.getMainFrame();
 		mainFrame.getLSConsoleModel().clearCommandHistory();
 	}
 	
@@ -457,7 +458,7 @@ class ConsolePane extends JSLSConsolePropsPane {
 	apply() {
 		super.apply();
 		
-		MainFrame mainFrame = (MainFrame)CC.getMainFrame();
+		MainFrame mainFrame = (MainFrame)SHF.getMainFrame();
 		
 		LSConsoleModel model = mainFrame.getLSConsoleModel();
 		model.setCommandHistorySize(preferences().getIntProperty(LS_CONSOLE_HISTSIZE));

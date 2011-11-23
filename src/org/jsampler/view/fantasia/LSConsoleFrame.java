@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2010 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -32,6 +32,7 @@ import javax.swing.JMenuItem;
 import org.jsampler.CC;
 import org.jsampler.view.std.JSFrame;
 import org.jsampler.view.std.JSLscpScriptDlg;
+import org.jsampler.view.swing.SHF;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 
@@ -116,7 +117,7 @@ public class LSConsoleFrame extends JSFrame {
 		mi.addActionListener(new ActionListener() {
 			public void
 			actionPerformed(ActionEvent e) {
-				((MainFrame)CC.getMainFrame()).runScript();
+				((MainFrame)SHF.getMainFrame()).runScript();
 			}
 		});
 

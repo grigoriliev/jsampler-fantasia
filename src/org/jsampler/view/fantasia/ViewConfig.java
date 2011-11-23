@@ -22,6 +22,7 @@
 
 package org.jsampler.view.fantasia;
 
+import org.jsampler.view.swing.SHF;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,18 +35,17 @@ import org.jsampler.AudioDeviceModel;
 import org.jsampler.CC;
 import org.jsampler.JSPrefs;
 
+import org.jsampler.view.JSMainFrame;
 import org.jsampler.view.InstrumentsDbTableView;
 import org.jsampler.view.InstrumentsDbTreeView;
 import org.jsampler.view.BasicIconSet;
-import org.jsampler.view.JSMainFrame;
 import org.jsampler.view.fantasia.basic.MultiColumnMenu;
-import org.jsampler.view.std.JSDestEffectChooser;
 import org.jsampler.view.std.StdViewConfig;
 
 import org.pushingpixels.substance.api.SubstanceConstants;
 import org.pushingpixels.substance.api.SubstanceLookAndFeel;
 
-import static org.jsampler.view.SamplerTreeModel.*;
+import static org.jsampler.view.swing.SamplerTreeModel.*;
 
 /**
  *
@@ -142,7 +142,7 @@ public class ViewConfig extends StdViewConfig {
 	public String
 	exportSessionViewConfig() {
 		StringBuffer sb = new StringBuffer();
-		MainFrame frame = (MainFrame)CC.getMainFrame();
+		MainFrame frame = (MainFrame)SHF.getMainFrame();
 		
 		for(int i = 0; i < frame.getChannelsPaneCount(); i++) {
 			exportSamplerChannels(sb, i);

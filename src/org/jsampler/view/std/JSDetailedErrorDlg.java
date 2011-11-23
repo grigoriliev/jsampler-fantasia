@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -37,7 +37,6 @@ import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JToggleButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
@@ -45,10 +44,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.SwingUtilities;
 
-import org.linuxsampler.lscp.LSException;
-
-import net.sf.juife.EnhancedDialog;
-import net.sf.juife.JuifeUtils;
+import net.sf.juife.swing.EnhancedDialog;
+import net.sf.juife.swing.JuifeUtils;
 
 import static org.jsampler.view.std.StdI18n.i18n;
 

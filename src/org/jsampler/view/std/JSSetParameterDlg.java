@@ -30,8 +30,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
-import net.sf.juife.OkCancelDialog;
-import org.jsampler.CC;
+import net.sf.juife.swing.OkCancelDialog;
+import org.jsampler.view.swing.SHF;
 import org.linuxsampler.lscp.EffectParameter;
 import org.linuxsampler.lscp.FloatParameter;
 
@@ -44,7 +44,7 @@ public class JSSetParameterDlg extends OkCancelDialog {
 	
 	public
 	JSSetParameterDlg(EffectParameter param) {
-		this(CC.getMainFrame(), param);
+		this(SHF.getMainFrame(), param);
 	}
 	
 	public

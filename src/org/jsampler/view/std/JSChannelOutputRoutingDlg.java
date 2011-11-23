@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -34,8 +34,8 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.JTableHeader;
 
-import net.sf.juife.InformationDialog;
-import net.sf.juife.JuifeUtils;
+import net.sf.juife.swing.InformationDialog;
+import net.sf.juife.swing.JuifeUtils;
 
 import org.jsampler.AudioDeviceModel;
 import org.jsampler.CC;

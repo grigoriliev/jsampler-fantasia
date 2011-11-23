@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -22,8 +22,8 @@
 
 package org.jsampler.view.classic;
 
-import net.sf.juife.NavigationPage;
-import net.sf.juife.NavigationPane;
+import net.sf.juife.swing.NavigationPage;
+import net.sf.juife.swing.NavigationPane;
 
 
 /**

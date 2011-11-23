@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -22,10 +22,9 @@
 
 package org.jsampler.view;
 
-import javax.swing.JPanel;
-import javax.swing.event.ListSelectionListener;
 
 import org.jsampler.SamplerChannelModel;
+import org.jsampler.event.ListSelectionListener;
 import org.jsampler.view.SessionViewConfig.ChannelConfig;
 
 
@@ -33,136 +32,113 @@ import org.jsampler.view.SessionViewConfig.ChannelConfig;
  * This class defines the skeleton of a pane containg sampler channels.
  * @author Grigor Iliev
  */
-public abstract class JSChannelsPane extends JPanel {
+public interface JSChannelsPane<C extends JSChannel> {
 	/** The key used for reporting title's property change. */
 	public final static String TITLE = "ChannelsPaneTitle";
 	
-	private String title;
-	
-	/** Creates a new instance of <code>JSChannelsPane</code>. */
-	public
-	JSChannelsPane(String title) { this.title = title; }
+	/**
+	 * Returns the title of this channels' pane.
+	 * @return The title of this  channels' pane.
+	 */
+	public String getTitle();
 	
 	/**
-	 * Returns the title of this <code>JSChannelsPane</code>.
-	 * @return The title of this <code>JSChannelsPane</code>.
+	 * Sets the title of this  channels' pane.
+	 * @param title The new title of this channels' pane.
 	 */
-	public String
-	getTitle() { return title; }
+	public void setTitle(String title);
 	
-	/**
-	 * Sets the title of this <code>JSChannelsPane</code>.
-	 * @param title The new title of this <code>JSChannelsPane</code>.
-	 */
-	public void
-	setTitle(String title) {
-		if(this.title.equals(title)) return;
-		
-		String oldTitle = this.title;
-		this.title = title;
-		firePropertyChange(TITLE, oldTitle, title);
-	}
-	
-	/**
-	 * Returns the title of this <code>JSChannelsPane</code>.
-	 * @return The title of this <code>JSChannelsPane</code>.
-	 */
-	@Override
-	public String
-	toString() { return getTitle(); }
+	//public void firePropertyChange(String propertyName, Object oldValue, Object newValue);
 	
 	/**
 	 * Adds new channel to this channels pane.
 	 * @param channelModel The sampler channel model to be used by the new channel.
 	 */
-	public abstract void addChannel(SamplerChannelModel channelModel);
+	public void addChannel(SamplerChannelModel channelModel);
 	
 	/**
 	 * Adds new channel to this channels pane.
 	 * @param channelModel The sampler channel model to be used by the new channel.
 	 * @param config The view config of the sampler channel.
 	 */
-	public void
-	addChannel(SamplerChannelModel channelModel, ChannelConfig config) {
-		addChannel(channelModel);
-	}
+	public void addChannel(SamplerChannelModel channelModel, ChannelConfig config);
 	
 	/**
 	 * Adds the specified channels to this channels pane.
 	 * @param chns The channels to be added.
 	 */
-	public abstract void addChannels(JSChannel[] chns);
+	public void addChannels(C[] chns);
 	
 	/**
 	 * Removes the specified channel from this channels pane.
 	 * This method is invoked when a sampler channel is removed in the back-end.
 	 * @param chn The channel to be removed from this channels pane.
 	 */
-	public abstract void removeChannel(JSChannel chn);
+	public void removeChannel(C chn);
 	
 	/**
 	 * Determines whether there is at least one selected channel.
 	 * @return <code>true</code> if there is at least one selected channel,
 	 * <code>false</code> otherwise.
 	 */
-	public abstract boolean hasSelectedChannel();
+	public boolean hasSelectedChannel();
 	
 	/**
 	 * Gets the first channel in this channels pane.
 	 * @return The first channel in this channels pane or <code>null</code> if 
 	 * the channels pane is empty.
 	 */
-	public abstract JSChannel getFirstChannel();
+	public C getFirstChannel();
 	
 	/**
 	 * Gets the last channel in this channels pane.
 	 * @return The last channel in this channels pane or <code>null</code> if 
 	 * the channels pane is empty.
 	 */
-	public abstract JSChannel getLastChannel();
+	public C getLastChannel();
 	
 	/**
 	 * Gets the channel at the specified index.
 	 * @return The channel at the specified index.
 	 * @throws ArrayIndexOutOfBoundsException If the index is out of range.
 	 */
-	public abstract JSChannel getChannel(int idx);
+	public C getChannel(int idx);
 	
 	/**
 	 * Gets an array of all channels in this channels pane.
 	 * @return An array of all channels in this channels pane.
 	 */
-	public abstract JSChannel[] getChannels();
+	public C[] getChannels();
 	
 	/**
 	 * Gets the number of channels in this channels pane.
 	 * @return The number of channels in this channels pane.
 	 */
-	public abstract int getChannelCount();
+	public int getChannelCount();
 	
 	/**
 	 * Gets an array of all selected channels.
 	 * The channels are sorted in increasing index order.
 	 * @return The selected channels or an empty array if nothing is selected.
 	 */
-	public abstract JSChannel[] getSelectedChannels();
+	public C[] getSelectedChannels();
 	
 	/**
 	 * Gets the number of the selected channels.
 	 * @return The number of the selected channels.
 	 */
-	public abstract int getSelectedChannelCount();
+	public int getSelectedChannelCount();
 	
 	/**
 	 * Selects the specified channel.
 	 */
-	public abstract void setSelectedChannel(JSChannel channel);
+	public void setSelectedChannel(C channel);
 	
 	/** Selects all channels. */
-	public abstract void selectAll();
+	public void selectAll();
 	
 	/** Deselects all selected channels. */
-	public abstract void clearSelection();
+	public void clearSelection();
 	
 	/**
 	 * Removes all selected channels in this channels pane.
@@ -170,27 +146,27 @@ public abstract class JSChannelsPane extends JPanel {
 	 * It is invoked after the channels are already removed in the back-end.
 	 * @return The number of removed channels.
 	 */
-	public abstract int removeSelectedChannels();
+	public int removeSelectedChannels();
 	
-	public abstract void moveSelectedChannelsOnTop();
+	public void moveSelectedChannelsOnTop();
 	
-	public abstract void moveSelectedChannelsUp();
+	public void moveSelectedChannelsUp();
 	
-	public abstract void moveSelectedChannelsDown();
+	public void moveSelectedChannelsDown();
 	
-	public abstract void moveSelectedChannelsAtBottom();
+	public void moveSelectedChannelsAtBottom();
 		
 	/**
 	 * Registers the specified listener for receiving list selection events.
 	 * @param listener The <code>ListSelectionListener</code> to register.
 	 */
-	public abstract void addListSelectionListener(ListSelectionListener listener);
+	public void addListSelectionListener(ListSelectionListener listener);
 	
 	/**
 	 * Removes the specified listener.
 	 * @param listener The <code>ListSelectionListener</code> to remove.
 	 */
-	public abstract void removeListSelectionListener(ListSelectionListener listener);
+	public void removeListSelectionListener(ListSelectionListener listener);
 	
 	/**
 	 * Process a selection event.
@@ -198,25 +174,25 @@ public abstract class JSChannelsPane extends JPanel {
 	 * @param controlDown Specifies whether the control key is held down during selection.
 	 * @param shiftDown Specifies whether the shift key is held down during selection.
 	 */
-	public abstract void processChannelSelection(JSChannel c, boolean controlDown, boolean shiftDown);
+	public void processChannelSelection(C c, boolean controlDown, boolean shiftDown);
 	
 	/**
 	 * Determines whether the channel list UI should be automatically updated
 	 * when channel is added/removed. The default value is <code>true</code>.
 	 * @see updateChannelListUI
 	 */
-	public abstract boolean getAutoUpdate();
+	public boolean getAutoUpdate();
 	
 	/**
 	 * Determines whether the channel list UI should be automatically updated
 	 * when channel is added/removed.
 	 * @see updateChannelListUI
 	 */
-	public abstract void setAutoUpdate(boolean b);
+	public void setAutoUpdate(boolean b);
 	
 	/**
 	 * Updates the channel list UI.
 	 * @see setAutoUpdate
 	 */
-	public abstract void updateChannelListUI();
+	public void updateChannelListUI();
 }

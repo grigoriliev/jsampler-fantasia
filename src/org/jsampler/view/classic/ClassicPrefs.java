@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -26,16 +26,14 @@ import java.awt.Color;
 
 import java.util.prefs.Preferences;
 
-import org.jsampler.CC;
-
-import org.jsampler.view.std.StdPrefs;
+import org.jsampler.JSPrefs;
 
 
 /**
  * This class represents the preferences of the JS Classic package.
  * @author Grigor Iliev
  */
-public class ClassicPrefs extends StdPrefs {
+public class ClassicPrefs extends JSPrefs {
 	private final static String prefNode = "org.jsampler.view.classic";
 	
 	private final static String WINDOW_SIZE_AND_LOCATION = ".sizeAndLocation";

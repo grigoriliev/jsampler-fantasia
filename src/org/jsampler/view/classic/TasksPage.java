@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -23,27 +23,19 @@
 package org.jsampler.view.classic;
 
 import java.awt.Dimension;
-import java.awt.MediaTracker;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import java.net.URL;
-
-import java.util.logging.Level;
-
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 
-import net.sf.juife.LinkButton;
-import net.sf.juife.NavigationPage;
-
-import org.jsampler.CC;
+import net.sf.juife.swing.LinkButton;
+import net.sf.juife.swing.NavigationPage;
 
 import static org.jsampler.view.classic.ClassicI18n.i18n;
 import static org.jsampler.view.classic.LeftPane.getLeftPane;

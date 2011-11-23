@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2010 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -54,10 +54,11 @@ import javax.swing.JPopupMenu;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import net.sf.juife.Dial;
+import net.sf.juife.swing.Dial;
 
 import org.jsampler.CC;
 import org.jsampler.view.fantasia.basic.*;
+import org.jsampler.view.swing.SHF;
 
 import org.pushingpixels.substance.internal.utils.SubstanceImageCreator;
 
@@ -705,12 +706,12 @@ class ChannelScreen extends PixmapPane {
 		addMouseListener(getHandler());
 		addHierarchyListener(getHandler());
 		
-		((MainFrame)CC.getMainFrame()).getGuiTimer().addActionListener(guiListener);
+		((MainFrame)SHF.getMainFrame()).getGuiTimer().addActionListener(guiListener);
 	}
 	
 	private void
 	uninstallListeners() {
-		((MainFrame)CC.getMainFrame()).getGuiTimer().removeActionListener(guiListener);
+		((MainFrame)SHF.getMainFrame()).getGuiTimer().removeActionListener(guiListener);
 	}
 	
 	protected void

@@ -55,9 +55,9 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
 
-import net.sf.juife.InformationDialog;
-import net.sf.juife.JuifeUtils;
-import net.sf.juife.NavigationPage;
+import net.sf.juife.swing.InformationDialog;
+import net.sf.juife.swing.JuifeUtils;
+import net.sf.juife.swing.NavigationPage;
 
 import org.jsampler.AudioDeviceModel;
 import org.jsampler.CC;
@@ -70,8 +70,9 @@ import org.jsampler.event.ListListener;
 import org.jsampler.event.ParameterEvent;
 import org.jsampler.event.ParameterListener;
 
-import org.jsampler.view.NumberCellEditor;
-import org.jsampler.view.ParameterTable;
+import org.jsampler.view.swing.NumberCellEditor;
+import org.jsampler.view.swing.ParameterTable;
+import org.jsampler.view.swing.SHF;
 
 import org.linuxsampler.lscp.AudioOutputChannel;
 import org.linuxsampler.lscp.AudioOutputDevice;
@@ -323,7 +324,7 @@ public class AudioDevicesPage extends NavigationPage {
 		public void
 		actionPerformed(ActionEvent e) {
 			JOptionPane.showMessageDialog (
-				CC.getMainFrame(), "Not implemented yet",
+				SHF.getMainFrame(), "Not implemented yet",
 				"",
 				JOptionPane.INFORMATION_MESSAGE
 			);
@@ -398,7 +399,7 @@ public class AudioDevicesPage extends NavigationPage {
 	
 	private class DevicePropsDlg extends InformationDialog {
 		DevicePropsDlg() {
-			super(CC.getMainFrame(), i18n.getLabel("AudioDevicesPage.DevicePropsDlg"));
+			super(SHF.getMainFrame(), i18n.getLabel("AudioDevicesPage.DevicePropsDlg"));
 			
 			AudioDeviceModel m = getSelectedAudioDeviceModel();
 			ParameterTable table = new ParameterTable();

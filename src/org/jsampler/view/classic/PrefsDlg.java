@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -50,11 +50,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
-import net.sf.juife.EnhancedDialog;
-import net.sf.juife.JuifeUtils;
+import net.sf.juife.swing.EnhancedDialog;
+import net.sf.juife.swing.JuifeUtils;
 
 import org.jsampler.CC;
-import org.jsampler.HF;
 import org.jsampler.JSI18n;
 import org.jsampler.JSUtils;
 import org.jsampler.LSConsoleModel;
@@ -66,10 +65,11 @@ import org.jsampler.view.std.JSConnectionPropsPane;
 import org.jsampler.view.std.JSDefaultsPropsPane;
 import org.jsampler.view.std.JSGeneralProps;
 import org.jsampler.view.std.JSLSConsolePropsPane;
+import org.jsampler.view.swing.SHF;
 
+import static org.jsampler.JSPrefs.*;
 import static org.jsampler.view.classic.ClassicI18n.i18n;
 import static org.jsampler.view.classic.ClassicPrefs.preferences;
-import static org.jsampler.view.std.StdPrefs.*;
 
 
 /**
@@ -297,7 +297,7 @@ class GeneralPane extends JPanel {
 		
 		int size = recentScriptsPane.getRecentScriptsSize();
 		preferences().setIntProperty(RECENT_LSCP_SCRIPTS_SIZE, size);
-		((MainFrame)CC.getMainFrame()).updateRecentScriptsMenu();
+		((MainFrame)SHF.getMainFrame()).updateRecentScriptsMenu();
 		
 		String s = jSamplerHomePane.getJSamplerHome();
 		if(s.length() > 0 && !s.equals(CC.getJSamplerHome())) {
@@ -309,7 +309,7 @@ class GeneralPane extends JPanel {
 		@Override
 		protected void
 		clearRecentScripts() {
-			((MainFrame)CC.getMainFrame()).clearRecentScripts();
+			((MainFrame)SHF.getMainFrame()).clearRecentScripts();
 		}
 	}
 }
@@ -583,7 +583,7 @@ class ViewPane extends JPanel {
 		if(fontName.equals("[Default]")) {
 			b = Prefs.setInterfaceFont(null);
 		} else if(Prefs.setInterfaceFont(fontName)) {
-			HF.setUIDefaultFont(fontName);
+			CC.getViewConfig().setUIDefaultFont(fontName);
 			b = true;
 		}
 		
@@ -650,8 +650,8 @@ class ConsolePane extends JSLSConsolePropsPane {
 	@Override
 	protected void
 	clearConsoleHistory() {
-		MainFrame mainFrame = (MainFrame)CC.getMainFrame();
-		mainFrame.getLSConsoleModel().clearCommandHistory();
+		MainFrame frame = (MainFrame)SHF.getMainFrame();
+		frame.getLSConsoleModel().clearCommandHistory();
 	}
 	
 	@Override
@@ -659,24 +659,24 @@ class ConsolePane extends JSLSConsolePropsPane {
 	apply() {
 		super.apply();
 		
-		MainFrame mainFrame = (MainFrame)CC.getMainFrame();
+		MainFrame frame = (MainFrame)SHF.getMainFrame();
 		
-		LSConsoleModel model = mainFrame.getLSConsoleModel();
+		LSConsoleModel model = frame.getLSConsoleModel();
 		model.setCommandHistorySize(preferences().getIntProperty(LS_CONSOLE_HISTSIZE));
 		
 		int c = preferences().getIntProperty(LS_CONSOLE_TEXT_COLOR);
-		mainFrame.setLSConsoleTextColor(new Color(c));
+		frame.setLSConsoleTextColor(new Color(c));
 		
 		c = preferences().getIntProperty(LS_CONSOLE_BACKGROUND_COLOR);
-		mainFrame.setLSConsoleBackgroundColor(new Color(c));
+		frame.setLSConsoleBackgroundColor(new Color(c));
 		
 		c = preferences().getIntProperty(LS_CONSOLE_NOTIFY_COLOR);
-		mainFrame.setLSConsoleNotifyColor(new Color(c));
+		frame.setLSConsoleNotifyColor(new Color(c));
 		
 		c = preferences().getIntProperty(LS_CONSOLE_WARNING_COLOR);
-		mainFrame.setLSConsoleWarningColor(new Color(c));
+		frame.setLSConsoleWarningColor(new Color(c));
 		
 		c = preferences().getIntProperty(LS_CONSOLE_ERROR_COLOR);
-		mainFrame.setLSConsoleErrorColor(new Color(c));
+		frame.setLSConsoleErrorColor(new Color(c));
 	}
 }

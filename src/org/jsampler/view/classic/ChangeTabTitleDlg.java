@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -36,12 +36,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import net.sf.juife.EnhancedDialog;
-import net.sf.juife.JuifeUtils;
+import net.sf.juife.swing.EnhancedDialog;
+import net.sf.juife.swing.JuifeUtils;
 
 import org.jsampler.CC;
-import org.jsampler.HF;
 import org.jsampler.view.JSChannelsPane;
+import org.jsampler.view.swing.SHF;
 
 import static org.jsampler.view.classic.ClassicI18n.i18n;
 
@@ -130,20 +130,20 @@ public class ChangeTabTitleDlg extends EnhancedDialog {
 		String title = tfTitle.getText().trim();
 		
 		if(title.length() == 0) {
-			HF.showErrorMessage(i18n.getError("ChangeTabTitleDlg.emptyTitle!"), this);
+			SHF.showErrorMessage(i18n.getError("ChangeTabTitleDlg.emptyTitle!"), this);
 			return;
 		}
 		
 		for(JSChannelsPane p : CC.getMainFrame().getChannelsPaneList()) {
 			if(p != pane && title.equals(p.getTitle())) {
 				String s = i18n.getError("ChangeTabTitleDlg.tabExist!", title);
-				HF.showErrorMessage(s, this);
+				SHF.showErrorMessage(s, this);
 				return;
 			}
 		}
 		
 		pane.setTitle(title);
-		((MainFrame)CC.getMainFrame()).updateTabTitle(pane);
+		((MainFrame)SHF.getMainFrame()).updateTabTitle(pane);
 		
 		setVisible(false);
 	}

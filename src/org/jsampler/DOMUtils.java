@@ -131,4 +131,14 @@ public class DOMUtils {
 			node.getFirstChild().getNodeType() != Node.TEXT_NODE
 		) { throw new IllegalArgumentException(node.getNodeName() + ": Not a text node"); }
 	}
+	
+	/**
+	 * Validates a text attribute.
+	 * @throws IllegalArgumentException If the node is not a text attribute.
+	 */
+	public static void
+	validateTextAttr(Node node) throws IllegalArgumentException {
+		if (node.getNodeType() != Node.ATTRIBUTE_NODE)
+		{ throw new IllegalArgumentException(node.getNodeName() + ": Not an attribute"); }
+	}
 }

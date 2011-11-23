@@ -22,6 +22,8 @@
 
 package org.jsampler;
 
+import java.io.Serializable;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -33,7 +35,7 @@ import org.w3c.dom.NodeList;
  *
  * @author Grigor Iliev
  */
-public class Server extends Resource {
+public class Server extends Resource implements Serializable {
 	private String address = "127.0.0.1";
 	private int port = 8888;
 	
@@ -108,8 +110,8 @@ public class Server extends Resource {
 		if(n == null) {
 			throw new IllegalArgumentException("The server name is undefined!");
 		}
-		DOMUtils.validateTextContent(n);
-		setName(n.getFirstChild().getNodeValue());
+		DOMUtils.validateTextAttr(n);
+		setName(n.getNodeValue());
 		
 		
 		String s = null;

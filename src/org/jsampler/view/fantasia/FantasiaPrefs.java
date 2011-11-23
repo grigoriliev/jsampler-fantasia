@@ -22,14 +22,14 @@
 
 package org.jsampler.view.fantasia;
 
-import org.jsampler.view.std.StdPrefs;
+import org.jsampler.JSPrefs;
 
 
 /**
  *
  * @author Grigor Iliev
  */
-public class FantasiaPrefs extends StdPrefs {
+public class FantasiaPrefs extends JSPrefs {
 	/** Property which specifies whether to use animation effects. */
 	public final static String ANIMATED = "animated";
 	

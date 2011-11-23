@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2010 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -31,7 +31,7 @@ import org.jsampler.view.fantasia.Res;
  *
  * @author Grigor Iliev
  */
-public class MultiColumnMenu extends net.sf.juife.MultiColumnMenu {
+public class MultiColumnMenu extends net.sf.juife.swing.MultiColumnMenu {
 	public
 	MultiColumnMenu(String s) { super(s); }
 

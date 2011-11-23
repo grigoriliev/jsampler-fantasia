@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -32,10 +32,10 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
-import net.sf.juife.OkCancelDialog;
+import net.sf.juife.swing.OkCancelDialog;
 
 import org.jsampler.CC;
-import org.jsampler.HF;
+import org.jsampler.view.swing.SHF;
 
 import static org.jsampler.view.std.StdI18n.i18n;
 
@@ -48,7 +48,7 @@ public class JSPianoRollPrefsDlg extends OkCancelDialog {
 	
 	public
 	JSPianoRollPrefsDlg() {
-		super(CC.getMainFrame(), i18n.getLabel("JSPianoRollPrefsDlg.title"));
+		super(SHF.getMainFrame(), i18n.getLabel("JSPianoRollPrefsDlg.title"));
 		btnOk.setText(i18n.getButtonLabel("apply"));
 		
 		setMainPane(mainPane);
@@ -60,7 +60,7 @@ public class JSPianoRollPrefsDlg extends OkCancelDialog {
 		if(!btnOk.isEnabled()) return;
 		
 		try { mainPane.apply(); }
-		catch(Exception x) { HF.showErrorMessage(x); return; }
+		catch(Exception x) { SHF.showErrorMessage(x); return; }
 		
 		setVisible(false);
 		setCancelled(false);

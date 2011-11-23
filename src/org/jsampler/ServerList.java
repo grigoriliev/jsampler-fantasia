@@ -24,8 +24,8 @@ package org.jsampler;
 
 import java.util.Vector;
 
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import net.sf.juife.event.GenericEvent;
+import net.sf.juife.event.GenericListener;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -39,11 +39,11 @@ import org.w3c.dom.NodeList;
  */
 public class ServerList {
 	private final Vector<Server> servers = new Vector<Server>();
-	private final Vector<ChangeListener> listeners = new Vector<ChangeListener>();
+	private final Vector<GenericListener> listeners = new Vector<GenericListener>();
 	
-	private final ChangeListener l = new ChangeListener() {
+	private final GenericListener l = new GenericListener() {
 		public void
-		stateChanged(ChangeEvent e) { fireChangeEvent(); }
+		jobDone(GenericEvent e) { fireChangeEvent(); }
 	};
 	
 	/**
@@ -56,17 +56,17 @@ public class ServerList {
 	
 	/**
 	 * Registers the specified listener to be notified when the server list is changed.
-	 * @param l The <code>ChangeListener</code> to register.
+	 * @param l The <code>GenericListener</code> to register.
 	 */
 	public void
-	addChangeListener(ChangeListener l) { listeners.add(l); }
+	addChangeListener(GenericListener l) { listeners.add(l); }
 	
 	/**
 	 * Removes the specified listener.
-	 * @param l The <code>ChangeListener</code> to remove.
+	 * @param l The <code>GenericListener</code> to remove.
 	 */
 	public void
-	removeChangeListener(ChangeListener l) { listeners.remove(l); }
+	removeChangeListener(GenericListener l) { listeners.remove(l); }
 	
 	/**
 	 * Adds the specified server to the server list.
@@ -213,8 +213,8 @@ public class ServerList {
 	/** Notifies listeners that the server list has changed. */
 	protected void
 	fireChangeEvent() {
-		ChangeEvent e = new ChangeEvent(this);
-		for(ChangeListener l : listeners) l.stateChanged(e);
+		GenericEvent e = new GenericEvent(this);
+		for(GenericListener l : listeners) l.jobDone(e);
 	}
 	
 	/**

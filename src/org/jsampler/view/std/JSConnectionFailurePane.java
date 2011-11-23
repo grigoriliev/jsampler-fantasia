@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2009 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -26,6 +26,7 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
 import org.jsampler.CC;
+import org.jsampler.view.swing.SHF;
 
 import static org.jsampler.view.std.StdI18n.i18n;
 
@@ -53,7 +54,7 @@ public class JSConnectionFailurePane extends JOptionPane {
 
 	public void
 	showDialog() {
-		JDialog dlg = createDialog(CC.getMainFrame(), i18n.getError("error"));
+		JDialog dlg = createDialog(SHF.getMainFrame(), i18n.getError("error"));
 		dlg.setModal(true);
 		dlg.setVisible(true);
 		Object val = getValue();

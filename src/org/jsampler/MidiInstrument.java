@@ -23,7 +23,8 @@
 package org.jsampler;
 
 import java.util.Vector;
-import javax.swing.SwingUtilities;
+
+import net.sf.juife.PDUtils;
 
 import org.linuxsampler.lscp.MidiInstrumentInfo;
 
@@ -154,7 +155,7 @@ public class MidiInstrument {
 	fireInfoChanged() {
 		final MidiInstrumentEvent e = new MidiInstrumentEvent(this);
 		
-		SwingUtilities.invokeLater(new Runnable() {
+		PDUtils.runOnUiThread(new Runnable() {
 			public void
 			run() { fireInfoChanged(e); }
 		});

@@ -24,8 +24,7 @@ package org.jsampler;
 
 import java.util.Vector;
 
-import javax.swing.SwingUtilities;
-
+import net.sf.juife.PDUtils;
 import net.sf.juife.Task;
 import net.sf.juife.event.TaskEvent;
 import net.sf.juife.event.TaskListener;
@@ -90,6 +89,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * Registers the specified listener for receiving event messages.
 	 * @param l The <code>SamplerChannelListener</code> to register.
 	 */
+	@Override
 	public void
 	addSamplerChannelListener(SamplerChannelListener l) { listeners.add(l); }
 	
@@ -97,6 +97,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * Removes the specified listener.
 	 * @param l The <code>SamplerChannelListener</code> to remove.
 	 */
+	@Override
 	public void
 	removeSamplerChannelListener(SamplerChannelListener l) { listeners.remove(l); }
 	
@@ -104,6 +105,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * Registers the specified listener for receiving event messages.
 	 * @param l The <code>EffectSendsListener</code> to register.
 	 */
+	@Override
 	public void
 	addEffectSendsListener(EffectSendsListener l) { fxListeners.add(l); }
 	
@@ -111,6 +113,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * Removes the specified listener.
 	 * @param l The <code>EffectSendsListener</code> to remove.
 	 */
+	@Override
 	public void
 	removeEffectSendsListener(EffectSendsListener l) { fxListeners.remove(l); }
 	
@@ -119,6 +122,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * MIDI events are sent to the channel.
 	 * @param l The <code>MidiDataListener</code> to register.
 	 */
+	@Override
 	public void
 	addMidiDataListener(MidiDataListener l) { midiListeners.add(l); }
 	
@@ -126,6 +130,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * Removes the specified listener.
 	 * @param l The <code>MidiDataListener</code> to remove.
 	 */
+	@Override
 	public void
 	removeMidiDataListener(MidiDataListener l) { midiListeners.remove(l); }
 	
@@ -133,6 +138,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * Gets the sampler channel number.
 	 * @return The sampler channel number or -1 if the sampler channel number is not set.
 	 */
+	@Override
 	public int
 	getChannelId() { return channel == null ? -1 : channel.getChannelId(); }
 	
@@ -141,6 +147,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * @return <code>SamplerChannel</code> instance containing
 	 * the current settings of the sampler channel.
 	 */
+	@Override
 	public SamplerChannel
 	getChannelInfo() { return channel; }
 	
@@ -152,6 +159,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * the new settings for this sampler channel.
 	 * @throws IllegalArgumentException If <code>channel</code> is <code>null</code>.
 	 */
+	@Override
 	public void
 	setChannelInfo(SamplerChannel channel) {
 		if(channel == null) throw new IllegalArgumentException("channel must be non null");
@@ -165,6 +173,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * Gets the number of active disk streams.
 	 * @return The number of active disk streams.
 	 */
+	@Override
 	public int
 	getStreamCount() { return streamCount; }
 	
@@ -174,6 +183,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * of active disk streams on the backend side.
 	 * @param count The new number of active disk streams.
 	 */
+	@Override
 	public void
 	setStreamCount(int count) {
 		if(streamCount == count) return;
@@ -186,6 +196,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * Gets the number of active voices.
 	 * @return The number of active voices.
 	 */
+	@Override
 	public int
 	getVoiceCount() { return voiceCount; }
 	
@@ -195,6 +206,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * of active voices on the backend side.
 	 * @param count The new number of active voices.
 	 */
+	@Override
 	public void
 	setVoiceCount(int count) {
 		if(voiceCount == count) return;
@@ -207,6 +219,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * Schedules a new task for setting the sampler engine type to be used.
 	 * @param engine The name of the engine type to be used.
 	 */
+	@Override
 	public void
 	setBackendEngineType(String engine) {
 		final LoadEngine loadEngine = new LoadEngine(engine, getChannelId());
@@ -233,6 +246,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * @param mute Specifies the mute mode. If <code>true</code> the channel is muted, else
 	 * the channel is unmuted.
 	 */
+	@Override
 	public void
 	setBackendMute(boolean mute) {
 		final SetMute smc = new SetMute(getChannelId(), mute);
@@ -259,6 +273,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * @param solo Specifies the solo mode. If <code>true</code> the channel is soloed, else
 	 * the channel is unsoloed.
 	 */
+	@Override
 	public void
 	setBackendSolo(boolean solo) {
 		final SetSolo ssc = new SetSolo(getChannelId(), solo);
@@ -284,6 +299,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * Schedules a new task for setting the channel volume on the backend side.
 	 * @param volume Specifies the new volume value.
 	 */
+	@Override
 	public void
 	setBackendVolume(float volume) {
 		final SetVolume scv = new SetVolume(getChannelId(), volume);
@@ -310,6 +326,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * device of the channel represented by this model. 
 	 * @param deviceId Specifies the numerical ID of the MIDI input device to be set.
 	 */
+	@Override
 	public void
 	setBackendMidiInputDevice(int deviceId) {
 		final Task scmid = new SetMidiInputDevice(getChannelId(), deviceId);
@@ -336,6 +353,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * MIDI input port of the channel represented by this model. 
 	 * @param port Specifies the number of the MIDI input port.
 	 */
+	@Override
 	public void
 	setBackendMidiInputPort(int port) {
 		final Task scmip = new SetMidiInputPort(getChannelId(), port);
@@ -363,6 +381,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * @param channel Specifies the MIDI channel that the channel
 	 * represented by this model should listen to.
 	 */
+	@Override
 	public void
 	setBackendMidiInputChannel(int channel) {
 		final Task scmic = new SetMidiInputChannel(getChannelId(), channel);
@@ -389,6 +408,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * device of the channel represented by this model. 
 	 * @param deviceId Specifies the numerical ID of the audio output device to be set.
 	 */
+	@Override
 	public void
 	setBackendAudioOutputDevice(int deviceId) {
 		final Task scaod = new Channel.SetAudioOutputDevice(getChannelId(), deviceId);
@@ -417,6 +437,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * @param audioDst The audio channel of the selected audio output device
 	 * where <code>audioSrc</code> should be routed to.
 	 */
+	@Override
 	public void
 	setBackendAudioOutputChannel(int audioSrc, int audioDst) {
 		final Task t;
@@ -444,6 +465,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * map that should be assigned to this sampler
 	 * channel or <code>-1</code> to remove the current map binding.
 	 */
+	@Override
 	public void
 	setBackendMidiInstrumentMap(int mapId) {
 		final Task t = new Channel.SetMidiInstrumentMap(getChannelId(), mapId);
@@ -469,6 +491,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * @param filename The file name of the instrument to be loaded.
 	 * @param InstrIndex The index of the instrument in the instrument file to be loaded.
 	 */
+	@Override
 	public void
 	loadBackendInstrument(String filename, int InstrIndex) {
 		final Task li = new LoadInstrument(filename, InstrIndex, getChannelId());
@@ -478,6 +501,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	}
 	
 	/** Schedules a new task for reseting the channel. */
+	@Override
 	public void
 	resetBackendChannel() {
 		CC.getTaskQueue().add(new org.jsampler.task.Channel.Reset(getChannelId()));
@@ -486,6 +510,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	}
 	
 	/** Schedules a new task for duplicating the channel. */
+	@Override
 	public void
 	duplicateBackendChannel() {
 		CC.getTaskQueue().add(new DuplicateChannels(getChannelInfo()));
@@ -498,6 +523,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * @param midiCtrl Defines the MIDI controller, which
 	 * will be able alter the effect send level.
 	 */
+	@Override
 	public void
 	addBackendFxSend(int midiCtrl) {
 		CC.getTaskQueue().add(new Channel.AddFxSend(getChannelId(), midiCtrl));
@@ -513,6 +539,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * @param name The name of the effect send entity.
 	 * The name does not have to be unique.
 	 */
+	@Override
 	public void
 	addBackendFxSend(int midiCtrl, String name) {
 		CC.getTaskQueue().add(new Channel.AddFxSend(getChannelId(), midiCtrl, name));
@@ -523,6 +550,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * Adds the specified effect send.
 	 * @param fxSend The effect send to be added.
 	 */
+	@Override
 	public void
 	addFxSend(FxSend fxSend) {
 		fxSends.add(fxSend);
@@ -533,6 +561,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * Schedules a new task for removing the specified effect send on the backend side.
 	 * @param fxSendId The ID of the effect send to remove.
 	 */
+	@Override
 	public void
 	removeBackendFxSend(int fxSendId) {
 		CC.getTaskQueue().add(new Channel.RemoveFxSend(getChannelId(), fxSendId));
@@ -543,6 +572,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * @param index The index of the effect send to be returned.
 	 * @return The effect send at the specified position.
 	 */
+	@Override
 	public FxSend
 	getFxSend(int index) { return fxSends.get(index); }
 	
@@ -552,6 +582,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * @return The effect send with the specified ID or <code>null</code>
 	 * if there is no effect send with ID <code>fxSendId</code>.
 	 */
+	@Override
 	public FxSend
 	getFxSendById(int fxSendId) {
 		for(FxSend fxs : fxSends) {
@@ -566,6 +597,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * @param index The position of the effect send to remove.
 	 * @return The removed effect send.
 	 */
+	@Override
 	public FxSend
 	removeFxSend(int index) {
 		FxSend fxs = fxSends.remove(index);
@@ -579,6 +611,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * @return <code>true</code> if the effect send is removed successfully, <code>false</code>
 	 * if the channel does not contain effect send with ID <code>fxSendId</code>.
 	 */
+	@Override
 	public boolean
 	removeFxSendById(int fxSendId) {
 		for(int i = 0; i < fxSends.size(); i++) {
@@ -594,6 +627,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	}
 	
 	/** Removes all effect sends from this channel. */
+	@Override
 	public void
 	removeAllFxSends() {
 		for(int i = fxSends.size() - 1; i >= 0; i--) {
@@ -607,6 +641,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * Updates the specified effect send.
 	 * @param fxSend The effect send to update.
 	 */
+	@Override
 	public void
 	updateFxSend(FxSend fxSend) {
 		for(int i = 0; i < fxSends.size(); i++) {
@@ -623,6 +658,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * Gets the current number of effect sends.
 	 * @return The current number of effect sends.
 	 */
+	@Override
 	public int
 	getFxSendCount() { return fxSends.size(); }
 	
@@ -630,6 +666,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * Gets the current list of effect sends.
 	 * @return The current list of effect sends.
 	 */
+	@Override
 	public FxSend[]
 	getFxSends() { return fxSends.toArray(new FxSend[fxSends.size()]); }
 	
@@ -638,6 +675,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * @param fxSend The numerical ID of the effect send.
 	 * @param name The new name of the effect send entity.
 	 */
+	@Override
 	public void
 	setBackendFxSendName(final int fxSend, String name) {
 		final Task t = new Channel.SetFxSendName(getChannelId(), fxSend, name);
@@ -665,6 +703,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * @param audioDst The audio channel of the selected audio output device
 	 * where <code>audioSrc</code> should be routed to.
 	 */
+	@Override
 	public void
 	setBackendFxSendAudioOutputChannel(int fxSend, int audioSrc, int audioDst) {
 		Task t = new Channel.SetFxSendAudioOutputChannel (
@@ -680,6 +719,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * @param midiCtrl The MIDI controller which shall be
 	 * able to modify the effect send's send level.
 	 */
+	@Override
 	public void
 	setBackendFxSendMidiController(int fxSend, int midiCtrl) {
 		Task t = new Channel.SetFxSendMidiController(getChannelId(), fxSend, midiCtrl);
@@ -692,6 +732,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * send, which volume should be changed.
 	 * @param level The new volume value.
 	 */
+	@Override
 	public void
 	setBackendFxSendLevel(int fxSend, float level) {
 		CC.getTaskQueue().add(new Channel.SetFxSendLevel(getChannelId(), fxSend, level));
@@ -700,6 +741,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	/**
 	 * Sends a MIDI data message to this sampler channel.
 	 */
+	@Override
 	public void
 	sendBackendMidiData(MidiDataEvent e) {
 		sendBackendMidiData(e.getType(), e.getNote(), e.getVelocity());
@@ -711,6 +753,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * @param arg1 Depends on the message type.
 	 * @param arg2 Depends on the message type.
 	 */
+	@Override
 	public void
 	sendBackendMidiData(MidiDataEvent.Type type, int arg1, int arg2) {
 		CC.getTaskQueue().add(new Channel.SendMidiMsg(getChannelId(), type, arg1, arg2));
@@ -720,6 +763,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * Sets destination effect on the specified effect send.
 	 * @param fxSend The numerical ID of the effect send.
 	 */
+	@Override
 	public void
 	setBackendFxSendEffect(int fxSend, int chainId, int chainPos) {
 		CC.getTaskQueue().add (
@@ -731,6 +775,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * Removes the destination effect of the specified effect send.
 	 * @param fxSend The numerical ID of the effect send.
 	 */
+	@Override
 	public void
 	removeBackendFxSendEffect(int fxSend) {
 		CC.getTaskQueue().add (
@@ -743,7 +788,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	fireSamplerChannelChanged() {
 		final SamplerChannelEvent e = new SamplerChannelEvent(this);
 		
-		SwingUtilities.invokeLater(new Runnable() {
+		PDUtils.runOnUiThread(new Runnable() {
 			public void
 			run() { fireSamplerChannelChanged(e); }
 		});
@@ -751,7 +796,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	
 	/** 
 	 * Notifies listeners that the sampler channel settings has changed.
-	 * This method should be invoked from the event-dispatching thread.
+	 * This method should be invoked from the UI thread.
 	 */
 	protected void
 	fireSamplerChannelChanged(SamplerChannelEvent e) {
@@ -764,7 +809,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	fireStreamCountChanged() {
 		final SamplerChannelEvent e = new SamplerChannelEvent(this);
 		
-		SwingUtilities.invokeLater(new Runnable() {
+		PDUtils.runOnUiThread(new Runnable() {
 			public void
 			run() { fireStreamCountChanged(e); }
 		});
@@ -772,7 +817,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	
 	/** 
 	 * Notifies listeners that the number of active disk streams has changed.
-	 * This method should be invoked from the event-dispatching thread.
+	 * This method should be invoked from the UI thread.
 	 */
 	protected void
 	fireStreamCountChanged(SamplerChannelEvent e) {
@@ -784,7 +829,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	fireVoiceCountChanged() {
 		final SamplerChannelEvent e = new SamplerChannelEvent(this);
 		
-		SwingUtilities.invokeLater(new Runnable() {
+		PDUtils.runOnUiThread(new Runnable() {
 			public void
 			run() { fireVoiceCountChanged(e); }
 		});
@@ -792,7 +837,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	
 	/** 
 	 * Notifies listeners that the number of active voices has changed.
-	 * This method should be invoked from the event-dispatching thread.
+	 * This method should be invoked from the UI thread.
 	 */
 	protected void
 	fireVoiceCountChanged(SamplerChannelEvent e) {
@@ -806,7 +851,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	fireFxSendAdded(FxSend fxSend) {
 		final EffectSendsEvent e = new EffectSendsEvent(this, fxSend);
 		
-		SwingUtilities.invokeLater(new Runnable() {
+		PDUtils.runOnUiThread(new Runnable() {
 			public void
 			run() { fireFxSendAdded(e); }
 		});
@@ -814,7 +859,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	
 	/** 
 	 * Notifies listeners that the specified effect send has been added to the channel.
-	 * This method should be invoked from the event-dispatching thread.
+	 * This method should be invoked from the UI thread.
 	 */
 	protected void
 	fireFxSendAdded(EffectSendsEvent e) {
@@ -827,7 +872,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	fireFxSendRemoved(FxSend fxSend) {
 		final EffectSendsEvent e = new EffectSendsEvent(this, fxSend);
 		
-		SwingUtilities.invokeLater(new Runnable() {
+		PDUtils.runOnUiThread(new Runnable() {
 			public void
 			run() { fireFxSendRemoved(e); }
 		});
@@ -835,7 +880,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	
 	/** 
 	 * Notifies listeners that the specified effect send has been removed.
-	 * This method should be invoked from the event-dispatching thread.
+	 * This method should be invoked from the UI thread.
 	 */
 	protected void
 	fireFxSendRemoved(EffectSendsEvent e) {
@@ -848,7 +893,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	fireFxSendUpdated(FxSend fxSend) {
 		final EffectSendsEvent e = new EffectSendsEvent(this, fxSend);
 		
-		SwingUtilities.invokeLater(new Runnable() {
+		PDUtils.runOnUiThread(new Runnable() {
 			public void
 			run() { fireFxSendUpdated(e); }
 		});
@@ -856,7 +901,7 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	
 	/** 
 	 * Notifies listeners that the specified effect send has been updated.
-	 * This method should be invoked from the event-dispatching thread.
+	 * This method should be invoked from the UI thread.
 	 */
 	protected void
 	fireFxSendUpdated(EffectSendsEvent e) {

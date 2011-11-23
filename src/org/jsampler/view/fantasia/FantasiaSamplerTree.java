@@ -23,10 +23,9 @@ package org.jsampler.view.fantasia;
 
 import java.awt.Component;
 import javax.swing.JTree;
-import org.jsampler.view.SamplerTreeModel;
 import org.jsampler.view.std.JSSamplerTree;
+import org.jsampler.view.swing.SamplerTreeModel;
 import org.pushingpixels.substance.api.renderers.SubstanceDefaultTreeCellRenderer;
-import static org.jsampler.view.SamplerTreeModel.*;
 
 /**
  *

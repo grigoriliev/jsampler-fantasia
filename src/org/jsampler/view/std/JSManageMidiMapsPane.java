@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -40,10 +40,10 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.jsampler.CC;
-import org.jsampler.HF;
 import org.jsampler.MidiInstrumentMap;
 
-import org.jsampler.view.MidiMapTable;
+import org.jsampler.view.swing.MidiMapTable;
+import org.jsampler.view.swing.SHF;
 
 import static org.jsampler.view.std.StdI18n.i18n;
 
@@ -168,7 +168,7 @@ public class JSManageMidiMapsPane extends JPanel implements ListSelectionListene
 			if(map.getAllMidiInstruments().length > 0) {
 				String s = i18n.getMessage("JSManageMidiMapsPane.removeMap", map.getName());
 				String s2 = i18n.getMessage("JSManageMidiMapsPane.removeMap?");
-				if(!HF.showYesNoDialog(JSManageMidiMapsPane.this, s2, s)) return;
+				if(!SHF.showYesNoDialog(JSManageMidiMapsPane.this, s2, s)) return;
 			}
 			CC.getSamplerModel().removeBackendMidiInstrumentMap(map.getMapId());
 		}

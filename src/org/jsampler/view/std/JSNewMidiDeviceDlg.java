@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -43,8 +43,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import net.sf.juife.EnhancedDialog;
-import net.sf.juife.JuifeUtils;
+import net.sf.juife.swing.EnhancedDialog;
+import net.sf.juife.swing.JuifeUtils;
 
 import net.sf.juife.event.TaskEvent;
 import net.sf.juife.event.TaskListener;
@@ -56,13 +56,13 @@ import org.jsampler.event.ParameterEvent;
 import org.jsampler.event.ParameterListener;
 
 import org.jsampler.task.Midi;
-import org.jsampler.view.ParameterTable;
+import org.jsampler.view.swing.ParameterTable;
 
 import org.linuxsampler.lscp.MidiInputDriver;
 import org.linuxsampler.lscp.Parameter;
 
 import static org.jsampler.view.std.StdI18n.i18n;
-import static org.jsampler.view.std.StdPrefs.*;
+import static org.jsampler.JSPrefs.*;
 
 
 /**

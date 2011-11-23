@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -152,6 +152,70 @@ public class JSPrefs extends PropertyChangeSupport {
 	public final static String SOCKET_READ_TIMEOUT = "socketReadTimeout";
 	
 	
+	/** Property representing the maximum number of lines to be kept in the command history. */
+	public final static String LS_CONSOLE_HISTSIZE = "LSConsole.historySize";
+	
+	/** Property which specifies whether the command history should be saved on exit. */
+	public final static String SAVE_LS_CONSOLE_HISTORY = "LSConsole.saveCommandHistory";
+	
+	/** Property representing the background color of the LS Console. */
+	public final static String LS_CONSOLE_BACKGROUND_COLOR = "LSConsole.backgroundColor";
+	
+	/** Property representing the text color of the LS Console. */
+	public final static String LS_CONSOLE_TEXT_COLOR = "LSConsole.textColor";
+	
+	/** Property representing the notification messages' color of the LS Console. */
+	public final static String LS_CONSOLE_NOTIFY_COLOR = "LSConsole.notifyColor";
+	
+	/** Property representing the warning messages' color of the LS Console. */
+	public final static String LS_CONSOLE_WARNING_COLOR = "LSConsole.warningColor";
+	
+	/** Property representing the error messages' color of the LS Console. */
+	public final static String LS_CONSOLE_ERROR_COLOR = "LSConsole.errorColor";
+	
+	/** Property representing the list of recent LSCP scripts. */
+	public final static String RECENT_LSCP_SCRIPTS = "recentLscpScripts";
+	
+	/** Property representing the maximum number of recent LSCP scripts to be stored. */
+	public final static String RECENT_LSCP_SCRIPTS_SIZE = "recentLscpScripts.maxNumber";
+	
+	/** Property which specifies whether the LS Console should be shown when script is run. */
+	public final static String SHOW_LS_CONSOLE_WHEN_RUN_SCRIPT = "showLSConsoleWhenRunScript";
+	
+	/** Property representing the maximum master volume (in percents). */
+	public final static String MAXIMUM_MASTER_VOLUME = "maximumMasterVolume";
+	
+	/** Property representing the maximum channel volume (in percents). */
+	public final static String MAXIMUM_CHANNEL_VOLUME = "maximumChannelVolume";
+	
+	/** Property which specifies whether the user should confirm channel removals. */
+	public final static String CONFIRM_CHANNEL_REMOVAL = "confirmChannelRemoval";
+	
+	/** Property which specifies whether the user should confirm audio/MIDI device removals. */
+	public final static String CONFIRM_DEVICE_REMOVAL = "confirmDeviceRemoval";
+	
+	/** Property which specifies whether the user should confirm quiting. */
+	public final static String CONFIRM_APP_QUIT = "confirmAppQuit";
+	
+	/** Property which specifies the sort order in the instruments database frame. */
+	public final static String INSTRUMENTS_DB_FRAME_SORT_ORDER = "instrumentsDbFrameSortOrder";
+	
+	/** Property representing the channel view to be used when creating a sampler channel. */
+	public final static String DEFAULT_CHANNEL_VIEW = "defaultChannelView";
+	
+	/**
+	 * Property which specifies whether a different sampler channel view should be shown
+	 * when the mouse cursor is over a sampler channel.
+	 */
+	public final static String DIFFERENT_CHANNEL_VIEW_ON_MOUSE_OVER = "differentChannelViewOnMO";
+	
+	/**
+	 * Property representing the channel view to be used when
+	 * the mouse cursor is over a sampler channel.
+	 */
+	public final static String CHANNEL_VIEW_ON_MOUSE_OVER = "channelViewOnMouseOver";
+	
+	
 	private final String pathName;
 	private final Preferences userPrefs;
 	
@@ -219,6 +283,14 @@ public class JSPrefs extends PropertyChangeSupport {
 	public String
 	getDefaultStringValue(String name) {
 		if(BACKEND_LAUNCH_COMMAND.equals(name)) return "linuxsampler";
+		if(RECENT_LSCP_SCRIPTS.equals(name)) return "";
+		if(DEFAULT_ENGINE.equals(name)) return "GIG";
+		if(DEFAULT_MIDI_INPUT.equals(name)) return "firstDeviceNextChannel";
+		if(DEFAULT_AUDIO_OUTPUT.equals(name)) return "firstDevice";
+		if(DEFAULT_MIDI_DRIVER.equals(name)) return "ALSA";
+		if(DEFAULT_AUDIO_DRIVER.equals(name)) return "ALSA";
+		if(DEFAULT_MIDI_INSTRUMENT_MAP.equals(name)) return "midiInstrumentMap.none";
+		
 		return null;
 	}
 	
@@ -331,6 +403,15 @@ public class JSPrefs extends PropertyChangeSupport {
 		if(FIRST_MIDI_BANK_NUMBER.equals(name)) return 1;
 		if(FIRST_MIDI_PROGRAM_NUMBER.equals(name)) return 1;
 		if(BACKEND_LAUNCH_DELAY.equals(name)) return 3;
+		if(DEFAULT_CHANNEL_VOLUME.equals(name)) return 100;
+		if(LS_CONSOLE_HISTSIZE.equals(name)) return 1000;
+		if(RECENT_LSCP_SCRIPTS_SIZE.equals(name)) return 7;
+		if(MAXIMUM_MASTER_VOLUME.equals(name)) return 100;
+		if(MAXIMUM_CHANNEL_VOLUME.equals(name)) return 100;
+		if(INSTRUMENTS_DB_FRAME_SORT_ORDER.equals(name)) return 1;
+		if(DEFAULT_CHANNEL_VIEW.equals(name)) return 1;
+		if(CHANNEL_VIEW_ON_MOUSE_OVER.equals(name)) return 1;
+		
 		return 0;
 	}
 	
@@ -393,6 +474,14 @@ public class JSPrefs extends PropertyChangeSupport {
 		if(EXPORT_MIDI_MAPS_TO_SESSION_SCRIPT.equals(name)) return true;
 		if(LOAD_MIDI_INSTRUMENTS_IN_BACKGROUND.equals(name)) return true;
 		if(LAUNCH_BACKEND_LOCALLY.equals(name)) return true;
+		if(DIFFERENT_CHANNEL_VIEW_ON_MOUSE_OVER.equals(name)) return true;
+		if(CONFIRM_CHANNEL_REMOVAL.equals(name)) return true;
+		if(CONFIRM_DEVICE_REMOVAL.equals(name)) return true;
+		if(CONFIRM_APP_QUIT.equals(name)) return true;
+		if(SAVE_LS_CONSOLE_HISTORY.equals(name)) return true;
+		if(USE_CHANNEL_DEFAULTS.equals(name)) return true;
+		if("nativeFileChoosers".equals(name) && CC.isMacOS()) return true;
+		
 		return false;
 	}
 }

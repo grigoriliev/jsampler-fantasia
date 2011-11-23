@@ -32,10 +32,10 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 
 import org.jsampler.CC;
-import org.jsampler.view.SamplerTreeModel;
-import org.jsampler.view.SamplerTreeModel.TreeNodeBase;
 import org.jsampler.view.std.JSFrame;
 import org.jsampler.view.std.JSSamplerTable;
+import org.jsampler.view.swing.SamplerTreeModel;
+import org.jsampler.view.swing.SamplerTreeModel.TreeNodeBase;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 

@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -44,8 +44,8 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 
-import net.sf.juife.JuifeUtils;
-import net.sf.juife.Wizard;
+import net.sf.juife.swing.JuifeUtils;
+import net.sf.juife.swing.Wizard;
 
 import net.sf.juife.event.TaskEvent;
 import net.sf.juife.event.TaskListener;
@@ -56,7 +56,6 @@ import net.sf.juife.wizard.WizardPage;
 
 import org.jsampler.AudioDeviceModel;
 import org.jsampler.CC;
-import org.jsampler.HF;
 import org.jsampler.MidiDeviceModel;
 
 import org.jsampler.event.ListEvent;
@@ -73,6 +72,7 @@ import org.jsampler.task.Channel.SetMidiInputPort;
 
 import org.jsampler.view.std.JSNewMidiDeviceDlg;
 import org.jsampler.view.std.JSNewAudioDeviceDlg;
+import org.jsampler.view.swing.SHF;
 
 import org.linuxsampler.lscp.AudioOutputDevice;
 import org.linuxsampler.lscp.MidiInputDevice;
@@ -92,7 +92,7 @@ public class NewChannelWizard extends Wizard {
 	/** Creates a new instance of <code>NewChannelWizard</code>. */
 	public
 	NewChannelWizard() {
-		super(CC.getMainFrame(), i18n.getLabel("NewChannelWizard.title"));
+		super(SHF.getMainFrame(), i18n.getLabel("NewChannelWizard.title"));
 		
 		setModel(new NewChannelWizardModel());
 	}
@@ -599,7 +599,7 @@ class InstrumentWizardPage extends UserInputPage {
 		NewChannelWizardModel model = (NewChannelWizardModel)getWizardModel();
 		if(model.getSelectedAudioDevice() == null && getSelectedFile().length() > 0) {
 			String s = i18n.getError("InstrumentWizardPage.selectAODevice!");
-			HF.showErrorMessage(s, getWizardDialog());
+			SHF.showErrorMessage(s, getWizardDialog());
 			return false;
 		} else {
 			return true;

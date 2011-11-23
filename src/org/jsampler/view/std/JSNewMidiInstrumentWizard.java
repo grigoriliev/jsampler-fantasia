@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -49,7 +49,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import net.sf.juife.Wizard;
+import net.sf.juife.swing.Wizard;
 
 import net.sf.juife.event.TaskEvent;
 import net.sf.juife.event.TaskListener;
@@ -63,8 +63,8 @@ import org.jsampler.OrchestraInstrument;
 import org.jsampler.JSPrefs;
 import org.jsampler.MidiInstrumentMap;
 import org.jsampler.OrchestraModel;
-
 import org.jsampler.task.Global;
+import org.jsampler.view.swing.SHF;
 
 import org.linuxsampler.lscp.Instrument;
 import org.linuxsampler.lscp.MidiInstrumentEntry;
@@ -93,7 +93,7 @@ public class JSNewMidiInstrumentWizard extends Wizard {
 	 */
 	public
 	JSNewMidiInstrumentWizard(ImageIcon iconBrowse, MidiInstrumentMap defaultMap) {
-		super(CC.getMainFrame(), i18n.getLabel("JSNewMidiInstrumentWizard.title"));
+		super(SHF.getMainFrame(), i18n.getLabel("JSNewMidiInstrumentWizard.title"));
 		setModel(new NewMidiInstrumentWizardModel(iconBrowse, defaultMap));
 	}
 	

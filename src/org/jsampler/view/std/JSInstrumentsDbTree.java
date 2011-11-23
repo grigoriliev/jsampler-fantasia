@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -47,13 +47,13 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeSelectionModel;
 
-import net.sf.juife.DefaultNavigationHistoryModel;
+import net.sf.juife.swing.DefaultNavigationHistoryModel;
 
 import org.jsampler.CC;
-import org.jsampler.HF;
 
-import org.jsampler.view.DbDirectoryTreeNode;
-import org.jsampler.view.InstrumentsDbTreeModel;
+import org.jsampler.view.swing.DbDirectoryTreeNode;
+import org.jsampler.view.swing.InstrumentsDbTreeModel;
+import org.jsampler.view.swing.SHF;
 
 import static org.jsampler.view.std.StdI18n.i18n;
 
@@ -61,7 +61,7 @@ import static org.jsampler.view.std.StdI18n.i18n;
  *
  * @author Grigor Iliev
  */
-public class JSInstrumentsDbTree extends org.jsampler.view.AbstractInstrumentsDbTree {
+public class JSInstrumentsDbTree extends org.jsampler.view.swing.AbstractInstrumentsDbTree {
 	public final AbstractAction actionGoUp = new GoUp();
 	public final AbstractAction actionGoBack = new GoBack();
 	public final AbstractAction actionGoForward = new GoForward();
@@ -94,10 +94,10 @@ public class JSInstrumentsDbTree extends org.jsampler.view.AbstractInstrumentsDb
 		//addMouseListener(contextMenu);
 		installKeyboardListeners();
 		
-		CC.addInstrumentsDbChangeListener(new ChangeListener() {
+		SHF.getViewConfig().addInstrumentsDbChangeListener(new ChangeListener() {
 			public void
 			stateChanged(ChangeEvent e) {
-				setModel(CC.getInstrumentsDbTreeModel());
+				setModel(SHF.getInstrumentsDbTreeModel());
 				
 				CC.scheduleInTaskQueue(new Runnable() {
 					public void
@@ -175,7 +175,7 @@ public class JSInstrumentsDbTree extends org.jsampler.view.AbstractInstrumentsDb
 			if(node == null) return null;
 			
 			String path = node.getInfo().getDirectoryPath();
-			if(CC.getInstrumentsDbTreeModel().getNodeByPath(path) != null) {
+			if(SHF.getInstrumentsDbTreeModel().getNodeByPath(path) != null) {
 				setSelectedDirectory(path);
 				return node;
 			}
@@ -183,7 +183,7 @@ public class JSInstrumentsDbTree extends org.jsampler.view.AbstractInstrumentsDb
 			removePage();
 			fireActionPerformed();
 			String s = i18n.getMessage("JSInstrumentsDbTree.unknownDirectory!", path);
-			HF.showErrorMessage(s, JSInstrumentsDbTree.this);
+			SHF.showErrorMessage(s, JSInstrumentsDbTree.this);
 			return node;
 		}
 		

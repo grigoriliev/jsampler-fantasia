@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -54,12 +54,11 @@ import org.jsampler.view.fantasia.basic.*;
 
 import org.jsampler.view.std.JSVolumeEditorPopup;
 
+import static org.jsampler.JSPrefs.*;
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jsampler.view.fantasia.FantasiaPrefs.preferences;
 import static org.jsampler.view.fantasia.FantasiaUtils.*;
-
 import static org.jsampler.view.std.JSVolumeEditorPopup.VolumeType;
-import static org.jsampler.view.std.StdPrefs.*;
 
 /**
  *

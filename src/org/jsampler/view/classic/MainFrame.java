@@ -22,6 +22,8 @@
 
 package org.jsampler.view.classic;
 
+import net.sf.juife.event.GenericEvent;
+import net.sf.juife.event.GenericListener;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dialog;
@@ -53,13 +55,10 @@ import javax.swing.KeyStroke;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
-import net.sf.juife.NavigationPage;
+import net.sf.juife.swing.NavigationPage;
 
 import org.jsampler.CC;
-import org.jsampler.HF;
 import org.jsampler.JSUtils;
 import org.jsampler.LSConsoleModel;
 import org.jsampler.OrchestraModel;
@@ -77,19 +76,21 @@ import org.jsampler.view.std.JSDetailedErrorDlg;
 import org.jsampler.view.std.JSQuitDlg;
 import org.jsampler.view.std.JSamplerHomeChooser;
 import org.jsampler.view.std.StdUtils;
+import org.jsampler.view.swing.SHF;
+import org.jsampler.view.swing.SwingMainFrame;
 
 import static org.jsampler.view.classic.A4n.a4n;
 import static org.jsampler.view.classic.ClassicI18n.i18n;
 import static org.jsampler.view.classic.ClassicPrefs.preferences;
 import static org.jsampler.view.classic.LeftPane.getLeftPane;
-import static org.jsampler.view.std.StdPrefs.*;
+import static org.jsampler.JSPrefs.*;
 
 /**
  *
  * @author Grigor Iliev
  */
 public class
-MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListSelectionListener {
+MainFrame extends SwingMainFrame<ChannelsPane> implements ChangeListener, org.jsampler.event.ListSelectionListener {
 	public static ImageIcon applicationIcon = Res.appIcon;
 	
 	private final ChannelsBar channelsBar = new ChannelsBar();
@@ -144,7 +145,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		
 		ChannelsPane p = new ChannelsPane("Untitled");
 		p.addListSelectionListener(this);
-		getChannelsPaneList().add(p);
+		CC.getMainFrame().getChannelsPaneList().add(p);
 		miList.add(new JMenuItem(new A4n.MoveChannelsTo(p)));
 		
 		channelsPane.add(getChannelsPane(0));
@@ -649,9 +650,9 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		
 		mi2.setEnabled(CC.getBackendProcess() != null);
 		
-		CC.addBackendProcessListener(new ActionListener() {
+		CC.addBackendProcessListener(new GenericListener() {
 			public void
-			actionPerformed(ActionEvent e) {
+			jobDone(GenericEvent e) {
 				mi2.setEnabled(CC.getBackendProcess() != null);
 			}
 		});
@@ -866,13 +867,13 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 	 */
 	@Override
 	public void
-	addChannelsPane(JSChannelsPane chnPane) {
+	addChannelsPane(ChannelsPane chnPane) {
 		insertChannelsPane(chnPane, getChannelsPaneCount());
 	}
 	
 	@Override
 	public void
-	insertChannelsPane(JSChannelsPane chnPane, int idx) {
+	insertChannelsPane(ChannelsPane chnPane, int idx) {
 		chnPane.addListSelectionListener(this);
 		
 		if(getChannelsPaneCount() == 1) {
@@ -898,10 +899,10 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 	 * @return The currently shown <code>JSChannelsPane</code>.
 	 */
 	@Override
-	public JSChannelsPane
+	public ChannelsPane
 	getSelectedChannelsPane() {
 		if(getChannelsPaneList().size() == 1) return getChannelsPane(0);
-		return (JSChannelsPane)tabbedPane.getSelectedComponent();
+		return (ChannelsPane)tabbedPane.getSelectedComponent();
 	}
 	
 	/**
@@ -910,7 +911,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 	 */
 	@Override
 	public void
-	setSelectedChannelsPane(JSChannelsPane pane) {
+	setSelectedChannelsPane(ChannelsPane pane) {
 		if(getChannelsPaneList().size() == 1) return;
 		tabbedPane.setSelectedComponent(pane);
 		fireChannelsPaneSelectionChanged();
@@ -924,7 +925,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 	 */
 	@Override
 	public boolean
-	removeChannelsPane(JSChannelsPane chnPane) {
+	removeChannelsPane(ChannelsPane chnPane) {
 		chnPane.removeListSelectionListener(this);
 		
 		tabbedPane.remove(chnPane);
@@ -1074,7 +1075,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 	
 	@Override
 	public void
-	valueChanged(ListSelectionEvent e) {
+	valueChanged(org.jsampler.event.ListSelectionEvent e) {
 		if(e.getValueIsAdjusting()) return;
 		if(e.getSource() != getSelectedChannelsPane()) return;
 		
@@ -1089,7 +1090,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 			return;
 		}
 		
-		JSChannelsPane c = (JSChannelsPane)tabbedPane.getSelectedComponent();
+		ChannelsPane c = (ChannelsPane)tabbedPane.getSelectedComponent();
 		if(getChannelsPane(idx) != c)
 			CC.getLogger().warning("Channels pane indices don't match");
 		removeChannelsPane(c);
@@ -1106,7 +1107,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		}
 		
 		
-		JSChannelsPane c = (JSChannelsPane)tabbedPane.getSelectedComponent();
+		ChannelsPane c = (ChannelsPane)tabbedPane.getSelectedComponent();
 		if(getChannelsPane(idx) != c)
 			CC.getLogger().warning("Channels pane indices don't match");
 		removeChannelsPane(c);
@@ -1122,7 +1123,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 			return;
 		}
 		
-		JSChannelsPane c = (JSChannelsPane)tabbedPane.getSelectedComponent();
+		ChannelsPane c = (ChannelsPane)tabbedPane.getSelectedComponent();
 		if(getChannelsPane(idx) != c)
 			CC.getLogger().warning("Channels pane indices don't match");
 		removeChannelsPane(c);
@@ -1138,7 +1139,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 			return;
 		}
 		
-		JSChannelsPane c = (JSChannelsPane)tabbedPane.getSelectedComponent();
+		ChannelsPane c = (ChannelsPane)tabbedPane.getSelectedComponent();
 		if(getChannelsPane(idx) != c)
 			CC.getLogger().warning("Channels pane indices don't match");
 		removeChannelsPane(c);
@@ -1162,7 +1163,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 		FileReader fr;
 		try { fr = new FileReader(script); }
 		catch(FileNotFoundException e) {
-			HF.showErrorMessage(i18n.getError("fileNotFound!", script.getAbsolutePath()));
+			SHF.showErrorMessage(i18n.getError("fileNotFound!", script.getAbsolutePath()));
 			return;
 		}
 		
@@ -1176,7 +1177,7 @@ MainFrame extends org.jsampler.view.JSMainFrame implements ChangeListener, ListS
 				s = br.readLine();
 			}
 		} catch(Exception e) {
-			HF.showErrorMessage(e);
+			SHF.showErrorMessage(e);
 			return;
 		}
 		

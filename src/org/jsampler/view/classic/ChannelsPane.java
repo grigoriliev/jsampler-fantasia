@@ -41,15 +41,16 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import net.sf.juife.ComponentList;
-import net.sf.juife.ComponentListModel;
-import net.sf.juife.DefaultComponentListModel;
+import net.sf.juife.swing.ComponentList;
+import net.sf.juife.swing.ComponentListModel;
+import net.sf.juife.swing.DefaultComponentListModel;
 
 import org.jsampler.CC;
 import org.jsampler.SamplerChannelModel;
 
-import org.jsampler.view.JSChannel;
 import org.jsampler.view.JSChannelsPane;
+import org.jsampler.view.swing.SHF;
+import org.jsampler.view.swing.SwingChannelsPane;
 
 import static org.jsampler.view.classic.A4n.a4n;
 import static org.jsampler.view.classic.ClassicI18n.i18n;
@@ -59,7 +60,7 @@ import static org.jsampler.view.classic.ClassicI18n.i18n;
  *
  * @author Grigor Iliev
  */
-public class ChannelsPane extends JSChannelsPane implements ListSelectionListener {
+public class ChannelsPane extends SwingChannelsPane<Channel> implements ListSelectionListener {
 	private final ComponentList chnList = new ComponentList();
 	private final DefaultComponentListModel listModel = new DefaultComponentListModel();
 	
@@ -94,7 +95,7 @@ public class ChannelsPane extends JSChannelsPane implements ListSelectionListene
 	
 	@Override
 	public void
-	setSelectedChannel(JSChannel channel) {
+	setSelectedChannel(Channel channel) {
 		chnList.setSelectedComponent(channel, true);
 	}
 	
@@ -120,10 +121,10 @@ public class ChannelsPane extends JSChannelsPane implements ListSelectionListene
 	 */
 	@Override
 	public void
-	addChannels(JSChannel[] chns) {
+	addChannels(Channel[] chns) {
 		if(chns == null || chns.length == 0) return;
 		
-		for(JSChannel c : chns) listModel.add(c);
+		for(Channel c : chns) listModel.add(c);
 		chnList.setSelectionInterval (
 			listModel.getSize() - chns.length, listModel.getSize() - 1
 		);
@@ -140,7 +141,7 @@ public class ChannelsPane extends JSChannelsPane implements ListSelectionListene
 	 */
 	@Override
 	public void
-	removeChannel(JSChannel chn) {
+	removeChannel(Channel chn) {
 		listModel.remove(chn);
 		
 		firePropertyChange("channelRemoved", null, chn);
@@ -152,8 +153,8 @@ public class ChannelsPane extends JSChannelsPane implements ListSelectionListene
 	 * the channels pane is empty.
 	 */
 	@Override
-	public JSChannel
-	getFirstChannel() { return listModel.size() == 0 ? null : (JSChannel)listModel.get(0); }
+	public Channel
+	getFirstChannel() { return listModel.size() == 0 ? null : (Channel)listModel.get(0); }
 	
 	/**
 	 * Gets the last channel in this channels pane.
@@ -161,9 +162,9 @@ public class ChannelsPane extends JSChannelsPane implements ListSelectionListene
 	 * the channels pane is empty.
 	 */
 	@Override
-	public JSChannel
+	public Channel
 	getLastChannel() {
-		return listModel.size() == 0 ? null : (JSChannel)listModel.get(listModel.size()-1);
+		return listModel.size() == 0 ? null : (Channel)listModel.get(listModel.size()-1);
 	}
 	
 	/**
@@ -172,18 +173,18 @@ public class ChannelsPane extends JSChannelsPane implements ListSelectionListene
 	 * @throws ArrayIndexOutOfBoundsException If the index is out of range.
 	 */
 	@Override
-	public JSChannel
-	getChannel(int idx) { return (JSChannel)listModel.get(idx); }
+	public Channel
+	getChannel(int idx) { return (Channel)listModel.get(idx); }
 	
 	/**
 	 * Gets an array with all channels in this channels pane.
 	 * @return An array with all channels in this channels pane.
 	 */
 	@Override
-	public JSChannel[]
+	public Channel[]
 	getChannels() {
-		JSChannel[] chns = new JSChannel[listModel.size()];
-		for(int i = 0; i < listModel.size(); i++) chns[i] = (JSChannel)listModel.get(i);
+		Channel[] chns = new Channel[listModel.size()];
+		for(int i = 0; i < listModel.size(); i++) chns[i] = (Channel)listModel.get(i);
 		return chns;
 	}
 	
@@ -218,11 +219,11 @@ public class ChannelsPane extends JSChannelsPane implements ListSelectionListene
 	 * @return The selected channels or an empty array if nothing is selected.
 	 */
 	@Override
-	public JSChannel[]
+	public Channel[]
 	getSelectedChannels() {
 		Component[] cS = chnList.getSelectedComponents();
-		JSChannel[] chns = new JSChannel[cS.length];
-		for(int i = 0; i < cS.length; i++) chns[i] = (JSChannel)cS[i];
+		Channel[] chns = new Channel[cS.length];
+		for(int i = 0; i < cS.length; i++) chns[i] = (Channel)cS[i];
 		return chns;
 	}
 	
@@ -265,8 +266,8 @@ public class ChannelsPane extends JSChannelsPane implements ListSelectionListene
 	 */
 	@Override
 	public void
-	addListSelectionListener(ListSelectionListener listener) {
-		listenerList.add(ListSelectionListener.class, listener);
+	addListSelectionListener(org.jsampler.event.ListSelectionListener listener) {
+		listenerList.add(org.jsampler.event.ListSelectionListener.class, listener);
 	}
 	
 	/**
@@ -275,8 +276,8 @@ public class ChannelsPane extends JSChannelsPane implements ListSelectionListene
 	 */
 	@Override
 	public void
-	removeListSelectionListener(ListSelectionListener listener) {
-		listenerList.remove(ListSelectionListener.class, listener);
+	removeListSelectionListener(org.jsampler.event.ListSelectionListener listener) {
+		listenerList.remove(org.jsampler.event.ListSelectionListener.class, listener);
 	}
 	
 	/**
@@ -336,7 +337,7 @@ public class ChannelsPane extends JSChannelsPane implements ListSelectionListene
 	@Override
 	public void
 	moveSelectedChannelsOnTop() {
-		JSChannel[] chns = getSelectedChannels();
+		Channel[] chns = getSelectedChannels();
 			
 		if(chns.length == 0) {
 			CC.getLogger().info("Can't move channel(s) at the beginning");
@@ -357,7 +358,7 @@ public class ChannelsPane extends JSChannelsPane implements ListSelectionListene
 	@Override
 	public void
 	moveSelectedChannelsUp() {
-		JSChannel[] chns = getSelectedChannels();
+		Channel[] chns = getSelectedChannels();
 			
 		if(chns.length == 0 || chns[0] == getFirstChannel()) {
 			CC.getLogger().info("Can't move channel(s) up");
@@ -379,7 +380,7 @@ public class ChannelsPane extends JSChannelsPane implements ListSelectionListene
 	@Override
 	public void
 	moveSelectedChannelsDown() {
-		JSChannel[] chns = getSelectedChannels();
+		Channel[] chns = getSelectedChannels();
 			
 		if(chns.length == 0 || chns[chns.length - 1] == getLastChannel()) {
 			CC.getLogger().info("Can't move channel(s) down");
@@ -399,7 +400,7 @@ public class ChannelsPane extends JSChannelsPane implements ListSelectionListene
 	@Override
 	public void
 	moveSelectedChannelsAtBottom() {
-		JSChannel[] chns = getSelectedChannels();
+		Channel[] chns = getSelectedChannels();
 			
 		if(chns.length == 0) {
 			CC.getLogger().info("Can't move channel(s) at the end");
@@ -483,8 +484,8 @@ public class ChannelsPane extends JSChannelsPane implements ListSelectionListene
 		private void
 		updateMenu() {
 			submenu.removeAll();
-			Vector<JSChannelsPane> v = CC.getMainFrame().getChannelsPaneList();
-			for(JSChannelsPane p : v) 
+			Vector<SwingChannelsPane> v = SHF.getMainFrame().getChannelsPaneList();
+			for(SwingChannelsPane p : v) 
 				if(p != CC.getMainFrame().getSelectedChannelsPane())
 					submenu.add(new JMenuItem(new A4n.MoveChannelsTo(p)));
 		}
@@ -492,7 +493,7 @@ public class ChannelsPane extends JSChannelsPane implements ListSelectionListene
 	
 	@Override
 	public void
-	processChannelSelection(JSChannel c, boolean controlDown, boolean shiftDown) {
+	processChannelSelection(Channel c, boolean controlDown, boolean shiftDown) {
 		
 	}
 }

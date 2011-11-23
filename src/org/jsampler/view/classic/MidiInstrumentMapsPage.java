@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -40,8 +40,7 @@ import javax.swing.JToolBar;
 
 import javax.swing.tree.DefaultTreeCellRenderer;
 
-import net.sf.juife.LinkButton;
-import net.sf.juife.NavigationPage;
+import net.sf.juife.swing.NavigationPage;
 
 import org.jsampler.CC;
 import org.jsampler.MidiInstrumentMap;
@@ -50,13 +49,9 @@ import org.jsampler.event.ListEvent;
 import org.jsampler.event.ListListener;
 import org.jsampler.event.MidiInstrumentMapEvent;
 import org.jsampler.event.MidiInstrumentMapListener;
-import org.jsampler.view.std.JSEditMidiInstrumentDlg;
 
 import org.jsampler.view.std.JSAddMidiInstrumentMapDlg;
-import org.jsampler.view.std.JSMidiInstrumentTree;
 import org.jsampler.view.std.JSMidiInstrumentsPane;
-
-import org.linuxsampler.lscp.MidiInstrumentInfo;
 
 import static org.jsampler.view.classic.A4n.a4n;
 import static org.jsampler.view.classic.ClassicI18n.i18n;

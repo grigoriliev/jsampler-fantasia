@@ -22,9 +22,6 @@
 
 package org.jsampler;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -37,8 +34,9 @@ import java.util.Vector;
 
 import java.util.logging.Level;
 
-import javax.swing.SwingUtilities;
-
+import net.sf.juife.PDUtils;
+import net.sf.juife.event.GenericEvent;
+import net.sf.juife.event.GenericListener;
 import net.sf.juife.event.TaskEvent;
 import net.sf.juife.event.TaskListener;
 
@@ -88,9 +86,9 @@ public class DefaultLSConsoleModel implements LSConsoleModel {
 	/** Creates a new instance of <code>DefaultLSConsoleModel</code>. */
 	public
 	DefaultLSConsoleModel() {
-		CC.addReconnectListener(new ActionListener() {
+		CC.addReconnectListener(new GenericListener() {
 			public void
-			actionPerformed(ActionEvent e) { reconnect(); }
+			jobDone(GenericEvent e) { reconnect(); }
 		});
 		
 		lsConsoleThread.start();
@@ -380,7 +378,6 @@ public class DefaultLSConsoleModel implements LSConsoleModel {
 		return tmpVector.toArray(new String[tmpVector.size()]);
 	}
 	
-	@Override
 	public void
 	quit() { disconnect(); }
 	
@@ -404,7 +401,7 @@ public class DefaultLSConsoleModel implements LSConsoleModel {
 	 */
 	private void
 	fireResponseReceived(final String response) {
-		SwingUtilities.invokeLater(new Runnable() {
+		PDUtils.runOnUiThread(new Runnable() {
 			public void
 			run() {
 				LSConsoleEvent e = new LSConsoleEvent(this, response);

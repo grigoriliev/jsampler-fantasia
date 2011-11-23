@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2010 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -26,8 +26,8 @@ import java.awt.Component;
 
 import javax.swing.JTree;
 
-import org.jsampler.view.DbDirectoryTreeNode;
-import org.jsampler.view.InstrumentsDbTreeModel;
+import org.jsampler.view.swing.DbDirectoryTreeNode;
+import org.jsampler.view.swing.InstrumentsDbTreeModel;
 
 import org.jsampler.view.std.JSInstrumentsDbTree;
 

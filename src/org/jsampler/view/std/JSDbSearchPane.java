@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2007 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -60,6 +60,8 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import org.jsampler.view.swing.SHF;
+
 import net.sf.juife.event.TaskEvent;
 import net.sf.juife.event.TaskListener;
 
@@ -88,7 +90,7 @@ public abstract class JSDbSearchPane extends JPanel {
 	private final JLabel lLookIn = new JLabel(i18n.getLabel("JSDbSearchPane.lLookIn"));
 	private final JTextField tfLookIn = new JTextField();
 	private JButton btnBrowse =
-		new JButton(CC.getViewConfig().getInstrumentsDbTreeView().getOpenIcon());
+		new JButton(SHF.getViewConfig().getInstrumentsDbTreeView().getOpenIcon());
 	
 	private TypeCriteriaPane typeCriteriaPane = new TypeCriteriaPane();
 	private DateCriteriaPane dateCreatedPane = new DateCriteriaPane();

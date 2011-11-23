@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -24,14 +24,12 @@ package org.jsampler.view.std;
 
 import javax.swing.Action;
 
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
 import org.jsampler.CC;
 import org.jsampler.task.Global;
 import org.jsampler.view.JSChannel;
 import org.jsampler.view.JSChannelsPane;
-import org.jsampler.view.JSMainFrame;
+import org.jsampler.view.swing.SwingChannelsPane;
+import org.jsampler.view.swing.SwingMainFrame;
 
 import static org.jsampler.view.std.StdI18n.i18n;
 
@@ -39,7 +37,7 @@ import static org.jsampler.view.std.StdI18n.i18n;
  *
  * @author Grigor Iliev
  */
-public abstract class StdMainFrame extends JSMainFrame implements ListSelectionListener {
+public abstract class StdMainFrame<CP extends SwingChannelsPane> extends SwingMainFrame<CP> implements org.jsampler.event.ListSelectionListener {
 	public
 	StdMainFrame() {
 		addChannelsPaneSelectionListener(this);
@@ -47,21 +45,21 @@ public abstract class StdMainFrame extends JSMainFrame implements ListSelectionL
 	
 	@Override
 	public void
-	addChannelsPane(JSChannelsPane chnPane) {
+	addChannelsPane(CP chnPane) {
 		super.addChannelsPane(chnPane);
 		chnPane.addListSelectionListener(this);
 	}
 	
 	@Override
 	public boolean
-	removeChannelsPane(JSChannelsPane chnPane) {
+	removeChannelsPane(CP chnPane) {
 		chnPane.removeListSelectionListener(this);
 		return super.removeChannelsPane(chnPane);
 	}
 	
 	@Override
 	public void
-	valueChanged(ListSelectionEvent e) {
+	valueChanged(org.jsampler.event.ListSelectionEvent e) {
 		if(e.getValueIsAdjusting()) return;
 		
 		checkChannelSelection(getSelectedChannelsPane());

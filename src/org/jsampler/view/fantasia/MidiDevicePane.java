@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -61,8 +61,8 @@ import org.jsampler.event.ParameterListener;
 
 import org.jsampler.task.Midi;
 
-import org.jsampler.view.ParameterTable;
 import org.jsampler.view.fantasia.basic.PixmapPane;
+import org.jsampler.view.swing.ParameterTable;
 
 import org.linuxsampler.lscp.MidiInputDevice;
 import org.linuxsampler.lscp.MidiPort;

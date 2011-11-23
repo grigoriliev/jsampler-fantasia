@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -24,8 +24,8 @@ package org.jsampler;
 
 import java.util.Vector;
 
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import net.sf.juife.event.GenericEvent;
+import net.sf.juife.event.GenericListener;
 
 import org.jsampler.event.OrchestraAdapter;
 import org.jsampler.event.OrchestraEvent;
@@ -60,6 +60,7 @@ public class DefaultOrchestraModel implements OrchestraModel {
 	 * Registers the specified listener for receiving event messages.
 	 * @param l The <code>OrchestraListener</code> to register.
 	 */
+	@Override
 	public void
 	addOrchestraListener(OrchestraListener l) { listeners.add(l); }
 	
@@ -67,6 +68,7 @@ public class DefaultOrchestraModel implements OrchestraModel {
 	 * Removes the specified listener.
 	 * @param l The <code>OrchestraListener</code> to remove.
 	 */
+	@Override
 	public void
 	removeOrchestraListener(OrchestraListener l) { listeners.remove(l); }
 	
@@ -74,6 +76,7 @@ public class DefaultOrchestraModel implements OrchestraModel {
 	 * Gets the name of this orchestra.
 	 * @return The name of this orchestra.
 	 */
+	@Override
 	public String
 	getName() { return name; }
 	
@@ -81,6 +84,7 @@ public class DefaultOrchestraModel implements OrchestraModel {
 	 * Sets the name of this orchestra.
 	 * @param name The new name of this orchestra.
 	 */
+	@Override
 	public void
 	setName(String name) {
 		this.name = name;
@@ -91,6 +95,7 @@ public class DefaultOrchestraModel implements OrchestraModel {
 	 * Returns the name of this orchestra.
 	 * @return The name of this orchestra.
 	 */
+	@Override
 	public String
 	toString() { return getName(); }
 	
@@ -98,6 +103,7 @@ public class DefaultOrchestraModel implements OrchestraModel {
 	 * Gets a brief description about this orchestra.
 	 * @return A brief description about this orchestra.
 	 */
+	@Override
 	public String
 	getDescription() { return description; }
 	
@@ -105,6 +111,7 @@ public class DefaultOrchestraModel implements OrchestraModel {
 	 * Sets a description about this orchestra.
 	 * @param desc A brief description about this orchestra.
 	 */
+	@Override
 	public void
 	setDescription(String desc) {
 		description = desc;
@@ -115,6 +122,7 @@ public class DefaultOrchestraModel implements OrchestraModel {
 	 * Gets the current number of instruments in this orchestra.
 	 * @return The current number of instruments in this orchestra.
 	 */
+	@Override
 	public int
 	getInstrumentCount() { return instruments.size(); }
 	
@@ -123,6 +131,7 @@ public class DefaultOrchestraModel implements OrchestraModel {
 	 * @param idx The index of the instrument to be returned.
 	 * @return The instrument at the specified position.
 	 */
+	@Override
 	public OrchestraInstrument
 	getInstrument(int idx) { return instruments.get(idx); }
 	
@@ -131,6 +140,7 @@ public class DefaultOrchestraModel implements OrchestraModel {
 	 * @param instr The instrument to be added.
 	 * @throws IllegalArgumentException If <code>instr</code> is <code>null</code>.
 	 */
+	@Override
 	public void
 	addInstrument(OrchestraInstrument instr) {
 		insertInstrument(instr, getInstrumentCount());
@@ -143,6 +153,7 @@ public class DefaultOrchestraModel implements OrchestraModel {
 	 * @throws IllegalArgumentException If <code>instr</code> is <code>null</code>.
 	 * @throws ArrayIndexOutOfBoundsException If the specified index is invalid.
 	 */
+	@Override
 	public void
 	insertInstrument(OrchestraInstrument instr, int idx) {
 		if(instr == null) throw new IllegalArgumentException("instr should be non-null!");
@@ -154,6 +165,7 @@ public class DefaultOrchestraModel implements OrchestraModel {
 	 * Removes the specified instrument from this orchestra.
 	 * @param idx The index of the instrument to remove.
 	 */
+	@Override
 	public void
 	removeInstrument(int idx) {
 		OrchestraInstrument instr = instruments.get(idx);
@@ -167,6 +179,7 @@ public class DefaultOrchestraModel implements OrchestraModel {
 	 * @return <code>true</code> if the specified instrument was in this orchestra,
 	 * <code>false</code> otherwise.
 	 */
+	@Override
 	public boolean
 	removeInstrument(OrchestraInstrument instr) {
 		boolean b = instruments.removeElement(instr);
@@ -181,6 +194,7 @@ public class DefaultOrchestraModel implements OrchestraModel {
 	 * and -1 if <code>instr</code> is <code>null</code> or
 	 * the orchestra does not contain the specified instrument.
 	 */
+	@Override
 	public int
 	getInstrumentIndex(OrchestraInstrument instr) {
 		if(instr == null) return -1;
@@ -199,6 +213,7 @@ public class DefaultOrchestraModel implements OrchestraModel {
 	 * or if the instrument is already on the top.
 	 * @param instr The instrument to move on top.
 	 */
+	@Override
 	public void
 	moveInstrumentOnTop(OrchestraInstrument instr) {
 		if(instr == null) return;
@@ -217,6 +232,7 @@ public class DefaultOrchestraModel implements OrchestraModel {
 	 * or if the instrument is already on the top.
 	 * @param instr The instrument to move up.
 	 */
+	@Override
 	public void
 	moveInstrumentUp(OrchestraInstrument instr) {
 		if(instr == null) return;
@@ -236,6 +252,7 @@ public class DefaultOrchestraModel implements OrchestraModel {
 	 * or if the instrument is already at the bottom.
 	 * @param instr The instrument to move down.
 	 */
+	@Override
 	public void
 	moveInstrumentDown(OrchestraInstrument instr) {
 		if(instr == null) return;
@@ -253,6 +270,7 @@ public class DefaultOrchestraModel implements OrchestraModel {
 	 * or if the instrument is already at the bottom.
 	 * @param instr The instrument to move at bottom.
 	 */
+	@Override
 	public void
 	moveInstrumentAtBottom(OrchestraInstrument instr) {
 		if(instr == null) return;
@@ -270,6 +288,7 @@ public class DefaultOrchestraModel implements OrchestraModel {
 	 * @throws IllegalArgumentException If an error occurs while
 	 * reading the content of this orchestra.
 	 */
+	@Override
 	public void
 	readObject(Node node) {
 		if(
@@ -318,6 +337,7 @@ public class DefaultOrchestraModel implements OrchestraModel {
 	 * @param node Specifies the node where the content of this orchestra
 	 * should be written.
 	 */
+	@Override
 	public void
 	writeObject(Document doc, Node node) {
 		Element el = doc.createElement("orchestra");
@@ -378,10 +398,10 @@ public class DefaultOrchestraModel implements OrchestraModel {
 	private Handler
 	getHandler() { return eventHandler; }
 	
-	private class Handler extends OrchestraAdapter implements ChangeListener {
+	private class Handler extends OrchestraAdapter implements GenericListener {
 		/** Invoked when the settings of an instrument are changed. */
 		public void
-		stateChanged(ChangeEvent e) {
+		jobDone(GenericEvent e) {
 			fireInstrumentChanged((OrchestraInstrument)e.getSource());
 		}
 		

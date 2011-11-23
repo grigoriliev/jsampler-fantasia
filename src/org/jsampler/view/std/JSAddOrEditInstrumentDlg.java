@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2010 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -32,6 +32,7 @@ import java.awt.event.ActionListener;
 
 import java.io.File;
 
+import java.util.Locale;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -41,7 +42,7 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import net.sf.juife.OkCancelDialog;
+import net.sf.juife.swing.OkCancelDialog;
 
 import net.sf.juife.event.TaskEvent;
 import net.sf.juife.event.TaskListener;
@@ -49,10 +50,11 @@ import net.sf.juife.event.TaskListener;
 import org.jsampler.CC;
 import org.jsampler.OrchestraInstrument;
 import org.jsampler.JSPrefs;
-
 import org.jsampler.task.Global;
+import org.jsampler.view.swing.SHF;
 
 import org.linuxsampler.lscp.Instrument;
+import org.linuxsampler.lscp.SamplerEngine;
 
 import static org.jsampler.view.std.StdI18n.i18n;
 import static org.linuxsampler.lscp.Parser.*;
@@ -67,6 +69,7 @@ public class JSAddOrEditInstrumentDlg extends OkCancelDialog {
 	private final JLabel lDesc = new JLabel(i18n.getLabel("JSAddOrEditInstrumentDlg.lDesc"));
 	private final JLabel lPath = new JLabel(i18n.getLabel("JSAddOrEditInstrumentDlg.lPath"));
 	private final JLabel lIndex = new JLabel(i18n.getLabel("JSAddOrEditInstrumentDlg.lIndex"));
+	private final JLabel lEngine = new JLabel(i18n.getLabel("JSAddOrEditInstrumentDlg.lEngine"));
 	
 	private final JButton btnBrowse =
 		new JButton(i18n.getButtonLabel("browse"));
@@ -75,6 +78,7 @@ public class JSAddOrEditInstrumentDlg extends OkCancelDialog {
 	private final JTextField tfDesc = new JTextField();
 	private final JComboBox cbPath = new JComboBox();
 	private final JComboBox cbIndex = new JComboBox();
+	private final JComboBox cbEngine = new JComboBox();
 	
 	private OrchestraInstrument instrument;
 	
@@ -90,7 +94,7 @@ public class JSAddOrEditInstrumentDlg extends OkCancelDialog {
 	 * @param instr The instrument to modify.
 	 */
 	public JSAddOrEditInstrumentDlg(OrchestraInstrument instr) {
-		super(CC.getMainFrame(), i18n.getLabel("JSAddOrEditInstrumentDlg.title"));
+		super(SHF.getMainFrame(), i18n.getLabel("JSAddOrEditInstrumentDlg.title"));
 		setResizable(true);
 		
 		instrument = instr;
@@ -107,6 +111,10 @@ public class JSAddOrEditInstrumentDlg extends OkCancelDialog {
 		cbPath.setPreferredSize (
 			new Dimension(200, cbPath.getPreferredSize().height)
 		);
+		
+		for(SamplerEngine engine : CC.getSamplerModel().getEngines()) {
+			cbEngine.addItem(engine);
+		}
 		
 		JPanel p = new JPanel();
 		
@@ -144,6 +152,11 @@ public class JSAddOrEditInstrumentDlg extends OkCancelDialog {
 		gridbag.setConstraints(lIndex, c);
 		p.add(lIndex);
 	
+		c.gridx = 0;
+		c.gridy = 4;
+		gridbag.setConstraints(lEngine, c);
+		p.add(lEngine);
+	
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridx = 1;
 		c.gridy = 0;
@@ -171,6 +184,11 @@ public class JSAddOrEditInstrumentDlg extends OkCancelDialog {
 		c.gridwidth = 2;
 		gridbag.setConstraints(cbIndex, c);
 		p.add(cbIndex);
+		
+		c.gridx = 1;
+		c.gridy = 4;
+		gridbag.setConstraints(cbEngine, c);
+		p.add(cbEngine);
 		
 		setMainPane(p);
 		
@@ -215,6 +233,8 @@ public class JSAddOrEditInstrumentDlg extends OkCancelDialog {
 		tfDesc.setText(getInstrument().getDescription());
 		cbPath.setSelectedItem(getInstrument().getFilePath());
 		cbIndex.setSelectedIndex(getInstrument().getInstrumentIndex());
+		
+		setSelectedEngine(getInstrument().getEngine());
 	}
 	
 	private void
@@ -275,6 +295,7 @@ public class JSAddOrEditInstrumentDlg extends OkCancelDialog {
 		instrument.setFilePath(cbPath.getSelectedItem().toString());
 		int idx = cbIndex.getSelectedIndex();
 		instrument.setInstrumentIndex(idx);
+		instrument.setEngine(((SamplerEngine)cbEngine.getSelectedItem()).getName());
 		
 		StdUtils.updateRecentElements("recentInstrumentFiles", instrument.getFilePath());
 		
@@ -292,6 +313,36 @@ public class JSAddOrEditInstrumentDlg extends OkCancelDialog {
 	 */
 	public OrchestraInstrument
 	getInstrument() { return instrument; }
+	
+	private void
+	guessEngine(String file) {
+		if(file == null || file.length() < 4) return;
+		String engineName = null;
+		file = file.substring(file.length() - 4).toLowerCase();
+		if (file.equals(".gig")) {
+			engineName = "GIG";
+		} else if(file.equals(".sfz")) {
+			engineName = "SFZ";
+		} else if(file.equals(".sf2")) {
+			engineName = "SF2";
+		}
+		
+		setSelectedEngine(engineName);
+		
+		
+	}
+	
+	private void
+	setSelectedEngine(String engineName) {
+		if(engineName == null) return;
+		for(int i = 0; i < cbEngine.getItemCount(); i ++) {
+			SamplerEngine engine = (SamplerEngine)cbEngine.getItemAt(i);
+			if(engine.getName().equals(engineName)) {
+				cbEngine.setSelectedIndex(i);
+				break;
+			}
+		}
+	}
 	
 	
 	private final Handler eventHandler = new Handler();
@@ -326,6 +377,7 @@ public class JSAddOrEditInstrumentDlg extends OkCancelDialog {
 			}
 			path = toEscapedString(path);
 			cbPath.setSelectedItem(path);
+			guessEngine(path);
 		}
 	}
 }

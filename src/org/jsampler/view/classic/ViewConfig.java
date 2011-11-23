@@ -30,13 +30,13 @@ import org.jsampler.JSPrefs;
 import org.jsampler.view.InstrumentsDbTableView;
 import org.jsampler.view.InstrumentsDbTreeView;
 import org.jsampler.view.BasicIconSet;
-import org.jsampler.view.JSViewConfig;
+
 
 /**
  *
  * @author Grigor Iliev
  */
-public class ViewConfig extends JSViewConfig {
+public class ViewConfig extends org.jsampler.view.swing.ViewConfig {
 	private InstrumentsDbTreeView instrumentsDbTreeView = new TreeView();
 	private InstrumentsDbTableView instrumentsDbTableView = new TableView();
 	private IconSet basicIconSet = new IconSet();

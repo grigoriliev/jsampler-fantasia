@@ -22,9 +22,6 @@
 
 package org.jsampler.view;
 
-import javax.swing.JPopupMenu;
-import java.awt.event.KeyEvent;
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -38,7 +35,7 @@ import static org.jsampler.JSPrefs.*;
  * Provides the view configuration.
  * @author Grigor Iliev
  */
-public abstract class JSViewConfig {
+public abstract class JSViewConfig<I> {
 	private boolean measurementUnitDecibel;
 	
 	private int firstMidiBankNumber;
@@ -85,16 +82,16 @@ public abstract class JSViewConfig {
 	/**
 	 * Provides UI information for instruments database trees.
 	 */
-	public abstract InstrumentsDbTreeView getInstrumentsDbTreeView();
+	public abstract InstrumentsDbTreeView<I> getInstrumentsDbTreeView();
 	
 	/**
 	 * Provides UI information for instruments database tables.
 	 */
-	public abstract InstrumentsDbTableView getInstrumentsDbTableView();
+	public abstract InstrumentsDbTableView<I> getInstrumentsDbTableView();
 	
-	public abstract SamplerBrowserView getSamplerBrowserView();
+	public abstract SamplerBrowserView<I> getSamplerBrowserView();
 	
-	public abstract BasicIconSet getBasicIconSet();
+	public abstract BasicIconSet<I> getBasicIconSet();
 	
 	public abstract JSPrefs preferences();
 	
@@ -104,6 +101,9 @@ public abstract class JSViewConfig {
 	 */
 	public boolean
 	getInstrumentsDbSupport() { return false; }
+	
+	public abstract void initInstrumentsDbTreeModel();
+	public abstract void resetInstrumentsDbTreeModel();
 	
 	/**
 	 * Determines whether the volume values should be shown in decibels.
@@ -129,10 +129,7 @@ public abstract class JSViewConfig {
 	public int
 	getFirstMidiProgramNumber() { return firstMidiProgramNumber; }
 
-	public int
-	getDefaultModKey() {
-		return CC.isMacOS() ? KeyEvent.META_MASK : KeyEvent.CTRL_MASK;
-	}
+	public abstract int getDefaultModKey();
 
 	/**
 	 * Determines whether main menu is moved to
@@ -144,13 +141,29 @@ public abstract class JSViewConfig {
 		String s = System.getProperty("apple.laf.useScreenMenuBar");
 		return (s != null && "true".equalsIgnoreCase(s)) ? true : false;
 	}
-
-	/**  Constructs a new multicolumn menu with the supplied string as its text. */
-	public javax.swing.JMenu
-	createMultiColumnMenu(String s) { return new net.sf.juife.MultiColumnMenu(s); }
-
-	/**  Constructs a new multicolumn popup menu. */
-	public JPopupMenu
-	createMultiColumnPopupMenu()
-	{ return new net.sf.juife.MultiColumnMenu.PopupMenu(); }
+	
+	/**
+	 * Shows a dialog with the specified error message.
+	 * @param msg The error message to be shown.
+	 */
+	public abstract void showErrorMessage(String msg);
+	
+	/**
+	 * Shows a dialog with error message.
+	 * @param e The <code>Exception</code> from which the error message is obtained.
+	 */
+	public abstract void showErrorMessage(Exception e);
+	
+	/**
+	 * Shows a dialog with error message.
+	 * @param e The <code>Exception</code> from which the error message is obtained.
+	 * @param prefix The prefix to be added to the error message.
+	 */
+	public abstract void showErrorMessage(Exception e, String prefix);
+	
+	/**
+	 * Sets the default font to be used in the GUI.
+	 * @param fontName The name of the font to be used as default.
+	 */
+	public abstract void setUIDefaultFont(String fontName);
 }

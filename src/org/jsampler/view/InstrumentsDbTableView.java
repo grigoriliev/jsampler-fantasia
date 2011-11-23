@@ -22,19 +22,17 @@
 
 package org.jsampler.view;
 
-import javax.swing.Icon;
-
 /**
  * Provides UI information for instruments database tables.
  * @author Grigor Iliev
  */
-public interface InstrumentsDbTableView {
+public interface InstrumentsDbTableView<I> {
 	/** Gets the folder icon. */
-	public Icon getFolderIcon();
+	public I getFolderIcon();
 	
 	/** Gets the default instrument icon. */
-	public Icon getInstrumentIcon();
+	public I getInstrumentIcon();
 	
 	/** Gets the icon used for representing GigaSamppler instruments. */
-	public Icon getGigInstrumentIcon();
+	public I getGigInstrumentIcon();
 }

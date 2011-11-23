@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -58,7 +58,6 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
 
 import org.jsampler.CC;
-import org.jsampler.HF;
 import org.jsampler.MidiInstrument;
 import org.jsampler.MidiInstrumentMap;
 
@@ -66,10 +65,11 @@ import org.jsampler.event.MidiInstrumentEvent;
 import org.jsampler.event.MidiInstrumentListener;
 import org.jsampler.event.MidiInstrumentMapEvent;
 import org.jsampler.event.MidiInstrumentMapListener;
+import org.jsampler.view.swing.SHF;
 
 import org.linuxsampler.lscp.MidiInstrumentInfo;
 
-import net.sf.juife.OkCancelDialog;
+import net.sf.juife.swing.OkCancelDialog;
 
 import static org.jsampler.JSPrefs.FIRST_MIDI_BANK_NUMBER;
 import static org.jsampler.JSPrefs.FIRST_MIDI_PROGRAM_NUMBER;
@@ -282,7 +282,7 @@ public class JSMidiInstrumentTree extends JTree {
 			if(c > 1) {
 				String s;
 				s = i18n.getMessage("JSMidiInstrumentTree.removeInstruments?", c);
-				if(!HF.showYesNoDialog(CC.getMainFrame(), s)) return;
+				if(!SHF.showYesNoDialog(SHF.getMainFrame(), s)) return;
 			}
 			
 			for(int i = c - 1; i >= 0; i--) {
@@ -476,13 +476,13 @@ public class JSMidiInstrumentTree extends JTree {
 		MidiInstrumentMap smap = dlg.getSelectedMidiInstrumentMap();
 		
 		if(smap == null) {
-			HF.showErrorMessage(i18n.getMessage("JSMidiInstrumentTree.noMap!"), this);
+			SHF.showErrorMessage(i18n.getMessage("JSMidiInstrumentTree.noMap!"), this);
 			return;
 		}
 		
 		if(dlg.getMidiBank() == bank.getId() && smap.getMapId() == getMidiInstrumentMap().getMapId()) {
 			String s = "JSMidiInstrumentTree.sameSourceAndDestination!";
-			HF.showErrorMessage(i18n.getMessage(s), this);
+			SHF.showErrorMessage(i18n.getMessage(s), this);
 			return;
 		}
 		
@@ -549,14 +549,14 @@ public class JSMidiInstrumentTree extends JTree {
 		MidiInstrumentMap smap = dlg.getSelectedMidiInstrumentMap();
 		
 		if(smap == null) {
-			HF.showErrorMessage(i18n.getMessage("JSMidiInstrumentTree.noMap!"), this);
+			SHF.showErrorMessage(i18n.getMessage("JSMidiInstrumentTree.noMap!"), this);
 			return;
 		}
 		
 		int bank = instr.getInfo().getMidiBank();
 		if(dlg.getMidiBank() == bank && smap.getMapId() == getMidiInstrumentMap().getMapId()) {
 			String s = "JSMidiInstrumentTree.sameSourceAndDestination!";
-			HF.showErrorMessage(i18n.getMessage(s), this);
+			SHF.showErrorMessage(i18n.getMessage(s), this);
 			return;
 		}
 		
@@ -896,12 +896,12 @@ class JSOverrideInstrumentsConfirmDlg extends OkCancelDialog {
 	private final JTable table;
 	
 	JSOverrideInstrumentsConfirmDlg(String[] instrumentNames) {
-		super(CC.getMainFrame());
+		super(SHF.getMainFrame());
 		
 		JPanel mainPane = new JPanel();
 		mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.Y_AXIS));
 		
-		lMsg.setIcon(CC.getViewConfig().getBasicIconSet().getWarning32Icon());
+		lMsg.setIcon(SHF.getViewConfig().getBasicIconSet().getWarning32Icon());
 		lMsg.setAlignmentX(LEFT_ALIGNMENT);
 		mainPane.add(lMsg);
 		

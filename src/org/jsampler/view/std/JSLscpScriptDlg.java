@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -45,6 +45,7 @@ import javax.swing.JTextPane;
 import org.jsampler.CC;
 import org.jsampler.HF;
 import org.jsampler.JSPrefs;
+import org.jsampler.view.swing.SHF;
 
 import static org.jsampler.view.std.StdI18n.i18n;
 
@@ -64,7 +65,7 @@ public class JSLscpScriptDlg extends JDialog {
 	 * Creates a new instance of <code>JSLscpScriptDlg</code>.
 	 */
 	public
-	JSLscpScriptDlg() { this(CC.getMainFrame()); }
+	JSLscpScriptDlg() { this(SHF.getMainFrame()); }
 	
 	/**
 	 * Creates a new instance of <code>JSLscpScriptDlg</code>.
@@ -130,7 +131,7 @@ public class JSLscpScriptDlg extends JDialog {
 		// On Mac OS the native file chooser asks whether to replace a file
 		if(f.exists() && !(CC.isMacOS() && b)) {
 			String msg = i18n.getMessage("JSLscpScriptDlg.overwriteFile?");
-			if(!HF.showYesNoDialog(CC.getMainFrame(), msg)) return;
+			if(!SHF.showYesNoDialog(SHF.getMainFrame(), msg)) return;
 		}
 		
 		try {
@@ -139,7 +140,7 @@ public class JSLscpScriptDlg extends JDialog {
 			fos.close();
 		} catch(Exception e) {
 			CC.getLogger().log(Level.FINE, HF.getErrorMessage(e), e);
-			HF.showErrorMessage(e);
+			SHF.showErrorMessage(e);
 		}
 	}
 }

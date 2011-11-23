@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -32,13 +32,14 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
-import net.sf.juife.OkCancelDialog;
+import net.sf.juife.swing.OkCancelDialog;
 
 import org.jsampler.CC;
 import org.jsampler.MidiInstrumentMap;
 
 import org.jsampler.event.ListEvent;
 import org.jsampler.event.ListListener;
+import org.jsampler.view.swing.SHF;
 
 import static org.jsampler.view.std.StdI18n.i18n;
 
@@ -56,7 +57,7 @@ public class JSMidiBankChooser extends OkCancelDialog implements ListListener<Mi
 	/** Creates a new instance of <code>JSMidiBankChooser</code> */
 	public
 	JSMidiBankChooser() {
-		super(CC.getMainFrame());
+		super(SHF.getMainFrame());
 		int i = CC.getViewConfig().getFirstMidiBankNumber();
 		spinnerBank = new JSpinner(new SpinnerNumberModel(i, i, 16383 + i, 1));
 		

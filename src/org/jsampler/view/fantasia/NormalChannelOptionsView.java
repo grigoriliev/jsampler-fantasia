@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2010 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -60,6 +60,7 @@ import org.jsampler.event.SamplerListener;
 
 import org.jsampler.view.fantasia.basic.*;
 import org.jsampler.view.std.JSChannelOutputRoutingDlg;
+import org.jsampler.view.swing.SHF;
 
 import org.linuxsampler.lscp.AudioOutputDevice;
 import org.linuxsampler.lscp.MidiInputDevice;
@@ -236,7 +237,7 @@ public class NormalChannelOptionsView extends JPanel implements ChannelOptionsVi
 			public void
 			actionPerformed(ActionEvent e) {
 				SamplerChannel c = channel.getChannelInfo();
-				new JSChannelOutputRoutingDlg(CC.getMainFrame(), c).setVisible(true);
+				new JSChannelOutputRoutingDlg(SHF.getMainFrame(), c).setVisible(true);
 			
 			}
 		});

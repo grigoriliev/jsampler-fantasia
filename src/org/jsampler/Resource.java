@@ -24,8 +24,8 @@ package org.jsampler;
 
 import java.util.Vector;
 
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import net.sf.juife.event.GenericEvent;
+import net.sf.juife.event.GenericListener;
 
 
 /**
@@ -36,7 +36,7 @@ public class Resource {
 	private String name = "Untitled";
 	private String description = "";
 	
-	private final Vector<ChangeListener> listeners = new Vector<ChangeListener>();
+	private final Vector<GenericListener> listeners = new Vector<GenericListener>();
 	
 	/**
 	 * Creates a new instance of Resource 
@@ -46,17 +46,17 @@ public class Resource {
 	
 	/**
 	 * Registers the specified listener to be notified when the resource info is changed.
-	 * @param l The <code>ChangeListener</code> to register.
+	 * @param l The <code>GenericListener</code> to register.
 	 */
 	public void
-	addChangeListener(ChangeListener l) { listeners.add(l); }
+	addChangeListener(GenericListener l) { listeners.add(l); }
 	
 	/**
 	 * Removes the specified listener.
-	 * @param l The <code>ChangeListener</code> to remove.
+	 * @param l The <code>GenericListener</code> to remove.
 	 */
 	public void
-	removeChangeListener(ChangeListener l) { listeners.remove(l); }
+	removeChangeListener(GenericListener l) { listeners.remove(l); }
 	
 	/**
 	 * Gets the name of this resource.
@@ -95,7 +95,7 @@ public class Resource {
 	/** Notifies listeners that the recourse properties has changed. */
 	protected void
 	fireChangeEvent() {
-		ChangeEvent e = new ChangeEvent(this);
-		for(ChangeListener l : listeners) l.stateChanged(e);
+		GenericEvent e = new GenericEvent(this);
+		for(GenericListener l : listeners) l.jobDone(e);
 	}
 }

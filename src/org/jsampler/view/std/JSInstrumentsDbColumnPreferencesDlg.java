@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2008 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -33,10 +33,10 @@ import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
-import net.sf.juife.InformationDialog;
+import net.sf.juife.swing.InformationDialog;
 
 import org.jsampler.JSI18n;
-import org.jsampler.view.InstrumentsDbTableModel;
+import org.jsampler.view.swing.InstrumentsDbTableModel;
 
 import static org.jsampler.view.std.StdI18n.i18n;
 

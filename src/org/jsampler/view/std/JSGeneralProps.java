@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2009 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -45,9 +45,10 @@ import javax.swing.SpinnerNumberModel;
 import org.jsampler.CC;
 import org.jsampler.JSPrefs;
 import org.jsampler.task.Global;
+import org.jsampler.view.swing.SHF;
 
 import static org.jsampler.view.std.StdI18n.i18n;
-import static org.jsampler.view.std.StdPrefs.*;
+import static org.jsampler.JSPrefs.*;
 
 
 /**
@@ -252,7 +253,7 @@ public class JSGeneralProps {
 		
 		private void
 		onChange() {
-			File f = StdUtils.showOpenDirectoryChooser(CC.getMainFrame(), null);
+			File f = StdUtils.showOpenDirectoryChooser(SHF.getMainFrame(), null);
 			if(f == null) return;
 			
 			String s = CC.getJSamplerHome();

@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2005-2006 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2005-2011 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -41,13 +41,13 @@ import javax.swing.JSeparator;
 import javax.swing.JTextField;
 
 import org.jsampler.CC;
-import org.jsampler.HF;
 
 import org.jsampler.view.JSChannelsPane;
 import org.jsampler.view.JSMainFrame;
+import org.jsampler.view.swing.SHF;
 
-import net.sf.juife.EnhancedDialog;
-import net.sf.juife.JuifeUtils;
+import net.sf.juife.swing.EnhancedDialog;
+import net.sf.juife.swing.JuifeUtils;
 
 import static org.jsampler.view.classic.ClassicI18n.i18n;
 
@@ -123,7 +123,7 @@ public class NewChannelsTabDlg extends EnhancedDialog {
 		ChannelsPane pane = new ChannelsPane(title);
 		
 		if(title.length() == 0) {
-			HF.showErrorMessage(i18n.getError("NewChannelsTabDlg.emptyTitle!"), this);
+			SHF.showErrorMessage(i18n.getError("NewChannelsTabDlg.emptyTitle!"), this);
 			return;
 		}
 		
@@ -131,7 +131,7 @@ public class NewChannelsTabDlg extends EnhancedDialog {
 			if(pane.getTitle().equals(p.getTitle())) {
 				String s;
 				s = i18n.getError("NewChannelsTabDlg.tabExist!", pane.getTitle());
-				HF.showErrorMessage(s, this);
+				SHF.showErrorMessage(s, this);
 				return;
 			}
 		}

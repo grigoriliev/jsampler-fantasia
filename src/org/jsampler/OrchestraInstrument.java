@@ -89,7 +89,10 @@ public class OrchestraInstrument extends Resource implements org.linuxsampler.ls
 	 * Sets the engine to be used for loading this instrument.
 	 */
 	public void
-	setEngine(String engine) { this.engine = engine; }
+	setEngine(String engine) {
+		this.engine = engine;
+		fireChangeEvent();
+	}
 	
 	public String
 	getFormatFamily() { return null; }
@@ -218,6 +221,9 @@ public class OrchestraInstrument extends Resource implements org.linuxsampler.ls
 				} catch(NumberFormatException x) {
 					throw new IllegalArgumentException("Not a number");
 				}
+			} else if(s.equals("engine")) {
+				DOMUtils.validateTextContent(node);
+				setEngine(node.getFirstChild().getNodeValue());
 			} else {	// Unknown content
 				CC.getLogger().info ("Unknown field: " + s);
 			}
@@ -250,5 +256,11 @@ public class OrchestraInstrument extends Resource implements org.linuxsampler.ls
 		el = doc.createElement("instrument-index");
 		el.appendChild(doc.createTextNode(String.valueOf(getInstrumentIndex())));
 		node.appendChild(el);
+		
+		if (getEngine() != null) {
+			el = doc.createElement("engine");
+			el.appendChild(doc.createTextNode(getEngine()));
+			node.appendChild(el);
+		}
 	}
 }

@@ -25,7 +25,7 @@ package org.jsampler;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-
+import java.text.NumberFormat;
 import java.util.logging.Level;
 
 import org.linuxsampler.lscp.LSException;
@@ -39,6 +39,11 @@ import static org.jsampler.JSI18n.i18n;
  * @author Grigor Iliev
  */
 public class HF {
+	private static NumberFormat numberFormat = NumberFormat.getInstance();
+	
+	static {
+		numberFormat.setMaximumFractionDigits(1);
+	}
 	
 	/**
 	 * Returns more meaningful, non-<code>null</code> message.
@@ -172,5 +177,14 @@ public class HF {
 		if(!f.isDirectory()) return false;
 		if(f.canRead() && f.canWrite() && f.canExecute()) return true;
 		return false;
+	}
+		
+	public static String
+	getVolumeString(int volume) {
+		if(CC.getViewConfig().isMeasurementUnitDecibel()) {
+			return numberFormat.format(HF.percentsToDecibels(volume)) + "dB";
+		} else {
+			return String.valueOf(volume) + "%";
+		}
 	}
 }

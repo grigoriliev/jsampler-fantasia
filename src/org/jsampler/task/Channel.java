@@ -439,8 +439,9 @@ public class Channel {
 		 * Creates new instance of <code>SetMidiInstrumentMap</code>.
 		 * @param channel The sampler channel number.
 		 * @param mapId The numerical ID of the MIDI instrument
-		 * map that should be assigned to the specified sampler
-		 * channel or <code>-1</code> to remove the current map binding.
+		 * map that should be assigned to the specified sampler channel.
+		 * To remove the current map binding use <code>-1</code>.
+		 * To set the current map to be the default map use <code>-2</code>.
 		 */
 		public
 		SetMidiInstrumentMap(int channel, int mapId) {

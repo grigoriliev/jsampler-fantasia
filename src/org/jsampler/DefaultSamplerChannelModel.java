@@ -462,8 +462,9 @@ public class DefaultSamplerChannelModel implements SamplerChannelModel {
 	 * Schedules a new task for assigning (on the backend side) the
 	 * specified MIDI instrument map to this sampler channel. 
 	 * @param mapId Specify the numerical ID of the MIDI instrument
-	 * map that should be assigned to this sampler
-	 * channel or <code>-1</code> to remove the current map binding.
+	 * map that should be assigned to this sampler channel.
+	 * To remove the current map binding use <code>-1</code>.
+	 * To set the current map to be the default map use <code>-2</code>.
 	 */
 	@Override
 	public void

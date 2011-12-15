@@ -1,4 +1,6 @@
  CVS HEAD
+  * Initial support for Android platforms
+  
   * Initial implementation of Sampler Browser
     (choose Window/Sampler Browser) - another way to view/edit
     the sampler configuration (work in progress - for now only

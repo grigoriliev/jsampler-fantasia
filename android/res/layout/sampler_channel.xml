@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/sampler_channel_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Channel 1"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+    
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@drawable/divider_gradient" />
+
+    <LinearLayout
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <ImageView
+            android:paddingLeft="3dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_volume" />
+
+        <SeekBar
+            android:paddingLeft="18dp"
+            android:paddingRight="18dp"
+            android:id="@+id/sampler_channel_slider_volume"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/sampler_channel_text_volume"
+            android:layout_width="65dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="left"
+            android:text="3 dB" />
+
+    </LinearLayout>
+
+    <include layout="@layout/divider_section" />
+
+    <LinearLayout
+        android:paddingTop="3dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/sampler_channel_btn_instrument"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Load Instrument..."
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="12dp"
+        android:paddingTop="7dp"
+        android:text="@string/sampler_channel_engine"
+        android:textStyle="bold" />
+
+    <include layout="@layout/divider_section" />
+
+    <LinearLayout
+        android:paddingTop="3dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Spinner
+            android:id="@+id/sampler_channel_engine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_weight="1" />
+
+        <ToggleButton
+            android:id="@+id/sampler_channel_btn_mute"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:textOn="M"
+            android:textOff="M" />
+
+        <ToggleButton
+            android:id="@+id/sampler_channel_btn_solo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:textOn="S"
+            android:textOff="S" />
+
+    </LinearLayout>
+
+    <TextView
+        android:paddingTop="7dp"
+        android:paddingLeft="12dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/sampler_channel_midi_input"
+        android:textStyle="bold" />
+
+    <include layout="@layout/divider_section" />
+
+    <LinearLayout
+        android:paddingTop="3dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Spinner
+            android:id="@+id/sampler_channel_midi_device"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <Spinner
+            android:id="@+id/sampler_channel_midi_port"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <Spinner
+            android:id="@+id/sampler_channel_midi_channel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+    <TextView
+        android:paddingTop="7dp"
+        android:paddingLeft="12dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/sampler_channel_midi_map"
+        android:textStyle="bold" />
+
+    <include layout="@layout/divider_section" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="3dp" />
+
+    <Spinner
+        android:id="@+id/sampler_channel_midi_map"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:paddingTop="7dp"
+        android:paddingLeft="12dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/sampler_channel_audio_output"
+        android:textStyle="bold" />
+
+    <include layout="@layout/divider_section" />
+
+    <LinearLayout
+        android:paddingTop="3dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+        
+        <Spinner
+            android:id="@+id/sampler_channel_audio_device"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/sampler_channel_btn_fx_sends"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="FX Sends" />
+
+        <Button
+            android:id="@+id/sampler_channel_btn_cr"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CR" />
+
+    </LinearLayout>
+
+</LinearLayout>

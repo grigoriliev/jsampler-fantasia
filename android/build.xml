@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="JSampler" default="help">
+
+    <loadproperties srcFile="local.properties" />
+    <property file="ant.properties" />
+    <loadproperties srcFile="project.properties" />
+
+    <target name="-pre-build">
+    	<delete file="./libs/jlscp.jar"/>
+    	<copy todir="./libs">
+    	    <fileset file="../lib/required/jlscp.jar"/>
+    	</copy>
+    	<delete file="./libs/juife.jar"/>
+    	<copy todir="./libs">
+     	    <fileset file="../lib/required/juife.jar"/>
+       	</copy>
+    	<delete dir="./src"/>
+    	<copy todir="./src">
+     	    <fileset file="../src/**"/>
+       	</copy>
+    	<delete dir="./src/org/jsampler/view/std"/>
+    	<delete dir="./src/org/jsampler/view/swing"/>
+    	<delete dir="./src/org/jsampler/view/classic"/>
+    	<delete dir="./src/org/jsampler/view/fantasia"/>
+    	
+    	<manifest file="src/org/jsampler/view/views.mf">
+            <attribute name="JS-Views" value="android-classic"/>
+    	    <attribute name="JS-Default-View" value="android-classic"/>
+    	            
+    	    <section name="android-classic">
+    	        <attribute name="View-Name" value="JS Classic"/>
+    	        <attribute name="View-Config" value="org.jsampler.android.view.classic.ViewConfig"/>
+    	        <attribute name="Main-Frame" value="org.jsampler.android.view.classic.MainFrame"/>
+    	        <attribute name="Progress-Indicator" value="org.jsampler.android.view.classic.ProgressDlg"/>
+    	    </section>
+    	</manifest>
+    </target>
+
+    <!-- quick check on sdk.dir -->
+    <fail
+            message="sdk.dir is missing. Make sure to generate local.properties using 'android update project'"
+            unless="sdk.dir"
+    />
+
+    <!-- version-tag: custom -->
+    <import file="${sdk.dir}/tools/ant/build.xml" />
+
+</project>

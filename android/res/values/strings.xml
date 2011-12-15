@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">JS Classic</string>
+    <string name="add_backend_title">Add Backend</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="browse">Browse...</string>
+    <string name="choose_backend.btn_add">Add</string>
+    <string name="choose_backend.btn_remove">Remove</string>
+    <string name="choose_backend.btn_up">Move Up</string>
+    <string name="choose_backend.btn_down">Move Down</string>
+    <string name="choose_backend.btn_connect">Connect</string>
+    <string name="choose_backend_title">Choose backend to connect</string>
+    <string name="choose_home_dir_title">Choose JSampler Home</string>
+    <string name="jsampler_options_menu_choose_backend">Choose backend...</string>
+    <string name="label_addr">Address: </string>
+    <string name="label_desc">Description: </string>
+    <string name="label_name">Name: </string>
+    <string name="label_port">Port: </string>
+    <string name="sampler_channel_audio_output">AUDIO OUTPUT</string>
+    <string name="sampler_channel_engine">ENGINE</string>
+    <string name="sampler_channel_midi_input">MIDI INPUT</string>
+    <string name="sampler_channel_midi_map">MIDI INSTRUMENT MAP</string>
+    <string name="sampler_channels_title">Sampler Channels</string>
+
+</resources>

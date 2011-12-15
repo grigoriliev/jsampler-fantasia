@@ -37,7 +37,7 @@
             </patternset>
         </unjar>
         
-        <javac debug="true" debuglevel="source,lines" srcdir="src" destdir="dist/build" excludes="org/jsampler/view/fantasia/**" />
+        <javac debug="true" debuglevel="source,lines" srcdir="src" destdir="dist/build" excludes="org/jsampler/view/fantasia/** org/jsampler/android/**" />
         <copy todir="./dist/build/org/jsampler/langprops">
             <fileset dir="./src/org/jsampler/langprops"/>
         </copy>
@@ -100,7 +100,7 @@
             <not><os name="mac" /></not>
         </condition>
 
-        <javac debug="true" debuglevel="source,lines" srcdir="src" destdir="dist/build" excludes="org/jsampler/view/classic/** ${mac-src}"/>
+        <javac debug="true" debuglevel="source,lines" srcdir="src" destdir="dist/build" excludes="org/jsampler/view/classic/** org/jsampler/android/** ${mac-src}"/>
         
         <copy todir="./dist/build/org/jsampler/langprops">
             <fileset dir="./src/org/jsampler/langprops"/>

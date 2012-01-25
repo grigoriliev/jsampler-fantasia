@@ -400,7 +400,7 @@ public class JSPrefs extends PropertyChangeSupport {
 		if(GLOBAL_VOICE_LIMIT.equals(name)) return 64;
 		if(GLOBAL_STREAM_LIMIT.equals(name)) return 90;
 		if(SOCKET_READ_TIMEOUT.equals(name)) return 90;
-		if(FIRST_MIDI_BANK_NUMBER.equals(name)) return 1;
+		if(FIRST_MIDI_BANK_NUMBER.equals(name)) return 0;
 		if(FIRST_MIDI_PROGRAM_NUMBER.equals(name)) return 1;
 		if(BACKEND_LAUNCH_DELAY.equals(name)) return 3;
 		if(DEFAULT_CHANNEL_VOLUME.equals(name)) return 100;

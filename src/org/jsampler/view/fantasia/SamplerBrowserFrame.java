@@ -82,8 +82,6 @@ public class SamplerBrowserFrame extends JSFrame {
 
 		addMenu();
 		
-		pack();
-		
 		getContentPane().add(splitPane);
 	}
 	

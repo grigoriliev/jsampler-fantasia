@@ -30,6 +30,7 @@
     - Fixed bug #156
     - Fixed bug #160
     - Fixed bug #161 (the default MIDI bank numbering is now zero-based)
+    - Save effect parameters into lscp file (see #179)
 
   * Some GUI enhancements and code cleanup
 

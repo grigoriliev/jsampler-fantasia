@@ -1,7 +1,7 @@
 /*
  *   JSampler - a java front-end for LinuxSampler
  *
- *   Copyright (C) 2009 Grigor Iliev <grigor@grigoriliev.com>
+ *   Copyright (C) 2012 Grigor Iliev <grigor@grigoriliev.com>
  *
  *   This file is part of JSampler.
  *
@@ -35,6 +35,7 @@ import org.jsampler.view.JSChannelsPane;
 import org.linuxsampler.lscp.AudioOutputChannel;
 import org.linuxsampler.lscp.AudioOutputDevice;
 import org.linuxsampler.lscp.Client;
+import org.linuxsampler.lscp.EffectParameter;
 import org.linuxsampler.lscp.FxSend;
 import org.linuxsampler.lscp.MidiInputDevice;
 import org.linuxsampler.lscp.MidiPort;
@@ -524,6 +525,13 @@ public class JSUtils {
 					lscpCLient.createEffectInstance(sys, mod, name);
 					int fxInstanceId = fxInsts + effectInstances++;
 					lscpCLient.appendEffectInstance(devId, i, fxInstanceId);
+					
+					EffectParameter[] fxParams = ei.getInfo().getParameters();
+					for(EffectParameter p : fxParams) {
+						lscpCLient.setEffectInstanceParameter (
+							fxInstanceId, p.getIndex(), p.getValue()
+						);
+					}
 				}
 			}
 		} catch(Exception e) {

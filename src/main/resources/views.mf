@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Created-By: Grigor Iliev
+JS-Views: fantasia
+JS-Default-View: fantasia
+
+Name: fantasia
+View-Name: Fantasia
+View-Config: org.jsampler.view.fantasia.ViewConfig
+Main-Frame: org.jsampler.view.fantasia.MainFrame
+Progress-Indicator: org.jsampler.view.fantasia.ProgressDlg

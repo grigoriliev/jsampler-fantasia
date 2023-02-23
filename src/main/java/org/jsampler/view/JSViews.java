@@ -144,7 +144,7 @@ public class JSViews {
 		viewEntries.removeAllElements();
 		
 		try {
-			Manifest m = new Manifest(JSViews.class.getResourceAsStream("views.mf"));
+			Manifest m = new Manifest(JSViews.class.getResourceAsStream("/views.mf"));
 			String s = m.getMainAttributes().getValue("JS-Views");
 			if(s == null) {
 				CC.getLogger().warning("Missing manifest attribute: JS-Views");

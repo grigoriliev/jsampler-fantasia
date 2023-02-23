@@ -42,7 +42,7 @@ import org.linuxsampler.lscp.Parser;
  */
 public class Res {
 	
-	/** Forbits the instantiation of this class. */
+	/** Forbids the instantiation of this class. */
 	private Res() { }
 	
 	public static ImageIcon gfxFantasiaLogo;

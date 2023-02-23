@@ -21,7 +21,6 @@
 
 package org.jsampler.view.swing;
 
-import org.jsampler.view.InstrumentsDbTableView;
 import java.awt.Component;
 import java.util.Comparator;
 import java.util.List;
@@ -43,6 +42,7 @@ import javax.swing.table.TableRowSorter;
 
 import org.jsampler.CC;
 import org.jsampler.JSPrefs;
+import org.jsampler.view.InstrumentsDbTableView;
 
 import org.linuxsampler.lscp.DbDirectoryInfo;
 import org.linuxsampler.lscp.DbInstrumentInfo;

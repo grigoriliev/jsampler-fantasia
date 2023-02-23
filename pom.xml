@@ -51,13 +51,8 @@
 		</dependency>
 		<dependency>
 			<groupId>com.grigoriliev.jsampler</groupId>
-			<artifactId>jlscp</artifactId>
-			<version>0.9.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.grigoriliev.jsampler</groupId>
-			<artifactId>juife</artifactId>
-			<version>0.5-SNAPSHOT</version>
+			<artifactId>jsampler-core</artifactId>
+			<version>0.9.2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jdesktop</groupId>

@@ -29,7 +29,7 @@ package org.jsampler.event;
  */
 public interface ParameterListener extends java.util.EventListener {
 	/**
-	 * Invoked when when the value of a particular parameter is changed.
+	 * Invoked when the value of a particular parameter is changed.
 	 */
 	public void parameterChanged(ParameterEvent e);
 }

@@ -63,7 +63,7 @@ public class ListSelectionEvent extends EventObject
      *
      * @param firstIndex the first index in the range, &lt;= lastIndex
      * @param lastIndex the last index in the range, &gt;= firstIndex
-     * @param isAdjusting whether or not this is one in a series of
+     * @param isAdjusting whether this is one in a series of
      *        multiple events, where changes are still being made
      */
     public ListSelectionEvent(Object source, int firstIndex, int lastIndex,

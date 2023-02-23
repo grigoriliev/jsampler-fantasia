@@ -26,6 +26,6 @@ package org.jsampler.event;
  * @author Grigor Iliev
  */
 public interface MidiDeviceListener extends java.util.EventListener {
-	/** Invoked when when the settings of a particular MIDI device have changed. */
+	/** Invoked when the settings of a particular MIDI device have changed. */
 	public void settingsChanged(MidiDeviceEvent e);
 }

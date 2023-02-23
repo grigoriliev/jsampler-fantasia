@@ -26,12 +26,12 @@ package org.jsampler.event;
  * @author Grigor Iliev
  */
 public interface AudioDeviceListener extends java.util.EventListener {
-	/** Invoked when when the settings of a particular audio device have changed. */
+	/** Invoked when the settings of a particular audio device have changed. */
 	public void settingsChanged(AudioDeviceEvent e);
 	
-	/** Invoked when when a new send effect chain is added to the audio device. */
+	/** Invoked when a new send effect chain is added to the audio device. */
 	public void sendEffectChainAdded(AudioDeviceEvent e);
 	
-	/** Invoked when when a send effect chain is removed from the audio device. */
+	/** Invoked when a send effect chain is removed from the audio device. */
 	public void sendEffectChainRemoved(AudioDeviceEvent e);
 }

@@ -82,7 +82,6 @@ import org.jsampler.MidiDeviceModel;
 import org.jsampler.MidiInstrumentMap;
 import org.jsampler.SamplerChannelModel;
 import org.jsampler.SamplerModel;
-
 import org.jsampler.event.ListEvent;
 import org.jsampler.event.ListListener;
 import org.jsampler.event.MidiDeviceEvent;
@@ -97,11 +96,10 @@ import org.jsampler.event.SamplerChannelListListener;
 import org.jsampler.event.SamplerChannelListener;
 import org.jsampler.event.SamplerEvent;
 import org.jsampler.event.SamplerListener;
-
-import org.jsampler.view.std.JSChannelOutputRoutingDlg;
-import org.jsampler.view.std.JSFxSendsPane;
-import org.jsampler.view.std.JSInstrumentChooser;
 import org.jsampler.view.swing.SHF;
+import org.jsampler.view.swing.std.JSChannelOutputRoutingDlg;
+import org.jsampler.view.swing.std.JSFxSendsPane;
+import org.jsampler.view.swing.std.JSInstrumentChooser;
 
 import org.linuxsampler.lscp.AudioOutputDevice;
 import org.linuxsampler.lscp.MidiInputDevice;

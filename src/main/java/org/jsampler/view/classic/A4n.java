@@ -30,18 +30,16 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 
 import org.jsampler.CC;
-
 import org.jsampler.view.JSChannel;
 import org.jsampler.view.JSChannelsPane;
-import org.jsampler.view.std.JSAddMidiInstrumentMapDlg;
-
-import org.jsampler.view.std.JSNewMidiDeviceDlg;
-import org.jsampler.view.std.JSNewAudioDeviceDlg;
-import org.jsampler.view.std.JSNewMidiInstrumentWizard;
-import org.jsampler.view.std.StdA4n;
 import org.jsampler.view.swing.SHF;
 import org.jsampler.view.swing.SwingChannelsPane;
 import org.jsampler.view.swing.SwingMainFrame;
+import org.jsampler.view.swing.std.JSAddMidiInstrumentMapDlg;
+import org.jsampler.view.swing.std.JSNewMidiDeviceDlg;
+import org.jsampler.view.swing.std.JSNewAudioDeviceDlg;
+import org.jsampler.view.swing.std.JSNewMidiInstrumentWizard;
+import org.jsampler.view.swing.std.StdA4n;
 
 import static org.jsampler.view.classic.ClassicI18n.i18n;
 

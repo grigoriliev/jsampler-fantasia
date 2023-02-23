@@ -29,9 +29,9 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
 import org.jsampler.CC;
-import org.jsampler.view.std.JSFrame;
-import org.jsampler.view.std.JSLscpScriptDlg;
 import org.jsampler.view.swing.SHF;
+import org.jsampler.view.swing.std.JSFrame;
+import org.jsampler.view.swing.std.JSLscpScriptDlg;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 

@@ -61,10 +61,9 @@ import org.jsampler.task.Audio;
 
 import org.jsampler.view.JSViewConfig;
 import org.jsampler.view.SessionViewConfig.DeviceConfig;
-
 import org.jsampler.view.fantasia.basic.PixmapButton;
 import org.jsampler.view.fantasia.basic.PixmapPane;
-import org.jsampler.view.std.JSNewAudioDeviceDlg;
+import org.jsampler.view.swing.std.JSNewAudioDeviceDlg;
 
 import org.linuxsampler.lscp.AudioOutputDriver;
 

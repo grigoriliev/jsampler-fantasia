@@ -46,9 +46,8 @@ import net.sf.juife.swing.NavigationPage;
 
 import org.jsampler.view.swing.InstrumentTable;
 import org.jsampler.view.swing.OrchestraTable;
-
-import org.jsampler.view.std.JSManageOrchestrasPane;
-import org.jsampler.view.std.JSOrchestraPane;
+import org.jsampler.view.swing.std.JSManageOrchestrasPane;
+import org.jsampler.view.swing.std.JSOrchestraPane;
 
 import static org.jsampler.view.classic.ClassicI18n.i18n;
 

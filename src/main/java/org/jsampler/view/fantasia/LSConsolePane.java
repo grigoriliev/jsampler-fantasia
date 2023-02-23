@@ -25,7 +25,7 @@ import java.awt.Window;
 
 import javax.swing.Action;
 
-import org.jsampler.view.std.JSLSConsolePane;
+import org.jsampler.view.swing.std.JSLSConsolePane;
 
 /**
  *

@@ -50,10 +50,9 @@ import org.jsampler.event.ListEvent;
 import org.jsampler.event.ListListener;
 
 import org.jsampler.view.fantasia.basic.*;
-
-import org.jsampler.view.std.JSManageMidiMapsPane;
-import org.jsampler.view.std.JSMidiInstrumentsPane;
-import org.jsampler.view.std.JSNewMidiInstrumentWizard;
+import org.jsampler.view.swing.std.JSManageMidiMapsPane;
+import org.jsampler.view.swing.std.JSMidiInstrumentsPane;
+import org.jsampler.view.swing.std.JSNewMidiInstrumentWizard;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jsampler.view.fantasia.FantasiaPrefs.*;

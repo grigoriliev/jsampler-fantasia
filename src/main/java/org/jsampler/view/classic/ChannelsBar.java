@@ -37,8 +37,7 @@ import org.jsampler.CC;
 
 import org.jsampler.event.SamplerAdapter;
 import org.jsampler.event.SamplerEvent;
-
-import org.jsampler.view.std.StdUtils;
+import org.jsampler.view.swing.std.StdUtils;
 
 import static org.jsampler.view.classic.A4n.a4n;
 import static org.jsampler.view.classic.ClassicI18n.i18n;

@@ -21,10 +21,12 @@
 package org.jsampler.view.fantasia;
 
 import java.awt.Component;
+
 import javax.swing.JTree;
+
 import org.jsampler.AudioDeviceModel;
-import org.jsampler.view.std.JSDestEffectChooser;
 import org.jsampler.view.swing.SHF;
+import org.jsampler.view.swing.std.JSDestEffectChooser;
 import org.pushingpixels.substance.api.renderers.SubstanceDefaultTreeCellRenderer;
 
 /**

@@ -39,7 +39,7 @@ import org.jsampler.view.InstrumentsDbTableView;
 import org.jsampler.view.InstrumentsDbTreeView;
 import org.jsampler.view.BasicIconSet;
 import org.jsampler.view.fantasia.basic.MultiColumnMenu;
-import org.jsampler.view.std.StdViewConfig;
+import org.jsampler.view.swing.std.StdViewConfig;
 
 import org.pushingpixels.substance.api.SubstanceConstants;
 import org.pushingpixels.substance.api.SubstanceLookAndFeel;

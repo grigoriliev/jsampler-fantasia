@@ -53,10 +53,10 @@ import net.sf.juife.swing.NavigationPane;
 
 import org.jsampler.CC;
 import org.jsampler.task.InstrumentsDb;
-import org.jsampler.view.std.JSInstrumentsDbColumnPreferencesDlg;
-import org.jsampler.view.std.JSInstrumentsDbTable;
-import org.jsampler.view.std.JSLostFilesDlg;
-import org.jsampler.view.std.StdUtils;
+import org.jsampler.view.swing.std.JSInstrumentsDbColumnPreferencesDlg;
+import org.jsampler.view.swing.std.JSInstrumentsDbTable;
+import org.jsampler.view.swing.std.JSLostFilesDlg;
+import org.jsampler.view.swing.std.StdUtils;
 import org.jsampler.view.swing.DbDirectoryTreeNode;
 import org.jsampler.view.swing.SHF;
 

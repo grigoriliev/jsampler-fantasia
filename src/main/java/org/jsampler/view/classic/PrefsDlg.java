@@ -57,14 +57,13 @@ import org.jsampler.JSI18n;
 import org.jsampler.JSUtils;
 import org.jsampler.LSConsoleModel;
 import org.jsampler.Prefs;
-
-import org.jsampler.view.std.JSAdvancedGeneralPropsDlg;
-import org.jsampler.view.std.JSColorButton;
-import org.jsampler.view.std.JSConnectionPropsPane;
-import org.jsampler.view.std.JSDefaultsPropsPane;
-import org.jsampler.view.std.JSGeneralProps;
-import org.jsampler.view.std.JSLSConsolePropsPane;
 import org.jsampler.view.swing.SHF;
+import org.jsampler.view.swing.std.JSAdvancedGeneralPropsDlg;
+import org.jsampler.view.swing.std.JSColorButton;
+import org.jsampler.view.swing.std.JSConnectionPropsPane;
+import org.jsampler.view.swing.std.JSDefaultsPropsPane;
+import org.jsampler.view.swing.std.JSGeneralProps;
+import org.jsampler.view.swing.std.JSLSConsolePropsPane;
 
 import static org.jsampler.JSPrefs.*;
 import static org.jsampler.view.classic.ClassicI18n.i18n;

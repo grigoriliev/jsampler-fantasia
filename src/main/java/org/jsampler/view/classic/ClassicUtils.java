@@ -27,8 +27,8 @@ import java.awt.Frame;
 import javax.swing.Action;
 import javax.swing.JButton;
 
-import org.jsampler.view.std.JSDbInstrumentChooser;
-import org.jsampler.view.std.JSInstrumentChooser;
+import org.jsampler.view.swing.std.JSDbInstrumentChooser;
+import org.jsampler.view.swing.std.JSInstrumentChooser;
 
 /**
  *

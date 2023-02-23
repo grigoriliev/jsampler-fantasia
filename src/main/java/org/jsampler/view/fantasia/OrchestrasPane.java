@@ -45,10 +45,9 @@ import org.jsampler.event.OrchestraAdapter;
 import org.jsampler.event.OrchestraEvent;
 import org.jsampler.event.ListEvent;
 import org.jsampler.event.ListListener;
-
 import org.jsampler.view.fantasia.basic.*;
-import org.jsampler.view.std.JSManageOrchestrasPane;
-import org.jsampler.view.std.JSOrchestraPane;
+import org.jsampler.view.swing.std.JSManageOrchestrasPane;
+import org.jsampler.view.swing.std.JSOrchestraPane;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jsampler.view.fantasia.FantasiaPrefs.*;

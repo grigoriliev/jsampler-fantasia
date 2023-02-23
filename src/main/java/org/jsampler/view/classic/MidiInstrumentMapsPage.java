@@ -43,14 +43,12 @@ import net.sf.juife.swing.NavigationPage;
 
 import org.jsampler.CC;
 import org.jsampler.MidiInstrumentMap;
-
 import org.jsampler.event.ListEvent;
 import org.jsampler.event.ListListener;
 import org.jsampler.event.MidiInstrumentMapEvent;
 import org.jsampler.event.MidiInstrumentMapListener;
-
-import org.jsampler.view.std.JSAddMidiInstrumentMapDlg;
-import org.jsampler.view.std.JSMidiInstrumentsPane;
+import org.jsampler.view.swing.std.JSAddMidiInstrumentMapDlg;
+import org.jsampler.view.swing.std.JSMidiInstrumentsPane;
 
 import static org.jsampler.view.classic.A4n.a4n;
 import static org.jsampler.view.classic.ClassicI18n.i18n;

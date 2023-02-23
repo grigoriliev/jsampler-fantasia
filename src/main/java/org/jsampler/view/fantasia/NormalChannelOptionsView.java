@@ -56,10 +56,9 @@ import org.jsampler.event.SamplerChannelAdapter;
 import org.jsampler.event.SamplerChannelEvent;
 import org.jsampler.event.SamplerEvent;
 import org.jsampler.event.SamplerListener;
-
 import org.jsampler.view.fantasia.basic.*;
-import org.jsampler.view.std.JSChannelOutputRoutingDlg;
 import org.jsampler.view.swing.SHF;
+import org.jsampler.view.swing.std.JSChannelOutputRoutingDlg;
 
 import org.linuxsampler.lscp.AudioOutputDevice;
 import org.linuxsampler.lscp.MidiInputDevice;

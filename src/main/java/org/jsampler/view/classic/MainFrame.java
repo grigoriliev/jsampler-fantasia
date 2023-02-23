@@ -62,21 +62,18 @@ import org.jsampler.JSUtils;
 import org.jsampler.LSConsoleModel;
 import org.jsampler.OrchestraModel;
 import org.jsampler.Server;
-
 import org.jsampler.task.Global;
-
 import org.jsampler.view.JSChannel;
 import org.jsampler.view.JSChannelsPane;
-
-import org.jsampler.view.std.JSBackendLogFrame;
-import org.jsampler.view.std.JSConnectDlg;
-import org.jsampler.view.std.JSConnectionFailurePane;
-import org.jsampler.view.std.JSDetailedErrorDlg;
-import org.jsampler.view.std.JSQuitDlg;
-import org.jsampler.view.std.JSamplerHomeChooser;
-import org.jsampler.view.std.StdUtils;
 import org.jsampler.view.swing.SHF;
 import org.jsampler.view.swing.SwingMainFrame;
+import org.jsampler.view.swing.std.JSBackendLogFrame;
+import org.jsampler.view.swing.std.JSConnectDlg;
+import org.jsampler.view.swing.std.JSConnectionFailurePane;
+import org.jsampler.view.swing.std.JSDetailedErrorDlg;
+import org.jsampler.view.swing.std.JSQuitDlg;
+import org.jsampler.view.swing.std.JSamplerHomeChooser;
+import org.jsampler.view.swing.std.StdUtils;
 
 import static org.jsampler.view.classic.A4n.a4n;
 import static org.jsampler.view.classic.ClassicI18n.i18n;

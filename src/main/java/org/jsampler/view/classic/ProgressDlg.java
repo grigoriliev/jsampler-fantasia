@@ -21,7 +21,7 @@
 
 package org.jsampler.view.classic;
 
-import org.jsampler.view.std.JSProgressDlg;
+import org.jsampler.view.swing.std.JSProgressDlg;
 
 /**
  *

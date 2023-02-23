@@ -28,11 +28,9 @@ import javax.swing.BoxLayout;
 
 import org.jsampler.CC;
 import org.jsampler.SamplerChannelModel;
-
 import org.jsampler.view.SessionViewConfig.ChannelConfig;
-
-import org.jsampler.view.std.StdChannelsPane;
 import org.jsampler.view.swing.SwingChannel;
+import org.jsampler.view.swing.std.StdChannelsPane;
 
 
 /**

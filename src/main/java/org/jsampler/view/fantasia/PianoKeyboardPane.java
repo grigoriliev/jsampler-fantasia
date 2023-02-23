@@ -57,16 +57,14 @@ import net.sf.juife.event.TaskListener;
 
 import org.jsampler.CC;
 import org.jsampler.SamplerChannelModel;
-
 import org.jsampler.event.SamplerChannelAdapter;
 import org.jsampler.event.SamplerChannelEvent;
 import org.jsampler.event.SamplerChannelListListener;
 import org.jsampler.event.SamplerChannelListEvent;
-
 import org.jsampler.view.JSChannel;
 import org.jsampler.view.fantasia.basic.*;
-import org.jsampler.view.std.JSPianoRoll;
 import org.jsampler.view.swing.SHF;
+import org.jsampler.view.swing.std.JSPianoRoll;
 
 import org.linuxsampler.lscp.Instrument;
 import org.linuxsampler.lscp.SamplerChannel;

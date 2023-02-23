@@ -78,15 +78,14 @@ import org.jsampler.view.SessionViewConfig;
 import org.jsampler.view.fantasia.basic.FantasiaPainter;
 import org.jsampler.view.fantasia.basic.FantasiaPanel;
 import org.jsampler.view.fantasia.basic.FantasiaSubPanel;
-
-import org.jsampler.view.std.JSBackendLogFrame;
-import org.jsampler.view.std.JSConnectDlg;
-import org.jsampler.view.std.JSDetailedErrorDlg;
-import org.jsampler.view.std.JSQuitDlg;
-import org.jsampler.view.std.JSamplerHomeChooser;
-import org.jsampler.view.std.StdMainFrame;
-import org.jsampler.view.std.StdUtils;
 import org.jsampler.view.swing.SHF;
+import org.jsampler.view.swing.std.JSBackendLogFrame;
+import org.jsampler.view.swing.std.JSConnectDlg;
+import org.jsampler.view.swing.std.JSDetailedErrorDlg;
+import org.jsampler.view.swing.std.JSQuitDlg;
+import org.jsampler.view.swing.std.JSamplerHomeChooser;
+import org.jsampler.view.swing.std.StdMainFrame;
+import org.jsampler.view.swing.std.StdUtils;
 
 import static org.jsampler.view.fantasia.A4n.a4n;
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;

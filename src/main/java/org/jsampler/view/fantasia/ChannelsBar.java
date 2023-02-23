@@ -45,19 +45,16 @@ import javax.swing.event.ChangeListener;
 
 import org.jsampler.CC;
 import org.jsampler.HF;
-
 import org.jsampler.event.SamplerAdapter;
 import org.jsampler.event.SamplerEvent;
-
 import org.jsampler.view.fantasia.basic.*;
-
-import org.jsampler.view.std.JSVolumeEditorPopup;
+import org.jsampler.view.swing.std.JSVolumeEditorPopup;
 
 import static org.jsampler.JSPrefs.*;
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jsampler.view.fantasia.FantasiaPrefs.preferences;
 import static org.jsampler.view.fantasia.FantasiaUtils.*;
-import static org.jsampler.view.std.JSVolumeEditorPopup.VolumeType;
+import static org.jsampler.view.swing.std.JSVolumeEditorPopup.VolumeType;
 
 /**
  *

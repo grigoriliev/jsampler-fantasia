@@ -34,10 +34,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 
-import org.jsampler.view.std.JSInstrumentsDbColumnPreferencesDlg;
-import org.jsampler.view.std.JSInstrumentsDbTable;
 import org.jsampler.view.swing.InstrumentsDbTreeModel;
 import org.jsampler.view.swing.SHF;
+import org.jsampler.view.swing.std.JSInstrumentsDbColumnPreferencesDlg;
+import org.jsampler.view.swing.std.JSInstrumentsDbTable;
 
 import static org.jsampler.view.fantasia.FantasiaPrefs.preferences;
 

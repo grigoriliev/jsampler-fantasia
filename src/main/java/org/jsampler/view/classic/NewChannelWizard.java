@@ -66,12 +66,10 @@ import org.jsampler.task.Channel.LoadEngine;
 import org.jsampler.task.Channel.LoadInstrument;
 import org.jsampler.task.Channel.SetAudioOutputDevice;
 import org.jsampler.task.Channel.SetMidiInputChannel;
-import org.jsampler.task.Channel.SetMidiInputDevice;
 import org.jsampler.task.Channel.SetMidiInputPort;
-
-import org.jsampler.view.std.JSNewMidiDeviceDlg;
-import org.jsampler.view.std.JSNewAudioDeviceDlg;
 import org.jsampler.view.swing.SHF;
+import org.jsampler.view.swing.std.JSNewMidiDeviceDlg;
+import org.jsampler.view.swing.std.JSNewAudioDeviceDlg;
 
 import org.linuxsampler.lscp.AudioOutputDevice;
 import org.linuxsampler.lscp.MidiInputDevice;

@@ -48,13 +48,13 @@ import org.jsampler.CC;
 import org.jsampler.JSUtils;
 import org.jsampler.LSConsoleModel;
 
-import org.jsampler.view.std.JSAdvancedGeneralPropsDlg;
-import org.jsampler.view.std.JSConnectionPropsPane;
-import org.jsampler.view.std.JSDefaultsPropsPane;
-import org.jsampler.view.std.JSGeneralProps;
-import org.jsampler.view.std.JSLSConsolePropsPane;
-import org.jsampler.view.std.JSViewProps;
 import org.jsampler.view.swing.SHF;
+import org.jsampler.view.swing.std.JSAdvancedGeneralPropsDlg;
+import org.jsampler.view.swing.std.JSConnectionPropsPane;
+import org.jsampler.view.swing.std.JSDefaultsPropsPane;
+import org.jsampler.view.swing.std.JSGeneralProps;
+import org.jsampler.view.swing.std.JSLSConsolePropsPane;
+import org.jsampler.view.swing.std.JSViewProps;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jsampler.view.fantasia.FantasiaPrefs.*;

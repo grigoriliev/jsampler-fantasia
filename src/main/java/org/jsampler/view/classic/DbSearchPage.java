@@ -43,7 +43,7 @@ import javax.swing.event.ChangeListener;
 
 import net.sf.juife.swing.NavigationPage;
 
-import org.jsampler.view.std.JSDbSearchPane;
+import org.jsampler.view.swing.std.JSDbSearchPane;
 
 import static org.jsampler.view.classic.ClassicI18n.i18n;
 

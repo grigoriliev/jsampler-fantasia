@@ -27,8 +27,7 @@ import javax.swing.JTree;
 
 import org.jsampler.view.swing.DbDirectoryTreeNode;
 import org.jsampler.view.swing.InstrumentsDbTreeModel;
-
-import org.jsampler.view.std.JSInstrumentsDbTree;
+import org.jsampler.view.swing.std.JSInstrumentsDbTree;
 
 import org.pushingpixels.substance.api.renderers.SubstanceDefaultTreeCellRenderer;
 

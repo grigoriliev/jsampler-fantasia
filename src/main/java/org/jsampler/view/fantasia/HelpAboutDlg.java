@@ -47,8 +47,7 @@ import javax.swing.JTabbedPane;
 import net.sf.juife.swing.InformationDialog;
 import net.sf.juife.swing.LinkButton;
 
-import org.jsampler.view.std.StdUtils;
-
+import org.jsampler.view.swing.std.StdUtils;
 import org.pushingpixels.substance.api.SubstanceLookAndFeel;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;

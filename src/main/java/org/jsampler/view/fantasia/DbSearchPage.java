@@ -36,7 +36,7 @@ import javax.swing.event.ChangeListener;
 import net.sf.juife.swing.NavigationPage;
 
 import org.jsampler.view.fantasia.basic.FantasiaTaskPane;
-import org.jsampler.view.std.JSDbSearchPane;
+import org.jsampler.view.swing.std.JSDbSearchPane;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jsampler.view.fantasia.FantasiaPrefs.*;

@@ -28,10 +28,10 @@ import javax.swing.Action;
 
 import org.jsampler.CC;
 import org.jsampler.view.JSChannel;
-import org.jsampler.view.std.JSNewAudioDeviceDlg;
-import org.jsampler.view.std.JSNewMidiDeviceDlg;
-import org.jsampler.view.std.StdA4n;
 import org.jsampler.view.swing.SHF;
+import org.jsampler.view.swing.std.JSNewAudioDeviceDlg;
+import org.jsampler.view.swing.std.JSNewMidiDeviceDlg;
+import org.jsampler.view.swing.std.StdA4n;
 
 import static org.jsampler.JSPrefs.*;
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;

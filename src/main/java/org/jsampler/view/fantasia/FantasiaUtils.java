@@ -42,11 +42,9 @@ import javax.swing.plaf.basic.BasicLabelUI;
 
 import org.jsampler.view.fantasia.basic.FantasiaPainter;
 import org.jsampler.view.swing.InstrumentsDbTreeModel;
-
-import org.jsampler.view.std.JSDbInstrumentChooser;
-import org.jsampler.view.std.JSInstrumentChooser;
-import org.jsampler.view.std.JSInstrumentsDbTree;
-
+import org.jsampler.view.swing.std.JSDbInstrumentChooser;
+import org.jsampler.view.swing.std.JSInstrumentChooser;
+import org.jsampler.view.swing.std.JSInstrumentsDbTree;
 
 /**
  *

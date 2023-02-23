@@ -40,12 +40,11 @@ import javax.swing.JPopupMenu;
 
 import javax.swing.border.EtchedBorder;
 
-import org.jsampler.CC;
-import org.jsampler.view.std.JSLSConsolePane;
+import org.jsampler.view.swing.SHF;
+import org.jsampler.view.swing.std.JSLSConsolePane;
+import org.jsampler.view.swing.std.JSLscpScriptDlg;
 
 import static org.jsampler.view.classic.ClassicI18n.i18n;
-import org.jsampler.view.std.JSLscpScriptDlg;
-import org.jsampler.view.swing.SHF;
 
 /**
  *

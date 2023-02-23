@@ -31,7 +31,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 
 import org.jsampler.view.fantasia.Res;
-import org.jsampler.view.std.StdUtils;
+import org.jsampler.view.swing.std.StdUtils;
 
 import org.pushingpixels.substance.api.renderers.SubstanceDefaultListCellRenderer;
 

@@ -63,14 +63,13 @@ import org.jsampler.view.JSChannel;
 import org.jsampler.view.JSChannelsPane;
 
 import org.jsampler.view.fantasia.basic.PixmapToggleButton;
-
-import org.jsampler.view.std.JSChannelOutputRoutingDlg;
-import org.jsampler.view.std.JSFxSendsDlg;
-import org.jsampler.view.std.JSFxSendsPane;
-import org.jsampler.view.std.JSInstrumentChooser;
-import org.jsampler.view.std.JSVolumeEditorPopup;
 import org.jsampler.view.swing.SHF;
 import org.jsampler.view.swing.SwingChannel;
+import org.jsampler.view.swing.std.JSChannelOutputRoutingDlg;
+import org.jsampler.view.swing.std.JSFxSendsDlg;
+import org.jsampler.view.swing.std.JSFxSendsPane;
+import org.jsampler.view.swing.std.JSInstrumentChooser;
+import org.jsampler.view.swing.std.JSVolumeEditorPopup;
 
 import org.linuxsampler.lscp.SamplerChannel;
 
@@ -78,7 +77,7 @@ import static org.jsampler.view.fantasia.A4n.a4n;
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jsampler.view.fantasia.FantasiaPrefs.*;
 import static org.jsampler.view.fantasia.FantasiaUtils.*;
-import static org.jsampler.view.std.JSVolumeEditorPopup.VolumeType;
+import static org.jsampler.view.swing.std.JSVolumeEditorPopup.VolumeType;
 
 
 /**

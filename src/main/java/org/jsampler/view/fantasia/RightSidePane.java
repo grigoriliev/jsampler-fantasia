@@ -34,7 +34,7 @@ import javax.swing.JScrollPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import net.sf.juife.swing.JuifeUtils;
+import com.grigoriliev.jsampler.juife.swing.JuifeUtils;
 
 import org.jsampler.view.fantasia.basic.*;
 

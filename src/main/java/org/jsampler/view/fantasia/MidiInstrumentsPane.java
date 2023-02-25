@@ -41,7 +41,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 
-import net.sf.juife.swing.Wizard;
+import com.grigoriliev.jsampler.juife.swing.Wizard;
 
 import org.jsampler.CC;
 import org.jsampler.MidiInstrumentMap;

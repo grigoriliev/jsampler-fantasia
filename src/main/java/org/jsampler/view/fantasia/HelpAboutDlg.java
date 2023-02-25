@@ -44,8 +44,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
-import net.sf.juife.swing.InformationDialog;
-import net.sf.juife.swing.LinkButton;
+import com.grigoriliev.jsampler.juife.swing.InformationDialog;
+import com.grigoriliev.jsampler.juife.swing.LinkButton;
 
 import org.jsampler.view.swing.std.StdUtils;
 import org.pushingpixels.substance.api.SubstanceLookAndFeel;

@@ -33,7 +33,7 @@ import javax.swing.JComponent;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import net.sf.juife.swing.NavigationPage;
+import com.grigoriliev.jsampler.juife.swing.NavigationPage;
 
 import org.jsampler.view.fantasia.basic.FantasiaTaskPane;
 import org.jsampler.view.swing.std.JSDbSearchPane;

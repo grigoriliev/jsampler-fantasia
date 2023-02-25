@@ -30,7 +30,7 @@ import org.jsampler.view.fantasia.Res;
  *
  * @author Grigor Iliev
  */
-public class MultiColumnMenu extends net.sf.juife.swing.MultiColumnMenu {
+public class MultiColumnMenu extends com.grigoriliev.jsampler.juife.swing.MultiColumnMenu {
 	public
 	MultiColumnMenu(String s) { super(s); }
 

@@ -35,7 +35,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import net.sf.juife.swing.InformationDialog;
+import com.grigoriliev.jsampler.juife.swing.InformationDialog;
 
 import org.jsampler.CC;
 

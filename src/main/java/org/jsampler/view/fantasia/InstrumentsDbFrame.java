@@ -48,8 +48,8 @@ import javax.swing.KeyStroke;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import net.sf.juife.swing.NavigationPage;
-import net.sf.juife.swing.NavigationPane;
+import com.grigoriliev.jsampler.juife.swing.NavigationPage;
+import com.grigoriliev.jsampler.juife.swing.NavigationPane;
 
 import org.jsampler.CC;
 import org.jsampler.task.InstrumentsDb;

@@ -26,7 +26,7 @@ import java.awt.Dimension;
 
 import javax.swing.BorderFactory;
 
-import net.sf.juife.swing.JuifeUtils;
+import com.grigoriliev.jsampler.juife.swing.JuifeUtils;
 
 import org.jsampler.view.fantasia.basic.FantasiaTabbedPane;
 import org.jsampler.view.fantasia.basic.FantasiaPanel;

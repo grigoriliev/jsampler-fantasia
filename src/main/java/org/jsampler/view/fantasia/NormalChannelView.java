@@ -53,7 +53,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import net.sf.juife.swing.Dial;
+import com.grigoriliev.jsampler.juife.swing.Dial;
 
 import org.jsampler.CC;
 import org.jsampler.view.fantasia.basic.*;

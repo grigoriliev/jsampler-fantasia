@@ -21,6 +21,9 @@
 
 package org.jsampler.view.fantasia;
 
+import com.grigoriliev.jsampler.juife.swing.EnhancedDialog;
+import com.grigoriliev.jsampler.juife.swing.JuifeUtils;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dialog;
@@ -40,9 +43,6 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.SpinnerNumberModel;
-
-import net.sf.juife.swing.EnhancedDialog;
-import net.sf.juife.swing.JuifeUtils;
 
 import org.jsampler.CC;
 import org.jsampler.JSUtils;

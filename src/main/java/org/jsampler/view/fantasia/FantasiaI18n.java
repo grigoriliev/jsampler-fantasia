@@ -25,7 +25,7 @@ package org.jsampler.view.fantasia;
  * This class manages the locale-specific data of Fantasia.
  * @author Grigor Iliev
  */
-public class FantasiaI18n extends net.sf.juife.I18n {
+public class FantasiaI18n extends com.grigoriliev.jsampler.juife.I18n {
 	/** Provides the locale-specific data of Fantasia. */
 	public static FantasiaI18n i18n = new FantasiaI18n();
 	

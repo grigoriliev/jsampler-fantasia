@@ -64,8 +64,8 @@ import javax.swing.Timer;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import net.sf.juife.event.GenericEvent;
-import net.sf.juife.event.GenericListener;
+import com.grigoriliev.jsampler.juife.event.GenericEvent;
+import com.grigoriliev.jsampler.juife.event.GenericListener;
 
 import org.jsampler.CC;
 import org.jsampler.JSUtils;

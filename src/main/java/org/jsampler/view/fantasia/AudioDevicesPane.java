@@ -43,11 +43,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 
-import net.sf.juife.swing.ComponentList;
-import net.sf.juife.swing.DefaultComponentListModel;
+import com.grigoriliev.jsampler.juife.swing.ComponentList;
+import com.grigoriliev.jsampler.juife.swing.DefaultComponentListModel;
 
-import net.sf.juife.event.TaskEvent;
-import net.sf.juife.event.TaskListener;
+import com.grigoriliev.jsampler.juife.event.TaskEvent;
+import com.grigoriliev.jsampler.juife.event.TaskListener;
 
 import org.jdesktop.swingx.JXCollapsiblePane;
 

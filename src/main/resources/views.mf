@@ -5,6 +5,6 @@ JS-Default-View: fantasia
 
 Name: fantasia
 View-Name: Fantasia
-View-Config: org.jsampler.view.fantasia.ViewConfig
-Main-Frame: org.jsampler.view.fantasia.MainFrame
-Progress-Indicator: org.jsampler.view.fantasia.ProgressDlg
+View-Config: com.grigoriliev.jsampler.fantasia.view.ViewConfig
+Main-Frame: com.grigoriliev.jsampler.fantasia.view.MainFrame
+Progress-Indicator: com.grigoriliev.jsampler.fantasia.view.ProgressDlg

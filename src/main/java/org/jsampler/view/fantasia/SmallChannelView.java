@@ -56,7 +56,7 @@ import org.jsampler.view.fantasia.basic.PixmapPane;
 
 import org.pushingpixels.substance.internal.utils.SubstanceImageCreator;
 
-import org.linuxsampler.lscp.SamplerChannel;
+import com.grigoriliev.jsampler.jlscp.SamplerChannel;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jsampler.view.fantasia.FantasiaPrefs.*;

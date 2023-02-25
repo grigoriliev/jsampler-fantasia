@@ -63,9 +63,9 @@ import org.jsampler.task.Midi;
 import org.jsampler.view.fantasia.basic.PixmapPane;
 import org.jsampler.view.swing.ParameterTable;
 
-import org.linuxsampler.lscp.MidiInputDevice;
-import org.linuxsampler.lscp.MidiPort;
-import org.linuxsampler.lscp.Parameter;
+import com.grigoriliev.jsampler.jlscp.MidiInputDevice;
+import com.grigoriliev.jsampler.jlscp.MidiPort;
+import com.grigoriliev.jsampler.jlscp.Parameter;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jsampler.view.fantasia.FantasiaPrefs.preferences;

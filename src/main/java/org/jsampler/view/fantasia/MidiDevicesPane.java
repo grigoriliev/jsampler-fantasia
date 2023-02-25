@@ -67,7 +67,7 @@ import org.jsampler.view.fantasia.basic.PixmapButton;
 import org.jsampler.view.fantasia.basic.PixmapPane;
 import org.jsampler.view.swing.std.JSNewMidiDeviceDlg;
 
-import org.linuxsampler.lscp.MidiInputDriver;
+import com.grigoriliev.jsampler.jlscp.MidiInputDriver;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jsampler.view.fantasia.FantasiaPrefs.*;

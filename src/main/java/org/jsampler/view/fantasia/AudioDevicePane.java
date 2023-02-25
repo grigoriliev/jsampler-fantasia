@@ -62,9 +62,9 @@ import org.jsampler.task.Audio;
 import org.jsampler.view.fantasia.basic.PixmapPane;
 import org.jsampler.view.swing.ParameterTable;
 
-import org.linuxsampler.lscp.AudioOutputChannel;
-import org.linuxsampler.lscp.AudioOutputDevice;
-import org.linuxsampler.lscp.Parameter;
+import com.grigoriliev.jsampler.jlscp.AudioOutputChannel;
+import com.grigoriliev.jsampler.jlscp.AudioOutputDevice;
+import com.grigoriliev.jsampler.jlscp.Parameter;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jsampler.view.fantasia.FantasiaPrefs.preferences;

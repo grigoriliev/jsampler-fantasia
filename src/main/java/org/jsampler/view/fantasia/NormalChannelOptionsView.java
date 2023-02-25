@@ -60,10 +60,10 @@ import org.jsampler.view.fantasia.basic.*;
 import org.jsampler.view.swing.SHF;
 import org.jsampler.view.swing.std.JSChannelOutputRoutingDlg;
 
-import org.linuxsampler.lscp.AudioOutputDevice;
-import org.linuxsampler.lscp.MidiInputDevice;
-import org.linuxsampler.lscp.MidiPort;
-import org.linuxsampler.lscp.SamplerChannel;
+import com.grigoriliev.jsampler.jlscp.AudioOutputDevice;
+import com.grigoriliev.jsampler.jlscp.MidiInputDevice;
+import com.grigoriliev.jsampler.jlscp.MidiPort;
+import com.grigoriliev.jsampler.jlscp.SamplerChannel;
 
 import org.pushingpixels.substance.api.SubstanceLookAndFeel;
 

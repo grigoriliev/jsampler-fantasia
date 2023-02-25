@@ -60,8 +60,8 @@ import org.jsampler.view.swing.std.StdUtils;
 import org.jsampler.view.swing.DbDirectoryTreeNode;
 import org.jsampler.view.swing.SHF;
 
-import org.linuxsampler.lscp.DbDirectoryInfo;
-import org.linuxsampler.lscp.DbInstrumentInfo;
+import com.grigoriliev.jsampler.jlscp.DbDirectoryInfo;
+import com.grigoriliev.jsampler.jlscp.DbInstrumentInfo;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jsampler.view.fantasia.FantasiaPrefs.preferences;

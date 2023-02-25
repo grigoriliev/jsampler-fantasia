@@ -32,7 +32,7 @@ import javax.swing.ImageIcon;
 import org.jsampler.CC;
 import org.jsampler.HF;
 
-import org.linuxsampler.lscp.Parser;
+import com.grigoriliev.jsampler.jlscp.Parser;
 
 
 /**

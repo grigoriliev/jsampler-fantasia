@@ -66,11 +66,11 @@ import org.jsampler.view.fantasia.basic.*;
 import org.jsampler.view.swing.SHF;
 import org.jsampler.view.swing.std.JSPianoRoll;
 
-import org.linuxsampler.lscp.Instrument;
-import org.linuxsampler.lscp.SamplerChannel;
+import com.grigoriliev.jsampler.jlscp.Instrument;
+import com.grigoriliev.jsampler.jlscp.SamplerChannel;
 
-import org.linuxsampler.lscp.event.MidiDataEvent;
-import org.linuxsampler.lscp.event.MidiDataListener;
+import com.grigoriliev.jsampler.jlscp.event.MidiDataEvent;
+import com.grigoriliev.jsampler.jlscp.event.MidiDataListener;
 
 import static javax.swing.Action.SMALL_ICON;
 import static org.jsampler.task.Global.GetFileInstrument;

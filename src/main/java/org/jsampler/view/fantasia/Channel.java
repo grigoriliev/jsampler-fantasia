@@ -71,7 +71,7 @@ import org.jsampler.view.swing.std.JSFxSendsPane;
 import org.jsampler.view.swing.std.JSInstrumentChooser;
 import org.jsampler.view.swing.std.JSVolumeEditorPopup;
 
-import org.linuxsampler.lscp.SamplerChannel;
+import com.grigoriliev.jsampler.jlscp.SamplerChannel;
 
 import static org.jsampler.view.fantasia.A4n.a4n;
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;

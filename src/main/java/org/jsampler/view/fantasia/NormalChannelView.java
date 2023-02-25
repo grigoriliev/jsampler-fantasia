@@ -61,8 +61,8 @@ import org.jsampler.view.swing.SHF;
 
 import org.pushingpixels.substance.internal.utils.SubstanceImageCreator;
 
-import org.linuxsampler.lscp.SamplerChannel;
-import org.linuxsampler.lscp.SamplerEngine;
+import com.grigoriliev.jsampler.jlscp.SamplerChannel;
+import com.grigoriliev.jsampler.jlscp.SamplerEngine;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jsampler.view.fantasia.FantasiaPrefs.*;

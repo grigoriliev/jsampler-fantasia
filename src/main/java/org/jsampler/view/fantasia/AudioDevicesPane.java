@@ -65,7 +65,7 @@ import org.jsampler.view.fantasia.basic.PixmapButton;
 import org.jsampler.view.fantasia.basic.PixmapPane;
 import org.jsampler.view.swing.std.JSNewAudioDeviceDlg;
 
-import org.linuxsampler.lscp.AudioOutputDriver;
+import com.grigoriliev.jsampler.jlscp.AudioOutputDriver;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 import static org.jsampler.view.fantasia.FantasiaPrefs.*;

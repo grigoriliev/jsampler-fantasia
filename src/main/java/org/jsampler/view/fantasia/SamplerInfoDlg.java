@@ -39,7 +39,7 @@ import com.grigoriliev.jsampler.juife.swing.InformationDialog;
 
 import org.jsampler.CC;
 
-import org.linuxsampler.lscp.ServerInfo;
+import com.grigoriliev.jsampler.jlscp.ServerInfo;
 
 import static org.jsampler.view.fantasia.FantasiaI18n.i18n;
 

@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.grigoriliev.jsampler</groupId>
 	<artifactId>jsampler-fantasia</artifactId>
-	<version>0.9.5-SNAPSHOT</version>
+	<version>0.9.5</version>
 	<packaging>jar</packaging>
 
 	<name>${project.groupId}:${project.artifactId}</name>
@@ -52,7 +52,7 @@
 		<dependency>
 			<groupId>com.grigoriliev.jsampler</groupId>
 			<artifactId>jsampler-swing</artifactId>
-			<version>0.9.5-SNAPSHOT</version>
+			<version>0.9.5</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jdesktop</groupId>

@@ -21,20 +21,18 @@
 
 package com.grigoriliev.jsampler.fantasia.view;
 
-import java.awt.BorderLayout;
+import com.grigoriliev.jsampler.fantasia.view.basic.FantasiaPanel;
+import com.grigoriliev.jsampler.fantasia.view.basic.FantasiaSubPanel;
+import com.grigoriliev.jsampler.fantasia.view.basic.FantasiaTaskPane;
 
+import java.awt.BorderLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.BorderFactory;
 
-import com.grigoriliev.jsampler.fantasia.view.basic.FantasiaPanel;
-import com.grigoriliev.jsampler.fantasia.view.basic.FantasiaSubPanel;
-import com.grigoriliev.jsampler.fantasia.view.basic.FantasiaTaskPane;
 import org.jdesktop.swingx.JXTaskPane;
 import org.jdesktop.swingx.JXTaskPaneContainer;
-
-import com.grigoriliev.jsampler.fantasia.view.basic.*;
 
 /**
  *

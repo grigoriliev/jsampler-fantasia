@@ -21,6 +21,9 @@
 
 package com.grigoriliev.jsampler.fantasia.view;
 
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 /**
  * This class manages the locale-specific data of Fantasia.
  * @author Grigor Iliev
@@ -36,5 +39,10 @@ public class FantasiaI18n extends com.grigoriliev.jsampler.juife.I18n {
 		setLabelsBundle("com.grigoriliev.jsampler.fantasia.view.langprops.LabelsBundle");
 		setMenusBundle("com.grigoriliev.jsampler.fantasia.view.langprops.MenuLabelsBundle");
 		setMessagesBundle("com.grigoriliev.jsampler.fantasia.view.langprops.MessagesBundle");
+	}
+
+	@Override
+	protected ResourceBundle getBundle(String baseName, Locale locale) {
+		return ResourceBundle.getBundle(baseName, locale, FantasiaI18n.class.getModule());
 	}
 }

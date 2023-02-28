@@ -55,25 +55,9 @@
 			<version>0.9.7-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>org.jdesktop</groupId>
-			<artifactId>swingx</artifactId>
-			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/lib/required/swingx.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>org.pushingpixels</groupId>
-			<artifactId>substance</artifactId>
-			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/lib/required/substance.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>org.pushingpixels</groupId>
-			<artifactId>trident</artifactId>
-			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/lib/required/trident.jar</systemPath>
+			<groupId>com.grigoriliev.jsampler</groupId>
+			<artifactId>jsampler-fantasia-3rd-party-libs</artifactId>
+			<version>0.9.7-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 

@@ -100,7 +100,7 @@
 				<artifactId>maven-dependency-plugin</artifactId>
 				<version>3.5.0</version>
 				<configuration>
-					<outputDirectory>lib</outputDirectory>
+					<outputDirectory>target/lib</outputDirectory>
 				</configuration>
 				<executions>
 					<execution>

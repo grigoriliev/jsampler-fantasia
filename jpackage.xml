@@ -5,7 +5,7 @@
 
   Windows: Download and install WiX Toolset 3.14+: https://wixtoolset.org/releases
 -->
-	<property name="jpackage.cmd" value="/home/grishata/soft/jdk-17.0.5/bin/jpackage"/>
+	<property name="jpackage.cmd" value="jpackage"/>
 	<property name="app.name" value="Fantasia"/>
 	<!--
 	NOTE: application version should be incremented after each installation to avoid

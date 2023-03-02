@@ -24,6 +24,7 @@ package com.grigoriliev.jsampler.fantasia.view;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Composite;
+import java.awt.Desktop;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -34,12 +35,10 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Paint;
 import java.awt.Rectangle;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import java.io.BufferedReader;
@@ -47,6 +46,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 
+import java.util.Arrays;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -61,20 +61,16 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
+import com.grigoriliev.jsampler.CC;
+import com.grigoriliev.jsampler.JSUtils;
+import com.grigoriliev.jsampler.JSampler;
+import com.grigoriliev.jsampler.LSConsoleModel;
+import com.grigoriliev.jsampler.Server;
 import com.grigoriliev.jsampler.fantasia.view.basic.FantasiaPainter;
 import com.grigoriliev.jsampler.fantasia.view.basic.FantasiaPanel;
 import com.grigoriliev.jsampler.fantasia.view.basic.FantasiaSubPanel;
-import com.grigoriliev.jsampler.juife.event.GenericEvent;
-import com.grigoriliev.jsampler.juife.event.GenericListener;
-
-import com.grigoriliev.jsampler.CC;
-import com.grigoriliev.jsampler.JSUtils;
-import com.grigoriliev.jsampler.LSConsoleModel;
-import com.grigoriliev.jsampler.Server;
-
 import com.grigoriliev.jsampler.view.JSChannelsPane;
 import com.grigoriliev.jsampler.view.SessionViewConfig;
-
 import com.grigoriliev.jsampler.swing.view.SHF;
 import com.grigoriliev.jsampler.swing.view.std.JSBackendLogFrame;
 import com.grigoriliev.jsampler.swing.view.std.JSConnectDlg;
@@ -114,7 +110,7 @@ public class MainFrame extends StdMainFrame<ChannelsPane> {
 	
 	private final LSConsoleFrame lsConsoleFrame = new LSConsoleFrame();
 	private SamplerBrowserFrame samplerBrowserFrame = null;
-	private final Vector<String> recentScripts = new Vector<String>();
+	private final Vector<String> recentScripts = new Vector<>();
 	
 	private final JSBackendLogFrame backendLogFrame = new JSBackendLogFrame();
 		
@@ -168,24 +164,16 @@ public class MainFrame extends StdMainFrame<ChannelsPane> {
 			getChannelsPane(i).addListSelectionListener(pianoKeyboardPane);
 		}
 
-		PropertyChangeListener l = new PropertyChangeListener() {
-			public void
-			propertyChange(PropertyChangeEvent e) {
-				onChangeChannelLaneCount();
-			}
-		};
+		PropertyChangeListener l = e -> onChangeChannelLaneCount();
 
 		FantasiaPrefs.preferences().addPropertyChangeListener("channelLanes.count", l);
 		
-		int h = FantasiaPrefs.preferences().getIntProperty("midiKeyboard.height");
+		final int h = FantasiaPrefs.preferences().getIntProperty("midiKeyboard.height");
 		setMidiKeyboardHeight(h);
 		
-		l = new PropertyChangeListener() {
-			public void
-			propertyChange(PropertyChangeEvent e) {
-				int h = FantasiaPrefs.preferences().getIntProperty("midiKeyboard.height");
-				setMidiKeyboardHeight(h);
-			}
+		l = e -> {
+			int h1 = FantasiaPrefs.preferences().getIntProperty("midiKeyboard.height");
+			setMidiKeyboardHeight(h1);
 		};
 		
 		CC.preferences().addPropertyChangeListener("midiKeyboard.height", l);
@@ -196,19 +184,12 @@ public class MainFrame extends StdMainFrame<ChannelsPane> {
 		rootPane.add(hSplitPane);
 		rootPane.add(bottomPane, BorderLayout.SOUTH);
 		add(rootPane);
-
-		if(CC.isMacOS()) {
-			try {
-				String s = "com.grigoriliev.jsampler.fantasia.view.MacOSApplicationHandler";
-				Class.forName(s).newInstance(); }
-			catch(Throwable e) { }
-		}
 		
 		addMenu();
 		
 		if(CC.getViewConfig().isUsingScreenMenuBar()) {
 			// fix for moving the menu bar on top of the screen
-			// when running on Mac OS and third party plugin is used
+			// when running on macOS and third party plugin is used
 			((ViewConfig)CC.getViewConfig()).restoreMenuProperties();
 		}
 		
@@ -269,17 +250,19 @@ public class MainFrame extends StdMainFrame<ChannelsPane> {
 		pack();
 		setLocationRelativeTo(null);
 	}
-	
-	
+
 	/** Invoked when this window is about to close. */
-	@Override
-	public void
-	onWindowClose() {
+	@Override public void onWindowClose() { closeWindow(); }
+
+	/**
+	 * @return {@code false} if closing is cancelled.
+	 */
+	public boolean closeWindow() {
 		boolean b = FantasiaPrefs.preferences().getBoolProperty(CONFIRM_APP_QUIT);
 		if(b && CC.getSamplerModel().isModified()) {
 			JSQuitDlg dlg = new JSQuitDlg(Res.iconQuestion32);
 			dlg.setVisible(true);
-			if(dlg.isCancelled()) return;
+			if(dlg.isCancelled()) return false;
 		}
 		
 		leftSidePane.savePreferences();
@@ -295,12 +278,12 @@ public class MainFrame extends StdMainFrame<ChannelsPane> {
 		
 		if(FantasiaPrefs.preferences().getBoolProperty("MainFrame.windowMaximized")) {
 			super.onWindowClose();
-			return;
+			return true;
 		}
 		
 		StdUtils.saveWindowBounds("MainFrame", getBounds());
 		
-		String[] list = recentScripts.toArray(new String[recentScripts.size()]);
+		String[] list = recentScripts.toArray(new String[0]);
 		FantasiaPrefs.preferences().setStringListProperty(RECENT_LSCP_SCRIPTS, list);
 		
 		if(FantasiaPrefs.preferences().getBoolProperty(SAVE_LS_CONSOLE_HISTORY)) {
@@ -311,6 +294,7 @@ public class MainFrame extends StdMainFrame<ChannelsPane> {
 		if(getLSConsolePane() != null) getLSConsolePane().disconnect();
 		
 		super.onWindowClose();
+		return true;
 	}
 
 	private void
@@ -417,7 +401,7 @@ public class MainFrame extends StdMainFrame<ChannelsPane> {
 		m.add(mi);
 		
 		String[] list = FantasiaPrefs.preferences().getStringListProperty(RECENT_LSCP_SCRIPTS);
-		for(String s : list) recentScripts.add(s);
+		recentScripts.addAll(Arrays.asList(list));
 		
 		updateRecentScriptsMenu();
 		
@@ -434,10 +418,7 @@ public class MainFrame extends StdMainFrame<ChannelsPane> {
 		
 		mi = new JMenuItem(FantasiaI18n.i18n.getMenuLabel("actions.exit"));
 		m.add(mi);
-		mi.addActionListener(new ActionListener() {
-			public void
-			actionPerformed(ActionEvent e) { onWindowClose(); }
-		});
+		mi.addActionListener(e -> onWindowClose());
 		
 		menuBar.add(m);
 		
@@ -448,12 +429,7 @@ public class MainFrame extends StdMainFrame<ChannelsPane> {
 		
 		mi = new JMenuItem(FantasiaI18n.i18n.getMenuLabel("edit.addChannel"));
 		m.add(mi);
-		mi.addActionListener(new ActionListener() {
-			public void
-			actionPerformed(ActionEvent e) {
-				CC.getSamplerModel().addBackendChannel();
-			}
-		});
+		mi.addActionListener(e -> CC.getSamplerModel().addBackendChannel());
 		
 		m.addSeparator();
 		
@@ -480,12 +456,7 @@ public class MainFrame extends StdMainFrame<ChannelsPane> {
 		
 		m.add(cbmiToolBarVisible);
 		
-		cbmiToolBarVisible.addActionListener(new ActionListener() {
-			public void
-			actionPerformed(ActionEvent e) {
-				showToolBar(cbmiToolBarVisible.getState());
-			}
-		});
+		cbmiToolBarVisible.addActionListener(e -> showToolBar(cbmiToolBarVisible.getState()));
 		
 		boolean b = FantasiaPrefs.preferences().getBoolProperty("toolBar.visible");
 		cbmiToolBarVisible.setSelected(b);
@@ -496,12 +467,9 @@ public class MainFrame extends StdMainFrame<ChannelsPane> {
 		));
 		m.add(cbmiLeftSidePaneVisible);
 		
-		cbmiLeftSidePaneVisible.addActionListener(new ActionListener() {
-			public void
-			actionPerformed(ActionEvent e) {
-				showSidePane(cbmiLeftSidePaneVisible.getState());
-			}
-		});
+		cbmiLeftSidePaneVisible.addActionListener(
+			e -> showSidePane(cbmiLeftSidePaneVisible.getState())
+		);
 		
 		b = FantasiaPrefs.preferences().getBoolProperty("leftSidePane.visible");
 		cbmiLeftSidePaneVisible.setSelected(b);
@@ -512,12 +480,9 @@ public class MainFrame extends StdMainFrame<ChannelsPane> {
 		));
 		m.add(cbmiRightSidePaneVisible);
 		
-		cbmiRightSidePaneVisible.addActionListener(new ActionListener() {
-			public void
-			actionPerformed(ActionEvent e) {
-				showDevicesPane(cbmiRightSidePaneVisible.getState());
-			}
-		});
+		cbmiRightSidePaneVisible.addActionListener(
+			e -> showDevicesPane(cbmiRightSidePaneVisible.getState())
+		);
 		
 		b = FantasiaPrefs.preferences().getBoolProperty("rightSidePane.visible");
 		cbmiRightSidePaneVisible.setSelected(b);
@@ -525,12 +490,9 @@ public class MainFrame extends StdMainFrame<ChannelsPane> {
 		
 		m.add(cbmiMidiKeyboardVisible);
 		
-		cbmiMidiKeyboardVisible.addActionListener(new ActionListener() {
-			public void
-			actionPerformed(ActionEvent e) {
-				setMidiKeyboardVisible(cbmiMidiKeyboardVisible.getState());
-			}
-		});
+		cbmiMidiKeyboardVisible.addActionListener(
+			e -> setMidiKeyboardVisible(cbmiMidiKeyboardVisible.getState())
+		);
 		
 		b = FantasiaPrefs.preferences().getBoolProperty("midiKeyboard.visible");
 		cbmiMidiKeyboardVisible.setSelected(b);
@@ -543,12 +505,7 @@ public class MainFrame extends StdMainFrame<ChannelsPane> {
 		));
 		m.add(cbmiAlwaysOnTop);
 
-		cbmiAlwaysOnTop.addActionListener(new ActionListener() {
-			public void
-			actionPerformed(ActionEvent e) {
-				setWindowAlwaysOnTop(cbmiAlwaysOnTop.getState());
-			}
-		});
+		cbmiAlwaysOnTop.addActionListener(e -> setWindowAlwaysOnTop(cbmiAlwaysOnTop.getState()));
 
 		b = FantasiaPrefs.preferences().getBoolProperty("mainFrame.alwaysOnTop");
 		cbmiAlwaysOnTop.setSelected(b);
@@ -559,12 +516,7 @@ public class MainFrame extends StdMainFrame<ChannelsPane> {
 		m = new FantasiaMenu(FantasiaI18n.i18n.getMenuLabel("channels"));
 		
 		mi = new JMenuItem(FantasiaI18n.i18n.getMenuLabel("channels.newChannel"));
-		mi.addActionListener(new ActionListener() {
-			public void
-			actionPerformed(ActionEvent e) {
-				CC.getSamplerModel().addBackendChannel();
-			}
-		});
+		mi.addActionListener(e -> CC.getSamplerModel().addBackendChannel());
 		m.add(mi);
 		
 		m.addSeparator();
@@ -619,25 +571,19 @@ public class MainFrame extends StdMainFrame<ChannelsPane> {
 		
 		final JMenuItem mi2 = new JMenuItem(FantasiaI18n.i18n.getMenuLabel("window.backendLog"));
 		m.add(mi2);
-		mi2.addActionListener(new ActionListener() {
-			public void
-			actionPerformed(ActionEvent e) {
+		mi2.addActionListener(
+			e -> {
 				if(getBackendLogFrame().isVisible()) {
 					getBackendLogFrame().setVisible(false);
 				}
-				
+
 				getBackendLogFrame().setVisible(true);
 			}
-		});
+		);
 		
 		mi2.setEnabled(CC.getBackendProcess() != null);
 		
-		CC.addBackendProcessListener(new GenericListener() {
-			public void
-			jobDone(GenericEvent e) {
-				mi2.setEnabled(CC.getBackendProcess() != null);
-			}
-		});
+		CC.addBackendProcessListener(e -> mi2.setEnabled(CC.getBackendProcess() != null));
 		
 		
 		// Help
@@ -816,7 +762,7 @@ public class MainFrame extends StdMainFrame<ChannelsPane> {
 		}
 		
 		String prefix = "#jsampler.fantasia: ";
-		Vector<String> v = new Vector<String>();
+		Vector<String> v = new Vector<>();
 		BufferedReader br = new BufferedReader(fr);
 		
 		try {
@@ -839,7 +785,7 @@ public class MainFrame extends StdMainFrame<ChannelsPane> {
 		updateRecentScriptsMenu();
 		
 		CC.getViewConfig().setSessionViewConfig(
-			new SessionViewConfig(v.toArray(new String[v.size()]))
+			new SessionViewConfig(v.toArray(new String[0]))
 		);
 	}
 	
@@ -899,10 +845,7 @@ public class MainFrame extends StdMainFrame<ChannelsPane> {
 		rootPane.validate();
 		rootPane.repaint();
 		
-		SwingUtilities.invokeLater(new Runnable() {
-			public void
-			run() { sidePanesVisibilityChanged(); }
-		});
+		SwingUtilities.invokeLater(this::sidePanesVisibilityChanged);
 	}
 	
 	private void
@@ -936,10 +879,7 @@ public class MainFrame extends StdMainFrame<ChannelsPane> {
 		rootPane.repaint();
 		//hSplitPane.validate();
 		
-		SwingUtilities.invokeLater(new Runnable() {
-			public void
-			run() { sidePanesVisibilityChanged(); }
-		});
+		SwingUtilities.invokeLater(this::sidePanesVisibilityChanged);
 	}
 	
 	public void
@@ -1004,7 +944,7 @@ public class MainFrame extends StdMainFrame<ChannelsPane> {
 	}
 	
 	private class RecentScriptHandler implements ActionListener {
-		private String script;
+		private final String script;
 		
 		RecentScriptHandler(String script) { this.script = script; }
 		
@@ -1063,7 +1003,7 @@ public class MainFrame extends StdMainFrame<ChannelsPane> {
 		}
 	}
 	
-	class RootPane extends FantasiaSubPanel {
+	static class RootPane extends FantasiaSubPanel {
 		private final Color color1 = new Color(0x454545);
 		private final Color color2 = new Color(0x2e2e2e);
 		
@@ -1100,5 +1040,25 @@ public class MainFrame extends StdMainFrame<ChannelsPane> {
 			add(pianoKeyboardPane);
 			
 		}
+	}
+
+	public static void installDesktopHandlers() {
+		final Desktop desktop = Desktop.getDesktop();
+		desktop.setAboutHandler(event -> A4n.a4n.helpAbout.actionPerformed(null));
+		desktop.setPreferencesHandler(event -> A4n.a4n.editPreferences.actionPerformed(null));
+
+		desktop.setQuitHandler(
+			(event, response) -> {
+				if (!((MainFrame) ((Object) CC.getMainFrame())).closeWindow()) {
+					response.cancelQuit();
+				}
+			}
+		);
+
+		desktop.setOpenFileHandler(
+			// TODO: check file extensions
+			// TODO: ask for confirmation when too many files are selected
+			event -> event.getFiles().stream().map(File::getAbsolutePath).forEach(JSampler::open)
+		);
 	}
 }

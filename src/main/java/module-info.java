@@ -9,7 +9,5 @@ module com.grigoriliev.jsampler.fantasia {
 	requires java.desktop;
 	requires java.logging;
 
-	requires static orange.extensions;
-
 	exports com.grigoriliev.jsampler.fantasia.view;
 }

@@ -51,9 +51,9 @@
 	</target>
 
 	<target name="create_installer" depends="prepare">
-		<antcall target="create_linux_installer"></antcall>
-		<antcall target="create_mac_installer"></antcall>
-		<antcall target="create_windows_installer"></antcall>
+		<antcall target="create_linux_installer"/>
+		<antcall target="create_mac_installer"/>
+		<antcall target="create_windows_installer"/>
 	</target>
 
 	<target name="create_linux_installer" if="isLinux">
@@ -72,7 +72,7 @@
 			<arg value="--icon"/> <arg value="${app.image.linux}"/>
 		</exec>
 
-		<antcall target="clean"></antcall>
+		<antcall target="clean"/>
 		<echo message="Done" />
 	</target>
 
@@ -91,9 +91,11 @@
 
 			<arg value="--icon"/> <arg value="${app.image.mac}"/>
 			<arg value="--mac-package-identifier"/> <arg value="com.grigoriliev.jsampler.Fantasia"/>
+			<arg value="--mac-package-name"/> <arg value="Fantasia"/>
+			<arg value="--mac-app-category"/> <arg value="public.app-category.music"/>
 		</exec>
 
-		<antcall target="clean"></antcall>
+		<antcall target="clean"/>
 		<echo message="Done" />
 	</target>
 
@@ -114,7 +116,7 @@
 			<arg value="--win-menu"/>
 		</exec>
 
-		<antcall target="clean"></antcall>
+		<antcall target="clean"/>
 		<echo message="Done" />
 	</target>
 </project>

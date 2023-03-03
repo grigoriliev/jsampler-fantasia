@@ -8,7 +8,7 @@ The Latest Version
 ==================
 
 The latest version can be downloaded from
-http://sourceforge.net/projects/jsampler/
+https://github.com/grigoriliev/jsampler-fantasia/releases
 
 See also: http://www.linuxsampler.org/downloads.html
 
@@ -18,94 +18,6 @@ License
 
 This software is licensed under the terms of
 the GNU Affero General Public License v3.0 (see LICENSE.md file).
-
-
-Requirements
-============
-
-To run JSampler you need Java Runtime Environment (JRE) version 6 or higher.
-
-To build a distribution you need JDK version 6.0 or higher
-and the Ant tool (http://ant.apache.org/).
-
-
-Distributions
-=============
-
-All available distributions are located in the dist directory.
-
-
-Compilation
-===========
-
-To build a JSampler distribution follow the next steps.
-(there are two distribution available for now - JS Classic and Fantasia)
-
-  1. Set the JAVA_HOME environment variable to point to your JDK directory.
-     If the JDK is installed in /opt/jdk1.6.0 directory, this can be done
-     by issuing the following command:
-
-     export JAVA_HOME=/opt/jdk1.6.0
-
-     (Windows users should do something like `set JAVA_HOME=c:\jdk1.6.0')
-
-  2. Choose one or more of the following options.
-
-     - Building a JS Classic distribution: `ant build-jsclassic'
-
-     - Cleaning the JS Classic distribution: `ant clean-jsclassic'
-
-     - Building a Fantasia distribution: `ant build-fantasia'
-
-     - Cleaning the Fantasia distribution: `ant clean-fantasia'
-
-
-Installation
-============
-
-Copy the desired file (dist/JS_Classic-0.9.jar or dist/Fantasia-0.9.jar)
-to some location. That's it!
-
-You may also consider using a script for running particular distribution.
-Look at scripts directory to find an appropriate script for that.
-
-
-Running
-=======
-
-On some systems double clicking on the jar file will be enough.
-If you aren't that lucky use the following
-commands to run JS Classic or Fantasia:
-
-java -jar /<path-to-js-classic>/JS_Classic-0.9.jar
-java -jar /<path-to-fantasia>/Fantasia-0.9.jar
-
-If the java command is not in your path, locate your jre directory and type:
-
-/<jre-dir>/bin/java -jar /<path-to-js-classic>/JS_Classic-0.9.jar
-/<jre-dir>/bin/java -jar /<path-to-fantasia>/Fantasia-0.9.jar
-
-Note that you must run LinuxSampler before running a JSampler frontend.
-
-Libraries Used
-==============
-The following libraries are used in the JSampler core:
-  * Library: jlscp
-    License: GNU General Public License Version 2
-    Website: http://sourceforge.net/projects/jlscp/
-
-  * Library: juife
-    License: GNU Lesser General Public License (LGPL)
-    Website: http://sourceforge.net/projects/juife/
-
-The following libraries are used in the Fantasia distribution:
-  * Library: substance
-    License: Berkeley Software Distribution (BSD)
-    Website: http://substance.dev.java.net
-
-  * Library: swingx
-    License: GNU Lesser General Public License (LGPL)
-    Website: http://swingx.dev.java.net
 
 
 Credits

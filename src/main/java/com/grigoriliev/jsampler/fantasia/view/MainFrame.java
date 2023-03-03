@@ -1044,21 +1044,30 @@ public class MainFrame extends StdMainFrame<ChannelsPane> {
 
 	public static void installDesktopHandlers() {
 		final Desktop desktop = Desktop.getDesktop();
-		desktop.setAboutHandler(event -> A4n.a4n.helpAbout.actionPerformed(null));
-		desktop.setPreferencesHandler(event -> A4n.a4n.editPreferences.actionPerformed(null));
+		if (desktop.isSupported(Desktop.Action.APP_ABOUT)) {
+			desktop.setAboutHandler(event -> A4n.a4n.helpAbout.actionPerformed(null));
+		}
 
-		desktop.setQuitHandler(
-			(event, response) -> {
-				if (!((MainFrame) ((Object) CC.getMainFrame())).closeWindow()) {
-					response.cancelQuit();
+		if (desktop.isSupported(Desktop.Action.APP_PREFERENCES)) {
+			desktop.setPreferencesHandler(event -> A4n.a4n.editPreferences.actionPerformed(null));
+		}
+
+		if (desktop.isSupported(Desktop.Action.APP_QUIT_HANDLER)) {
+			desktop.setQuitHandler(
+				(event, response) -> {
+					if (!((MainFrame) ((Object) CC.getMainFrame())).closeWindow()) {
+						response.cancelQuit();
+					}
 				}
-			}
-		);
+			);
+		}
 
-		desktop.setOpenFileHandler(
-			// TODO: check file extensions
-			// TODO: ask for confirmation when too many files are selected
-			event -> event.getFiles().stream().map(File::getAbsolutePath).forEach(JSampler::open)
-		);
+		if (desktop.isSupported(Desktop.Action.APP_OPEN_FILE)) {
+			desktop.setOpenFileHandler(
+				// TODO: check file extensions
+				// TODO: ask for confirmation when too many files are selected
+				event -> event.getFiles().stream().map(File::getAbsolutePath).forEach(JSampler::open)
+			);
+		}
 	}
 }

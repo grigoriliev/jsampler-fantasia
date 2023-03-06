@@ -15,7 +15,9 @@
 	<property name="app.image.linux" value="src/main/resources/com/grigoriliev/jsampler/fantasia/view/res/icons/LinuxSampler-logo.png"/>
 	<property name="app.image.mac" value="res/mac/Fantasia.icns"/>
 	<property name="app.image.win" value="res/win/fantasia.ico"/>
+	<property name="res.dir.linux" value="res/linux"/>
 	<property name="res.dir.mac" value="res/mac"/>
+	<property name="res.dir.win" value="res/win"/>
 	<property name="main.jar.pattern" value="jsampler-fantasia*.jar"/>
 	<property name="module.name" value="com.grigoriliev.jsampler.fantasia"/>
 	<property name="main.class" value="com.grigoriliev.jsampler.fantasia.JSamplerFantasia"/>
@@ -71,6 +73,8 @@
 			<arg value="--dest"/> <arg value="target"/>
 
 			<arg value="--icon"/> <arg value="${app.image.linux}"/>
+			<arg value="--resource-dir"/> <arg value="${res.dir.linux}"/>
+			<arg value="--file-associations"/> <arg value="res/linux/lscp-ext.properties"/>
 		</exec>
 
 		<antcall target="clean"/>
@@ -112,6 +116,7 @@
 			<arg value="--dest"/> <arg value="target"/>
 
 			<arg value="--icon"/> <arg value="${app.image.win}"/>
+			<arg value="--resource-dir"/> <arg value="${res.dir.win}"/>
 			<arg value="--file-associations"/> <arg value="res/win/lscp-ext.properties"/>
 			<arg value="--win-dir-chooser"/>
 			<arg value="--win-shortcut"/>

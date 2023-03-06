@@ -1,4 +1,4 @@
-module com.grigoriliev.jsampler.fantasia {
+open module com.grigoriliev.jsampler.fantasia {
 	requires com.grigoriliev.jsampler;
 	requires com.grigoriliev.jsampler.fantasia.lib3rdparty;
 	requires com.grigoriliev.jsampler.jlscp;

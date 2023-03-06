@@ -29,9 +29,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import java.net.URL;
 
 import javax.swing.BorderFactory;
@@ -55,20 +52,20 @@ import org.pushingpixels.substance.api.SubstanceLookAndFeel;
  * @author Grigor Iliev
  */
 public class HelpAboutDlg extends InformationDialog {
-	private JLabel lProductName =
-		new JLabel("<html>\n<font size=+1>JSampler Fantasia (version 0.9cvs2)</font>");
+	private final JLabel lProductName =
+		new JLabel("<html>\n<font size=+1>JSampler Fantasia (version 0.9.8-SNAPSHOT)</font>");
 	
-	private JLabel lAuthor = new JLabel(FantasiaI18n.i18n.getLabel("HelpAboutDlg.lAuthor"));
-	private LinkButton btnAuthor = new Lnkbutton(FantasiaI18n.i18n.getLabel("HelpAboutDlg.btnAuthor"));
+	private final JLabel lAuthor = new JLabel(FantasiaI18n.i18n.getLabel("HelpAboutDlg.lAuthor"));
+	private final LinkButton btnAuthor = new Lnkbutton(FantasiaI18n.i18n.getLabel("HelpAboutDlg.btnAuthor"));
 	
-	private JLabel lLicense = new JLabel(FantasiaI18n.i18n.getLabel("HelpAboutDlg.lLicense"));
-	private LinkButton btnLicense = new Lnkbutton("GNU General Public License v.2");
+	private final JLabel lLicense = new JLabel(FantasiaI18n.i18n.getLabel("HelpAboutDlg.lLicense"));
+	private final LinkButton btnLicense = new Lnkbutton("GNU Affero General Public License v.3");
 	
-	private JLabel lDesign = new JLabel(FantasiaI18n.i18n.getLabel("HelpAboutDlg.lDesign"));
+	private final JLabel lDesign = new JLabel(FantasiaI18n.i18n.getLabel("HelpAboutDlg.lDesign"));
 	
-	private JLabel lCopyright = new JLabel(FantasiaI18n.i18n.getLabel("HelpAboutDlg.lCopyright"));
+	private final JLabel lCopyright = new JLabel(FantasiaI18n.i18n.getLabel("HelpAboutDlg.lCopyright"));
 	
-	private JPanel mainPane = new JPanel();
+	private final JPanel mainPane = new JPanel();
 	
 	/** Creates a new instance of <code>HelpAboutDlg</code> */
 	public
@@ -107,17 +104,9 @@ public class HelpAboutDlg extends InformationDialog {
 	
 	private void
 	installListeners() {
-		btnAuthor.addActionListener(new ActionListener() {
-			public void
-			actionPerformed(ActionEvent e) {
-				StdUtils.browse("http://www.grigoriliev.com");
-			}
-		});
+		btnAuthor.addActionListener(e -> StdUtils.browse("http://www.grigoriliev.com"));
 		
-		btnLicense.addActionListener(new ActionListener() {
-			public void
-			actionPerformed(ActionEvent e) { showLicense(License.GPL); }
-		});
+		btnLicense.addActionListener(e -> showLicense(License.AGPL));
 	}
 	
 	private JPanel
@@ -203,12 +192,7 @@ public class HelpAboutDlg extends InformationDialog {
 		p.setLayout(gridbag);
 		
 		Button btn = new Button("swingx");
-		btn.addActionListener(new ActionListener() {
-			public void
-			actionPerformed(ActionEvent e) {
-				StdUtils.browse("http://swingx.dev.java.net/");
-			}
-		});
+		btn.addActionListener(e -> StdUtils.browse("http://swingx.dev.java.net/"));
 		
 		c.gridx = 1;
 		c.gridy = 0;
@@ -217,12 +201,7 @@ public class HelpAboutDlg extends InformationDialog {
 		p.add(btn);
 		
 		btn = new Button("substance");
-		btn.addActionListener(new ActionListener() {
-			public void
-			actionPerformed(ActionEvent e) {
-				StdUtils.browse("http://substance.dev.java.net/");
-			}
-		});
+		btn.addActionListener(e -> StdUtils.browse("http://substance.dev.java.net/"));
 		
 		c.gridx = 1;
 		c.gridy = 1;
@@ -230,12 +209,7 @@ public class HelpAboutDlg extends InformationDialog {
 		p.add(btn);
 		
 		btn = new Button("jlscp");
-		btn.addActionListener(new ActionListener() {
-			public void
-			actionPerformed(ActionEvent e) {
-				StdUtils.browse("http://sourceforge.net/projects/jlscp/");
-			}
-		});
+		btn.addActionListener(e -> StdUtils.browse("https://github.com/grigoriliev/jlscp"));
 		
 		c.gridx = 0;
 		c.gridy = 2;
@@ -243,12 +217,7 @@ public class HelpAboutDlg extends InformationDialog {
 		p.add(btn);
 		
 		btn = new Button("substance-swingx");
-		btn.addActionListener(new ActionListener() {
-			public void
-			actionPerformed(ActionEvent e) {
-				StdUtils.browse("http://substance-swingx.dev.java.net/");
-			}
-		});
+		btn.addActionListener(e -> StdUtils.browse("http://substance-swingx.dev.java.net/"));
 		
 		c.gridx = 1;
 		c.gridy = 2;
@@ -256,12 +225,7 @@ public class HelpAboutDlg extends InformationDialog {
 		p.add(btn);
 		
 		btn = new Button("juife");
-		btn.addActionListener(new ActionListener() {
-			public void
-			actionPerformed(ActionEvent e) {
-				StdUtils.browse("http://sourceforge.net/projects/juife/");
-			}
-		});
+		btn.addActionListener(e -> StdUtils.browse("https://github.com/grigoriliev/juife"));
 		
 		c.gridx = 2;
 		c.gridy = 2;
@@ -282,23 +246,23 @@ public class HelpAboutDlg extends InformationDialog {
 		new LicenseDlg(this, license).setVisible(true);
 	}
 	
-	class ContactInfoPane extends JPanel {
-		private JLabel lAuthorEmail =
+	static class ContactInfoPane extends JPanel {
+		private final JLabel lAuthorEmail =
 			new JLabel(FantasiaI18n.i18n.getLabel("HelpAboutDlg.lAuthorEmail"));
-		private JLabel lLSWebsite = new JLabel(FantasiaI18n.i18n.getLabel("HelpAboutDlg.lLSWebsite"));
-		private JLabel lJSWebsite = new JLabel(FantasiaI18n.i18n.getLabel("HelpAboutDlg.lJSWebsite"));
+		private final JLabel lLSWebsite = new JLabel(FantasiaI18n.i18n.getLabel("HelpAboutDlg.lLSWebsite"));
+		private final JLabel lJSWebsite = new JLabel(FantasiaI18n.i18n.getLabel("HelpAboutDlg.lJSWebsite"));
 		
-		private Lnkbutton btnAuthorEmail = new Lnkbutton("grigor@grigoriliev.com");
-		private Lnkbutton btnLSWebsite = new Lnkbutton("www.linuxsampler.org");
-		private Lnkbutton btnJSWebsite = new Lnkbutton("sf.net/projects/jsampler");
+		private final Lnkbutton btnAuthorEmail = new Lnkbutton("grigor@grigoriliev.com");
+		private final Lnkbutton btnLSWebsite = new Lnkbutton("www.linuxsampler.org");
+		private final Lnkbutton btnJSWebsite = new Lnkbutton("sf.net/projects/jsampler");
 	
-		private Button btnDocumentation =
+		private final Button btnDocumentation =
 			new Button(FantasiaI18n.i18n.getButtonLabel("HelpAboutDlg.btnDocumentation"));
 	
-		private Button btnLSDevelopers =
+		private final Button btnLSDevelopers =
 			new Button(FantasiaI18n.i18n.getButtonLabel("HelpAboutDlg.btnLSDevelopers"));
 	
-		private Button btnLSMailingList =
+		private final Button btnLSMailingList =
 			new Button(FantasiaI18n.i18n.getButtonLabel("HelpAboutDlg.btnLSMailingList"));
 	
 		ContactInfoPane() {
@@ -365,51 +329,33 @@ public class HelpAboutDlg extends InformationDialog {
 				FantasiaI18n.i18n.getLabel("HelpAboutDlg.contactInfoPane")
 			));
 		
-			btnAuthorEmail.addActionListener(new ActionListener() {
-				public void
-				actionPerformed(ActionEvent e) {
-					StdUtils.browse("mailto:grigor@grigoriliev.com");
-				}
-			});
+			btnAuthorEmail.addActionListener(
+				e -> StdUtils.browse("mailto:grigor@grigoriliev.com")
+			);
 		
-			btnLSWebsite.addActionListener(new ActionListener() {
-				public void
-				actionPerformed(ActionEvent e) {
-					StdUtils.browse("http://www.linuxsampler.org");
-				}
-			});
+			btnLSWebsite.addActionListener(
+				e -> StdUtils.browse("http://www.linuxsampler.org")
+			);
 		
-			btnJSWebsite.addActionListener(new ActionListener() {
-				public void
-				actionPerformed(ActionEvent e) {
-					StdUtils.browse("http://sf.net/projects/jsampler/");
-				}
-			});
+			btnJSWebsite.addActionListener(
+				e -> StdUtils.browse("http://sf.net/projects/jsampler/")
+			);
 		
-			btnDocumentation.addActionListener(new ActionListener() {
-				public void
-				actionPerformed(ActionEvent e) {
-					StdUtils.browse("http://www.linuxsampler.org/documentation.html");
-				}
-			});
+			btnDocumentation.addActionListener(
+				e -> StdUtils.browse("http://www.linuxsampler.org/documentation.html")
+			);
 		
-			btnLSDevelopers.addActionListener(new ActionListener() {
-				public void
-				actionPerformed(ActionEvent e) {
-					StdUtils.browse("http://www.linuxsampler.org/developers.html");
-				}
-			});
+			btnLSDevelopers.addActionListener(
+				e -> StdUtils.browse("http://www.linuxsampler.org/developers.html")
+			);
 		
-			btnLSMailingList.addActionListener(new ActionListener() {
-				public void
-				actionPerformed(ActionEvent e) {
-					StdUtils.browse("http://lists.sourceforge.net/lists/listinfo/linuxsampler-devel");
-				}
-			});
+			btnLSMailingList.addActionListener(
+				e -> StdUtils.browse("http://lists.sourceforge.net/lists/listinfo/linuxsampler-devel")
+			);
 		}
 	}
 	
-	private class Lnkbutton extends LinkButton {
+	private static class Lnkbutton extends LinkButton {
 		Lnkbutton(String s) {
 			super(s);
 			Color c = new Color(0xFFA300);
@@ -422,7 +368,7 @@ public class HelpAboutDlg extends InformationDialog {
 		}
 	}
 	
-	private class Button extends JButton {
+	private static class Button extends JButton {
 		Button(String s) {
 			super(s);
 			putClientProperty (
@@ -438,13 +384,14 @@ public class HelpAboutDlg extends InformationDialog {
 
 
 
-enum License { GPL, LGPL }
+enum License { AGPL, GPL, LGPL }
 
 class LicenseDlg extends InformationDialog {
 	LicenseDlg(Dialog owner, License license) {
 		super(owner);
 		
 		switch(license) {
+			case AGPL: setTitle("GNU Affero General Public License"); break;
 			case GPL: setTitle("GNU General Public License"); break;
 			case LGPL: setTitle("GNU Lesser General Public License"); break;
 		}
@@ -456,19 +403,20 @@ class LicenseDlg extends InformationDialog {
 	}
 	
 	static class LicensePane extends JEditorPane {
-		private static URL urlGPL;
-		private static URL urlLGPL;
+		private static final URL urlAGPL;
+		private static final URL urlGPL;
+		private static final URL urlLGPL;
 	
 		static {
-			String s = "licenses/gpl.html";
-			urlGPL = ClassLoader.getSystemClassLoader().getResource(s);
-				s = "licenses/lgpl.html";
-			urlLGPL = ClassLoader.getSystemClassLoader().getResource(s);
+			urlAGPL = ClassLoader.getSystemClassLoader().getResource("agpl-3.0.html");
+			urlGPL = ClassLoader.getSystemClassLoader().getResource("gpl.html");
+			urlLGPL = ClassLoader.getSystemClassLoader().getResource("lgpl.html");
 		}
 	
 		LicensePane(License license) {
 			try {
 				switch(license) {
+					case AGPL: setPage(urlAGPL); break;
 					case GPL: setPage(urlGPL); break;
 					case LGPL: setPage(urlLGPL); break;
 				}

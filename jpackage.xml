@@ -112,6 +112,7 @@
 			<arg value="--dest"/> <arg value="target"/>
 
 			<arg value="--icon"/> <arg value="${app.image.win}"/>
+			<arg value="--file-associations"/> <arg value="res/win/lscp-ext.properties"/>
 			<arg value="--win-dir-chooser"/>
 			<arg value="--win-shortcut"/>
 			<arg value="--win-menu"/>

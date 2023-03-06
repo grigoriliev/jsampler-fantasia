@@ -14,11 +14,11 @@
 			<key>LSHandlerRank</key>
 			<string>Default</string>
 			<key>CFBundleTypeIconFile</key>
-			<string>LSCPScript.icns</string>
+			<string>Fantasia.icns</string>
 		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
-	<string>JavaApplicationStub</string>
+	<string>Fantasia</string>
 	<key>CFBundleIconFile</key>
 	<string>Fantasia.icns</string>
 	<key>CFBundleIdentifier</key>
@@ -31,27 +31,13 @@
 	<string>1.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.music</string>
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
-	<key>Java</key>
-	<dict>
-		<key>ClassPath</key>
-		<array>
-			<string>$JAVAROOT/Fantasia-0.9.jar</string>
-		</array>
-		<key>JVMVersion</key>
-		<string>1.6*</string>
-		<key>MainClass</key>
-		<string>com.grigoriliev.jsampler.JSampler</string>
-		<key>Properties</key>
-		<dict>
-			<key>apple.laf.useScreenMenuBar</key>
-			<string>true</string>
-		</dict>
-		<key>WorkingDirectory</key>
-		<string>$APP_PACKAGE/Contents/Resources/Java</string>
-	</dict>
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright ©2005-2009 Grigor Iliev</string>
+	<string>Copyright ©2005-2023 Grigor Iliev</string>
+  <key>NSHighResolutionCapable</key>
+  <string>true</string>
 </dict>
 </plist>

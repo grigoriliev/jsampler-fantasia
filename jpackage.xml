@@ -13,8 +13,9 @@
 	-->
 	<property name="app.version" value="0.9.7"/>
 	<property name="app.image.linux" value="src/main/resources/com/grigoriliev/jsampler/fantasia/view/res/icons/LinuxSampler-logo.png"/>
-	<property name="app.image.mac" value="src/main/resources/com/grigoriliev/jsampler/fantasia/view/res/osx/Fantasia.icns"/>
+	<property name="app.image.mac" value="res/mac/Fantasia.icns"/>
 	<property name="app.image.win" value="src/main/resources/com/grigoriliev/jsampler/fantasia/view/res/win/fantasia.ico"/>
+	<property name="res.dir.mac" value="res/mac"/>
 	<property name="main.jar.pattern" value="jsampler-fantasia*.jar"/>
 	<property name="module.name" value="com.grigoriliev.jsampler.fantasia"/>
 	<property name="main.class" value="com.grigoriliev.jsampler.fantasia.JSamplerFantasia"/>
@@ -86,13 +87,13 @@
 			<arg value="--module"/> <arg value="${module.name}/${main.class}"/>
 			<arg value="--java-options"/> <arg value="--add-exports"/>
 			<arg value="--java-options"/> <arg value="${exports.1}"/>
-			<arg value="--icon"/> <arg value="${app.image}"/>
 			<arg value="--dest"/> <arg value="target"/>
 
+			<arg value="--java-options"/> <arg value="-Dapple.laf.useScreenMenuBar=true"/>
 			<arg value="--icon"/> <arg value="${app.image.mac}"/>
+			<arg value="--resource-dir"/> <arg value="${res.dir.mac}"/>
 			<arg value="--mac-package-identifier"/> <arg value="com.grigoriliev.jsampler.Fantasia"/>
 			<arg value="--mac-package-name"/> <arg value="Fantasia"/>
-			<arg value="--mac-app-category"/> <arg value="public.app-category.music"/>
 		</exec>
 
 		<antcall target="clean"/>

@@ -5,12 +5,13 @@ XSLCHUNKEDFILE  ?= html-chunked.xsl
 HTMLFILE ?= ../html/jsampler.html
 CSSFILE	 ?= jsampler.css
 XSLTPROC ?= xsltproc
+ENCODING ?= UTF-8
 
 html-chunked:: clean
 	# creating output directory
 	-@mkdir $(OUTDIR)
 	# generating html
-	$(XSLTPROC) -stringparam base.dir $(OUTDIR)/ -stringparam chunk.section.depth 1 $(XSLCHUNKEDFILE) $(XMLFILE)
+	$(XSLTPROC) --encoding $(ENCODING) -stringparam base.dir $(OUTDIR)/ -stringparam chunk.section.depth 1 $(XSLCHUNKEDFILE) $(XMLFILE)
 	# copy css file to output directory
 	-@cp $(CSSFILE) $(OUTDIR)/$(CSSFILE)
 	# copy the image files to the output directory
@@ -22,7 +23,7 @@ html:: clean
 	# creating output directory
 	-@mkdir $(OUTDIR)
 	# generating html
-	$(XSLTPROC) -o $(HTMLFILE) $(XSLFILE) $(XMLFILE)
+	$(XSLTPROC) --encoding $(ENCODING) -o $(HTMLFILE) $(XSLFILE) $(XMLFILE)
 	# copy css file to output directory
 	-@cp $(CSSFILE) $(OUTDIR)/$(CSSFILE)
 	# copy the image files to the output directory

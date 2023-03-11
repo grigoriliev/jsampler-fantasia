@@ -102,6 +102,11 @@
           </listitem>
           <listitem>
             <para>
+            	git clone <ulink url="https://github.com/grigoriliev/juife-swing.git">https://github.com/grigoriliev/juife-swing.git</ulink>
+            </para>
+          </listitem>
+          <listitem>
+            <para>
             	git clone <ulink url="https://github.com/grigoriliev/jlscp.git">https://github.com/grigoriliev/jlscp.git</ulink>
             </para>
           </listitem>

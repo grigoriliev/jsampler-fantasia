@@ -140,7 +140,7 @@
     <section id="COMPILATION">
       <title>Compilation</title>
 
-      <para>To build a JSampler distribution, first set the
+      <para>To build Fantasia, first set the
       <code>JAVA_HOME</code> environment variable to point to your JDK
       directory. If the JDK is installed in /opt/jdk-17 directory, this can
       be done by issuing the following command:</para>
@@ -177,6 +177,9 @@
     <para><command>
     &lt;property name=&quot;jpackage.cmd&quot; value=&quot;/path/to/jdk/bin/jpackage&quot;/&gt;
     </command></para>
+    <para>
+    Note that <code>jpackage</code> command is available in JDK version 14 or later.
+    </para>
   </chapter>
 
   <chapter id="USING_ORCHESTRAS">

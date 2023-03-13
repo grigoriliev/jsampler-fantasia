@@ -1,8 +1,10 @@
 
-JSampler - A java front-end for LinuxSampler
+Fantasia - a front-end for LinuxSampler
+=======================================
 
 by Grigor Iliev <grigor@grigoriliev.com>
 
+![Fantasia](manual/docbook/images/fantasia.png)
 
 The Latest Version
 ==================
@@ -19,6 +21,11 @@ License
 This software is licensed under the terms of
 the GNU Affero General Public License v3.0 (see LICENSE.md file).
 
+
+Manual
+======
+
+The manual can be found [here](https://grigoriliev.github.io/jsampler-fantasia/).
 
 Credits
 =======
